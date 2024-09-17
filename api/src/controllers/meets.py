@@ -27,6 +27,7 @@ def delete_meet(request, meet_id):
     try:
         meet = get_object_or_404(Meet, id=meet_id)
         meet.delete()
+        # todo здесь удаление делаем через репозиторий
         return JsonResponse({"status": "success"})
     except Meet.DoesNotExist:
         return JsonResponse({"status": "Meet not found"}, status=404)
@@ -40,6 +41,7 @@ class CreateMeetView(LoginRequiredMixin, View):
     def get(self, request):
         form = CreateMeetForm()
         categories = Category.objects.all()
+        # todo получение данных через сервис ?
         return render(
             request,
             "create_meet_modal.html",
@@ -61,6 +63,7 @@ class CreateMeetView(LoginRequiredMixin, View):
             )
 
             meet.save()
+            # todo создание через сервис
 
             participant_statuses = data["participant_statuses"]
             for user_id, status in participant_statuses.items():
