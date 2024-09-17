@@ -1,0 +1,277 @@
+.hidden-menu {
+    display: none;
+}
+.visible-menu {
+    display: block;
+}
+.bg-green-custom {
+    background-color: #327680;
+}
+.hover:bg-green-dark {
+    background-color: #245c5e;
+}
+.text-green-custom {
+    color: #327680;
+}
+.editor {
+    height: 150px;
+}
+.custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+.custom-select select {
+    display: none;
+}
+.select-selected {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+}
+.select-items {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 99;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+}
+.select-items div {
+    padding: 10px;
+    cursor: pointer;
+}
+.select-items div:hover {
+    background-color: #f1f1f1;
+}
+.select-items .selected {
+    background-color: #ddd;
+}
+.select-selected.active + .select-items {
+    display: block;
+}
+
+/* Стиль для таблицы 1 */
+.table-style-1 td, .table-style-1 th {
+    border: 1px solid #e0e0e0;
+    padding: 8px;
+    background-color: #f9f9f9;
+}
+.table-style-1 th {
+    background-color: #e0e0e0;
+    text-align: left;
+}
+
+/* Стиль для таблицы 2 */
+.table-style-2 td, .table-style-2 th {
+    border: 1px solid #d0d0d0;
+    padding: 10px;
+    background-color: #ffffff;
+}
+.table-style-2 th {
+    background-color: #d0d0d0;
+    text-align: center;
+}
+.active-button {
+    background: #327680B2;
+    border: 1px solid #25464A
+}
+.active-1 {
+    background-color: #65BA83; /* Зеленый */
+    color: #ffffff; /* Цвет текста для активного состояния */
+}
+.active-2 {
+    background-color: #EE6666; /* Красный */
+    color: #ffffff; /* Цвет текста для активного состояния */
+}
+.active-3 {
+    background-color: #F0E8A3; /* Желтый */
+    color: #1e1e1e; /* Цвет текста для активного состояния */
+}
+#container {
+    height: 40px; /* Обновлена высота блока */
+}
+.flex-item {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.rounded {
+    border-radius: 5px; /* Радиус скругления */
+}
+.rounded-tl {
+    border-top-left-radius: 5px;
+}
+.rounded-tr {
+    border-top-right-radius: 5px;
+}
+.rounded-bl {
+    border-bottom-left-radius: 5px;
+}
+.rounded-br {
+    border-bottom-right-radius: 5px;
+}
+a {
+    line-height: 2;
+}
+
+.role-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+.truncate-link {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+.hidden-menu {
+    display: none;
+}
+.visible-menu {
+    display: block;
+}
+.bg-green-custom {
+    background-color: #327680;
+}
+.hover:bg-green-dark {
+    background-color: #245c5e;
+}
+.text-green-custom {
+    color: #327680;
+}
+.select-width {
+    width: 100px;
+}
+.status-active {
+    color: #38a169;
+}
+.status-used {
+    color: gray;
+}
+.status-expired {
+    color: #e53e3e;
+}
+
+.hidden-menu {
+    display: none;
+}
+.visible-menu {
+    display: block !important; /* Используем !important для приоритета */
+}
+.bg-green-custom {
+    background-color: #327680;
+}
+.hover:bg-green-dark {
+    background-color: #245c5e;
+}
+.text-green-custom {
+    color: #327680;
+}
+.select-width {
+    width: 150px;
+}
+.status-active {
+    color: #38a169;
+}
+.status-used {
+    color: gray;
+}
+.status-expired {
+    color: #e53e3e;
+}
+.modal {
+    transition: opacity 0.3s ease;
+}
+.modal-open {
+    overflow: hidden;
+}
+.modal-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.editor {
+    height: 150px;
+}
+.custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+.custom-select select {
+    display: none; /* Скрыть стандартный элемент select */
+}
+.select-selected {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+}
+.select-items {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 99;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none; /* По умолчанию скрыто */
+}
+.select-items div {
+    padding: 10px;
+    cursor: pointer;
+}
+.select-items div:hover {
+    background-color: #f1f1f1;
+}
+.select-items .selected {
+    background-color: #ddd;
+}
+.select-selected.active + .select-items {
+    display: block; /* Показываем при добавлении класса active */
+}
+
+.role-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+.hidden-menu {
+    display: none;
+}
+.visible-menu {
+    display: block;
+}
+/* Классы для зеленого фона и текста */
+.bg-green-custom {
+    background-color: #327680; /* Зеленый цвет */
+}
+.hover:bg-green-dark {
+    background-color: #245c5e; /* Темный зеленый для наведения */
+}
+.text-green-custom {
+    color: #327680; /* Зеленый цвет текста */
+}
+.select-width {
+    width: 100px; /* Ширина выпадающего списка */
+}
+
+.hidden {
+    display: none;
+}
