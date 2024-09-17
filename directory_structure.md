@@ -1,5 +1,3 @@
-# sup_test
-
 - .gitignore
 - README.md
 - api/
