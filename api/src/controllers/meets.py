@@ -5,9 +5,9 @@ from django.views import View
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
-from apps.meets.choice_classes import StatusChoice
-from apps.meets.forms import CreateMeetForm
-from apps.meets.models import Category, Meet, MeetParticipant, User
+from src.model.status_choises import MeetStatusChoice
+from src.apps.meets.forms import CreateMeetForm
+from src.models import Category, Meet, MeetParticipant, User
 
 
 class MeetsView(LoginRequiredMixin, TemplateView):
@@ -69,9 +69,9 @@ class CreateMeetView(LoginRequiredMixin, View):
             for user_id, status in participant_statuses.items():
                 user = User.objects.get(id=user_id)
                 if status == "ABSENT":
-                    status = StatusChoice.ABSENT
+                    status = MeetStatusChoice.ABSENT
                 elif status == "WARNED":
-                    status = StatusChoice.WARNED
+                    status = MeetStatusChoice.WARNED
                 MeetParticipant.objects.create(
                     meet=meet, custom_user=user, status=status
                 )

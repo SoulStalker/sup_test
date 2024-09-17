@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from apps.meets.choice_classes import StatusChoice
-from validators.validators import LettersOnlyValidator
+from .choice_classes import MeetStatusChoice
+from src.validators.validators import LettersOnlyValidator
 
 User = get_user_model()
 
@@ -45,7 +45,7 @@ class Meet(models.Model):
         validators=[LettersOnlyValidator.get_regex_validator()],
     )
     start_date = models.DateField(default=timezone.now, verbose_name="Дата")
-    start_time = models.TimeField(default=timezone.now, verbose_name="Время")
+    # start_time = models.TimeField(default=time(datetime.now()), verbose_name="Время")
     author = models.ForeignKey(
         User,
         related_name="author_meets",
@@ -70,7 +70,7 @@ class Meet(models.Model):
         db_table = "meets"
         verbose_name = "Мит"
         verbose_name_plural = "Миты"
-        ordering = ["start_date", "start_time", "category", "title"]
+        ordering = ["start_date", "category", "title"]
 
     def __str__(self):
         return f"{self.title} - {self.start_date} {self.start_time}"
@@ -92,8 +92,8 @@ class MeetParticipant(models.Model):
     )
     status = models.CharField(
         max_length=10,
-        choices=StatusChoice.choices,
-        default=StatusChoice.PRESENT,
+        choices=MeetStatusChoice.choices,
+        default=MeetStatusChoice.PRESENT,
         verbose_name="Статус",
     )
 
@@ -105,7 +105,7 @@ class MeetParticipant(models.Model):
 
     @property
     def status_color(self):
-        return StatusChoice.get_color(self.status)
+        return MeetStatusChoice.get_color(self.status)
 
     def __str__(self):
         return (

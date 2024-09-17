@@ -6,12 +6,12 @@ from django.shortcuts import redirect
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 
-from apps.projects.choice_classes import (
+from src.models.choice_classes import (
     FeatureChoices,
     ProjectChoices,
     TaskChoices,
 )
-from validators.validators import ColorValidator, MyValidator
+from src.validators.validators import ColorValidator, CustomValidator, LettersOnlyValidator
 
 User = get_user_model()
 
@@ -28,7 +28,7 @@ class Project(models.Model):
         max_length=20,
         verbose_name="Название",
         unique=True,
-        validators=[MyValidator.get_regex_validator()],
+        validators=[CustomValidator.get_regex_validator()],
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     logo = models.ImageField(
@@ -111,7 +111,7 @@ class Feature(models.Model):
     name = models.CharField(
         max_length=50,
         verbose_name="Название",
-        validators=[MyValidator.get_regex_validator()],
+        validators=[CustomValidator.get_regex_validator()],
         unique=True,
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
@@ -121,7 +121,7 @@ class Feature(models.Model):
     importance = models.PositiveIntegerField(
         default=0,
         verbose_name="Важность",
-        validators=[MyValidator.get_max_value_validator()],
+        validators=[LettersOnlyValidator.get_max_value_validator()],
     )
     tags = models.ManyToManyField(
         to=Tags,
@@ -180,7 +180,7 @@ class Task(models.Model):
         max_length=50,
         verbose_name="Название",
         unique=True,
-        validators=[MyValidator.get_regex_validator()],
+        validators=[CustomValidator.get_regex_validator()],
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     description = models.TextField(
@@ -190,7 +190,7 @@ class Task(models.Model):
         default=0,
         verbose_name="Важность",
         null=True,
-        validators=[MyValidator.get_max_value_validator()],
+        validators=[LettersOnlyValidator.get_max_value_validator()],
     )
     tags = models.ManyToManyField(
         to=Tags,

@@ -30,8 +30,8 @@ def generate_directory_structure(root_dir, exclude_folders=None, level=0):
 
 
 if __name__ == "__main__":
-    root_directory = "."  # Замените на корневую директорию
-    exclude = [".git", ".idea", ".venv", "\\_\\_pycache\\_\\_"]  # Добавьте папки для исключения
+    root_directory = "."
+    exclude = [".git", ".idea", ".venv", "\\_\\_pycache\\_\\_"]
     structure = generate_directory_structure(root_directory, exclude)
 
     with open("directory_structure.md", "w") as file:

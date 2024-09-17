@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.projects.models import Feature, Project, Tags, Task
+from src.models.projects import Feature, Project, Tags, Task
 
 
 @admin.register(Tags)

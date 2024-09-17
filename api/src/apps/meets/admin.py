@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.meets.models import Category, Meet, MeetParticipant
+from src.models.meets import Category, Meet, MeetParticipant
 
 
 @admin.register(Category)
@@ -17,9 +17,9 @@ class MeetParticipantInline(admin.TabularInline):
 
 @admin.register(Meet)
 class MeetAdmin(admin.ModelAdmin):
-    list_display = ("title", "category", "start_date", "start_time")
-    list_display_links = ("title", "category", "start_time")
-    search_fields = ("title", "category", "start_time", "end_time")
+    list_display = ("title", "category", "start_date")
+    list_display_links = ("title", "category")
+    search_fields = ("title", "category")
     inlines = [MeetParticipantInline]
 
 
