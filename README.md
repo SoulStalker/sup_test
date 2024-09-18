@@ -33,8 +33,6 @@
                 - \_\_init\_\_.py
                 - admin.py
                 - apps.py
-                - migrations/
-                    - \_\_init\_\_.py
                 - tests.py
                 - views.py
         - config/
@@ -48,6 +46,7 @@
             - meets.py
             - projects.py
             - users.py
+        - db.sqlite3
         - domain/
             - custom_user/
             - meet/
@@ -56,6 +55,9 @@
                 - repository.py
                 - service.py
             - project/
+                - dtos.py
+                - repository.py
+                - service.py
         - models/
             - \_\_init\_\_.py
             - apps.py
