@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, date, time
 
 
-@dataclass(frozen=True)
+@dataclass
 class Meet:
     category: int
     title: str
