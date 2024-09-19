@@ -1,3 +1,6 @@
+from src.models.meets import Category
+
+
 class IMeetRepository:
     def create(self, meet):
         pass
@@ -10,11 +13,13 @@ class IMeetRepository:
 
 
 class ICategoryRepository:
+    model = Category
+
     def create(self, category):
         pass
 
     def delete(self, category):
         pass
 
-    def get_list(self, category):
-        pass
+    def get_list(self) -> list[Category]:
+        return Category.objects.all()

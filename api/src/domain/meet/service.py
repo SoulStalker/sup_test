@@ -1,3 +1,6 @@
+from src.domain.meet.dtos import CategoryDTO
+
+
 class MeetService:
     def __init__(self, repository):
         self.__repository = repository
@@ -22,6 +25,7 @@ class CategoryMeetService:
     def delete(self, pk):
         self.__repository.delete(pk)
 
-    def get_list(self):
-        pass
+    def get_list(self) -> list[CategoryDTO]:
+        return self.__repository.get_list()
+
 

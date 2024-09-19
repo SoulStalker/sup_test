@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from .models import Category
+# from .models import Category
 
 
 class CreateMeetForm(forms.Form):

@@ -3,12 +3,12 @@
 """
 from src.models.meets import Meet
 
-from domain.repository import IMeetRepository
+from api.src.domain.meet.repository import IMeetRepository
 
 
 class MeetsRepository(IMeetRepository):
-    model = Meet
+    pass
 
-    def create(self, dto: CreateMeetDTO):
-        model = self.model(**dto.dict())
-        model.save()
+    # def create(self, dto: CreateMeetDTO):
+    #     model = self.model(**dto.dict())
+    #     model.save()

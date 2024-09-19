@@ -3,12 +3,13 @@ from datetime import date, time
 
 
 @dataclass
-class Category:
+class CategoryDTO:
+    id: int
     name: str
 
 
 @dataclass
-class Meet:
+class MeetDTO:
     category: int
     title: str
     start_date: date
@@ -16,6 +17,7 @@ class Meet:
     author: str
     responsible: str
     participants: list[str]
+
 
 @dataclass
 class CreateMeetDTO:
