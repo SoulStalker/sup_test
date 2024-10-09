@@ -1,7 +1,7 @@
 """
 Импортируется репозиторий из домена и преобразуется джанговский qureryset в нужную сущность (entity или dto)
 """
-from src.models.meets import Meet
+from src.models.meets import Meet, Category
 
 from api.src.domain.meet.repository import IMeetRepository
 
