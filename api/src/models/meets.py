@@ -44,8 +44,7 @@ class Meet(models.Model):
         verbose_name="Название",
         validators=[LettersOnlyValidator.get_regex_validator()],
     )
-    start_date = models.DateField(default=timezone.now, verbose_name="Дата")
-    # start_time = models.TimeField(default=time(datetime.now()), verbose_name="Время")
+    start_time = models.DateTimeField(default=timezone.now, verbose_name="Дата")
     author = models.ForeignKey(
         User,
         related_name="author_meets",
