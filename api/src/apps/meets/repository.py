@@ -48,9 +48,11 @@ class MeetsRepository(IMeetRepository, ABC):
         return self._orm_to_dto(Meet.objects.get(id=meet_id))
 
     def get_meets_list(self) -> list[Meet]:
+        print('Дошли до локального репо')
+
         return [meet for meet in Meet.objects.all()]
 
-    def get_meets_by_category_id(self, category_id: int) -> list[Meet]:
+    def get_meets_by_category(self, category_id: int) -> list[Meet]:
         return [meet for meet in Meet.objects.filter(category_id=category_id)]
 
 
@@ -59,6 +61,22 @@ class CategoryRepository(ICategoryRepository, ABC):
 
     def _orm_to_dto(self, category: Category) -> CategoryDTO:
         return CategoryDTO(id=category.id, name=category.name)
+
+    def create(self, category_dto: CategoryDTO) -> CategoryDTO:
+        repository = ICategoryRepository()
+        category = CategoryRepository.get_category_by_id(category_dto.id)
+        category.name = category_dto.name
+        return category
+
+    def update(self, category_id: int, dto: CategoryDTO) -> CategoryDTO:
+        repository = ICategoryRepository()
+        category = CategoryRepository.get_category_by_id(category_id)
+        category.name = dto.name
+        return category
+
+    def delete(self, category_id: int) -> None:
+        repository = ICategoryRepository()
+        category = CategoryRepository.get_category_by_id(category_id)
 
     def get_categories_list(self) -> list[CategoryDTO]:
         query = self.model.objects.all()

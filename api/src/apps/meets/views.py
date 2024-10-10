@@ -22,15 +22,17 @@ class MeetsView(LoginRequiredMixin, TemplateView):
 
     def __init__(self):
         super().__init__()
-        self.category_service = MeetCategoryService(CategoryRepository)
-        self.meet_service = MeetService(MeetsRepository, CategoryRepository)
+        self.category_service = MeetCategoryService(CategoryRepository())
+        self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["categories"] = MeetCategoryService.get_list
+        context["categories"] = self.category_service.get_categories_list()
         context["users"] = User.objects.order_by("id")
         # context["meets"] = Meet.objects.prefetch_related("participants").all()
         context["meets"] = self.meet_service.get_meets_list()
+
+        print('Печатаем из вьюшки',  context["meets"])
 
         return context
 

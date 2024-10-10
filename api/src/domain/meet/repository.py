@@ -22,11 +22,11 @@ class IMeetRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_meets_list(self):
+    def get_meet_by_id(self, meet_id: int):
         pass
 
     @abc.abstractmethod
-    def get_meet_by_id(self, meet_id: int):
+    def get_meets_list(self):
         pass
 
     @abc.abstractmethod

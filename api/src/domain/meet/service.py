@@ -22,10 +22,10 @@ class MeetService:
         self.__repository.delete(pk)
 
     def get_meets_list(self) -> list[MeetDTO]:
-        pass
+        return self.__repository.get_meets_list()
 
     def get_meet(self, pk) -> MeetDTO:
-        pass
+        return self.__repository.get_meet_by_id(pk)
 
     def get_meets_by_category(self, dto) -> list[MeetDTO]:
         category = self.__category_repository.get_category_by_id(dto.category_id)
@@ -48,8 +48,8 @@ class MeetCategoryService:
     def delete(self, pk):
         self.__repository.delete(pk)
 
-    def get_list(self) -> list[CategoryDTO]:
-        return self.__repository.get_list()
+    def get_categories_list(self) -> list[CategoryDTO]:
+        return self.__repository.get_categories_list()
 
     def get_category(self, pk) -> CategoryDTO:
         return self.__repository.get_category(pk)
