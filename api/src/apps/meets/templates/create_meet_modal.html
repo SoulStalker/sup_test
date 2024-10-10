@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+<div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
     <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
         <h2 class="text-xl mb-4">Создать Meet</h2>
         <form id="create-meet-form" method="POST" action="{% url 'meets:create_meet' %}">
@@ -84,9 +80,3 @@
         </form>
     </div>
 </div>
-</title>
-</head>
-<body>
-
-</body>
-</html>

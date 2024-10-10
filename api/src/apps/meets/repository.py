@@ -48,7 +48,9 @@ class MeetsRepository(IMeetRepository, ABC):
         return self._orm_to_dto(Meet.objects.get(id=meet_id))
 
     def get_meets_list(self) -> list[Meet]:
+
         print('Дошли до локального репо')
+        # todo убрать печать
 
         return [meet for meet in Meet.objects.all()]
 

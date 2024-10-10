@@ -29,10 +29,10 @@ class MeetsView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["categories"] = self.category_service.get_categories_list()
         context["users"] = User.objects.order_by("id")
-        # context["meets"] = Meet.objects.prefetch_related("participants").all()
         context["meets"] = self.meet_service.get_meets_list()
 
         print('Печатаем из вьюшки',  context["meets"])
+        # todo убрать печать
 
         return context
 

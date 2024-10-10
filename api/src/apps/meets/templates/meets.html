@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -10,7 +6,7 @@
     <title>Таблица Meet</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
-    <link href="{% static 'output.css' %}" rel="stylesheet">
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
 
 </head>
 <body class="bg-gray-100 h-screen flex">
@@ -207,12 +203,6 @@
     <script src="{% static 'script/create_meet.js' %}"></script>
 
 {% endblock %}
-
-</body>
-</html>
-</title>
-</head>
-<body>
 
 </body>
 </html>
