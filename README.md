@@ -15,6 +15,9 @@
                 - apps.py
                 - forms.py
                 - repository.py
+                - templates/
+                    - create_meet_modal.html
+                    - meets.html
                 - tests.py
                 - urls.py
                 - views.py
@@ -41,17 +44,11 @@
             - settings.py
             - urls.py
             - wsgi.py
-        - controllers/
-            - \_\_init\_\_.py
-            - meets.py
-            - projects.py
-            - users.py
         - db.sqlite3
         - domain/
             - custom_user/
             - meet/
                 - dtos.py
-                - entity.py
                 - repository.py
                 - service.py
             - project/
@@ -85,3 +82,4 @@
         - script/
             - create_meet.js
             - script.js
+
