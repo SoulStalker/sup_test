@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
+        <h2 class="text-xl mb-4">Создать Meet</h2>
+        <form id="create-meet-form" method="POST" action="{% url 'meets:create_meet' %}">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Название Meet*</label>
+                <input type="text" id="title" name="title" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+            </div>
+            <div class="mb-4">
+
+            </div>
+            <table class="w-full mx-auto">
+                <thead  class="bg-gray-100 text-xs">
+                    <tr>
+                        <th class="border-b py-2 px-4 text-left">ID</th>
+                        <th class="border-b py-2 px-4 text-left">Имя</th>
+                        <th class="border-b py-2 px-4 text-left">Ник telegram</th>
+                        <th class="border-b py-2 px-4 text-left">Имя telegram</th>
+                        <th class="border-b py-2 px-4 text-left">Присутствовали</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td class="border-b py-2 px-4">{{ user.id }}</td>
+                            <td class="border-b py-2 px-4">{{ user.first_name }}</td>
+                            <td class="border-b py-2 px-4">{{ user.email }}</td>
+                            <td class="border-b py-2 px-4">
+                                <input type="checkbox" name="participants" value="{{ user.id }}" id="participant_{{ user.id }}" class="hidden">
+                                <label for="participant_{{ user.id }}" class="cursor-pointer">{{ user.username }}</label>
+                            </td>
+                            <td class="border-b py-2 px-4">
+                                <div id="container_{{ user.id }}" class="w-full flex bg-gray-300 border rounded-lg border-[#666666] py-0 px-0">
+                                    <div id="item1_{{ user.id }}" class="flex-item rounded-tl rounded-bl bg-transparent cursor-pointer" onclick="setStatus('{{ user.id }}', 'PRESENT')">
+                                        <div class="text-center text-[#1e1e1e] text-xs font-normal">Б</div>
+                                    </div>
+                                    <div id="item2_{{ user.id }}" class="flex-item bg-transparent cursor-pointer" onclick="setStatus('{{ user.id }}', 'WARNED')">
+                                        <div class="text-center text-[#1e1e1e] text-xs font-normal">П</div>
+                                    </div>
+                                    <div id="item3_{{ user.id }}" class="flex-item rounded-tr rounded-br bg-transparent cursor-pointer" onclick="setStatus('{{ user.id }}', 'ABSENT')">
+                                        <div class="text-center text-[#1e1e1e] text-xs font-normal">Н</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="participant_status_{{ user.id }}" id="participant_status_{{ user.id }}" value="">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="mb-4">
+                <label for="start_date" class="block text-sm font-medium text-gray-700">Дата начала*</label>
+                <input type="date" id="start_date" name="start_date" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+            </div>
+            <div class="mb-4">
+                <label for="start_time" class="block text-sm font-medium text-gray-700">Время начала*</label>
+                <input type="time" id="start_time" name="start_time" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+            </div>
+            <div class="mb-4">
+                <label for="category" class="block text-sm font-medium text-gray-700">Категория*</label>
+                <select id="category" name="category" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="responsible" class="block text-sm font-medium text-gray-700">Ответственный*</label>
+                <select id="responsible" name="responsible" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex justify-end space-x-2">
+                <button id="close-modal" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+                <button type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
+            </div>
+        </form>
+    </div>
+</div>
+</title>
+</head>
+<body>
+
+</body>
+</html>

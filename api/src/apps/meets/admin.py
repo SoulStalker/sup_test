@@ -17,7 +17,7 @@ class MeetParticipantInline(admin.TabularInline):
 
 @admin.register(Meet)
 class MeetAdmin(admin.ModelAdmin):
-    list_display = ("title", "category", "start_date")
+    list_display = ("title", "category", "start_time")
     list_display_links = ("title", "category")
     search_fields = ("title", "category")
     inlines = [MeetParticipantInline]

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.meets.views import CreateMeetView, MeetsView, delete_meet
+from src.apps.meets.views import CreateMeetView, MeetsView, delete_meet
 
 app_name = "apps.meets"
 

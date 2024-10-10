@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views import View
@@ -6,9 +7,11 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 # from apps.meets.choice_classes import StatusChoice
-from api.src.apps.meets.forms import CreateMeetForm
-from src.apps.meets.repository import MeetsRepository
-from src.domain.meet.service import CategoryMeetService
+from src.apps.meets.forms import CreateMeetForm
+from src.apps.meets.repository import MeetsRepository, CategoryRepository
+from src.domain.meet.service import MeetCategoryService, MeetService
+from src.domain.meet.dtos import MeetDTO, CategoryDTO
+from src.models.meets import Meet
 
 
 # from apps.meets.models import Category, Meet, MeetParticipant, User
@@ -16,13 +19,18 @@ from src.domain.meet.service import CategoryMeetService
 
 class MeetsView(LoginRequiredMixin, TemplateView):
     template_name = "meets.html"
-    category_service = CategoryMeetService(MeetsRepository)
+
+    def __init__(self):
+        super().__init__()
+        self.category_service = MeetCategoryService(CategoryRepository)
+        self.meet_service = MeetService(MeetsRepository, CategoryRepository)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["categories"] = category_service.get_list
+        context["categories"] = MeetCategoryService.get_list
         context["users"] = User.objects.order_by("id")
-        context["meets"] = Meet.objects.prefetch_related("participants").all()
+        # context["meets"] = Meet.objects.prefetch_related("participants").all()
+        context["meets"] = self.meet_service.get_meets_list()
 
         return context
 
@@ -41,44 +49,44 @@ class CreateMeetView(LoginRequiredMixin, View):
     """
     Создание мита
     """
-
-    def get(self, request):
-        form = CreateMeetForm()
-        categories = Category.objects.all()
-        return render(
-            request,
-            "create_meet_modal.html",
-            {"form": form, "categories": categories},
-        )
+    def __init__(self):
+        super().__init__()
+        self.category_service = MeetCategoryService(CategoryRepository())
+        self.meet_service = MeetService(MeetsRepository())
+    # def get(self, request):
+    #     form = CreateMeetForm(request.POST)
+    #     categories = MeetCategoryService.get_list
+    #     return render(
+    #         request,
+    #         "create_meet_modal.html",
+    #         {"form": form, "categories": categories},
+    #     )
 
     def post(self, request):
         form = CreateMeetForm(request.POST)
         if form.is_valid():
-            data = form.cleaned_data
+            # data = form.cleaned_data
+            self.meet_service.create(MeetDTO(
+                category=form.cleaned_data["category"],
+                title=form.cleaned_data["title"],
+                start_time=form.cleaned_data["start_time"],
+                author_id=form.cleaned_data["author_id"],
+                responsible_id=form.cleaned_data["responsible_id"],
+                participants_ids=form.cleaned_data["participants_ids"],
+            ))
 
-            meet = Meet.objects.create(
-                author=request.user,
-                title=data["title"],
-                start_date=data["start_date"],
-                start_time=data["start_time"],
-                category=data["category"],
-                responsible=data["responsible"],
-            )
 
-            meet.save()
-
-            participant_statuses = data["participant_statuses"]
-            for user_id, status in participant_statuses.items():
-                user = User.objects.get(id=user_id)
-                if status == "ABSENT":
-                    status = StatusChoice.ABSENT
-                elif status == "WARNED":
-                    status = StatusChoice.WARNED
-                MeetParticipant.objects.create(
-                    meet=meet, custom_user=user, status=status
-                )
+            # participant_statuses = data["participant_statuses"]
+            # for user_id, status in participant_statuses.items():
+            #     user = User.objects.get(id=user_id)
+            #     if status == "ABSENT":
+            #         status = StatusChoice.ABSENT
+            #     elif status == "WARNED":
+            #         status = StatusChoice.WARNED
+            #     MeetParticipant.objects.create(
+            #         meet=meet, custom_user=user, status=status
+            #     )
 
             return JsonResponse({"status": "success"}, status=201)
 
         return render(request, "create_meet_modal.html", {"form": form})
-# Create your views here.

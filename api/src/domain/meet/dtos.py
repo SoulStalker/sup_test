@@ -11,7 +11,7 @@ class CategoryDTO:
 
 @dataclass
 class MeetDTO:
-    category_id: int
+    category: CategoryDTO
     title: str
     start_time: datetime
     author_id: int

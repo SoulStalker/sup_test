@@ -36,7 +36,7 @@ class Meet(models.Model):
     """
 
     category = models.ForeignKey(
-        "Category", on_delete=models.PROTECT, verbose_name="Категория"
+        "Category", on_delete=models.PROTECT, verbose_name="Категория", null=True
     )
     title = models.CharField(
         max_length=20,
@@ -50,6 +50,7 @@ class Meet(models.Model):
         related_name="author_meets",
         on_delete=models.CASCADE,
         verbose_name="Автор",
+        null=True,
     )
     responsible = models.ForeignKey(
         User,
@@ -69,10 +70,10 @@ class Meet(models.Model):
         db_table = "meets"
         verbose_name = "Мит"
         verbose_name_plural = "Миты"
-        ordering = ["start_date", "category", "title"]
+        ordering = ["start_time", "category", "title"]
 
     def __str__(self):
-        return f"{self.title} - {self.start_date} {self.start_time}"
+        return f"{self.title} - {self.start_time}"
 
 
 class MeetParticipant(models.Model):

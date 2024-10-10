@@ -5,16 +5,16 @@
 пишет в базу и читает из базы
 """
 import abc
+from .dtos import MeetDTO
 
 
 class IMeetRepository(abc.ABC):
     @abc.abstractmethod
-    # что должен принимать данный метод? ДТО?
-    def create(self, meet):
+    def create(self, dto: MeetDTO) -> MeetDTO:
         pass
 
     @abc.abstractmethod
-    def update(self, meet_id: int):
+    def update(self, meet_id: int, dto: MeetDTO):
         pass
 
     @abc.abstractmethod
@@ -35,9 +35,7 @@ class IMeetRepository(abc.ABC):
 
 
 class ICategoryRepository(abc.ABC):
-    # Может использовать один интерфейс для мита и категории и расширить метод уже в экземпляре?
     @abc.abstractmethod
-    # что должен принимать данный метод? может строку так как очень простой?
     def create(self, category_name: str):
         pass
 
