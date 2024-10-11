@@ -11,7 +11,6 @@ from src.apps.meets.forms import CreateMeetForm
 from src.apps.meets.repository import MeetsRepository, CategoryRepository
 from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.meet.dtos import MeetDTO, CategoryDTO
-from src.models.meets import Meet
 
 
 # from apps.meets.models import Category, Meet, MeetParticipant, User
@@ -31,30 +30,32 @@ class MeetsView(LoginRequiredMixin, TemplateView):
         context["users"] = User.objects.order_by("id")
         context["meets"] = self.meet_service.get_meets_list()
 
-        print('Печатаем из вьюшки',  context["meets"])
+        print('Печатаем из вьюшки', context["meets"])
         # todo убрать печать
 
         return context
 
-
-@require_POST
-def delete_meet(request, meet_id):
-    try:
-        meet = get_object_or_404(Meet, id=meet_id)
-        meet.delete()
-        return JsonResponse({"status": "success"})
-    except Meet.DoesNotExist:
-        return JsonResponse({"status": "Meet not found"}, status=404)
+    @require_POST
+    def delete_meet(self, meet_id):
+        try:
+            # meet = get_object_or_404(Meet, id=meet_id)
+            # meet.delete()
+            self.meet_service.delete(pk=meet_id)
+            return JsonResponse({"status": "success"})
+        except Exception as e:
+            return JsonResponse({"status": e}, status=404)
 
 
 class CreateMeetView(LoginRequiredMixin, View):
     """
     Создание мита
     """
+
     def __init__(self):
         super().__init__()
         self.category_service = MeetCategoryService(CategoryRepository())
-        self.meet_service = MeetService(MeetsRepository())
+        self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
+
     # def get(self, request):
     #     form = CreateMeetForm(request.POST)
     #     categories = MeetCategoryService.get_list
@@ -67,8 +68,10 @@ class CreateMeetView(LoginRequiredMixin, View):
     def post(self, request):
         form = CreateMeetForm(request.POST)
         if form.is_valid():
-            # data = form.cleaned_data
-            self.meet_service.create(MeetDTO(
+            data = form.cleaned_data
+            print(data)
+
+            new_meet = self.meet_service.create(MeetDTO(
                 category=form.cleaned_data["category"],
                 title=form.cleaned_data["title"],
                 start_time=form.cleaned_data["start_time"],
@@ -76,7 +79,6 @@ class CreateMeetView(LoginRequiredMixin, View):
                 responsible_id=form.cleaned_data["responsible_id"],
                 participants_ids=form.cleaned_data["participants_ids"],
             ))
-
 
             # participant_statuses = data["participant_statuses"]
             # for user_id, status in participant_statuses.items():
@@ -88,6 +90,8 @@ class CreateMeetView(LoginRequiredMixin, View):
             #     MeetParticipant.objects.create(
             #         meet=meet, custom_user=user, status=status
             #     )
+            # todo убрать печать
+            print(new_meet)
 
             return JsonResponse({"status": "success"}, status=201)
 
