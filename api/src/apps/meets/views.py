@@ -69,7 +69,7 @@ class CreateMeetView(LoginRequiredMixin, View):
         form = CreateMeetForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            print(data)
+            # print(data["participant_statuses"])
 
             new_meet = self.meet_service.create(MeetDTO(
                 category=form.cleaned_data["category"],
@@ -77,20 +77,21 @@ class CreateMeetView(LoginRequiredMixin, View):
                 start_time=form.cleaned_data["start_time"],
                 author_id=request.user.id,
                 responsible_id=form.cleaned_data["responsible"],
+                participant_statuses=form.cleaned_data["participant_statuses"],
                 # participants_ids=form.cleaned_data["participants_ids"],
             ))
 
-            participant_statuses = data["participant_statuses"]
-            for user_id, status in participant_statuses.items():
-                user = User.objects.get(id=user_id)
-                if status == "ABSENT":
-                    status = StatusChoice.ABSENT
-                elif status == "WARNED":
-                    status = StatusChoice.WARNED
-                MeetParticipant.objects.create(
-                    meet=meet, custom_user=user, status=status
-                )
-            # todo убрать печать
+            # participant_statuses = data["participant_statuses"]
+            # for user_id, status in participant_statuses.items():
+            #     user = User.objects.get(id=user_id)
+            #     if status == "ABSENT":
+            #         status = StatusChoice.ABSENT
+            #     elif status == "WARNED":
+            #         status = StatusChoice.WARNED
+            #     MeetParticipant.objects.create(
+            #         meet=meet, custom_user=user, status=status
+            #     )
+            # # todo убрать печать
             print(new_meet)
 
             return JsonResponse({"status": "success"}, status=201)

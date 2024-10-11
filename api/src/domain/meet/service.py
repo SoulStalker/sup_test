@@ -8,11 +8,11 @@ class MeetService:
         self.__category_repository = category_repository
 
     def create(self, dto):
-        category = self.__category_repository.get_category_by_id(dto.category_id)
+        category = dto.category
         try:
-            meet = MeetDTO(category, dto.title, dto.start_time, dto.author_id, dto.resposible_id, dto.participants_ids)
+            meet = MeetDTO(category, dto.title, dto.start_time, dto.author_id, dto.responsible_id, dto.participant_statuses)
         except Exception as e:
-            raise Exception('Category not found', e)
+            raise Exception('Ah shit', e)
         return meet
 
     def update(self, pk):

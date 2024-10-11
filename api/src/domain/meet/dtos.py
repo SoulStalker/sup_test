@@ -16,5 +16,5 @@ class MeetDTO:
     start_time: datetime
     author_id: int
     responsible_id: int
-    participants_ids: list[int]
+    participant_statuses: list[dict]
 
