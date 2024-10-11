@@ -75,21 +75,21 @@ class CreateMeetView(LoginRequiredMixin, View):
                 category=form.cleaned_data["category"],
                 title=form.cleaned_data["title"],
                 start_time=form.cleaned_data["start_time"],
-                author_id=form.cleaned_data["author_id"],
-                responsible_id=form.cleaned_data["responsible_id"],
-                participants_ids=form.cleaned_data["participants_ids"],
+                author_id=request.user.id,
+                responsible_id=form.cleaned_data["responsible"],
+                # participants_ids=form.cleaned_data["participants_ids"],
             ))
 
-            # participant_statuses = data["participant_statuses"]
-            # for user_id, status in participant_statuses.items():
-            #     user = User.objects.get(id=user_id)
-            #     if status == "ABSENT":
-            #         status = StatusChoice.ABSENT
-            #     elif status == "WARNED":
-            #         status = StatusChoice.WARNED
-            #     MeetParticipant.objects.create(
-            #         meet=meet, custom_user=user, status=status
-            #     )
+            participant_statuses = data["participant_statuses"]
+            for user_id, status in participant_statuses.items():
+                user = User.objects.get(id=user_id)
+                if status == "ABSENT":
+                    status = StatusChoice.ABSENT
+                elif status == "WARNED":
+                    status = StatusChoice.WARNED
+                MeetParticipant.objects.create(
+                    meet=meet, custom_user=user, status=status
+                )
             # todo убрать печать
             print(new_meet)
 
