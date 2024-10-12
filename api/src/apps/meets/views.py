@@ -57,13 +57,12 @@ class CreateMeetView(LoginRequiredMixin, View):
     def post(self, request):
         form = CreateMeetForm(request.POST)
         if form.is_valid():
-            # data = form.cleaned_data
             new_meet = self.meet_service.create(MeetDTO(
-                category=form.cleaned_data["category"],
+                category_id=form.cleaned_data["category"].id,
                 title=form.cleaned_data["title"],
                 start_time=form.cleaned_data["start_time"],
                 author_id=request.user.id,
-                responsible_id=form.cleaned_data["responsible"],
+                responsible_id=form.cleaned_data["responsible"].id,
                 participant_statuses=form.cleaned_data["participant_statuses"],
             ))
 

@@ -14,7 +14,7 @@ class MeetsRepository(IMeetRepository, ABC):
 
     def _orm_to_dto(self, meet: Meet) -> MeetDTO:
         return MeetDTO(
-            category=CategoryRepository.get_category_by_id(meet.category.id),
+            category_id=meet.category.id,
             title=meet.title,
             start_time=meet.start_time,
             author_id=meet.author.id,
@@ -24,8 +24,10 @@ class MeetsRepository(IMeetRepository, ABC):
 
     def create(self, dto: MeetDTO) -> MeetDTO:
 
+        print("RESPONSIBLE", dto.responsible_id)
+
         model = self.model(title=dto.title,
-                           category=dto.category,
+                           category_id=dto.category_id,
                            start_time=dto.start_time,
                            author_id=dto.author_id,
                            responsible_id=dto.responsible_id,

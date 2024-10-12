@@ -6,8 +6,7 @@ from src.models.meets import Category
 
 class CreateMeetForm(forms.Form):
     title = forms.CharField()
-    start_date = forms.DateField()
-    start_time = forms.TimeField()
+    start_time = forms.DateTimeField()
     category = forms.ModelChoiceField(queryset=Category.objects.all())
     author = User.objects.get(pk=1)
     responsible = forms.ModelChoiceField(queryset=User.objects.all())
