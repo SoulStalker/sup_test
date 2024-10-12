@@ -29,8 +29,11 @@ class MeetsView(LoginRequiredMixin, TemplateView):
 
     @require_POST
     def delete_meet(self, meet_id):
+        # как dry
+        meet_service = MeetService(MeetsRepository(), CategoryRepository())
+
         try:
-            self.meet_service.delete(pk=meet_id)
+            meet_service.delete(pk=meet_id)
             return JsonResponse({"status": "success"})
         except Exception as e:
             return JsonResponse({"status": e}, status=404)
@@ -57,7 +60,7 @@ class CreateMeetView(LoginRequiredMixin, View):
     def post(self, request):
         form = CreateMeetForm(request.POST)
         if form.is_valid():
-            new_meet = self.meet_service.create(MeetDTO(
+            self.meet_service.create(MeetDTO(
                 category_id=form.cleaned_data["category"].id,
                 title=form.cleaned_data["title"],
                 start_time=form.cleaned_data["start_time"],
@@ -76,9 +79,6 @@ class CreateMeetView(LoginRequiredMixin, View):
             #     MeetParticipant.objects.create(
             #         meet=meet, custom_user=user, status=status
             #     )
-            # todo убрать печать
-            print("Meet created: ", new_meet)
-
             return JsonResponse({"status": "success"}, status=201)
 
         # return render(request, "create_meet_modal.html", {"form": form})

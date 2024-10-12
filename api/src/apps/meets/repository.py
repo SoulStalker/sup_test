@@ -3,8 +3,11 @@
 """
 from abc import ABC
 
-from src.domain.meet.dtos import MeetDTO, CategoryObject
-from src.models.meets import Meet, Category
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+
+from src.domain.meet.dtos import MeetDTO, CategoryObject, Status
+from src.models.meets import Meet, Category, MeetParticipant
 
 from src.domain.meet.repository import IMeetRepository, ICategoryRepository
 
@@ -23,9 +26,6 @@ class MeetsRepository(IMeetRepository, ABC):
         )
 
     def create(self, dto: MeetDTO) -> MeetDTO:
-
-        print("RESPONSIBLE", dto.responsible_id)
-
         model = self.model(title=dto.title,
                            category_id=dto.category_id,
                            start_time=dto.start_time,
@@ -36,11 +36,22 @@ class MeetsRepository(IMeetRepository, ABC):
                            )
         print("Meet in model is: ", model)
 
+        # Теперь добавляем участников
         model.save()
 
-        # Теперь добавляем участников
         if dto.participant_statuses:
             model.participants.set(dto.participant_statuses.keys())
+
+        # todo тут какая-то херня надо обдумать еще раз
+        # for user_id, status in dto.participant_statuses.items():
+        #     user = User.objects.get(id=user_id)
+        #     if status == "ABSENT":
+        #         status = Status.ABSENT
+        #     elif status == "WARNED":
+        #         status = Status.WARNED
+        #     MeetParticipant.objects.create(
+        #         meet=meet, custom_user=user, status=status
+        #     )
 
         return self._orm_to_dto(model)
 
@@ -51,8 +62,8 @@ class MeetsRepository(IMeetRepository, ABC):
         return self._orm_to_dto(meet)
 
     def delete(self, meet_id: int) -> None:
-        repository = IMeetRepository()
-        repository.delete(meet_id)
+        meet = get_object_or_404(Meet, id=meet_id)
+        meet.delete()
 
     def get_meet_by_id(self, meet_id: int):
         return self._orm_to_dto(Meet.objects.get(id=meet_id))
