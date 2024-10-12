@@ -19,8 +19,7 @@ class MeetsRepository(IMeetRepository, ABC):
             start_time=meet.start_time,
             author_id=meet.author.id,
             responsible_id=meet.responsible.id,
-            participants_ids=meet.participants.all()
-            #  под вопросом последняя строка
+            participant_statuses=meet.participants,
         )
 
     def create(self, dto: MeetDTO) -> MeetDTO:
@@ -58,7 +57,7 @@ class CategoryRepository(ICategoryRepository, ABC):
     model = Category
 
     def _orm_to_dto(self, category: Category) -> CategoryObject:
-        return CategoryObject(name=category.name)
+        return CategoryObject(pk=category.id, name=category.name)
 
     def create(self, category_dto: CategoryObject) -> CategoryObject:
         repository = ICategoryRepository()

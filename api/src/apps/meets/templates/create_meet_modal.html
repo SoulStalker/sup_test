@@ -60,7 +60,7 @@
                 <label for="category" class="block text-sm font-medium text-gray-700">Категория*</label>
                 <select id="category" name="category" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
                     {% for category in categories %}
-                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        <option value="{{ category.pk }}">{{ category.name }}</option>
                     {% endfor %}
                 </select>
             </div>

@@ -52,10 +52,6 @@ class CreateMeetView(LoginRequiredMixin, View):
     def get(self, request):
         form = CreateMeetForm(request.POST)
         categories = self.category_service.get_categories_list()
-
-        print("Печатаем категории", categories)
-        # todo печать
-
         return render(
             request,
             "create_meet_modal.html",

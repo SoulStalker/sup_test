@@ -6,9 +6,11 @@ class CategoryObject:
     """
     ValueObject: Category of meet
     """
-    def __init__(self, name: str):
+    def __init__(self, pk: int, name: str):
+        self.pk = pk
         self.name = name
 
+    id: int
     name: str
 
 
