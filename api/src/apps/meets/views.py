@@ -17,6 +17,7 @@ class MeetsView(LoginRequiredMixin, TemplateView):
 
     def __init__(self):
         super().__init__()
+        # так можно ?
         self.category_service = MeetCategoryService(CategoryRepository())
         self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
@@ -29,7 +30,7 @@ class MeetsView(LoginRequiredMixin, TemplateView):
 
     @require_POST
     def delete_meet(self, meet_id):
-        # как dry
+        # ?
         meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
         try:
@@ -68,19 +69,8 @@ class CreateMeetView(LoginRequiredMixin, View):
                 responsible_id=form.cleaned_data["responsible"].id,
                 participant_statuses=form.cleaned_data["participant_statuses"],
             ))
-
-            # participant_statuses = data["participant_statuses"]
-            # for user_id, status in participant_statuses.items():
-            #     user = User.objects.get(id=user_id)
-            #     if status == "ABSENT":
-            #         status = StatusChoice.ABSENT
-            #     elif status == "WARNED":
-            #         status = StatusChoice.WARNED
-            #     MeetParticipant.objects.create(
-            #         meet=meet, custom_user=user, status=status
-            #     )
             return JsonResponse({"status": "success"}, status=201)
 
-        # return render(request, "create_meet_modal.html", {"form": form})
         print("Ошибка при создании мита из формы:", form.errors.get_json_data())
+
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)

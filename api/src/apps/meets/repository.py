@@ -3,7 +3,6 @@
 """
 from abc import ABC
 
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
 from src.domain.meet.dtos import MeetDTO, CategoryObject, Status
@@ -15,7 +14,7 @@ from src.domain.meet.repository import IMeetRepository, ICategoryRepository
 class MeetsRepository(IMeetRepository, ABC):
     model = Meet
 
-    def _orm_to_dto(self, meet: Meet) -> MeetDTO:
+    def _orm_to_dto(meet: Meet) -> MeetDTO:
         return MeetDTO(
             category_id=meet.category.id,
             title=meet.title,
@@ -31,18 +30,15 @@ class MeetsRepository(IMeetRepository, ABC):
                            start_time=dto.start_time,
                            author_id=dto.author_id,
                            responsible_id=dto.responsible_id,
-                           # participants=dto.participant_statuses,
-
                            )
-        print("Meet in model is: ", model)
 
-        # Теперь добавляем участников
         model.save()
 
-        if dto.participant_statuses:
-            model.participants.set(dto.participant_statuses.keys())
+        # Добавление участников
+        # переделать это через метод домена ?
+        model.participants.set(dto.participant_statuses.keys())
 
-        # todo тут какая-то херня надо обдумать еще раз
+        # todo тут какая-то херня надо переделать через domain
         # for user_id, status in dto.participant_statuses.items():
         #     user = User.objects.get(id=user_id)
         #     if status == "ABSENT":

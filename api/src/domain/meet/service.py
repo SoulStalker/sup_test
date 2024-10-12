@@ -23,11 +23,7 @@ class MeetService:
         return self.__repository.get_meet_by_id(pk)
 
     def get_meets_by_category(self, dto) -> list[MeetDTO]:
-        category = self.__category_repository.get_category_by_id(dto.category_id)
-        try:
-            return [meet for meet in self.__repository.get_meets_by_category(category)]
-        except Exception as e:
-            raise Exception('Meets not found', e)
+        return self.__repository.get_meets_by_category(dto)
 
 
 class MeetCategoryService:

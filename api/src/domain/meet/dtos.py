@@ -4,7 +4,7 @@ from datetime import datetime
 
 class CategoryObject:
     """
-    ValueObject: Category of meet
+    ValueObject: Категория мита
     """
     def __init__(self, pk: int, name: str):
         self.pk = pk
@@ -26,7 +26,7 @@ class MeetDTO:
 
 class Status:
     """
-    ValueObject: Status of the meet
+    ValueObject: Статусы участников мита
     """
     PRESENT = "present"
     ABSENT = "absent"
