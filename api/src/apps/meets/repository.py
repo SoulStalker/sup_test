@@ -23,14 +23,23 @@ class MeetsRepository(IMeetRepository, ABC):
         )
 
     def create(self, dto: MeetDTO) -> MeetDTO:
+
         model = self.model(title=dto.title,
                            category=dto.category,
                            start_time=dto.start_time,
                            author_id=dto.author_id,
                            responsible_id=dto.responsible_id,
-                           participant_ids=dto.participants_ids,
+                           # participants=dto.participant_statuses,
+
                            )
+        print("Meet in model is: ", model)
+
         model.save()
+
+        # Теперь добавляем участников
+        if dto.participant_statuses:
+            model.participants.set(dto.participant_statuses.keys())
+
         return self._orm_to_dto(model)
 
     def update(self, meet_id: int, dto: MeetDTO) -> MeetDTO:

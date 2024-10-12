@@ -1,19 +1,15 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.views import View
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
-# from apps.meets.choice_classes import StatusChoice
 from src.apps.meets.forms import CreateMeetForm
 from src.apps.meets.repository import MeetsRepository, CategoryRepository
 from src.domain.meet.service import MeetCategoryService, MeetService
-from src.domain.meet.dtos import MeetDTO, CategoryObject
-
-
-# from apps.meets.models import Category, Meet, MeetParticipant, User
+from src.domain.meet.dtos import MeetDTO
 
 
 class MeetsView(LoginRequiredMixin, TemplateView):
@@ -59,12 +55,9 @@ class CreateMeetView(LoginRequiredMixin, View):
         )
 
     def post(self, request):
-
         form = CreateMeetForm(request.POST)
         if form.is_valid():
-            data = form.cleaned_data
-            print(data["participant_statuses"])
-
+            # data = form.cleaned_data
             new_meet = self.meet_service.create(MeetDTO(
                 category=form.cleaned_data["category"],
                 title=form.cleaned_data["title"],
@@ -72,7 +65,6 @@ class CreateMeetView(LoginRequiredMixin, View):
                 author_id=request.user.id,
                 responsible_id=form.cleaned_data["responsible"],
                 participant_statuses=form.cleaned_data["participant_statuses"],
-                # participants_ids=form.cleaned_data["participants_ids"],
             ))
 
             # participant_statuses = data["participant_statuses"]
@@ -86,11 +78,10 @@ class CreateMeetView(LoginRequiredMixin, View):
             #         meet=meet, custom_user=user, status=status
             #     )
             # todo убрать печать
-            print(new_meet)
+            print("Meet created: ", new_meet)
 
             return JsonResponse({"status": "success"}, status=201)
 
         # return render(request, "create_meet_modal.html", {"form": form})
-        print(request.POST)
-        print(form.errors.get_json_data())
+        print("Ошибка при создании мита из формы:", form.errors.get_json_data())
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)

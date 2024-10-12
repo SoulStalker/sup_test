@@ -10,7 +10,7 @@ class CategoryObject:
         self.pk = pk
         self.name = name
 
-    id: int
+    pk: int
     name: str
 
 
@@ -21,7 +21,7 @@ class MeetDTO:
     start_time: datetime
     author_id: int
     responsible_id: int
-    participant_statuses: list[dict]
+    participant_statuses: dict
 
 
 class Status:

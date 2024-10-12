@@ -8,12 +8,16 @@ class MeetService:
         self.__category_repository = category_repository
 
     def create(self, dto):
-        category = dto.category
-        try:
-            meet = MeetDTO(category, dto.title, dto.start_time, dto.author_id, dto.responsible_id, dto.participant_statuses)
-        except Exception as e:
-            raise Exception('Ah shit', e)
-        return meet
+        # category = dto.category
+        # try:
+        #     meet = MeetDTO(category, dto.title, dto.start_time, dto.author_id, dto.responsible_id, dto.participant_statuses)
+        #
+        #     print("Meet in service is: ", self, meet)
+        #
+        # except Exception as e:
+        #     raise Exception('Ah shit', e)
+        # return meet
+        self.__repository.create(dto)
 
     def update(self, pk):
         self.__repository.update(pk)
