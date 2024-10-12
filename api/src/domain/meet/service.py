@@ -1,4 +1,4 @@
-from src.domain.meet.dtos import CategoryDTO, MeetDTO
+from src.domain.meet.dtos import CategoryObject, MeetDTO
 from src.domain.meet.repository import IMeetRepository, ICategoryRepository
 
 
@@ -48,8 +48,8 @@ class MeetCategoryService:
     def delete(self, pk):
         self.__repository.delete(pk)
 
-    def get_categories_list(self) -> list[CategoryDTO]:
+    def get_categories_list(self) -> list[CategoryObject]:
         return self.__repository.get_categories_list()
 
-    def get_category(self, pk) -> CategoryDTO:
+    def get_category(self, pk) -> CategoryObject:
         return self.__repository.get_category(pk)

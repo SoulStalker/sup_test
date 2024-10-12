@@ -3,7 +3,7 @@
 """
 from abc import ABC
 
-from src.domain.meet.dtos import MeetDTO, CategoryDTO
+from src.domain.meet.dtos import MeetDTO, CategoryObject
 from src.models.meets import Meet, Category
 
 from src.domain.meet.repository import IMeetRepository, ICategoryRepository
@@ -48,10 +48,6 @@ class MeetsRepository(IMeetRepository, ABC):
         return self._orm_to_dto(Meet.objects.get(id=meet_id))
 
     def get_meets_list(self) -> list[Meet]:
-
-        print('Дошли до локального репо')
-        # todo убрать печать
-
         return [meet for meet in Meet.objects.all()]
 
     def get_meets_by_category(self, category_id: int) -> list[Meet]:
@@ -61,16 +57,16 @@ class MeetsRepository(IMeetRepository, ABC):
 class CategoryRepository(ICategoryRepository, ABC):
     model = Category
 
-    def _orm_to_dto(self, category: Category) -> CategoryDTO:
-        return CategoryDTO(id=category.id, name=category.name)
+    def _orm_to_dto(self, category: Category) -> CategoryObject:
+        return CategoryObject(name=category.name)
 
-    def create(self, category_dto: CategoryDTO) -> CategoryDTO:
+    def create(self, category_dto: CategoryObject) -> CategoryObject:
         repository = ICategoryRepository()
         category = CategoryRepository.get_category_by_id(category_dto.id)
         category.name = category_dto.name
         return category
 
-    def update(self, category_id: int, dto: CategoryDTO) -> CategoryDTO:
+    def update(self, category_id: int, dto: CategoryObject) -> CategoryObject:
         repository = ICategoryRepository()
         category = CategoryRepository.get_category_by_id(category_id)
         category.name = dto.name
@@ -80,10 +76,10 @@ class CategoryRepository(ICategoryRepository, ABC):
         repository = ICategoryRepository()
         category = CategoryRepository.get_category_by_id(category_id)
 
-    def get_categories_list(self) -> list[CategoryDTO]:
+    def get_categories_list(self) -> list[CategoryObject]:
         query = self.model.objects.all()
         return [self._orm_to_dto(category) for category in query]
 
-    def get_category_by_id(self, category_id: int) -> CategoryDTO:
+    def get_category_by_id(self, category_id: int) -> CategoryObject:
         query = self.model.objects.get(id=category_id)
         return self._orm_to_dto(query)

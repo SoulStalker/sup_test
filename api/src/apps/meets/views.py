@@ -10,7 +10,7 @@ from django.views.generic import TemplateView
 from src.apps.meets.forms import CreateMeetForm
 from src.apps.meets.repository import MeetsRepository, CategoryRepository
 from src.domain.meet.service import MeetCategoryService, MeetService
-from src.domain.meet.dtos import MeetDTO, CategoryDTO
+from src.domain.meet.dtos import MeetDTO, CategoryObject
 
 
 # from apps.meets.models import Category, Meet, MeetParticipant, User
@@ -29,17 +29,11 @@ class MeetsView(LoginRequiredMixin, TemplateView):
         context["categories"] = self.category_service.get_categories_list()
         context["users"] = User.objects.order_by("id")
         context["meets"] = self.meet_service.get_meets_list()
-
-        print('Печатаем из вьюшки', context["meets"])
-        # todo убрать печать
-
         return context
 
     @require_POST
     def delete_meet(self, meet_id):
         try:
-            # meet = get_object_or_404(Meet, id=meet_id)
-            # meet.delete()
             self.meet_service.delete(pk=meet_id)
             return JsonResponse({"status": "success"})
         except Exception as e:
@@ -50,26 +44,30 @@ class CreateMeetView(LoginRequiredMixin, View):
     """
     Создание мита
     """
-
     def __init__(self):
         super().__init__()
         self.category_service = MeetCategoryService(CategoryRepository())
         self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
-    # def get(self, request):
-    #     form = CreateMeetForm(request.POST)
-    #     categories = MeetCategoryService.get_list
-    #     return render(
-    #         request,
-    #         "create_meet_modal.html",
-    #         {"form": form, "categories": categories},
-    #     )
+    def get(self, request):
+        form = CreateMeetForm(request.POST)
+        categories = self.category_service.get_categories_list()
+
+        print("Печатаем категории", categories)
+        # todo печать
+
+        return render(
+            request,
+            "create_meet_modal.html",
+            {"form": form, "categories": categories},
+        )
 
     def post(self, request):
+
         form = CreateMeetForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            # print(data["participant_statuses"])
+            print(data["participant_statuses"])
 
             new_meet = self.meet_service.create(MeetDTO(
                 category=form.cleaned_data["category"],
@@ -91,9 +89,12 @@ class CreateMeetView(LoginRequiredMixin, View):
             #     MeetParticipant.objects.create(
             #         meet=meet, custom_user=user, status=status
             #     )
-            # # todo убрать печать
+            # todo убрать печать
             print(new_meet)
 
             return JsonResponse({"status": "success"}, status=201)
 
-        return render(request, "create_meet_modal.html", {"form": form})
+        # return render(request, "create_meet_modal.html", {"form": form})
+        print(request.POST)
+        print(form.errors.get_json_data())
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
