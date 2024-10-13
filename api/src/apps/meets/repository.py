@@ -14,7 +14,7 @@ from src.domain.meet.repository import IMeetRepository, ICategoryRepository
 class MeetsRepository(IMeetRepository, ABC):
     model = Meet
 
-    def _orm_to_dto(meet: Meet) -> MeetDTO:
+    def _orm_to_dto(self, meet: Meet) -> MeetDTO:
         return MeetDTO(
             category_id=meet.category.id,
             title=meet.title,

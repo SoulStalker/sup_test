@@ -15,11 +15,13 @@ from src.domain.meet.dtos import MeetDTO
 class MeetsView(LoginRequiredMixin, TemplateView):
     template_name = "meets.html"
 
-    def __init__(self):
-        super().__init__()
-        # так можно ?
-        self.category_service = MeetCategoryService(CategoryRepository())
-        self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
+    category_service = MeetCategoryService(CategoryRepository())
+    meet_service = MeetService(MeetsRepository(), CategoryRepository())
+
+    # def __init__(self):
+    #     super().__init__()
+    #     self.category_service = MeetCategoryService(CategoryRepository())
+    #     self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -28,13 +30,11 @@ class MeetsView(LoginRequiredMixin, TemplateView):
         context["meets"] = self.meet_service.get_meets_list()
         return context
 
+    @staticmethod
     @require_POST
-    def delete_meet(self, meet_id):
-        # ?
-        meet_service = MeetService(MeetsRepository(), CategoryRepository())
-
+    def delete_meet(request, meet_id):
         try:
-            meet_service.delete(pk=meet_id)
+            MeetService(MeetsRepository(), CategoryRepository()).delete(pk=meet_id)
             return JsonResponse({"status": "success"})
         except Exception as e:
             return JsonResponse({"status": e}, status=404)
@@ -44,10 +44,12 @@ class CreateMeetView(LoginRequiredMixin, View):
     """
     Создание мита
     """
-    def __init__(self):
-        super().__init__()
-        self.category_service = MeetCategoryService(CategoryRepository())
-        self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
+    category_service = MeetCategoryService(CategoryRepository())
+    meet_service = MeetService(MeetsRepository(), CategoryRepository())
+    # def __init__(self):
+    #     super().__init__()
+    #     self.category_service = MeetCategoryService(CategoryRepository())
+    #     self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
     def get(self, request):
         form = CreateMeetForm(request.POST)
@@ -71,6 +73,6 @@ class CreateMeetView(LoginRequiredMixin, View):
             ))
             return JsonResponse({"status": "success"}, status=201)
 
-        print("Ошибка при создании мита из формы:", form.errors.get_json_data())
+        print("Ошибка при создании мита из формы: ", form.errors.get_json_data())
 
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
