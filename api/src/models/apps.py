@@ -6,6 +6,5 @@ class ProjectsConfig(AppConfig):
     name = 'src.models'
 
     def ready(self):
-        from .projects import Project
-        from .meets import Meet
+        pass
 

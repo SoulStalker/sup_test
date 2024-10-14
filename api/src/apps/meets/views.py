@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
-from django.views.decorators.http import require_POST, require_http_methods
-from django.views.generic import TemplateView
 
 from src.apps.meets.forms import CreateMeetForm
 from src.apps.meets.repository import MeetsRepository, CategoryRepository
@@ -12,25 +10,24 @@ from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.meet.dtos import MeetDTO
 
 
-from django.http import JsonResponse, HttpResponseNotAllowed
-from django.shortcuts import render
-from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseNotAllowed
 
 
 class MeetsView:
+    """
+    Список митов
+    """
+    category_service = MeetCategoryService(CategoryRepository())
+    meet_service = MeetService(MeetsRepository(), CategoryRepository())
+
     def __init__(self, request, *args, **kwargs):
         self.request = request
         self.args = args
         self.kwargs = kwargs
-        self.category_service = MeetCategoryService(CategoryRepository())
-        self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
     # Метод для маршрутизации запросов
     def dispatch(self):
         allowed_methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-
         if self.request.method not in allowed_methods:
             return HttpResponseNotAllowed(allowed_methods)
 
@@ -46,7 +43,6 @@ class MeetsView:
             return self.dispatch()
         return meet_view
 
-    # Обработка GET запросов
     # @login_required
     def get(self, *args, **kwargs):
         context = {
@@ -72,10 +68,6 @@ class CreateMeetView(LoginRequiredMixin, View):
     """
     category_service = MeetCategoryService(CategoryRepository())
     meet_service = MeetService(MeetsRepository(), CategoryRepository())
-    # def __init__(self):
-    #     super().__init__()
-    #     self.category_service = MeetCategoryService(CategoryRepository())
-    #     self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
     def get(self, request):
         form = CreateMeetForm(request.POST)
@@ -98,7 +90,4 @@ class CreateMeetView(LoginRequiredMixin, View):
                 participant_statuses=form.cleaned_data["participant_statuses"],
             ))
             return JsonResponse({"status": "success"}, status=201)
-
-        print("Ошибка при создании мита из формы: ", form.errors.get_json_data())
-
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)

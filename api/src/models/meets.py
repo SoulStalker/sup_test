@@ -97,6 +97,7 @@ class MeetParticipant(models.Model):
         verbose_name="Статус",
     )
 
+
     class Meta:
         db_table = "custom_user_meet"
         unique_together = ("meet", "custom_user")

@@ -25,6 +25,9 @@ class MeetService:
     def get_meets_by_category(self, dto) -> list[MeetDTO]:
         return self.__repository.get_meets_by_category(dto)
 
+    def set_participants_statuses(self, participant_statuses, meet_id: int):
+        return self.__repository.set_participant_statuses(participant_statuses, meet_id)
+
 
 class MeetCategoryService:
     def __init__(self, repository):

@@ -33,6 +33,10 @@ class IMeetRepository(abc.ABC):
     def get_meets_by_category(self, category_id: int):
         pass
 
+    @abc.abstractmethod
+    def set_participant_statuses(self, participant_statuses: dict, meet_id: int):
+        pass
+
 
 class ICategoryRepository(abc.ABC):
     @abc.abstractmethod

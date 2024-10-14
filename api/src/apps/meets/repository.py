@@ -6,7 +6,7 @@ from abc import ABC
 from django.shortcuts import get_object_or_404
 
 from src.domain.meet.dtos import MeetDTO, CategoryObject, Status
-from src.models.meets import Meet, Category, MeetParticipant
+from src.models.meets import Meet, Category, MeetParticipant, User
 
 from src.domain.meet.repository import IMeetRepository, ICategoryRepository
 
@@ -34,22 +34,23 @@ class MeetsRepository(IMeetRepository, ABC):
 
         model.save()
 
-        # Добавление участников
-        # переделать это через метод домена ?
-        model.participants.set(dto.participant_statuses.keys())
-
-        # todo тут какая-то херня надо переделать через domain
-        # for user_id, status in dto.participant_statuses.items():
-        #     user = User.objects.get(id=user_id)
-        #     if status == "ABSENT":
-        #         status = Status.ABSENT
-        #     elif status == "WARNED":
-        #         status = Status.WARNED
-        #     MeetParticipant.objects.create(
-        #         meet=meet, custom_user=user, status=status
-        #     )
-
+        # Проставление статусов участников
+        self.set_participant_statuses(dto.participant_statuses, model.id)
         return self._orm_to_dto(model)
+
+    def set_participant_statuses(self, participant_statuses: dict, meet_id: int) -> None:
+        # Метод проставления статсусов участников
+        # model = MeetParticipant
+
+        for user_id, status in participant_statuses.items():
+            user = User.objects.get(id=user_id)
+            if status == "ABSENT":
+                status = Status.ABSENT
+            elif status == "WARNED":
+                status = Status.WARNED
+            MeetParticipant.objects.create(
+                meet_id=meet_id, custom_user=user, status=status
+            )
 
     def update(self, meet_id: int, dto: MeetDTO) -> MeetDTO:
         repository = IMeetRepository()
