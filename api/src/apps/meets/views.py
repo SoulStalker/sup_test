@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.views.generic import TemplateView
 
 from src.apps.meets.forms import CreateMeetForm
@@ -12,32 +12,61 @@ from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.meet.dtos import MeetDTO
 
 
-class MeetsView(LoginRequiredMixin, TemplateView):
-    template_name = "meets.html"
+from django.http import JsonResponse, HttpResponseNotAllowed
+from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
-    category_service = MeetCategoryService(CategoryRepository())
-    meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
-    # def __init__(self):
-    #     super().__init__()
-    #     self.category_service = MeetCategoryService(CategoryRepository())
-    #     self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
+class MeetsView:
+    def __init__(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+        self.category_service = MeetCategoryService(CategoryRepository())
+        self.meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["categories"] = self.category_service.get_categories_list()
-        context["users"] = User.objects.order_by("id")
-        context["meets"] = self.meet_service.get_meets_list()
-        return context
+    # Метод для маршрутизации запросов
+    def dispatch(self):
+        allowed_methods = ["GET", "PUT", "PATCH", "DELETE", "POST"]
 
-    @staticmethod
-    @require_POST
-    def delete_meet(request, meet_id):
+        if self.request.method not in allowed_methods:
+            return HttpResponseNotAllowed(allowed_methods)
+
+        method = getattr(self, self.request.method.lower())
+        return method()
+
+    # Создаем метод as_view для интеграции с Django
+    @classmethod
+    def as_view(cls):
+        def meet_view(request, *args, **kwargs):
+            return MeetsView(request).dispatch()
+            # self = cls(request, *args, **kwargs)
+            # return self.dispatch()
+        return meet_view
+
+    # Обработка GET запросов
+    # @method_decorator(login_required)
+    def get(self):
+        context = {
+            "categories": self.category_service.get_categories_list(),
+            "users": User.objects.order_by("id"),
+            "meets": self.meet_service.get_meets_list(),
+        }
+        return render(self.request, "meets.html", context)
+
+    def delete(self, *args, **kwargs):
+
+        print(f"kwargs: {kwargs}")
+
+        meet_id = kwargs.get("meet_id")
+        print(meet_id)
         try:
-            MeetService(MeetsRepository(), CategoryRepository()).delete(pk=meet_id)
-            return JsonResponse({"status": "success"})
+            self.meet_service.delete(pk=meet_id)
+            return JsonResponse({"status": "success", "message": "Meet deleted"})
         except Exception as e:
-            return JsonResponse({"status": e}, status=404)
+            return JsonResponse({"status": "error", "message": str(e)}, status=404)
 
 
 class CreateMeetView(LoginRequiredMixin, View):

@@ -123,8 +123,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             function deleteMeet(meetId, buttonElement) {
-                fetch(`delete_meet/${meetId}/`, {
-                    method: 'POST',
+                fetch(`delete/${meetId}/`, {
+                    method: 'DELETE',
                     headers: {
                         'X-CSRFToken': csrfToken,
                         'Content-Type': 'application/json'
