@@ -47,7 +47,7 @@ class MeetsView:
         return meet_view
 
     # Обработка GET запросов
-    # @method_decorator(login_required)
+    # @login_required
     def get(self, *args, **kwargs):
         context = {
             "categories": self.category_service.get_categories_list(),
@@ -56,6 +56,7 @@ class MeetsView:
         }
         return render(self.request, "meets.html", context)
 
+    # @require_POST
     def delete(self, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
         try:
