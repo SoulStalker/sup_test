@@ -29,26 +29,26 @@ class MeetsView:
 
     # Метод для маршрутизации запросов
     def dispatch(self):
-        allowed_methods = ["GET", "PUT", "PATCH", "DELETE", "POST"]
+        allowed_methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
 
         if self.request.method not in allowed_methods:
             return HttpResponseNotAllowed(allowed_methods)
 
-        method = getattr(self, self.request.method.lower())
-        return method()
+        # Получаем соответствующий метод (например, get, post, delete)
+        method = getattr(self, self.request.method.lower(), None)
+        return method(self.request, *self.args, **self.kwargs)
 
     # Создаем метод as_view для интеграции с Django
     @classmethod
     def as_view(cls):
         def meet_view(request, *args, **kwargs):
-            return MeetsView(request).dispatch()
-            # self = cls(request, *args, **kwargs)
-            # return self.dispatch()
+            self = cls(request, *args, **kwargs)
+            return self.dispatch()
         return meet_view
 
     # Обработка GET запросов
     # @method_decorator(login_required)
-    def get(self):
+    def get(self, *args, **kwargs):
         context = {
             "categories": self.category_service.get_categories_list(),
             "users": User.objects.order_by("id"),
@@ -57,11 +57,7 @@ class MeetsView:
         return render(self.request, "meets.html", context)
 
     def delete(self, *args, **kwargs):
-
-        print(f"kwargs: {kwargs}")
-
         meet_id = kwargs.get("meet_id")
-        print(meet_id)
         try:
             self.meet_service.delete(pk=meet_id)
             return JsonResponse({"status": "success", "message": "Meet deleted"})
