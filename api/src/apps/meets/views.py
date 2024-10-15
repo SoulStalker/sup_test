@@ -1,13 +1,9 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.views import View
 
 from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
-from src.apps.meets.repository import MeetsRepository, CategoryRepository
-from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.meet.dtos import MeetDTO
 
 
@@ -15,9 +11,6 @@ class MeetsView(BaseView):
     """
     Список митов
     """
-    category_service = MeetCategoryService(CategoryRepository())
-    meet_service = MeetService(MeetsRepository(), CategoryRepository())
-
     def get(self, *args, **kwargs):
         context = {
             "categories": self.category_service.get_categories_list(),
@@ -35,14 +28,11 @@ class MeetsView(BaseView):
             return JsonResponse({"status": "error", "message": str(e)}, status=404)
 
 
-class CreateMeetView(LoginRequiredMixin, View):
+class CreateMeetView(BaseView):
     """
     Создание мита
     """
-    category_service = MeetCategoryService(CategoryRepository())
-    meet_service = MeetService(MeetsRepository(), CategoryRepository())
-
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         form = CreateMeetForm(request.POST)
         categories = self.category_service.get_categories_list()
         return render(

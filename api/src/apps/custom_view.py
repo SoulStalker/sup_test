@@ -1,5 +1,7 @@
-from django.http import HttpResponseNotAllowed, HttpResponseRedirect, HttpResponse
-from django.urls import reverse
+from django.http import HttpResponseNotAllowed, HttpResponse
+
+from src.apps.meets.repository import CategoryRepository, MeetsRepository
+from src.domain.meet.service import MeetCategoryService, MeetService
 
 
 class BaseView:
@@ -7,6 +9,9 @@ class BaseView:
     Базовый класс для кастомных контроллеров вместо контроллеров джанги
     дополнительные передаваемые параметры идут в kwargs
     """
+    category_service = MeetCategoryService(CategoryRepository())
+    meet_service = MeetService(MeetsRepository(), CategoryRepository())
+
     http_method_names = ["get", "post", "put", "patch", "delete"]
     # Определяем, требуется ли аутентификация
     login_required = True
