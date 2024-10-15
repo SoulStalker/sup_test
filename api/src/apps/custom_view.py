@@ -1,4 +1,5 @@
-from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseNotAllowed, HttpResponseRedirect, HttpResponse
+from django.urls import reverse
 
 
 class BaseView:
@@ -7,6 +8,8 @@ class BaseView:
     дополнительные передаваемые параметры идут в kwargs
     """
     http_method_names = ["get", "post", "put", "patch", "delete"]
+    # Определяем, требуется ли аутентификация
+    login_required = True
 
     def __init__(self, request, *args, **kwargs):
         self.request = request
@@ -23,8 +26,12 @@ class BaseView:
         return view
 
     def dispatch(self):
+        # Проверка авторизации
+        if self.login_required and not self.request.user.is_authenticated:
+            # todo add redirect to login page
+            return HttpResponse("Залогинься")
+        
         # Определяет возможность использования передаваемого метода
-        # и вызывает передаваемой метод из класса
         method = getattr(self, self.request.method.lower(), None)
         if not method or not callable(method):
             return HttpResponseNotAllowed(self._get_allowed_methods())

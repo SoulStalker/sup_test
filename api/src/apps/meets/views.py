@@ -4,46 +4,20 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 
+from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
 from src.apps.meets.repository import MeetsRepository, CategoryRepository
 from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.meet.dtos import MeetDTO
 
 
-from django.http import HttpResponseNotAllowed
-
-
-class MeetsView:
+class MeetsView(BaseView):
     """
     Список митов
     """
     category_service = MeetCategoryService(CategoryRepository())
     meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
-    def __init__(self, request, *args, **kwargs):
-        self.request = request
-        self.args = args
-        self.kwargs = kwargs
-
-    # Метод для маршрутизации запросов
-    def dispatch(self):
-        allowed_methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-        if self.request.method not in allowed_methods:
-            return HttpResponseNotAllowed(allowed_methods)
-
-        # Получаем соответствующий метод (например, get, post, delete)
-        method = getattr(self, self.request.method.lower(), None)
-        return method(self.request, *self.args, **self.kwargs)
-
-    # Создаем метод as_view для интеграции с Django
-    @classmethod
-    def as_view(cls):
-        def meet_view(request, *args, **kwargs):
-            self = cls(request, *args, **kwargs)
-            return self.dispatch()
-        return meet_view
-
-    # @login_required
     def get(self, *args, **kwargs):
         context = {
             "categories": self.category_service.get_categories_list(),
@@ -52,7 +26,6 @@ class MeetsView:
         }
         return render(self.request, "meets.html", context)
 
-    # @require_POST
     def delete(self, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
         try:
