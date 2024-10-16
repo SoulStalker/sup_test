@@ -10,8 +10,8 @@ class MeetService:
     def create(self, dto):
         self.__repository.create(dto)
 
-    def update(self, pk):
-        self.__repository.update(pk)
+    def update(self, meet_id, dto):
+        self.__repository.update(meet_id, dto)
 
     def delete(self, pk):
         self.__repository.delete(pk)

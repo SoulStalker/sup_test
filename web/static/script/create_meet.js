@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Меняем action формы для отправки на обновление
                     // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `/meets/update/${meetId}/`);
+                    form.setAttribute('action', `/meets/edit/${meetId}/`);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
                 .catch(error => console.error('Ошибка:', error));

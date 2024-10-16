@@ -5,8 +5,8 @@ from abc import ABC
 
 from django.shortcuts import get_object_or_404
 
-from src.domain.meet.dtos import MeetDTO, CategoryObject, StatusObject, ParticipantStatusDTO
-from src.models.meets import Meet, Category, MeetParticipant, User
+from src.domain.meet.dtos import MeetDTO, CategoryObject, ParticipantStatusDTO
+from src.models.meets import Meet, Category, MeetParticipant
 
 from src.domain.meet.repository import IMeetRepository, ICategoryRepository
 
@@ -31,12 +31,13 @@ class MeetsRepository(IMeetRepository, ABC):
         )
 
     def create(self, dto: MeetDTO) -> MeetDTO:
-        model = self.model(title=dto.title,
-                           category_id=dto.category_id,
-                           start_time=dto.start_time,
-                           author_id=dto.author_id,
-                           responsible_id=dto.responsible_id,
-                           )
+        model = self.model(
+            title=dto.title,
+            category_id=dto.category_id,
+            start_time=dto.start_time,
+            author_id=dto.author_id,
+            responsible_id=dto.responsible_id,
+        )
 
         model.save()
 
@@ -44,28 +45,17 @@ class MeetsRepository(IMeetRepository, ABC):
         self.set_participant_statuses(dto.participant_statuses, model.id)
         return self._meet_orm_to_dto(model)
 
-    def set_participant_statuses(self, participant_statuses: dict, meet_id: int) -> None:
-        # Метод проставления статсусов участников
-        # model = MeetParticipant
-
-        for user_id, status in participant_statuses.items():
-            user = User.objects.get(id=user_id)
-            if status == "ABSENT":
-                status = StatusObject.ABSENT
-            elif status == "WARNED":
-                status = StatusObject.WARNED
-            MeetParticipant.objects.create(
-                meet_id=meet_id, custom_user=user, status=status
-            )
-
-    def get_participants_statuses(self, meet_id):
-        statuses = MeetParticipant.objects.filter(meet_id=meet_id)
-        return [self._status_orm_to_dto(status) for status in statuses]
-
     def update(self, meet_id: int, dto: MeetDTO) -> MeetDTO:
-        repository = IMeetRepository()
+        Meet.objects.filter(id=meet_id).update(
+            title=dto.title,
+            category_id=dto.category_id,
+            start_time=dto.start_time,
+            author_id=dto.author_id,
+            responsible_id=dto.responsible_id,
+        )
+        self.set_participant_statuses(dto.participant_statuses, meet_id)
+
         meet = Meet.objects.get(id=meet_id)
-        repository.update(meet, dto)
         return self._meet_orm_to_dto(meet)
 
     def delete(self, meet_id: int) -> None:
@@ -81,6 +71,26 @@ class MeetsRepository(IMeetRepository, ABC):
     def get_meets_by_category(self, category_id: int) -> list[Meet]:
         return [meet for meet in Meet.objects.filter(category_id=category_id)]
 
+    def set_participant_statuses(self, participant_statuses: dict, meet_id: int) -> None:
+        """
+       Метод проставления статусов участников для мита.
+       Если участник уже существует — обновляем статус, если нет — создаем новую запись.
+       """
+        for user_id, status in participant_statuses.items():
+            # Проверяем, существует ли участник в данном мите
+            participant, created = MeetParticipant.objects.update_or_create(
+                meet_id=meet_id,
+                custom_user_id=user_id,
+                defaults={'status': status}  # Обновляем статус, если запись уже существует
+            )
+            if not created:
+                # Если запись не была создана, но была обновлена, просто продолжаем
+                continue
+
+    def get_participants_statuses(self, meet_id):
+        statuses = MeetParticipant.objects.filter(meet_id=meet_id)
+        return [self._status_orm_to_dto(status) for status in statuses]
+
 
 class CategoryRepository(ICategoryRepository, ABC):
     model = Category
@@ -89,19 +99,16 @@ class CategoryRepository(ICategoryRepository, ABC):
         return CategoryObject(pk=category.id, name=category.name)
 
     def create(self, category_dto: CategoryObject) -> CategoryObject:
-        repository = ICategoryRepository()
         category = CategoryRepository.get_category_by_id(category_dto.id)
         category.name = category_dto.name
         return category
 
     def update(self, category_id: int, dto: CategoryObject) -> CategoryObject:
-        repository = ICategoryRepository()
         category = CategoryRepository.get_category_by_id(category_id)
         category.name = dto.name
         return category
 
     def delete(self, category_id: int) -> None:
-        repository = ICategoryRepository()
         category = CategoryRepository.get_category_by_id(category_id)
 
     def get_categories_list(self) -> list[CategoryObject]:
