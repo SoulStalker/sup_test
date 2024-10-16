@@ -40,10 +40,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('modal');
     const form = document.getElementById('create-meet-form');
 
+    let submitButton = form.querySelector('button[type="submit"]');
     // Открытие модального окна
     if (openModalButton) {
         openModalButton.addEventListener('click', function () {
             modal.classList.remove('hidden');
+            form.setAttribute('action', '/meets/create/'); // Устанавливаем action на создание
+            submitButton.textContent = 'Создать';
+            form.reset();
         });
     }
 
@@ -94,6 +98,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('modal');
     const form = document.getElementById('create-meet-form');
 
+    let submitButton = form.querySelector('button[type="submit"]');
+
     editMeetButtons.forEach(button => {
         button.addEventListener('click', function () {
             const meetId = this.getAttribute('data-meet-id');
@@ -131,7 +137,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
 
                     // Меняем action формы для отправки на обновление
+                    // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/meets/update/${meetId}/`);
+                    submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
                 .catch(error => console.error('Ошибка:', error));
         });
