@@ -6,6 +6,7 @@ class CategoryObject:
     """
     ValueObject: Категория мита
     """
+
     def __init__(self, pk: int, name: str):
         self.pk = pk
         self.name = name
@@ -24,13 +25,13 @@ class MeetDTO:
     participant_statuses: dict
 
 
-class Status:
+class StatusObject:
     """
     ValueObject: Статусы участников мита
     """
-    PRESENT = "present"
-    ABSENT = "absent"
-    WARNED = "warned"
+    PRESENT = "PRESENT"
+    ABSENT = "ABSENT"
+    WARNED = "WARNED"
 
     _descriptions = {
         PRESENT: "Присутствует",
@@ -56,9 +57,15 @@ class Status:
         return self._colors[self.status]
 
     def __eq__(self, other):
-        if isinstance(other, Status):
+        if isinstance(other, StatusObject):
             return self.status == other.status
         return False
 
     def __repr__(self):
         return f"Status(status='{self.status}')"
+
+
+@dataclass
+class ParticipantStatusDTO:
+    participant_id: int
+    status: StatusObject

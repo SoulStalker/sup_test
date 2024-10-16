@@ -5,7 +5,7 @@ from abc import ABC
 
 from django.shortcuts import get_object_or_404
 
-from src.domain.meet.dtos import MeetDTO, CategoryObject, Status
+from src.domain.meet.dtos import MeetDTO, CategoryObject, StatusObject, ParticipantStatusDTO
 from src.models.meets import Meet, Category, MeetParticipant, User
 
 from src.domain.meet.repository import IMeetRepository, ICategoryRepository
@@ -14,7 +14,7 @@ from src.domain.meet.repository import IMeetRepository, ICategoryRepository
 class MeetsRepository(IMeetRepository, ABC):
     model = Meet
 
-    def _orm_to_dto(self, meet: Meet) -> MeetDTO:
+    def _meet_orm_to_dto(self, meet: Meet) -> MeetDTO:
         return MeetDTO(
             category_id=meet.category.id,
             title=meet.title,
@@ -22,6 +22,12 @@ class MeetsRepository(IMeetRepository, ABC):
             author_id=meet.author.id,
             responsible_id=meet.responsible.id,
             participant_statuses=meet.participants,
+        )
+
+    def _status_orm_to_dto(self, participant_status: MeetParticipant) -> ParticipantStatusDTO:
+        return ParticipantStatusDTO(
+            participant_id=participant_status.custom_user.id,
+            status=participant_status.status
         )
 
     def create(self, dto: MeetDTO) -> MeetDTO:
@@ -36,7 +42,7 @@ class MeetsRepository(IMeetRepository, ABC):
 
         # Проставление статусов участников
         self.set_participant_statuses(dto.participant_statuses, model.id)
-        return self._orm_to_dto(model)
+        return self._meet_orm_to_dto(model)
 
     def set_participant_statuses(self, participant_statuses: dict, meet_id: int) -> None:
         # Метод проставления статсусов участников
@@ -45,25 +51,29 @@ class MeetsRepository(IMeetRepository, ABC):
         for user_id, status in participant_statuses.items():
             user = User.objects.get(id=user_id)
             if status == "ABSENT":
-                status = Status.ABSENT
+                status = StatusObject.ABSENT
             elif status == "WARNED":
-                status = Status.WARNED
+                status = StatusObject.WARNED
             MeetParticipant.objects.create(
                 meet_id=meet_id, custom_user=user, status=status
             )
+
+    def get_participants_statuses(self, meet_id):
+        statuses = MeetParticipant.objects.filter(meet_id=meet_id)
+        return [self._status_orm_to_dto(status) for status in statuses]
 
     def update(self, meet_id: int, dto: MeetDTO) -> MeetDTO:
         repository = IMeetRepository()
         meet = Meet.objects.get(id=meet_id)
         repository.update(meet, dto)
-        return self._orm_to_dto(meet)
+        return self._meet_orm_to_dto(meet)
 
     def delete(self, meet_id: int) -> None:
         meet = get_object_or_404(Meet, id=meet_id)
         meet.delete()
 
     def get_meet_by_id(self, meet_id: int):
-        return self._orm_to_dto(Meet.objects.get(id=meet_id))
+        return self._meet_orm_to_dto(Meet.objects.get(id=meet_id))
 
     def get_meets_list(self) -> list[Meet]:
         return [meet for meet in Meet.objects.all()]

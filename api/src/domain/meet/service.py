@@ -28,6 +28,9 @@ class MeetService:
     def set_participants_statuses(self, participant_statuses, meet_id: int):
         return self.__repository.set_participant_statuses(participant_statuses, meet_id)
 
+    def get_participants_statuses(self, meet_id: int):
+        return self.__repository.get_participants_statuses(meet_id)
+
 
 class MeetCategoryService:
     def __init__(self, repository):

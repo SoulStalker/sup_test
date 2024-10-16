@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -53,4 +55,49 @@ class CreateMeetView(BaseView):
                 participant_statuses=form.cleaned_data["participant_statuses"],
             ))
             return JsonResponse({"status": "success"}, status=201)
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+
+
+class EditMeetView(BaseView):
+    """
+    Получение данных для редактирования мита
+    """
+    def get(self, request, *args, **kwargs):
+        meet_id = kwargs.get("meet_id")
+        statuses = self.meet_service.get_participants_statuses(meet_id)
+        meet = self.meet_service.get_meet(meet_id)
+
+        pprint([vars(item) for item in statuses])
+
+        data = {
+            "title": meet.title,
+            "start_time": meet.start_time.strftime("%Y-%m-%dT%H:%M"),
+            "category": meet.category_id,
+            "responsible": meet.responsible_id,
+            "participants": [vars(item) for item in statuses],
+        }
+
+        return JsonResponse(data)
+
+
+class UpdateMeetView(BaseView):
+    """
+    Обновление существующего мита
+    """
+    def post(self, request, *args, **kwargs):
+        meet_id = kwargs.get("meet_id")
+        form = CreateMeetForm(request.POST)
+
+        if form.is_valid():
+            # Обновляем мeт
+            self.meet_service.update(
+                meet_id=meet_id,
+                category_id=form.cleaned_data["category"].id,
+                title=form.cleaned_data["title"],
+                start_time=form.cleaned_data["start_time"],
+                responsible_id=form.cleaned_data["responsible"].id,
+                participant_statuses=form.cleaned_data["participant_statuses"],
+            )
+            return JsonResponse({"status": "success"}, status=200)
+
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)

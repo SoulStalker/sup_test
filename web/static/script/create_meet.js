@@ -88,6 +88,56 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+// Редактирование мита
+document.addEventListener('DOMContentLoaded', function () {
+    const editMeetButtons = document.querySelectorAll('.edit-meet-button');
+    const modal = document.getElementById('modal');
+    const form = document.getElementById('create-meet-form');
+
+    editMeetButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const meetId = this.getAttribute('data-meet-id');
+
+            // Открываем модальное окно
+            modal.classList.remove('hidden');
+
+            // Загружаем данные мита через fetch
+            fetch(`/meets/edit/${meetId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    // Заполняем форму полученными данными
+                    document.getElementById('title').value = data.title;
+                    document.getElementById('start_time').value = data.start_time;
+                    document.getElementById('category').value = data.category;
+                    document.getElementById('responsible').value = data.responsible;
+
+                   // Заполняем статусы участников
+                    data.participants.forEach(participant => {
+                        const participantCheckbox = document.getElementById(`participant_${participant.participant_id}`);
+                        const participantStatusInput = document.getElementById(`participant_status_${participant.participant_id}`);
+                        const container = document.getElementById(`container_${participant.participant_id}`);
+
+                        if (participantCheckbox) {
+                            participantCheckbox.checked = true;  // Отмечаем участника
+                        }
+
+                        if (participantStatusInput) {
+                            participantStatusInput.value = participant.status;  // Проставляем статус
+                        }
+
+                        if (container) {
+                            setStatus(participant.participant_id, participant.status);  // Устанавливаем статус
+                        }
+                    });
+
+                    // Меняем action формы для отправки на обновление
+                    form.setAttribute('action', `/meets/update/${meetId}/`);
+                })
+                .catch(error => console.error('Ошибка:', error));
+        });
+    });
+});
+
 
 
 // Удаление мита

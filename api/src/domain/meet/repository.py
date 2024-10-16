@@ -37,6 +37,9 @@ class IMeetRepository(abc.ABC):
     def set_participant_statuses(self, participant_statuses: dict, meet_id: int):
         pass
 
+    def get_participants_statuses(self, meet_id):
+        pass
+
 
 class ICategoryRepository(abc.ABC):
     @abc.abstractmethod
