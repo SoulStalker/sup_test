@@ -32,6 +32,51 @@ document.getElementById('style2-button').addEventListener('click', function() {
     document.querySelector('#style1-button svg').classList.add('fill-[#FCFEFF]');
 });
 
+// Фильтрация по категориям
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('category-select');
+
+    // Слушаем изменения в селекторе категорий
+    categorySelect.addEventListener('change', function() {
+        const selectedCategory = this.value;
+        filterTablesByCategory(selectedCategory);
+    });
+
+    function filterTablesByCategory(category) {
+        const tables = ['table-style-2'];
+
+        // Проходим по всем таблицам
+        tables.forEach(tableId => {
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const rowCategory = row.getAttribute('data-category');
+
+                // Скрываем или показываем строку в зависимости от выбранной категории
+                if (category === 'Категория' || rowCategory === category) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+
+
+document.getElementById('category-select').addEventListener('change', function () {
+    const selectedCategory = this.value;
+    const allColumns = document.querySelectorAll('#table-style-1 th[data-category], #table-style-1 td[data-category]');
+
+    allColumns.forEach(column => {
+        if (selectedCategory === 'Категория' || column.getAttribute('data-category') === selectedCategory) {
+            column.style.display = ''; // Показать колонку
+        } else {
+            column.style.display = 'none'; // Скрыть колонку
+        }
+    });
+});
 
 // Создание мита
 document.addEventListener('DOMContentLoaded', function () {

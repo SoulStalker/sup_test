@@ -2,9 +2,9 @@ from django.db import models
 
 
 class MeetStatusChoice(models.TextChoices):
-    PRESENT = "present", "Присутствует"
-    ABSENT = "absent", "Отсутствует"
-    WARNED = "warned", "Предупредил"
+    PRESENT = "PRESENT", "Присутствует"
+    ABSENT = "ABSENT", "Отсутствует"
+    WARNED = "WARNED", "Предупредил"
 
     @classmethod
     def get_color(cls, status):

@@ -63,7 +63,6 @@ class EditMeetView(BaseView):
     """
     Получение данных для редактирования мита
     """
-
     def get(self, request, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
         statuses = self.meet_service.get_participants_statuses(meet_id)
@@ -92,6 +91,8 @@ class EditMeetView(BaseView):
                 responsible_id=form.cleaned_data["responsible"].id,
                 participant_statuses=form.cleaned_data["participant_statuses"],
             ))
+
+            print(form.cleaned_data["participant_statuses"])
 
             return JsonResponse({"status": "success"}, status=201)
 

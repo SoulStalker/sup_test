@@ -66,7 +66,7 @@
                     <select id="category-select" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-teal-500 focus:border-teal-500">
                         <option value="Категория">Категория</option>
                         {% for category in categories %}
-                        <option value="{{ category }}">{{ category.name }}</option>
+                        <option value="{{ category.pk }}">{{ category.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -91,54 +91,55 @@
             </div>
             <div id="table-container">
                 <!-- Таблица 1 -->
-                <table id="table-style-1" class="w-full table-fixed mx-auto text-center">
-
+                 <table id="table-style-1" class="w-full table-fixed mx-auto text-center">
                     <thead class="bg-gray-100 text-xs">
-                    <tr>
-                        <th class="border-b py-2 w-[50px] whitespace-nowrap">ID</th>
-                        <th class="border-b py-2">Имя</th>
-                        <th class="border-b py-2">Фамилия</th>
-                        <th class="border-b py-2">Ник Telegram</th>
-                        <th class="border-b py-2">Имя Telegram</th>
-                    {% for meet in meets %}
-                        <th  data-category="{{ user.meet.category }}" class="border-b py-2 font-semibold leading-3.5">{{ meet.start_date|date:"d.m." }}<br>{{ meet.start_date|date:"Y" }}</th>
-                    {% endfor %}
-                    </tr>
+                        <tr>
+                            <th class="border-b py-2 w-[50px] whitespace-nowrap">ID</th>
+                            <th class="border-b py-2">Имя</th>
+                            <th class="border-b py-2">Фамилия</th>
+                            <th class="border-b py-2">Ник Telegram</th>
+                            <th class="border-b py-2">Имя Telegram</th>
+                            {% for meet in meets %}
+                                <th data-category="{{ meet.category.pk }}" class="border-b py-2 font-semibold leading-3.5">
+                                    {{ meet.start_time|date:"d.m." }}<br>{{ meet.start_time|date:"Y" }}
+                                </th>
+                            {% endfor %}
+                        </tr>
                     </thead>
                     <tbody>
-                    {% for user in users %}
-                        <tr>
-                            <td class="border-b py-2 px-4 w-[50px] text-center whitespace-nowrap">{{ user.id }}</td>
-                            <td class="border-b py-2 px-4">{{ user.first_name }}</td>
-                            <td class="border-b py-2 px-4">{{ user.last_name }}</td>
-                            <td class="border-b py-2 px-4">{{ user.email }}</td>
-                            <td class="border-b py-2 px-4">{{ user }}</td>
-                            {% for meet in meets %}
-                            {% if user in meet.participants.all %}
-                            <td class="border-b py-2 px-4 text-center">
-                            {% for user_meet in user.custom_meets.all %}
-                                {% if user_meet.meet.id == meet.id %}
-                                    {% if user_meet.status_color == 'red' %}
-                                        <div class="w-6 h-6 mx-auto rounded-lg bg-red-400 border border-red-800"></div>
-                                    {% elif user_meet.status_color == 'yellow' %}
-                                        <div class="w-6 h-6 mx-auto rounded-lg bg-yellow-200 border border-yellow-600"></div>
+                        {% for user in users %}
+                            <tr>
+                                <td class="border-b py-2 px-4 w-[50px] text-center whitespace-nowrap">{{ user.id }}</td>
+                                <td class="border-b py-2 px-4">{{ user.first_name }}</td>
+                                <td class="border-b py-2 px-4">{{ user.last_name }}</td>
+                                <td class="border-b py-2 px-4">{{ user.email }}</td>
+                                <td class="border-b py-2 px-4">{{ user }}</td>
+                                {% for meet in meets %}
+                                    {% if user in meet.participants.all %}
+                                        <td data-category="{{ meet.category.pk }}" class="border-b py-2 px-4 text-center">
+                                            {% for user_meet in user.custom_meets.all %}
+                                                {% if user_meet.meet.id == meet.id %}
+                                                    {% if user_meet.status_color == 'red' %}
+                                                        <div class="w-6 h-6 mx-auto rounded-lg bg-red-400 border border-red-800"></div>
+                                                    {% elif user_meet.status_color == 'yellow' %}
+                                                        <div class="w-6 h-6 mx-auto rounded-lg bg-yellow-200 border border-yellow-600"></div>
+                                                    {% else %}
+                                                        <div class="w-6 h-6 mx-auto rounded-lg bg-green-400 border border-gray-600"></div>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
                                     {% else %}
-                                        <div class="w-6 h-6 mx-auto rounded-lg bg-green-400 border border-gray-600"></div>
+                                        <td data-category="{{ meet.category.pk }}" class="border-b py-2 px-4 text-center">
+                                            <div class="w-6 h-6 mx-auto rounded-lg bg-gray-200 border border-gray-600"></div>
+                                        </td>
                                     {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                            </td>
-                            {% else %}
-                            <td class="border-b py-2 px-4 text-center">
-                                <div class="w-6 h-6 mx-auto rounded-lg bg-gray-200 border border-gray-600"></div>
-                            </td>
-                            {% endif %}
-                            {% endfor %}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
+
                 <!-- Таблица 2 -->
                 <table id="table-style-2" class="w-full table-fixed mx-auto hidden">
                     <thead class="bg-gray-100 text-xs">
@@ -152,7 +153,7 @@
                     </thead>
                     <tbody>
                     {% for meet in meets %}
-                    <tr data-category="{{ meet.category }}">
+                    <tr data-category="{{ meet.category.id }}">
                         <td class="border-b py-2 px-4 max-w-[50px]">{{ meet.id }}</td>
                         <td class="border-b py-2 px-4">{{ meet.title }}</td>
                         <td class="border-b py-2 px-4">{{ meet.start_date|date:"d.m.y" }}</td>
