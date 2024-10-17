@@ -81,16 +81,17 @@ document.getElementById('category-select').addEventListener('change', function (
 // Создание мита
 document.addEventListener('DOMContentLoaded', function () {
     const openModalButton = document.getElementById('open-modal');
-    const closeModalButton = document.getElementById('close-modal');
-    const modal = document.getElementById('modal');
+    const closeModalButton = document.getElementById('cancel-meet');
+    const modal = document.getElementById('modal-create-meet');
     const form = document.getElementById('create-meet-form');
 
     let submitButton = form.querySelector('button[type="submit"]');
-    // Открытие модального окна
+
+    // Открытие модального окна для создания мита
     if (openModalButton) {
         openModalButton.addEventListener('click', function () {
             modal.classList.remove('hidden');
-            form.setAttribute('action', '/meets/create/'); // Устанавливаем action на создание
+            form.setAttribute('action', '/meets/create/');
             submitButton.textContent = 'Создать';
             form.reset();
         });
@@ -107,9 +108,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (form) {
         form.addEventListener('submit', function(event) {
             event.preventDefault();
-            let formData = new FormData(this);
+            let formData = new FormData(form);
 
-            fetch(this.action, {
+            fetch(form.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -119,13 +120,8 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Закрываем модальное окно и обновляем список митов
-                    modal.classList.add('hidden');
-
-                    // Обновляем таблицу и отображаем table-style-2
-                    location.reload();
-                    showTableStyle2();
-                    console.log('Meet успешно создан');
+                    modal.classList.add('hidden'); // Закрыть модальное окно
+                    location.reload(); // Обновить страницу
                 } else {
                     console.error('Ошибка при создании Meet:', data.error);
                 }
@@ -270,3 +266,64 @@ function setStatus(userId, status) {
     statusInput.value = status;
     participantCheckbox.checked = true;
 }
+
+
+/// Добавление новой категории
+document.addEventListener('DOMContentLoaded', function () {
+    const openCategoryModalButton = document.getElementById('open-add-category-modal');
+    const closeCategoryModalButton = document.getElementById('cancel-add-category');
+    const categoryModal = document.getElementById('modal-add-category');
+    const categoryForm = document.getElementById('add-category-form');
+    const categorySelect = document.getElementById('category');
+    const createMeetForm = document.getElementById('create-meet-form');
+
+    // Открытие модального окна для добавления категории
+    openCategoryModalButton.addEventListener('click', function (e) {
+        e.preventDefault(); // Предотвращаем отправку формы создания meet
+        e.stopPropagation(); // Останавливаем всплытие события
+        categoryModal.classList.remove('hidden');
+    });
+
+    // Закрытие модального окна для добавления категории
+    closeCategoryModalButton.addEventListener('click', function () {
+        categoryModal.classList.add('hidden');
+        categoryForm.reset(); // Сбрасываем форму при закрытии
+    });
+
+    // Обработка отправки формы добавления категории
+    addCategoryForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const categoryName = document.getElementById('category-name').value;
+    const url = `${addCategoryForm.action}?category_name=${encodeURIComponent(categoryName)}`;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const option = new Option(data.category_name, data.category_id);
+            categorySelect.add(option);
+            categorySelect.value = data.category_id;
+
+            categoryModal.classList.add('hidden');
+            addCategoryForm.reset();
+        } else {
+            alert('Ошибка при добавлении категории: ' + (data.error || 'Неизвестная ошибка'));
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при отправке формы');
+    });
+});
+
+    // Предотвращаем всплытие событий с модального окна категории на форму создания meet
+    categoryModal.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+});

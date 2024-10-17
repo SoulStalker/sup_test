@@ -36,8 +36,8 @@ class MeetCategoryService:
     def __init__(self, repository):
         self.__repository = repository
 
-    def create(self, dto):
-        self.__repository.create(dto)
+    def create(self, category_name):
+        return self.__repository.create(category_name)
 
     def update(self, pk):
         self.__repository.update(pk)

@@ -1,0 +1,17 @@
+<!-- Модальное окно для добавления категории -->
+<div id="modal-add-category" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center" style="z-index: 1000;">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
+        <h2 class="text-xl mb-4">Добавить категорию</h2>
+        <form id="add-category-form" method="POST" action="{% url 'meets:add_category' %}" novalidate>
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="category-name" class="block text-sm font-medium text-gray-700">Название категории*</label>
+                <input type="text" id="category-name" name="category_name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button id="cancel-add-category" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+                <button id="submit-category" type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Добавить</button>
+            </div>
+        </form>
+    </div>
+</div>

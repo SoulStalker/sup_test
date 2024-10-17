@@ -80,6 +80,6 @@
             - output.css
         - images/
         - script/
-            - create_meet.js
+            - meets.js
             - script.js
 

@@ -98,10 +98,9 @@ class CategoryRepository(ICategoryRepository, ABC):
     def _orm_to_dto(self, category: Category) -> CategoryObject:
         return CategoryObject(pk=category.id, name=category.name)
 
-    def create(self, category_dto: CategoryObject) -> CategoryObject:
-        category = CategoryRepository.get_category_by_id(category_dto.id)
-        category.name = category_dto.name
-        return category
+    def create(self, category_name: str) -> CategoryObject:
+        category = Category.objects.create(name=category_name)
+        return self._orm_to_dto(category)
 
     def update(self, category_id: int, dto: CategoryObject) -> CategoryObject:
         category = CategoryRepository.get_category_by_id(category_id)
@@ -109,7 +108,7 @@ class CategoryRepository(ICategoryRepository, ABC):
         return category
 
     def delete(self, category_id: int) -> None:
-        category = CategoryRepository.get_category_by_id(category_id)
+        CategoryRepository.get_category_by_id(category_id)
 
     def get_categories_list(self) -> list[CategoryObject]:
         query = self.model.objects.all()

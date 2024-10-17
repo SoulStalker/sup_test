@@ -6,6 +6,7 @@ from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
 from src.domain.meet.dtos import MeetDTO
+from src.models.meets import Category
 
 
 class MeetsView(BaseView):
@@ -97,3 +98,20 @@ class EditMeetView(BaseView):
             return JsonResponse({"status": "success"}, status=201)
 
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+
+
+class CategoryView(BaseView):
+    def get(self, request, *args, **kwargs):
+        categories = self.category_service.get_categories_list()
+        return JsonResponse({"categories": categories})
+
+    def post(self, request, *args, **kwargs):
+        category_name = request.POST.get('category_name')
+        if category_name:
+            # Создаем новую категорию
+            # category = Category.objects.create(name=category_name)
+            category = self.category_service.create(category_name)
+            print(category)
+            return JsonResponse({"status": "success", "category_id": category.pk, "category_name": category.name})
+        else:
+            return JsonResponse({"status": "error", "error": "Название категории не может быть пустым."})

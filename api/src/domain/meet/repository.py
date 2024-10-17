@@ -5,7 +5,7 @@
 пишет в базу и читает из базы
 """
 import abc
-from .dtos import MeetDTO
+from .dtos import MeetDTO, CategoryObject
 
 
 class IMeetRepository(abc.ABC):
@@ -47,7 +47,7 @@ class ICategoryRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def update(self, category_id: int):
+    def update(self, category_id: int, dto: CategoryObject):
         pass
 
     @abc.abstractmethod
