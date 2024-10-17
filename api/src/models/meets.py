@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 from .choice_classes import MeetStatusChoice
-from src.validators.validators import LettersOnlyValidator
+from src.domain.validators.validators import LettersOnlyValidator
 
 User = get_user_model()
 

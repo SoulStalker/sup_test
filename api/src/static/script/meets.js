@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Конфигурация пагинации
 const paginationConfig = {
     currentPage: 1,
-    rowsPerPage: 100,
+    rowsPerPage: 16,
     totalPages: 0
 };
 

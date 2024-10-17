@@ -92,9 +92,6 @@ class EditMeetView(BaseView):
                 responsible_id=form.cleaned_data["responsible"].id,
                 participant_statuses=form.cleaned_data["participant_statuses"],
             ))
-
-            print(form.cleaned_data["participant_statuses"])
-
             return JsonResponse({"status": "success"}, status=201)
 
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
