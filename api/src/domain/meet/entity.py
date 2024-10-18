@@ -1,9 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-
-from poetry.console.commands import self
-
-from src.domain.validators.validators import LettersOnlyVerifier
+from src.domain.validators.validators import DataVerifier
 
 
 class CategoryObject:
@@ -28,9 +25,9 @@ class MeetEntity:
     responsible_id: int
     participant_statuses: dict
 
-    def validate(self):
-        letters_error = LettersOnlyVerifier.verify(self.title)
-        len_error = LettersOnlyVerifier.verify_max_value(self.title, 20)
+    def verify_data(self):
+        letters_error = DataVerifier.verify_letters_space_only(self.title)
+        len_error = DataVerifier.verify_max_value(self.title, 20)
         if letters_error:
             return letters_error
         elif len_error:
