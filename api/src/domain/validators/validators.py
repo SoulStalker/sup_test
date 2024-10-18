@@ -49,23 +49,58 @@ class DataVerifier:
     @staticmethod
     def verify_letters_and_symbols(value):
         if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", value):
-            return "Допускаются буквы латиницы, цифры и спец. символы. Не допускается пробел."
+            return "Допускаются буквы латиницы, цифры и спец. символы. Не допускается пробел"
         return None
 
-
-class LettersAndSymbolsValidator:
     @staticmethod
-    def get_regex_validator():
+    def verify_letter_digits_symbols(value):
+        if not re.match(r"^[a-zA-Zа-яА-Я0-9._%+-]+$", value):
+            return "Допускаются только буквы, цифры и спец.символы"
+
+    @staticmethod
+    def verify_color(value):
+        if not re.match(r"^/d{6}$", value):
+            return "Цвет должен состоять из 6 цифр."
+
+
+class ModelValidator:
+    @staticmethod
+    def validate_letters_only():
         return RegexValidator(
-            regex=r"^[a-zA-Zа-яА-Я0-9._%+-]+$",
-            message="Допускаются только буквы, цифры и спец.символы.",
+            regex=r"^[a-zA-Zа-яА-Я\s]*$",
+            message="Допускаются только буквы латиницы и кириллицы",
             code="invalid_name",
         )
 
-
-class ColorValidator:
     @staticmethod
-    def get_regex_validator():
+    def validate_letters_space_only():
+        return RegexValidator(
+            regex=r'^[а-яА-ЯёЁa-zA-Z]+(?:\s[а-яА-ЯёЁa-zA-Z]+)*$',
+            message="Допускаются только буквы и пробел"
+        )
+
+    @staticmethod
+    def validate_max_value():
+        return MaxValueValidator(limit_value=1_000_000)
+
+    @staticmethod
+    def validate_letters_and_symbols():
+        return RegexValidator(
+            regex=r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+            message="Допускаются буквы латиницы, цифры и спец. символы. Не допускается пробел",
+            code="invalid_name",
+        )
+
+    @staticmethod
+    def validate_letter_digits_symbols():
+        return RegexValidator(
+            regex=r"^[a-zA-Zа-яА-Я0-9._%+-]+$",
+            message="Допускаются только буквы, цифры и спец.символы",
+            code="invalid_name",
+        )
+
+    @staticmethod
+    def validate_color():
         return RegexValidator(
             regex=r"^/d{6}$",
             message="Цвет должен состоять из 6 цифр.",
