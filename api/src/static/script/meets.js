@@ -1,3 +1,37 @@
+// Глобальные переменные для работы с таблицами
+const tableConfig = {
+    currentPage: 1,
+    rowsPerPage: 16,
+    totalPages: 0,
+    sortColumn: null,
+    sortDirection: 'asc',
+    searchTerm: ''
+};
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация элементов управления
+    const searchInput = document.querySelector('input[type="text"][placeholder="Поиск"]');
+    const rowsPerPageSelect = document.getElementById('rows-per-page'); // Селектор для количества строк/колонок
+    const prevButton = document.querySelector('.pagination button:first-child');
+    const nextButton = document.querySelector('.pagination button:last-child');
+
+    // Установите значение по умолчанию для селектора количества строк
+    rowsPerPageSelect.value = tableConfig.rowsPerPage; // Задать значение по умолчанию
+
+    // Добавление обработчиков событий
+    searchInput.addEventListener('input', handleSearch);
+    rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
+    prevButton.addEventListener('click', handlePrevPage);
+    nextButton.addEventListener('click', handleNextPage);
+
+    // Добавление обработчиков сортировки для обеих таблиц
+    initializeSortingHandlers();
+
+    // Первоначальное обновление таблиц
+    updateTables(); // Сразу применяем установленное количество строк/колонок
+});
+
 function showTableStyle2() {
     document.getElementById('table-style-1').classList.add('hidden');
     document.getElementById('table-style-2').classList.remove('hidden');
@@ -328,38 +362,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Конфигурация пагинации
-// Глобальные переменные для работы с таблицами
-const tableConfig = {
-    currentPage: 1,
-    rowsPerPage: 16,
-    totalPages: 0,
-    sortColumn: null,
-    sortDirection: 'asc',
-    searchTerm: ''
-};
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация элементов управления
-    const searchInput = document.querySelector('input[type="text"][placeholder="Поиск"]');
-    const rowsPerPageSelect = document.getElementById('rows-per-page');
-    const prevButton = document.querySelector('.pagination button:first-child');
-    const nextButton = document.querySelector('.pagination button:last-child');
-
-    // Добавление обработчиков событий
-    searchInput.addEventListener('input', handleSearch);
-    rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
-    prevButton.addEventListener('click', handlePrevPage);
-    nextButton.addEventListener('click', handleNextPage);
-
-    // Добавление обработчиков сортировки для обеих таблиц
-    initializeSortingHandlers();
-
-    // Первоначальное обновление таблиц
-    updateTables();
-});
-
 // Обработка поиска
 function handleSearch(event) {
     tableConfig.searchTerm = event.target.value.toLowerCase();
@@ -374,21 +376,6 @@ function handleRowsPerPageChange(event) {
         : parseInt(event.target.value);
     tableConfig.currentPage = 1;
     updateTables();
-}
-
-// Обработка пагинации
-function handlePrevPage() {
-    if (tableConfig.currentPage > 1) {
-        tableConfig.currentPage--;
-        updateTables();
-    }
-}
-
-function handleNextPage() {
-    if (tableConfig.currentPage < tableConfig.totalPages) {
-        tableConfig.currentPage++;
-        updateTables();
-    }
 }
 
 // Инициализация обработчиков сортировки
@@ -459,29 +446,82 @@ function handleSort(columnIndex, tableId) {
 // Обновление таблиц
 function updateTables() {
     const activeTable = document.querySelector('#table-style-1:not(.hidden), #table-style-2:not(.hidden)');
-    const rows = Array.from(activeTable.querySelectorAll('tbody tr'));
 
-    // Применяем фильтр поиска
-    const filteredRows = rows.filter(row => {
-        const text = Array.from(row.cells)
-            .slice(0, 5) // Только первые 5 колонок для поиска
-            .map(cell => cell.textContent.toLowerCase())
-            .join(' ');
-        return text.includes(tableConfig.searchTerm);
+    if (activeTable.id === 'table-style-1') {
+        updateTableColumns(); // Логика для колонок в первой таблице
+    } else {
+        updateTableRows(); // Логика для строк во второй таблице
+    }
+
+    // Обновляем UI пагинации
+    updatePaginationUI();
+}
+
+// Логика для первой таблицы (работа с колонками)
+function updateTableColumns() {
+    const table1 = document.getElementById('table-style-1');
+    const headers = table1.querySelectorAll('thead th'); // Заголовки колонок
+    const rows = table1.querySelectorAll('tbody tr');    // Строки таблицы
+
+    const startIndex = (tableConfig.currentPage - 1) * tableConfig.rowsPerPage;
+    const endIndex = startIndex + tableConfig.rowsPerPage;
+
+    // Скрываем все колонки, начиная с пятой (чтобы не скрыть колонки с ID и именами)
+    headers.forEach((header, index) => {
+        if (index > 4) {
+            header.classList.add('hidden');
+        }
     });
 
-    // Обновляем общее количество страниц
-    tableConfig.totalPages = Math.ceil(filteredRows.length / tableConfig.rowsPerPage);
+    rows.forEach(row => {
+        row.querySelectorAll('td').forEach((cell, index) => {
+            if (index > 4) {
+                cell.classList.add('hidden');
+            }
+        });
+    });
 
-    // Показываем только строки для текущей страницы
+    // Показываем только нужные колонки
+    headers.forEach((header, index) => {
+        if (index > 4 && index >= startIndex && index < endIndex) {
+            header.classList.remove('hidden');
+        }
+    });
+
+    rows.forEach(row => {
+        row.querySelectorAll('td').forEach((cell, index) => {
+            if (index > 4 && index >= startIndex && index < endIndex) {
+                cell.classList.remove('hidden');
+            }
+        });
+    });
+}
+
+// Логика для второй таблицы (работа со строками)
+function updateTableRows() {
+    const table2 = document.getElementById('table-style-2');
+    const rows = Array.from(table2.querySelectorAll('tbody tr'));
+
     const startIndex = (tableConfig.currentPage - 1) * tableConfig.rowsPerPage;
     const endIndex = startIndex + tableConfig.rowsPerPage;
 
     rows.forEach(row => row.classList.add('hidden'));
-    filteredRows.slice(startIndex, endIndex).forEach(row => row.classList.remove('hidden'));
+    rows.slice(startIndex, endIndex).forEach(row => row.classList.remove('hidden'));
+}
 
-    // Обновляем UI пагинации
-    updatePaginationUI();
+// Обработка пагинации
+function handlePrevPage() {
+    if (tableConfig.currentPage > 1) {
+        tableConfig.currentPage--;
+        updateTables();
+    }
+}
+
+function handleNextPage() {
+    if (tableConfig.currentPage < tableConfig.totalPages) {
+        tableConfig.currentPage++;
+        updateTables();
+    }
 }
 
 // Обновление UI пагинации

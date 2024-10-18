@@ -6,7 +6,6 @@ from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
 from src.domain.meet.dtos import MeetDTO
-from src.models.meets import Category
 
 
 class MeetsView(BaseView):
