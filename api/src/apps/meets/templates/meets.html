@@ -73,20 +73,20 @@
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
                     <!-- Выпадающий список для количества строк -->
-                    <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 bg-green-custom text-white">
-                        <option>16</option>
-                        <option>4</option>
-                        <option>8</option>
-                        <option>24</option>
-                        <option>Все</option>
+                    <select id="rows-per-page" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 bg-green-custom text-white">
+                        <option value="8">8</option>
+                        <option value="16">16</option>
+                        <option value="24">24</option>
                     </select>
 
                     <!-- Пагинация -->
                     <div class="flex items-center space-x-2 pagination">
-                        <span class="text-green-custom">1 из 1</span>
-                        <button class="bg-green-custom text-white border border-gray-300 p-2 rounded-l hover:bg-green-dark disabled:opacity-50 disabled:cursor-not-allowed">❮</button>
-                        <button class="bg-green-custom text-white border border-gray-300 p-2 rounded-r hover:bg-green-dark disabled:opacity-50 disabled:cursor-not-allowed">❯</button>
+                        <span class="text-green-custom">Пагинация</span>
+                        <button id="prev-page" class="bg-green-custom text-white border border-gray-300 p-2 rounded-l hover:bg-green-dark">❮</button>
+                        <span id="page-info"></span>
+                        <button id="next-page" class="bg-green-custom text-white border border-gray-300 p-2 rounded-r hover:bg-green-dark">❯</button>
                     </div>
+
 
                     <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать Meet</button>
                 </div>
@@ -158,7 +158,7 @@
                     <tr data-category="{{ meet.category.id }}">
                         <td class="border-b py-2 px-4 max-w-[50px]">{{ meet.id }}</td>
                         <td class="border-b py-2 px-4">{{ meet.title }}</td>
-                        <td class="border-b py-2 px-4">{{ meet.start_date|date:"d.m.y" }}</td>
+                        <td class="border-b py-2 px-4">{{ meet.start_time|date:"d.m.y" }}</td>
                         <td class="max-w-[50px] border-b py-2 px-4">
                             <button class="text-teal-600 hover:underline delete-btn" data-meet-id="{{ meet.id }}">
                                 <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">

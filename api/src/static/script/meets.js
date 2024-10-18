@@ -329,93 +329,177 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Конфигурация пагинации
-const paginationConfig = {
+// Глобальные переменные для работы с таблицами
+const tableConfig = {
     currentPage: 1,
     rowsPerPage: 16,
-    totalPages: 0
+    totalPages: 0,
+    sortColumn: null,
+    sortDirection: 'asc',
+    searchTerm: ''
 };
 
-// Инициализация пагинации при загрузке страницы
+// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
-    const rowsPerPageSelect = document.querySelector('select');
+    // Инициализация элементов управления
+    const searchInput = document.querySelector('input[type="text"][placeholder="Поиск"]');
+    const rowsPerPageSelect = document.getElementById('rows-per-page');
     const prevButton = document.querySelector('.pagination button:first-child');
     const nextButton = document.querySelector('.pagination button:last-child');
 
-    // Инициализация пагинации
-    initPagination();
+    // Добавление обработчиков событий
+    searchInput.addEventListener('input', handleSearch);
+    rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
+    prevButton.addEventListener('click', handlePrevPage);
+    nextButton.addEventListener('click', handleNextPage);
 
-    // Обработчик изменения количества строк на странице
-    rowsPerPageSelect.addEventListener('change', function() {
-        paginationConfig.rowsPerPage = parseInt(this.value);
-        paginationConfig.currentPage = 1;
-        updateTables();
-    });
+    // Добавление обработчиков сортировки для обеих таблиц
+    initializeSortingHandlers();
 
-    // Обработчики кнопок пагинации
-    prevButton.addEventListener('click', function() {
-        if (paginationConfig.currentPage > 1) {
-            paginationConfig.currentPage--;
-            updateTables();
-        }
-    });
-
-    nextButton.addEventListener('click', function() {
-        if (paginationConfig.currentPage < paginationConfig.totalPages) {
-            paginationConfig.currentPage++;
-            updateTables();
-        }
-    });
+    // Первоначальное обновление таблиц
+    updateTables();
 });
 
-// Инициализация пагинации
-function initPagination() {
-    const activeTable = document.querySelector('#table-style-1:not(.hidden), #table-style-2:not(.hidden)');
-    const rows = activeTable.querySelectorAll('tbody tr');
-    const totalRows = Array.from(rows).filter(row => row.style.display !== 'none').length;
-
-    paginationConfig.totalPages = Math.ceil(totalRows / paginationConfig.rowsPerPage);
+// Обработка поиска
+function handleSearch(event) {
+    tableConfig.searchTerm = event.target.value.toLowerCase();
+    tableConfig.currentPage = 1;
     updateTables();
-    updatePaginationButtons();
 }
 
-// Обновление отображения таблиц
-function updateTables() {
-    const tables = ['table-style-1', 'table-style-2'];
+// Обработка изменения количества строк на странице
+function handleRowsPerPageChange(event) {
+    tableConfig.rowsPerPage = event.target.value === 'Все'
+        ? Number.MAX_SAFE_INTEGER
+        : parseInt(event.target.value);
+    tableConfig.currentPage = 1;
+    updateTables();
+}
 
-    tables.forEach(tableId => {
-        const table = document.getElementById(tableId);
-        if (!table.classList.contains('hidden')) {
-            const rows = table.querySelectorAll('tbody tr');
-            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+// Обработка пагинации
+function handlePrevPage() {
+    if (tableConfig.currentPage > 1) {
+        tableConfig.currentPage--;
+        updateTables();
+    }
+}
 
-            const startIndex = (paginationConfig.currentPage - 1) * paginationConfig.rowsPerPage;
-            const endIndex = startIndex + paginationConfig.rowsPerPage;
+function handleNextPage() {
+    if (tableConfig.currentPage < tableConfig.totalPages) {
+        tableConfig.currentPage++;
+        updateTables();
+    }
+}
 
-            visibleRows.forEach((row, index) => {
-                if (index >= startIndex && index < endIndex) {
-                    row.classList.remove('hidden');
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
+// Инициализация обработчиков сортировки
+function initializeSortingHandlers() {
+    const table1Headers = document.querySelectorAll('#table-style-1 thead th');
+    const table2Headers = document.querySelectorAll('#table-style-2 thead th');
+
+    // Добавляем обработчики для первой таблицы
+    table1Headers.forEach((header, index) => {
+        if (index <= 4) { // Только для колонок ID, Имя, Фамилия, Ник Telegram, Имя Telegram
+            header.style.cursor = 'pointer';
+            header.addEventListener('click', () => handleSort(index, 'table-style-1'));
         }
     });
 
-    updatePaginationButtons();
+    // Добавляем обработчики для второй таблицы
+    table2Headers.forEach((header, index) => {
+        if (index <= 2) { // Только для колонок ID, Название, Дата
+            header.style.cursor = 'pointer';
+            header.addEventListener('click', () => handleSort(index, 'table-style-2'));
+        }
+    });
 }
 
-// Обновление состояния кнопок пагинации
-function updatePaginationButtons() {
-    const prevButton = document.querySelector('.pagination button:first-child');
-    const nextButton = document.querySelector('.pagination button:last-child');
-    const pageInfo = document.querySelector('.text-green-custom');
+// Обработка сортировки
+function handleSort(columnIndex, tableId) {
+    if (tableConfig.sortColumn === columnIndex) {
+        tableConfig.sortDirection = tableConfig.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        tableConfig.sortColumn = columnIndex;
+        tableConfig.sortDirection = 'asc';
+    }
 
-    prevButton.disabled = paginationConfig.currentPage === 1;
-    nextButton.disabled = paginationConfig.currentPage === paginationConfig.totalPages;
+    const table = document.getElementById(tableId);
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
 
-    pageInfo.textContent = `${paginationConfig.currentPage} из ${paginationConfig.totalPages}`;
+    rows.sort((a, b) => {
+        const aValue = a.cells[columnIndex].textContent.trim();
+        const bValue = b.cells[columnIndex].textContent.trim();
 
-    // Визуальное отображение состояния кнопок
+        if (columnIndex === 0) { // Для ID используем числовое сравнение
+            return tableConfig.sortDirection === 'asc'
+                ? parseInt(aValue) - parseInt(bValue)
+                : parseInt(bValue) - parseInt(aValue);
+        } else if (tableId === 'table-style-2' && columnIndex === 2) { // Для даты
+            const aDate = new Date(aValue.split('.').reverse().join('-'));
+            const bDate = new Date(bValue.split('.').reverse().join('-'));
+            return tableConfig.sortDirection === 'asc'
+                ? aDate - bDate
+                : bDate - aDate;
+        } else { // Для текстовых значений
+            return tableConfig.sortDirection === 'asc'
+                ? aValue.localeCompare(bValue)
+                : bValue.localeCompare(aValue);
+        }
+    });
+
+    // Очищаем и заполняем таблицу отсортированными данными
+    rows.forEach(row => tbody.appendChild(row));
+    updateTables();
+
+    console.log(`Текущая страница: ${tableConfig.currentPage}`);
+    console.log(`Всего страниц: ${tableConfig.totalPages}`);
+    console.log(`Начальный индекс: ${startIndex}, Конечный индекс: ${endIndex}`);
+}
+
+// Обновление таблиц
+function updateTables() {
+    const activeTable = document.querySelector('#table-style-1:not(.hidden), #table-style-2:not(.hidden)');
+    const rows = Array.from(activeTable.querySelectorAll('tbody tr'));
+
+    // Применяем фильтр поиска
+    const filteredRows = rows.filter(row => {
+        const text = Array.from(row.cells)
+            .slice(0, 5) // Только первые 5 колонок для поиска
+            .map(cell => cell.textContent.toLowerCase())
+            .join(' ');
+        return text.includes(tableConfig.searchTerm);
+    });
+
+    // Обновляем общее количество страниц
+    tableConfig.totalPages = Math.ceil(filteredRows.length / tableConfig.rowsPerPage);
+
+    // Показываем только строки для текущей страницы
+    const startIndex = (tableConfig.currentPage - 1) * tableConfig.rowsPerPage;
+    const endIndex = startIndex + tableConfig.rowsPerPage;
+
+    rows.forEach(row => row.classList.add('hidden'));
+    filteredRows.slice(startIndex, endIndex).forEach(row => row.classList.remove('hidden'));
+
+    // Обновляем UI пагинации
+    updatePaginationUI();
+}
+
+// Обновление UI пагинации
+function updatePaginationUI() {
+    const prevButton = document.getElementById('prev-page');
+    const nextButton = document.getElementById('next-page');
+    const pageInfo = document.getElementById('page-info');
+
+    if (!prevButton || !nextButton || !pageInfo) {
+        console.error('Проблема с элементами пагинации');
+        return;
+    }
+
+    prevButton.disabled = tableConfig.currentPage === 1;
+    nextButton.disabled = tableConfig.currentPage === tableConfig.totalPages;
+
+    pageInfo.textContent = `${tableConfig.currentPage} из ${tableConfig.totalPages || 1}`;
+
     [prevButton, nextButton].forEach(button => {
         if (button.disabled) {
             button.classList.add('opacity-50', 'cursor-not-allowed');
@@ -426,20 +510,3 @@ function updatePaginationButtons() {
         }
     });
 }
-
-// Обновляем пагинацию при переключении таблиц
-document.getElementById('style1-button').addEventListener('click', function() {
-    setTimeout(initPagination, 0);
-});
-
-document.getElementById('style2-button').addEventListener('click', function() {
-    setTimeout(initPagination, 0);
-});
-
-// Обновляем пагинацию при фильтрации по категориям
-document.getElementById('category-select').addEventListener('change', function() {
-    setTimeout(() => {
-        paginationConfig.currentPage = 1;
-        initPagination();
-    }, 0);
-});
