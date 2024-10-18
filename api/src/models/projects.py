@@ -11,7 +11,8 @@ from src.models.choice_classes import (
     ProjectChoices,
     TaskChoices,
 )
-from src.validators.validators import ColorValidator, CustomValidator, LettersOnlyValidator
+
+from src.domain.validators.validators import ModelValidator
 
 User = get_user_model()
 
@@ -28,7 +29,7 @@ class Project(models.Model):
         max_length=20,
         verbose_name="Название",
         unique=True,
-        validators=[CustomValidator.get_regex_validator()],
+        validators=[ModelValidator.validate_letters_space_only()]
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     logo = models.ImageField(
@@ -82,9 +83,9 @@ class Tags(models.Model):
     name = models.CharField(max_length=50, verbose_name="Название")
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     color = models.IntegerField(
-        validators=[ColorValidator.get_regex_validator()],
         verbose_name="Цвет",
         help_text="Введите цвет в формате 6 цифр.",
+        validators=[ModelValidator.validate_color()],
     )
 
     def __str__(self):
@@ -111,8 +112,8 @@ class Feature(models.Model):
     name = models.CharField(
         max_length=50,
         verbose_name="Название",
-        validators=[CustomValidator.get_regex_validator()],
         unique=True,
+        validators=[ModelValidator.validate_letters_space_only()]
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     description = models.TextField(
@@ -121,7 +122,7 @@ class Feature(models.Model):
     importance = models.PositiveIntegerField(
         default=0,
         verbose_name="Важность",
-        validators=[LettersOnlyValidator.get_max_value_validator()],
+        validators=[ModelValidator.validate_max_value()]
     )
     tags = models.ManyToManyField(
         to=Tags,
@@ -180,7 +181,7 @@ class Task(models.Model):
         max_length=50,
         verbose_name="Название",
         unique=True,
-        validators=[CustomValidator.get_regex_validator()],
+        validators=[ModelValidator.validate_letters_space_only()]
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     description = models.TextField(
@@ -190,7 +191,7 @@ class Task(models.Model):
         default=0,
         verbose_name="Важность",
         null=True,
-        validators=[LettersOnlyValidator.get_max_value_validator()],
+        validators=[ModelValidator.validate_max_value()]
     )
     tags = models.ManyToManyField(
         to=Tags,

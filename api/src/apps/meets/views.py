@@ -47,7 +47,7 @@ class CreateMeetView(BaseView):
     def post(self, request):
         form = CreateMeetForm(request.POST)
         if form.is_valid():
-            self.meet_service.create(MeetDTO(
+            err = self.meet_service.create(MeetDTO(
                 category_id=form.cleaned_data["category"].id,
                 title=form.cleaned_data["title"],
                 start_time=form.cleaned_data["start_time"],
@@ -55,6 +55,8 @@ class CreateMeetView(BaseView):
                 responsible_id=form.cleaned_data["responsible"].id,
                 participant_statuses=form.cleaned_data["participant_statuses"],
             ))
+            if err:
+                return JsonResponse({"status": "error", "message": str(err)}, status=400)
             return JsonResponse({"status": "success"}, status=201)
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
@@ -91,9 +93,23 @@ class EditMeetView(BaseView):
                 responsible_id=form.cleaned_data["responsible"].id,
                 participant_statuses=form.cleaned_data["participant_statuses"],
             ))
-
-            print(form.cleaned_data["participant_statuses"])
-
             return JsonResponse({"status": "success"}, status=201)
 
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+
+
+class CategoryView(BaseView):
+    def get(self, request, *args, **kwargs):
+        categories = self.category_service.get_categories_list()
+        return JsonResponse({"categories": categories})
+
+    def post(self, request, *args, **kwargs):
+        category_name = request.POST.get('category_name')
+        if category_name:
+            # Создаем новую категорию
+            # category = Category.objects.create(name=category_name)
+            category = self.category_service.create(category_name)
+            print(category)
+            return JsonResponse({"status": "success", "category_id": category.pk, "category_name": category.name})
+        else:
+            return JsonResponse({"status": "error", "error": "Название категории не может быть пустым."})
