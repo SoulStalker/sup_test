@@ -56,7 +56,6 @@ class CreateMeetView(BaseView):
                 participant_statuses=form.cleaned_data["participant_statuses"],
             ))
             if err:
-                print(err)
                 return JsonResponse({"status": "error", "message": str(err)}, status=400)
             return JsonResponse({"status": "success"}, status=201)
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
