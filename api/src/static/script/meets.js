@@ -1,37 +1,3 @@
-// Глобальные переменные для работы с таблицами
-const tableConfig = {
-    currentPage: 1,
-    rowsPerPage: 16,
-    totalPages: 0,
-    sortColumn: null,
-    sortDirection: 'asc',
-    searchTerm: ''
-};
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация элементов управления
-    const searchInput = document.querySelector('input[type="text"][placeholder="Поиск"]');
-    const rowsPerPageSelect = document.getElementById('rows-per-page'); // Селектор для количества строк/колонок
-    const prevButton = document.querySelector('.pagination button:first-child');
-    const nextButton = document.querySelector('.pagination button:last-child');
-
-    // Установите значение по умолчанию для селектора количества строк
-    rowsPerPageSelect.value = tableConfig.rowsPerPage; // Задать значение по умолчанию
-
-    // Добавление обработчиков событий
-    searchInput.addEventListener('input', handleSearch);
-    rowsPerPageSelect.addEventListener('change', handleRowsPerPageChange);
-    prevButton.addEventListener('click', handlePrevPage);
-    nextButton.addEventListener('click', handleNextPage);
-
-    // Добавление обработчиков сортировки для обеих таблиц
-    initializeSortingHandlers();
-
-    // Первоначальное обновление таблиц
-    updateTables(); // Сразу применяем установленное количество строк/колонок
-});
-
 function showTableStyle2() {
     document.getElementById('table-style-1').classList.add('hidden');
     document.getElementById('table-style-2').classList.remove('hidden');
@@ -254,8 +220,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
-
 // Удаление мита
 document.addEventListener('DOMContentLoaded', function() {
             const deleteButtons = document.querySelectorAll('.delete-btn');
@@ -334,8 +298,7 @@ function setStatus(userId, status) {
     participantCheckbox.checked = true;
 }
 
-
-/// Добавление новой категории
+// Добавление новой категории
 document.addEventListener('DOMContentLoaded', function () {
     const openCategoryModalButton = document.getElementById('open-add-category-modal');
     const closeCategoryModalButton = document.getElementById('cancel-add-category');
@@ -399,187 +362,5 @@ document.addEventListener('DOMContentLoaded', function () {
 function handleSearch(event) {
     tableConfig.searchTerm = event.target.value.toLowerCase();
     tableConfig.currentPage = 1;
-    updateTables();
 }
 
-// Обработка изменения количества строк на странице
-function handleRowsPerPageChange(event) {
-    tableConfig.rowsPerPage = event.target.value === 'Все'
-        ? Number.MAX_SAFE_INTEGER
-        : parseInt(event.target.value);
-    tableConfig.currentPage = 1;
-    updateTables();
-}
-
-// Инициализация обработчиков сортировки
-function initializeSortingHandlers() {
-    const table1Headers = document.querySelectorAll('#table-style-1 thead th');
-    const table2Headers = document.querySelectorAll('#table-style-2 thead th');
-
-    // Добавляем обработчики для первой таблицы
-    table1Headers.forEach((header, index) => {
-        if (index <= 4) { // Только для колонок ID, Имя, Фамилия, Ник Telegram, Имя Telegram
-            header.style.cursor = 'pointer';
-            header.addEventListener('click', () => handleSort(index, 'table-style-1'));
-        }
-    });
-
-    // Добавляем обработчики для второй таблицы
-    table2Headers.forEach((header, index) => {
-        if (index <= 2) { // Только для колонок ID, Название, Дата
-            header.style.cursor = 'pointer';
-            header.addEventListener('click', () => handleSort(index, 'table-style-2'));
-        }
-    });
-}
-
-// Обработка сортировки
-function handleSort(columnIndex, tableId) {
-    if (tableConfig.sortColumn === columnIndex) {
-        tableConfig.sortDirection = tableConfig.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-        tableConfig.sortColumn = columnIndex;
-        tableConfig.sortDirection = 'asc';
-    }
-
-    const table = document.getElementById(tableId);
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-
-    rows.sort((a, b) => {
-        const aValue = a.cells[columnIndex].textContent.trim();
-        const bValue = b.cells[columnIndex].textContent.trim();
-
-        if (columnIndex === 0) { // Для ID используем числовое сравнение
-            return tableConfig.sortDirection === 'asc'
-                ? parseInt(aValue) - parseInt(bValue)
-                : parseInt(bValue) - parseInt(aValue);
-        } else if (tableId === 'table-style-2' && columnIndex === 2) { // Для даты
-            const aDate = new Date(aValue.split('.').reverse().join('-'));
-            const bDate = new Date(bValue.split('.').reverse().join('-'));
-            return tableConfig.sortDirection === 'asc'
-                ? aDate - bDate
-                : bDate - aDate;
-        } else { // Для текстовых значений
-            return tableConfig.sortDirection === 'asc'
-                ? aValue.localeCompare(bValue)
-                : bValue.localeCompare(aValue);
-        }
-    });
-
-    // Очищаем и заполняем таблицу отсортированными данными
-    rows.forEach(row => tbody.appendChild(row));
-    updateTables();
-
-    console.log(`Текущая страница: ${tableConfig.currentPage}`);
-    console.log(`Всего страниц: ${tableConfig.totalPages}`);
-    console.log(`Начальный индекс: ${startIndex}, Конечный индекс: ${endIndex}`);
-}
-
-// Обновление таблиц
-function updateTables() {
-    const activeTable = document.querySelector('#table-style-1:not(.hidden), #table-style-2:not(.hidden)');
-
-    if (activeTable.id === 'table-style-1') {
-        updateTableColumns(); // Логика для колонок в первой таблице
-    } else {
-        updateTableRows(); // Логика для строк во второй таблице
-    }
-
-    // Обновляем UI пагинации
-    updatePaginationUI();
-}
-
-// Логика для первой таблицы (работа с колонками)
-function updateTableColumns() {
-    const table1 = document.getElementById('table-style-1');
-    const headers = table1.querySelectorAll('thead th'); // Заголовки колонок
-    const rows = table1.querySelectorAll('tbody tr');    // Строки таблицы
-
-    const startIndex = (tableConfig.currentPage - 1) * tableConfig.rowsPerPage;
-    const endIndex = startIndex + tableConfig.rowsPerPage;
-
-    // Скрываем все колонки, начиная с пятой (чтобы не скрыть колонки с ID и именами)
-    headers.forEach((header, index) => {
-        if (index > 4) {
-            header.classList.add('hidden');
-        }
-    });
-
-    rows.forEach(row => {
-        row.querySelectorAll('td').forEach((cell, index) => {
-            if (index > 4) {
-                cell.classList.add('hidden');
-            }
-        });
-    });
-
-    // Показываем только нужные колонки
-    headers.forEach((header, index) => {
-        if (index > 4 && index >= startIndex && index < endIndex) {
-            header.classList.remove('hidden');
-        }
-    });
-
-    rows.forEach(row => {
-        row.querySelectorAll('td').forEach((cell, index) => {
-            if (index > 4 && index >= startIndex && index < endIndex) {
-                cell.classList.remove('hidden');
-            }
-        });
-    });
-}
-
-// Логика для второй таблицы (работа со строками)
-function updateTableRows() {
-    const table2 = document.getElementById('table-style-2');
-    const rows = Array.from(table2.querySelectorAll('tbody tr'));
-
-    const startIndex = (tableConfig.currentPage - 1) * tableConfig.rowsPerPage;
-    const endIndex = startIndex + tableConfig.rowsPerPage;
-
-    rows.forEach(row => row.classList.add('hidden'));
-    rows.slice(startIndex, endIndex).forEach(row => row.classList.remove('hidden'));
-}
-
-// Обработка пагинации
-function handlePrevPage() {
-    if (tableConfig.currentPage > 1) {
-        tableConfig.currentPage--;
-        updateTables();
-    }
-}
-
-function handleNextPage() {
-    if (tableConfig.currentPage < tableConfig.totalPages) {
-        tableConfig.currentPage++;
-        updateTables();
-    }
-}
-
-// Обновление UI пагинации
-function updatePaginationUI() {
-    const prevButton = document.getElementById('prev-page');
-    const nextButton = document.getElementById('next-page');
-    const pageInfo = document.getElementById('page-info');
-
-    if (!prevButton || !nextButton || !pageInfo) {
-        console.error('Проблема с элементами пагинации');
-        return;
-    }
-
-    prevButton.disabled = tableConfig.currentPage === 1;
-    nextButton.disabled = tableConfig.currentPage === tableConfig.totalPages;
-
-    pageInfo.textContent = `${tableConfig.currentPage} из ${tableConfig.totalPages || 1}`;
-
-    [prevButton, nextButton].forEach(button => {
-        if (button.disabled) {
-            button.classList.add('opacity-50', 'cursor-not-allowed');
-            button.classList.remove('hover:bg-green-dark');
-        } else {
-            button.classList.remove('opacity-50', 'cursor-not-allowed');
-            button.classList.add('hover:bg-green-dark');
-        }
-    });
-}

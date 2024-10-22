@@ -1,5 +1,7 @@
+from pprint import pprint
 
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -12,13 +14,28 @@ class MeetsView(BaseView):
     """
     Список митов
     """
+    items_per_page = 16
 
     def get(self, *args, **kwargs):
+
+        meets = self.meet_service.get_meets_list()
+        paginated_meets = self.paginate_queryset(meets)
+
         context = {
             "categories": self.category_service.get_categories_list(),
             "users": User.objects.order_by("id"),
-            "meets": self.meet_service.get_meets_list(),
+            "meets": paginated_meets['items'],
+            "pagination": {
+                "current_page": paginated_meets['current_page'],
+                "total_pages": paginated_meets['total_pages'],
+                "has_next": paginated_meets['has_next'],
+                "has_previous": paginated_meets['has_previous'],
+                "page_range": paginated_meets['page_range'],
+            }
         }
+
+        pprint(paginated_meets)
+
         return render(self.request, "meets.html", context)
 
     def delete(self, *args, **kwargs):
