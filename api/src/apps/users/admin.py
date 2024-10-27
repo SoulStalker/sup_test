@@ -1,6 +1,5 @@
 from django.contrib import admin
-
-from apps.users.models import CustomUser, Permissions, Role
+from src.models.users import CustomUser, Permissions, Role
 
 
 @admin.register(Role)
