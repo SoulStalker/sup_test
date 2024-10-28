@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 from .choice_classes import MeetStatusChoice
-from src.validators.validators import LettersOnlyValidator
+from ..domain.validators.validators import ModelValidator
 
 User = get_user_model()
 
@@ -16,8 +16,8 @@ class Category(models.Model):
     name = models.CharField(
         max_length=100,
         unique=True,
-        validators=[LettersOnlyValidator.get_regex_validator()],
         verbose_name="Категория",
+        validators=[ModelValidator.validate_letters_only()]
     )
 
     class Meta:
@@ -42,7 +42,7 @@ class Meet(models.Model):
         max_length=20,
         unique=True,
         verbose_name="Название",
-        validators=[LettersOnlyValidator.get_regex_validator()],
+        validators=[ModelValidator.validate_letters_space_only()]
     )
     start_time = models.DateTimeField(default=timezone.now, verbose_name="Дата")
     author = models.ForeignKey(
@@ -96,7 +96,6 @@ class MeetParticipant(models.Model):
         default=MeetStatusChoice.PRESENT,
         verbose_name="Статус",
     )
-
 
     class Meta:
         db_table = "custom_user_meet"

@@ -1,4 +1,5 @@
 from src.domain.meet.dtos import CategoryObject, MeetDTO
+from src.domain.meet.entity import MeetEntity
 from src.domain.meet.repository import IMeetRepository, ICategoryRepository
 
 
@@ -7,7 +8,16 @@ class MeetService:
         self.__repository = repository
         self.__category_repository = category_repository
 
-    def create(self, dto):
+    def create(self, dto: MeetDTO):
+        meet = MeetEntity(dto.category_id,
+                          dto.title,
+                          dto.start_time,
+                          dto.author_id,
+                          dto.responsible_id,
+                          dto.participant_statuses)
+        err = meet.verify_data()
+        if err:
+            return err
         self.__repository.create(dto)
 
     def update(self, meet_id, dto):

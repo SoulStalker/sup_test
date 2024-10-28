@@ -84,11 +84,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModalButton = document.getElementById('cancel-meet');
     const modal = document.getElementById('modal-create-meet');
     const form = document.getElementById('create-meet-form');
-
+    const clearErrors = () => {
+    form.querySelectorAll('.error-message, .general-error, .network-error').forEach(el => el.remove());
+    form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+    };
     let submitButton = form.querySelector('button[type="submit"]');
 
     // Открытие модального окна для создания мита
     if (openModalButton) {
+        clearErrors();
         openModalButton.addEventListener('click', function () {
             modal.classList.remove('hidden');
             form.setAttribute('action', '/meets/create/');
@@ -120,14 +124,44 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    modal.classList.add('hidden'); // Закрыть модальное окно
-                    location.reload(); // Обновить страницу
+                    modal.classList.add('hidden');
+                    location.reload();
                 } else {
-                    console.error('Ошибка при создании Meet:', data.error);
+                    // Обработка ошибок
+                    if (data.errors) {
+                        // Ошибки валидации формы
+                        console.error('Ошибки валидации:', data.errors);
+                        // Здесь можно добавить код для отображения ошибок в форме
+                        Object.entries(data.errors).forEach(([fieldName, errors]) => {
+                            const field = form.querySelector(`[name="${fieldName}"]`);
+                            if (field) {
+                                // Добавляем класс ошибки к полю
+                                field.classList.add('error');
+                                // Создаем и показываем сообщение об ошибке
+                                const errorDiv = document.createElement('div');
+                                errorDiv.className = 'error-message';
+                                errorDiv.textContent = errors.join(', ');
+                                field.parentNode.appendChild(errorDiv);
+                            }
+                        });
+                    } else if (data.message) {
+                        // Ошибка от сервиса
+                        console.error('Ошибка сервиса:', data.message);
+                        // Можно показать общее сообщение об ошибке
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'general-error';
+                        errorDiv.textContent = data.message;
+                        form.insertBefore(errorDiv, form.firstChild);
+                    }
                 }
             })
             .catch(error => {
-                console.error('Ошибка:', error);
+                console.error('Ошибка сети:', error);
+                // Показать общее сообщение об ошибке сети
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'network-error';
+                errorDiv.textContent = 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.';
+                form.insertBefore(errorDiv, form.firstChild);
             });
         });
     }
@@ -178,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
 
                     // Меняем action формы для отправки на обновление
-                    // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/meets/edit/${meetId}/`);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
@@ -186,8 +219,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
-
-
 
 // Удаление мита
 document.addEventListener('DOMContentLoaded', function() {
@@ -267,8 +298,7 @@ function setStatus(userId, status) {
     participantCheckbox.checked = true;
 }
 
-
-/// Добавление новой категории
+// Добавление новой категории
 document.addEventListener('DOMContentLoaded', function () {
     const openCategoryModalButton = document.getElementById('open-add-category-modal');
     const closeCategoryModalButton = document.getElementById('cancel-add-category');
@@ -328,118 +358,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Конфигурация пагинации
-const paginationConfig = {
-    currentPage: 1,
-    rowsPerPage: 100,
-    totalPages: 0
-};
-
-// Инициализация пагинации при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    const rowsPerPageSelect = document.querySelector('select');
-    const prevButton = document.querySelector('.pagination button:first-child');
-    const nextButton = document.querySelector('.pagination button:last-child');
-
-    // Инициализация пагинации
-    initPagination();
-
-    // Обработчик изменения количества строк на странице
-    rowsPerPageSelect.addEventListener('change', function() {
-        paginationConfig.rowsPerPage = parseInt(this.value);
-        paginationConfig.currentPage = 1;
-        updateTables();
-    });
-
-    // Обработчики кнопок пагинации
-    prevButton.addEventListener('click', function() {
-        if (paginationConfig.currentPage > 1) {
-            paginationConfig.currentPage--;
-            updateTables();
-        }
-    });
-
-    nextButton.addEventListener('click', function() {
-        if (paginationConfig.currentPage < paginationConfig.totalPages) {
-            paginationConfig.currentPage++;
-            updateTables();
-        }
-    });
-});
-
-// Инициализация пагинации
-function initPagination() {
-    const activeTable = document.querySelector('#table-style-1:not(.hidden), #table-style-2:not(.hidden)');
-    const rows = activeTable.querySelectorAll('tbody tr');
-    const totalRows = Array.from(rows).filter(row => row.style.display !== 'none').length;
-
-    paginationConfig.totalPages = Math.ceil(totalRows / paginationConfig.rowsPerPage);
-    updateTables();
-    updatePaginationButtons();
+// Обработка поиска
+function handleSearch(event) {
+    tableConfig.searchTerm = event.target.value.toLowerCase();
+    tableConfig.currentPage = 1;
 }
 
-// Обновление отображения таблиц
-function updateTables() {
-    const tables = ['table-style-1', 'table-style-2'];
-
-    tables.forEach(tableId => {
-        const table = document.getElementById(tableId);
-        if (!table.classList.contains('hidden')) {
-            const rows = table.querySelectorAll('tbody tr');
-            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
-
-            const startIndex = (paginationConfig.currentPage - 1) * paginationConfig.rowsPerPage;
-            const endIndex = startIndex + paginationConfig.rowsPerPage;
-
-            visibleRows.forEach((row, index) => {
-                if (index >= startIndex && index < endIndex) {
-                    row.classList.remove('hidden');
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
-        }
-    });
-
-    updatePaginationButtons();
-}
-
-// Обновление состояния кнопок пагинации
-function updatePaginationButtons() {
-    const prevButton = document.querySelector('.pagination button:first-child');
-    const nextButton = document.querySelector('.pagination button:last-child');
-    const pageInfo = document.querySelector('.text-green-custom');
-
-    prevButton.disabled = paginationConfig.currentPage === 1;
-    nextButton.disabled = paginationConfig.currentPage === paginationConfig.totalPages;
-
-    pageInfo.textContent = `${paginationConfig.currentPage} из ${paginationConfig.totalPages}`;
-
-    // Визуальное отображение состояния кнопок
-    [prevButton, nextButton].forEach(button => {
-        if (button.disabled) {
-            button.classList.add('opacity-50', 'cursor-not-allowed');
-            button.classList.remove('hover:bg-green-dark');
-        } else {
-            button.classList.remove('opacity-50', 'cursor-not-allowed');
-            button.classList.add('hover:bg-green-dark');
-        }
-    });
-}
-
-// Обновляем пагинацию при переключении таблиц
-document.getElementById('style1-button').addEventListener('click', function() {
-    setTimeout(initPagination, 0);
-});
-
-document.getElementById('style2-button').addEventListener('click', function() {
-    setTimeout(initPagination, 0);
-});
-
-// Обновляем пагинацию при фильтрации по категориям
-document.getElementById('category-select').addEventListener('change', function() {
-    setTimeout(() => {
-        paginationConfig.currentPage = 1;
-        initPagination();
-    }, 0);
-});
