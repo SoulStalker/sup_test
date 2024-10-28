@@ -1,19 +1,28 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from src.domain.validators.validators import DataVerifier
+
 
 class CategoryObject:
     """
     ValueObject: Категория мита
     """
 
+    pk: int
+    name: str
+
     def __init__(self, pk: int, name: str):
         self.pk = pk
         self.name = name
 
-    pk: int
-    name: str
-
+    def verify_data(self):
+        letters_error = DataVerifier.verify_letters_only(self.name)
+        len_error = DataVerifier.verify_max_value(self.name, 20)
+        if letters_error:
+            return letters_error
+        elif len_error:
+            return len_error
 
 @dataclass
 class MeetDTO:
