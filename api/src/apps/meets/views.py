@@ -1,9 +1,9 @@
 from pprint import pprint
 
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.db.utils import IntegrityError
 
 from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
@@ -64,17 +64,21 @@ class CreateMeetView(BaseView):
     def post(self, request):
         form = CreateMeetForm(request.POST)
         if form.is_valid():
-            err = self.meet_service.create(MeetDTO(
-                category_id=form.cleaned_data["category"].id,
-                title=form.cleaned_data["title"],
-                start_time=form.cleaned_data["start_time"],
-                author_id=request.user.id,
-                responsible_id=form.cleaned_data["responsible"].id,
-                participant_statuses=form.cleaned_data["participant_statuses"],
-            ))
-            if err:
-                return JsonResponse({"status": "error", "message": str(err)}, status=400)
-            return JsonResponse({"status": "success"}, status=201)
+
+            try:
+                err = self.meet_service.create(MeetDTO(
+                    category_id=form.cleaned_data["category"].id,
+                    title=form.cleaned_data["title"],
+                    start_time=form.cleaned_data["start_time"],
+                    author_id=request.user.id,
+                    responsible_id=form.cleaned_data["responsible"].id,
+                    participant_statuses=form.cleaned_data["participant_statuses"],
+                ))
+                if err:
+                    return JsonResponse({"status": "error", "message": str(err)}, status=400)
+                return JsonResponse({"status": "success"}, status=201)
+            except IntegrityError as e:
+                return JsonResponse({"status": "error", "message": "Такой мит уже существует"}, status=400)
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
@@ -98,21 +102,24 @@ class EditMeetView(BaseView):
         return JsonResponse(data)
 
     def post(self, request, *args, **kwargs):
-        meet_id = kwargs.get("meet_id")
-        form = CreateMeetForm(request.POST)
+        try:
+            meet_id = kwargs.get("meet_id")
+            form = CreateMeetForm(request.POST)
 
-        if form.is_valid():
-            self.meet_service.update(meet_id=meet_id, dto=MeetDTO(
-                category_id=form.cleaned_data["category"].id,
-                title=form.cleaned_data["title"],
-                start_time=form.cleaned_data["start_time"],
-                author_id=request.user.id,
-                responsible_id=form.cleaned_data["responsible"].id,
-                participant_statuses=form.cleaned_data["participant_statuses"],
-            ))
-            return JsonResponse({"status": "success"}, status=201)
+            if form.is_valid():
+                self.meet_service.update(meet_id=meet_id, dto=MeetDTO(
+                    category_id=form.cleaned_data["category"].id,
+                    title=form.cleaned_data["title"],
+                    start_time=form.cleaned_data["start_time"],
+                    author_id=request.user.id,
+                    responsible_id=form.cleaned_data["responsible"].id,
+                    participant_statuses=form.cleaned_data["participant_statuses"],
+                ))
+                return JsonResponse({"status": "success"}, status=201)
 
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+            return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({"status": "error", "message": "Такой мит уже существует"}, status=400)
 
 
 class CategoryView(BaseView):
