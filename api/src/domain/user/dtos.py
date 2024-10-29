@@ -27,6 +27,7 @@ class UserDTO:
     tg_nickname: str
     google_meet_nickname: str
     gitlab_nickname: str
+    github_nickname: str
     avatar: Optional[str]
     role_id: int
     permission_id: int
