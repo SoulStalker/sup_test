@@ -66,7 +66,7 @@ class MeetsRepository(IMeetRepository, ABC):
         return self._meet_orm_to_dto(Meet.objects.get(id=meet_id))
 
     def get_meets_list(self) -> list[Meet]:
-        return [meet for meet in Meet.objects.all().order_by('-start_time')]
+        return list(Meet.objects.select_related('category').order_by('-start_time'))
 
     def get_meets_by_category(self, category_id: int) -> list[Meet]:
         return [meet for meet in Meet.objects.filter(category_id=category_id)]

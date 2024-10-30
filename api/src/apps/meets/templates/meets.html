@@ -72,22 +72,40 @@
                 </div>
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
-                    <!-- Выпадающий список для количества строк -->
+                   <!-- Выпадающий список для количества строк -->
                     <select id="rows-per-page" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 bg-green-custom text-white">
-                        <option value="8">8</option>
-                        <option value="16">16</option>
-                        <option value="24">24</option>
+                        <option value="8" {% if pagination.rows_per_page == 8 %}selected{% endif %}>8</option>
+                        <option value="16" {% if pagination.rows_per_page == 16 %}selected{% endif %}>16</option>
+                        <option value="24" {% if pagination.rows_per_page == 24 %}selected{% endif %}>24</option>
                     </select>
 
                     <!-- Пагинация -->
-                    <div class="flex items-center space-x-2 pagination">
-                        <span class="text-green-custom">Пагинация</span>
-                        <button id="prev-page" class="bg-green-custom text-white border border-gray-300 p-2 rounded-l hover:bg-green-dark">❮</button>
-                        <span id="page-info"></span>
-                        <button id="next-page" class="bg-green-custom text-white border border-gray-300 p-2 rounded-r hover:bg-green-dark">❯</button>
+                    <<div class="flex items-center space-x-2 pagination">
+                    <div id="pagination-data"
+                         data-current-page="{{ pagination.current_page }}"
+                         data-rows-per-page="{{ pagination.rows_per_page }}"
+                         data-total-pages="{{ pagination.total_pages }}"
+                         data-has-previous="{{ pagination.has_previous }}"
+                         data-has-next="{{ pagination.has_next }}">
                     </div>
 
-
+                    <span class="text-green-custom">Пагинация</span>
+                    <button
+                        id="prev-page"
+                        class="bg-green-custom text-white border border-gray-300 p-2 rounded-l hover:bg-green-dark {% if not pagination.has_previous %}opacity-50 cursor-not-allowed{% endif %}"
+                        {% if not pagination.has_previous %}disabled{% endif %}
+                        data-page="{{ pagination.current_page|add:'-1' }}"
+                    >❮</button>
+                    <span id="page-info">
+                        Страница {{ pagination.current_page }} из {{ pagination.total_pages }}
+                    </span>
+                    <button
+                        id="next-page"
+                        class="bg-green-custom text-white border border-gray-300 p-2 rounded-r hover:bg-green-dark {% if not pagination.has_next %}opacity-50 cursor-not-allowed{% endif %}"
+                        {% if not pagination.has_next %}disabled{% endif %}
+                        data-page="{{ pagination.current_page|add:'1' }}"
+                    >❯</button>
+                </div>
                     <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать Meet</button>
                 </div>
             </div>
@@ -207,6 +225,9 @@
     <!--    <script src="{% static 'script/script.js' %}"></script>-->
 
     <script src="{% static 'script/meets.js' %}"></script>
+    {% block extra_js %}
+    <script src="{% static 'script/pagination.js' %}"></script>
+    {% endblock %}
 
 {% endblock %}
 
