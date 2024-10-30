@@ -1,13 +1,8 @@
-from apps.users.managers import CustomUserManager
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from validators.validators import (
-    ColorValidator,
-    CustomValidator,
-    LettersAndSymbolsValidator,
-    LettersOnlyValidator,
-)
+from src.apps.users.managers import CustomUserManager
+from validators.validators import ModelValidator
 
 
 class Role(models.Model):
@@ -15,20 +10,20 @@ class Role(models.Model):
 
     name = models.CharField(
         max_length=20,
-        validators=[LettersOnlyValidator.get_regex_validator()],
-        verbose_name="Название",
-        help_text="Введите название роли до 20 символов(допускаются только буквы кириллицы и латиницы.)",
+        validators=[ModelValidator.validate_letters_only()],
+        verbose_name="название",
+        help_text="Введите название роли до 20 символов(допускаются только буквы кириллицы и латиницы.",
     )
     color = models.CharField(
         max_length=6,
-        validators=[ColorValidator.get_regex_validator()],
-        verbose_name="Цвет",
+        validators=[ModelValidator.validate_color()],
+        verbose_name="цвет",
         help_text="Введите цвет в формате 6 цифр.",
     )
 
     class Meta:
-        verbose_name = "Роль"
-        verbose_name_plural = "Роли"
+        verbose_name = "роль"
+        verbose_name_plural = "роли"
         ordering = ["-id"]
 
     def __str__(self):
@@ -40,12 +35,12 @@ class Permission(models.Model):
 
     name = models.CharField(
         max_length=20,
-        validators=[LettersOnlyValidator.get_regex_validator()],
-        verbose_name="Название",
+        validators=[ModelValidator.validate_letters_only()],
+        verbose_name="название",
     )
-    code = models.IntegerField(verbose_name="Код")
+    code = models.IntegerField(verbose_name="код")
     description = models.TextField(
-        max_length=500, null=True, blank=True, verbose_name="Описание"
+        max_length=500, null=True, blank=True, verbose_name="описание"
     )
 
     class Meta:
@@ -62,72 +57,72 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     name = models.CharField(
         max_length=20,
-        validators=[LettersOnlyValidator.get_regex_validator()],
-        verbose_name="Имя",
+        validators=[ModelValidator.validate_letters_only()],
+        verbose_name="имя",
     )
     surname = models.CharField(
         max_length=20,
-        validators=[LettersOnlyValidator.get_regex_validator()],
-        verbose_name="Фамилия",
+        validators=[ModelValidator.validate_letters_only()],
+        verbose_name="фамилия",
     )
     email = models.EmailField(
         max_length=50,
         unique=True,
-        validators=[CustomValidator.get_regex_validator()],
-        verbose_name="Email",
+        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        verbose_name="email",
     )
     tg_name = models.CharField(
         max_length=50,
         unique=True,
-        validators=[LettersAndSymbolsValidator.get_regex_validator()],
-        verbose_name="TG Имя",
+        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        verbose_name="tg имя",
     )
     tg_nickname = models.CharField(
         max_length=50,
         unique=True,
-        validators=[CustomValidator.get_regex_validator()],
-        verbose_name="TG Ник",
+        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        verbose_name="tg ник",
     )
     google_meet_nickname = models.CharField(
         max_length=50,
         unique=True,
-        validators=[CustomValidator.get_regex_validator()],
-        verbose_name="GoogleMeet Ник",
+        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        verbose_name="googlemeet ник",
     )
     gitlab_nickname = models.CharField(
         max_length=50,
         unique=True,
-        validators=[CustomValidator.get_regex_validator()],
-        verbose_name="GitLab Ник",
+        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        verbose_name="gitlab ник",
     )
     github_nickname = models.CharField(
         max_length=50,
         unique=True,
-        validators=[CustomValidator.get_regex_validator()],
-        verbose_name="GitHub Ник",
+        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        verbose_name="github ник",
     )
     avatar = models.ImageField(
-        upload_to="avatars/", blank=True, null=True, verbose_name="Аватар"
+        upload_to="avatars/", blank=True, null=True, verbose_name="аватар"
     )
     role = models.ForeignKey(
-        Role, on_delete=models.CASCADE, null=True, verbose_name="Роль"
+        Role, on_delete=models.CASCADE, null=True, verbose_name="роль"
     )
     permissions = models.ForeignKey(
-        Permission, on_delete=models.PROTECT, null=True, verbose_name="Права"
+        Permission, on_delete=models.PROTECT, null=True, verbose_name="права"
     )
     is_active = models.BooleanField(
-        default=False, blank=True, null=True, verbose_name="Активный статус"
+        default=False, blank=True, null=True, verbose_name="активный статус"
     )
     is_admin = models.BooleanField(
         default=False,
         blank=True,
         null=True,
-        verbose_name="Статус администратора",
+        verbose_name="статус администратора",
     )
     is_superuser = models.BooleanField(
-        default=False, verbose_name="Суперпользователь"
+        default=False, verbose_name="суперпользователь"
     )
-    is_staff = models.BooleanField(default=False, verbose_name="Персонал")
+    is_staff = models.BooleanField(default=False, verbose_name="персонал")
 
     objects = CustomUserManager()
 
@@ -151,7 +146,7 @@ class CustomUserList(models.Model):
         CustomUser, on_delete=models.CASCADE, verbose_name="пользователь"
     )
     registration_date = models.DateField(
-        auto_now_add=True, verbose_name="дата создания", null=True, blank=True
+        auto_now_add=True, verbose_name="дата создания"
     )
 
     class Meta:

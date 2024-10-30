@@ -1,5 +1,5 @@
 from django.contrib import admin
-from src.models.users import CustomUser, Permissions, Role
+from src.models.users import CustomUser, Permission, Role
 
 
 @admin.register(Role)
@@ -8,8 +8,8 @@ class RoleAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
-@admin.register(Permissions)
-class PermissionsAdmin(admin.ModelAdmin):
+@admin.register(Permission)
+class PermissionAdmin(admin.ModelAdmin):
     list_display = ("name", "code", "description")
     search_fields = ("name", "code")
 
