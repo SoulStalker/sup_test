@@ -15,7 +15,7 @@ class BaseView:
     meet_service = MeetService(MeetsRepository(), CategoryRepository())
 
 
-    project_service = ProjectService(ProjectRepository(), TaskRepository())
+    project_service = 
 
 
     http_method_names = ["get", "post", "put", "patch", "delete"]

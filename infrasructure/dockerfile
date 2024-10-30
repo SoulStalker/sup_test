@@ -1,0 +1,33 @@
+FROM python:3.11
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Устанавливаем необходимые пакеты для установки Poetry и клиента PostgreSQL
+RUN apt-get update && \
+    apt-get install -y curl postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
+
+# Добавляем Poetry в PATH
+ENV PATH="/root/.local/bin:$PATH"
+
+# Копируем pyproject.toml и poetry.lock из корня проекта
+COPY ../pyproject.toml ../poetry.lock ./
+
+# Устанавливаем зависимости
+RUN poetry install --no-dev
+
+# Копируем папку api в контейнер
+COPY ../api ./api
+
+# Указываем рабочую директорию для Django
+WORKDIR /app/api
+
+# Устанавливаем необходимые зависимости, если вы еще этого не сделали
+RUN poetry install  # Убедитесь, что все зависимости установлены, включая Django
+
+# Команда для запуска сервера
+CMD ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]

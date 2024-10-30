@@ -1,6 +1,6 @@
 from django import forms
-
-from apps.projects.models import Feature, Project, Tags, Task
+from django.contrib.auth.models import User
+from src.models.projects import Feature, Project, Task, Tags
 
 
 class TagForm(forms.ModelForm):
@@ -27,11 +27,25 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = [
-            "name",
-            "description",
-            "participants",
-            "status",
+            'name',
+            'logo',
+            'description',
+            'status',
+            'participants',
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["participants"] = forms.ModelMultipleChoiceField(
+            queryset=User.objects.all(),
+            widget=forms.CheckboxSelectMultiple
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get('participants') is None:
+            cleaned_data['participants'] = []
+        return cleaned_data
 
 
 class TaskForm(forms.ModelForm):
