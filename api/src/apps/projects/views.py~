@@ -37,7 +37,7 @@ class CreateProjectView(BaseView):
     Создание проекта
     """
     def get(self, request, *args, **kwargs):
-        form = ProjectForm(request.POST)
+        form = ProjectForm()
 
         return render(
             request,

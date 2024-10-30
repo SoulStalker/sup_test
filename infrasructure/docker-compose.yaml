@@ -1,1 +1,32 @@
-pass
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ..  # Контекст сборки на корень проекта
+      dockerfile: infrasructure/Dockerfile  # Путь к Dockerfile
+    volumes:
+      - ../api:/app/api  # Монтируем папку api как /app/api
+    ports:
+      - "8000:8000"  # Порты совпадают с тем, что в manage.py
+    environment:
+      DB_ENGINE: django.db.backends.postgresql
+      POSTGRES_DB: sup_backend_db
+      POSTGRES_USER: docdevuserdb
+      POSTGRES_PASSWORD: docdevpassword
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: sup_backend_db
+      POSTGRES_USER: docdevuserdb
+      POSTGRES_PASSWORD: docdevpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
