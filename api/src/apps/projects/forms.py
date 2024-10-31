@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from src.models.projects import Feature, Project, Task, Tags
-
+from django.utils.functional import cached_property
 
 class TagForm(forms.ModelForm):
     class Meta:
@@ -23,25 +23,23 @@ class FeatureForm(forms.ModelForm):
         ]
 
 
-class ProjectForm(forms.ModelForm):
-    class Meta:
-        model = Project
-        fields = [
-            'name',
-            'logo',
-            'description',
-            'status',
-            'participants',
-        ]
+class ProjectForm(forms.Form):
+    title = forms.CharField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["participants"] = forms.ModelMultipleChoiceField(
-            queryset=User.objects.all(),
+            queryset=self.users_queryset,
             widget=forms.CheckboxSelectMultiple
         )
 
+    @cached_property
+    def users_queryset(self):
+        """Возвращает активных пользователей для выбора в форме."""
+        return User.objects.filter(is_active=True)
+
     def clean(self):
+        """Очистка данных формы."""
         cleaned_data = super().clean()
         if cleaned_data.get('participants') is None:
             cleaned_data['participants'] = []

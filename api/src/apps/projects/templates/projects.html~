@@ -113,8 +113,8 @@
         </div>
 
     </div>
-
-
+    <!-- projects.html -->
+    {% include 'create_project_modal.html' %}
 
 
 

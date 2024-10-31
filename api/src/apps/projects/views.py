@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.projects.forms import ProjectForm
-from django.contrib.auth.models import User
-from src.domain.project.service import ProjectService
 
 class ProjectsView(BaseView):
     """
@@ -17,7 +15,7 @@ class ProjectsView(BaseView):
         paginated_projects = self.paginate_queryset(projects)
 
         for project in projects:
-            project.participants = project.participants.all()
+            project.participants.set(project.participants.all())
 
         context = {
             "projects": paginated_projects['items'],
@@ -37,7 +35,7 @@ class CreateProjectView(BaseView):
     Создание проекта
     """
     def get(self, request, *args, **kwargs):
-        form = ProjectForm(request.POST)
+        form = ProjectForm(request.POST or None)
 
         return render(
             request,

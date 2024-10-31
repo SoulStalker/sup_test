@@ -1,44 +1,27 @@
-from src.models.projects import Project, Task
-from .dtos import ProjectDTO, TaskDTO
+from .dtos import ProjectDTO
+import abc
 
-class ProjectRepository:
-    @staticmethod
-    def get_project_by_slug(slug: str) -> ProjectDTO:
-        project = Project.objects.get(slug=slug)
-        return ProjectDTO(
-            id=project.id,
-            name=project.name,
-            slug=project.slug,
-            description=project.description,
-            status=project.status
-        )
+class IProjectRepository(abc.ABC):
+    @abc.abstractmethod
+    def create_project(self, dto: ProjectDTO) -> ProjectDTO:
+        pass
 
-    @staticmethod
-    def get_projects_list() -> list[ProjectDTO]:
-        projects = Project.objects.all()
-        return [
-            ProjectDTO(
-                id=project.id,
-                name=project.name,
-                slug=project.slug,
-                description=project.description,
-                status=project.status,
-                date_created=project.date_created,
-                participants=project.participants
-            ) for project in projects
-        ]
+    @abc.abstractmethod
+    def update_project(self, project_id: int, name: str, slug: str, description: str, status: str) -> ProjectDTO:
+        pass
 
-class TaskRepository:
-    @staticmethod
-    def get_tasks_by_project(project_id: int) -> list[TaskDTO]:
-        tasks = Task.objects.filter(project_id=project_id)
-        return [
-            TaskDTO(
-                id=task.id,
-                name=task.name,
-                slug=task.slug,
-                description=task.description,
-                status=task.status,
-                date_execution=task.date_execution
-            ) for task in tasks
-        ]
+    @abc.abstractmethod
+    def delete_project(self, project_id: int):
+        pass
+
+    @abc.abstractmethod
+    def get_project_list(self) -> list[ProjectDTO]:
+        pass
+
+    @abc.abstractmethod
+    def get_project_by_slug(self, slug: str) -> ProjectDTO:
+        pass
+
+    @abc.abstractmethod
+    def get_project_by_id(self, project_id: int) -> ProjectDTO:
+        pass
