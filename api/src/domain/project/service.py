@@ -42,3 +42,9 @@ class ProjectService:
             description=project.description,
             status=project.status
         )
+
+    def delete_project(self, project_id: int):
+        """Удаление существующего проекта."""
+        return self.__project_repository.delete_project(project_id)
+
+
