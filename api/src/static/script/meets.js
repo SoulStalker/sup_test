@@ -305,12 +305,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const categoryModal = document.getElementById('modal-add-category');
     const categoryForm = document.getElementById('add-category-form');
     const categorySelect = document.getElementById('category');
-    const createMeetForm = document.getElementById('create-meet-form');
 
     // Открытие модального окна для добавления категории
     openCategoryModalButton.addEventListener('click', function (e) {
-        e.preventDefault(); // Предотвращаем отправку формы создания meet
-        e.stopPropagation(); // Останавливаем всплытие события
+        e.preventDefault();
         categoryModal.classList.remove('hidden');
     });
 
@@ -321,46 +319,46 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Обработка отправки формы добавления категории
-    addCategoryForm.addEventListener('submit', function(e) {
-    e.preventDefault();
+    categoryForm.addEventListener('submit', function(e) {
+        e.preventDefault();
 
-    const categoryName = document.getElementById('category-name').value;
-    const url = `${addCategoryForm.action}?category_name=${encodeURIComponent(categoryName)}`;
+        const categoryName = document.getElementById('category-name').value;
+        const url = categoryForm.action;
 
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const option = new Option(data.category_name, data.category_id);
-            categorySelect.add(option);
-            categorySelect.value = data.category_id;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                'category_name': categoryName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const option = new Option(data.category_name, data.category_id);
+                categorySelect.add(option);
+                categorySelect.value = data.category_id;
 
-            categoryModal.classList.add('hidden');
-            addCategoryForm.reset();
-        } else {
-            alert('Ошибка при добавлении категории: ' + (data.error || 'Неизвестная ошибка'));
-        }
-    })
-    .catch(error => {
-        console.error('Ошибка:', error);
-        alert('Произошла ошибка при отправке формы');
+                categoryModal.classList.add('hidden');
+                categoryForm.reset();
+            } else {
+                alert('Ошибка при добавлении категории: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при отправке формы');
+        });
     });
 });
 
-    // Предотвращаем всплытие событий с модального окна категории на форму создания meet
-    categoryModal.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
-});
+
 
 // Обработка поиска
 function handleSearch(event) {
     tableConfig.searchTerm = event.target.value.toLowerCase();
     tableConfig.currentPage = 1;
 }
-
