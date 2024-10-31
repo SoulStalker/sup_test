@@ -88,7 +88,7 @@
                             <td class="px-4 py-4 border-b text-left truncate">{{ item_project.name }}</td>
                             <td class="px-4 py-4 border-b text-left">
                                 <div class="inline-flex -space-x-2">
-                                    {% for user in item_project.participants %}
+                                    {% for user in item_project.participants.all %}
                                         <img src="{% if user.avatar %}{{ user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}" alt="" class="inline-block border border-white rounded-full w-6 h-6">
                                     {% endfor %}
                                 </div>
@@ -113,9 +113,9 @@
         </div>
 
     </div>
-
-
+    <!-- projects.html -->
     {% include 'create_project_modal.html' %}
+
 
 
     <!-- Попап подтверждения удаления -->

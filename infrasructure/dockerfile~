@@ -4,9 +4,9 @@ WORKDIR /app
 
 RUN apt-get update
 
-COPY ../pyproject.toml ../poetry.lock ./
-
 RUN pip install poetry
+
+COPY ../pyproject.toml ../poetry.lock ./
 
 # Устанавливаем зависимости
 RUN poetry install --no-dev

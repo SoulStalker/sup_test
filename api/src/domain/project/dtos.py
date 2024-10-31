@@ -10,12 +10,3 @@ class ProjectDTO:
     status: str
     participants: dict
     date_created: datetime
-
-@dataclass
-class TaskDTO:
-    id: int
-    name: str
-    slug: str
-    description: str
-    status: str
-    date_execution: datetime

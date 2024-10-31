@@ -3,30 +3,37 @@ version: '3.8'
 services:
   web:
     build:
-      context: ..  # Контекст сборки на корень проекта
-      dockerfile: infrasructure/Dockerfile  # Путь к Dockerfile
+      context: ..
+      dockerfile: infrasructure/Dockerfile
     volumes:
-      - ../api:/app/api  # Монтируем папку api как /app/api
-    ports:
-      - "8000:8000"  # Порты совпадают с тем, что в manage.py
+      - ../api:/app/api
+    env_file:
+      - .env
     environment:
-      DB_ENGINE: django.db.backends.postgresql
-      POSTGRES_DB: sup_backend_db
-      POSTGRES_USER: docdevuserdb
-      POSTGRES_PASSWORD: docdevpassword
-      DB_HOST: db
-      DB_PORT: 5432
+      DB_ENGINE: ${DB_ENGINE}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
     depends_on:
       - db
+    ports:
+      - 8000:8000
 
   db:
-    image: postgres:13
+    image: postgres:16-alpine
     environment:
-      POSTGRES_DB: sup_backend_db
-      POSTGRES_USER: docdevuserdb
-      POSTGRES_PASSWORD: docdevpassword
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

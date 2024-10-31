@@ -1,11 +1,11 @@
-from .repository import ProjectRepository, TaskRepository
-from .dtos import ProjectDTO, TaskDTO
+from .repository import IProjectRepository
+from src.domain.project.entity import ProjectEntity
+from .dtos import ProjectDTO
 
 class ProjectService:
 
-    def __init__(self, project_repository: ProjectRepository, task_repository: TaskRepository):
+    def __init__(self, project_repository: IProjectRepository):
         self.__project_repository = project_repository
-        self.__task_repository = task_repository
 
     def get_project_by_slug(self, slug: str) -> ProjectDTO:
         """Получение проекта по его slug."""
@@ -13,23 +13,24 @@ class ProjectService:
 
     def get_projects_list(self) -> list[ProjectDTO]:
         """Получение списка всех проектов."""
-        return self.__project_repository.get_projects_list()
+        return self.__project_repository.get_project_list()
 
-    def get_tasks_by_project(self, project_id: int) -> list[TaskDTO]:
-        """Получение задач по идентификатору проекта."""
-        return self.__task_repository.get_tasks_by_project(project_id)
-
-    def create_project(self, name: str, slug: str, description: str, status: str) -> ProjectDTO:
+    def create_project(self, dto: ProjectDTO):
         """Создание нового проекта."""
-        # Логика для создания проекта, например:
-        project = self.__project_repository.create_project(name, slug, description, status)
-        return ProjectDTO(
-            id=project.id,
-            name=project.name,
-            slug=project.slug,
-            description=project.description,
-            status=project.status
+        project = ProjectEntity(
+            dto.id,
+            dto.name,
+            dto.slug,
+            dto.description,
+            dto.status,
+            dto.participants,
+            dto.date_created
         )
+
+        err = project.verify_data()
+        if err:
+            return err
+        return self.__project_repository.create_project(project)
 
     def update_project(self, project_id: int, name: str, slug: str, description: str, status: str) -> ProjectDTO:
         """Обновление существующего проекта."""
