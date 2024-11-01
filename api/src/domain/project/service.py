@@ -1,6 +1,6 @@
 from .repository import IProjectRepository
 from src.domain.project.entity import ProjectEntity
-from .dtos import ProjectDTO
+from .dtos import ProjectDTO, StatusObject
 
 class ProjectService:
 
@@ -18,13 +18,12 @@ class ProjectService:
     def create_project(self, dto: ProjectDTO):
         """Создание нового проекта."""
         project = ProjectEntity(
-            dto.id,
-            dto.name,
-            dto.slug,
-            dto.description,
-            dto.status,
-            dto.participants,
-            dto.date_created
+            name=dto.name,
+            description=dto.description,
+            status=dto.status,
+            responsible_id=dto.responsible_id,
+            participants=dto.participants,
+            date_created=dto.date_created
         )
 
         err = project.verify_data()
@@ -47,4 +46,7 @@ class ProjectService:
         """Удаление существующего проекта."""
         return self.__project_repository.delete_project(project_id)
 
+    def get_project_status_choices(self):
+        """Возвращает доступные статусы проекта."""
+        return StatusObject.choices()
 

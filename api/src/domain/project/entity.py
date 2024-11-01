@@ -5,13 +5,12 @@ from src.domain.validators.validators import DataVerifier
 
 @dataclass
 class ProjectEntity:
-    id: int
     name: str
-    slug: str
     description: str
     status: str
-    participants: dict
+    participants: list
     date_created: datetime
+    responsible_id: int
 
     def verify_data(self):
         return DataVerifier.verify_max_value(self.name, 100)

@@ -25,3 +25,13 @@ class IProjectRepository(abc.ABC):
     @abc.abstractmethod
     def get_project_by_id(self, project_id: int) -> ProjectDTO:
         pass
+
+    @abc.abstractmethod
+    def get_valid_statuses(self) -> list:
+        """Возвращает все допустимые статусы."""
+        pass
+
+    @abc.abstractmethod
+    def status_orm_to_dto(self, status: str) -> str:
+        """Преобразует статус в DTO."""
+        pass
