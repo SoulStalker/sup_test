@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from src.models.users import CustomUser, CustomUserList, Permissions, Role
+from src.models.models import CustomUser, CustomUserList, Permission, Role
 
 
 class CustomUserForm(ModelForm):
@@ -60,7 +60,7 @@ class PermissionsForm(ModelForm):
     """Форма модели Permissions."""
 
     class Meta:
-        model = Permissions
+        model = Permission
         fields = [
             "name",
             "code",

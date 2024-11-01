@@ -1,8 +1,8 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from src.apps.users.managers import CustomUserManager
-from validators.validators import ModelValidator
+from src.models.managers import CustomUserManager
+from src.validators.validators import ModelValidator
 
 
 class Role(models.Model):

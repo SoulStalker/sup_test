@@ -6,8 +6,8 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, TemplateView
 from src.apps.users.forms import CustomUserForm, ListUserForm
-from src.models.users import CustomUser, CustomUserList
-from validators.validators import ModelValidator
+from src.models.models import CustomUser, CustomUserList
+from src.validators.validators import ModelValidator
 
 
 class UserLogin(TemplateView, CustomUserForm):
