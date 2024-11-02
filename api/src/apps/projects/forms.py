@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.functional import cached_property
 from src.models.choice_classes import ProjectChoices
+from src.domain.validators.validators import DataVerifier
 
 
 class ProjectForm(forms.Form):
@@ -11,6 +12,14 @@ class ProjectForm(forms.Form):
         label="Название",
         widget=forms.TextInput(attrs={"class": "form-control"})
     )
+
+    logo = forms.ImageField(
+        label="Логотип",
+        widget=forms.FileInput(attrs={"class": "form-control"}),
+        validators=[DataVerifier.validate_file_extension],
+        required=False
+    )
+
     description = forms.CharField(
         max_length=10000,
         label="Описание",
@@ -39,6 +48,7 @@ class ProjectForm(forms.Form):
         label="Ответственный",
         widget=forms.Select(attrs={"class": "form-control"})
     )
+
 
 
 

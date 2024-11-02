@@ -3,29 +3,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModalButton = document.getElementById('close-modal');
     const modal = document.getElementById('modal');
     const form = document.getElementById('create-project-form');
+    const deleteButton = document.getElementById('delete-project-button'); // Кнопка удаления
+    const confirmDeletePopup = document.getElementById('confirm-delete-popup'); // Попап подтверждения удаления
+    const confirmDeleteButton = document.getElementById('confirm-delete'); // Кнопка подтверждения удаления
+    const logoPreview = document.getElementById('logo-preview'); // Элемент для показа логотипа
 
-    if (!form) {
-        console.error('Форма создания проекта не найдена');
-        return;
-    }
-
-    const clearErrors = () => {
-        console.log('Очищение ошибок формы');
-        const errorMessages = form.querySelectorAll('.error-message, .general-error, .network-error');
-        errorMessages.forEach(el => el.remove());
-        form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
-    };
-
-    const showError = (field, messages) => {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = messages.join(', ');
-        field.parentNode.appendChild(errorDiv);
-        field.classList.add('error');
-        console.error('Ошибка валидации для поля:', field.name, 'Сообщения:', messages);
-    };
-
-    const submitButton = form.querySelector('button[type="submit"]');
+    let submitButton = form.querySelector('button[type="submit"]');
+    let currentProjectId = null; // Переменная для хранения текущего ID проекта
 
     // Открытие модального окна для создания проекта
     if (openModalButton) {
@@ -35,17 +19,47 @@ document.addEventListener('DOMContentLoaded', function () {
             submitButton.textContent = 'Создать проект';
             form.reset();
             clearErrors(); // Очистить ошибки при открытии окна
+
+            // Сброс выбора участников
+            const participantsSelect = document.getElementById('project-participants');
+            Array.from(participantsSelect.options).forEach(option => {
+                option.selected = false; // Убираем выделение у всех опций
+            });
+
+            // Сброс текста выбора участников
+            const selectContainer = document.getElementById('select-container');
+            selectContainer.textContent = 'Выберите участников';
         });
-        console.log('Открытие модального окна создания проекта');
     }
 
     // Закрытие модального окна
-    if (closeModalButton) {
-        closeModalButton.addEventListener('click', function () {
-            modal.classList.add('hidden');
-            console.log('Закрытие модального окна');
+    function closeModal() {
+        modal.classList.add('hidden');
+        form.reset(); // Сбрасываем форму
+        clearErrors(); // Очищение ошибок
+
+        // Сброс логотипа
+        logoPreview.src = '';
+        logoPreview.classList.add('hidden'); // Скрытие логотипа
+
+        // Сброс текста выбора участников
+        const selectContainer = document.getElementById('select-container');
+        selectContainer.textContent = 'Выберите участников';
+
+        // Сброс выбора участников
+        const participantsSelect = document.getElementById('project-participants');
+        Array.from(participantsSelect.options).forEach(option => {
+            option.selected = false; // Убираем выделение у всех опций
         });
     }
+
+    // Обработчик клика по кнопке закрытия модального окна
+    closeModalButton.addEventListener('click', closeModal);
+    document.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            closeModal(); // Закрываем модальное окно при клике вне него
+        }
+    });
 
     // Обработка отправки формы
     form.addEventListener('submit', function(event) {
@@ -78,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             console.log('Данные от сервера:', data);
             if (data.status === 'success') {
-                modal.classList.add('hidden');
+                closeModal(); // Закрываем модальное окно при успешном ответе
                 location.reload(); // Перезагрузка страницы для обновления данных
             } else {
                 // Обработка ошибок
@@ -108,6 +122,163 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Редактирование проекта
+    const editProjectButtons = document.querySelectorAll('.edit-project-button');
+
+    editProjectButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            currentProjectId = this.getAttribute('data-project-id'); // Получаем ID проекта
+            // Открываем модальное окно
+            modal.classList.remove('hidden');
+
+            // Загружаем данные проекта через fetch
+            fetch(`/projects/edit/${currentProjectId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errData => {
+                            throw new Error(`Ошибка ${response.status}: ${errData.message || 'Неизвестная ошибка'}`);
+                        });
+                    }
+                    return response.json();
+                })
+
+                .then(data => {
+                    // Заполняем форму полученными данными
+                    document.getElementById('project-name').value = data.name || '';
+                    document.getElementById('project-description').value = data.description || '';
+                    document.getElementById('project-status').value = data.status || '';
+                    document.getElementById('project-responsible').value = data.responsible || '';
+
+                    // Обновляем логотип проекта
+                    if (data.logo) {
+                        logoPreview.src = data.logo; // Устанавливаем путь к изображению логотипа
+                        logoPreview.classList.remove('hidden'); // Убираем класс hidden для отображения
+                    } else {
+                        logoPreview.classList.add('hidden'); // Если логотипа нет, скрываем его
+                    }
+
+                    // Логика для заполнения участников
+                    const participantIds = data.participants.map(participant => participant.id);
+                    const participantsSelect = document.getElementById('project-participants');
+
+                    Array.from(participantsSelect.options).forEach(option => {
+                        option.selected = participantIds.includes(parseInt(option.value));
+                    });
+
+                    // Обновляем отображение выбранных участников
+                    updateSelectedParticipants(participantIds);
+
+                    const dateCreatedInput = document.getElementById('project-date');
+                    if (dateCreatedInput) {
+                        dateCreatedInput.value = data.date_created ? data.date_created.split('T')[0] : ''; // Проверка на наличие даты
+                    }
+
+                    // Меняем action формы для отправки на обновление
+                    form.setAttribute('action', `/projects/edit/${currentProjectId}/`);
+                    submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
+
+                    // Проверка логики для передачи логотипа
+                    const logoInput = document.getElementById('project-logo');
+                    const currentLogoSrc = logoPreview.src; // Текущий путь к логотипу
+
+                    if (currentLogoSrc) {
+                        if (!logoInput.files.length) {
+                            // Если изображения нет в input, используем текущее изображение
+                            logoInput.value = currentLogoSrc; // Передаем текущий путь к изображению
+                        } else {
+                            // Если есть новое изображение, используем его
+                            logoInput.value = logoInput.files[0]; // Передаем новое загруженное изображение
+                        }
+                    } else {
+                        // Если логотипа нет, и файл не выбран, то можно оставить обработку по умолчанию
+                        logoInput.value = ''; // Или можно обработать это как ошибку, если логотип обязателен
+                    }
+                })
+                .catch(error => console.error('Ошибка:', error));
+        });
+    });
+
+    // Обработчик для открытия попапа подтверждения удаления
+    deleteButton.addEventListener('click', function () {
+        confirmDeletePopup.classList.remove('hidden'); // Показываем попап подтверждения удаления
+    });
+
+    // Обработчик подтверждения удаления проекта
+    confirmDeleteButton.addEventListener('click', function () {
+        if (currentProjectId) {
+            fetch(`/projects/delete/${currentProjectId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    confirmDeletePopup.classList.add('hidden'); // Закрываем попап подтверждения удаления
+                    closeModal(); // Закрываем модальное окно редактирования
+
+                    // Перенаправляем на страницу проектов
+                    window.location.reload(); // Это обновит текущую страницу
+                } else {
+                    alert('Ошибка: ' + data.message); // Показываем сообщение об ошибке
+                }
+            })
+            .catch(error => console.error('Ошибка при удалении проекта:', error));
+        }
+    });
+
+    // Обработчик отмены удаления проекта
+    const cancelDeleteButton = document.getElementById('cancel-delete'); // Кнопка отмены удаления
+    cancelDeleteButton.addEventListener('click', function () {
+        confirmDeletePopup.classList.add('hidden'); // Скрываем попап подтверждения удаления
+    });
+
+    // Функция для обновления текста с выбранными участниками
+    function updateSelectedParticipants(participantIds) {
+        const selectedOptions = Array.from(document.querySelectorAll('#project-participants option:checked'));
+
+        const selectContainer = document.getElementById('select-container');
+        if (selectedOptions.length > 0) {
+            const selectedUsernames = selectedOptions.map(option => option.textContent).join(', ');
+            selectContainer.textContent = selectedUsernames; // Обновляем текст на контейнере
+        } else {
+            selectContainer.textContent = 'Выберите участников'; // Возвращаем текст по умолчанию
+        }
+    }
+
+    // Очищение ошибок формы
+    const clearErrors = () => {
+        console.log('Очищение ошибок формы');
+        const errorDivs = form.querySelectorAll('.error');
+        errorDivs.forEach(div => div.remove()); // Удаляем все сообщения об ошибках
+    };
+
+    // Функция для отображения ошибок
+    const showError = (field, errors) => {
+        console.error('Ошибки поля', field.name, errors);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error';
+        errorDiv.textContent = errors.join(', ');
+        field.parentNode.insertBefore(errorDiv, field.nextSibling); // Вставляем ошибку после поля
+    };
+
+    // Обработчик для отображения логотипа
+    const logoInput = document.getElementById('logo-input');
+    if (logoInput) {
+        logoInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                logoPreview.src = e.target.result; // Отображаем логотип
+                logoPreview.classList.remove('hidden'); // Показываем логотип
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+    }
     // Скрипт для кастомного множественного выбора
     const selectContainer = document.getElementById('select-container');
     const selectItems = document.getElementById('select-items');
@@ -142,54 +313,85 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-// Редактирование проекта
-document.addEventListener('DOMContentLoaded', function () {
-    const editProjectButtons = document.querySelectorAll('.edit-project-button');
-    const modal = document.getElementById('modal');
-    const form = document.getElementById('create-project-form');
 
-    let submitButton = form.querySelector('button[type="submit"]');
 
-    editProjectButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const projectId = this.getAttribute('data-project-id');
 
-            // Открываем модальное окно
-            modal.classList.remove('hidden');
 
-            // Загружаем данные проекта через fetch
-            fetch(`/projects/edit/${projectId}/`)
-                .then(response => response.json())
-                .then(data => {
-                    // Заполняем форму полученными данными
-                    document.getElementById('project_name').value = data.name;
-                    document.getElementById('project_slug').value = data.slug;
-                    document.getElementById('project_description').value = data.description;
-                    document.getElementById('project_status').value = data.status;
-                    document.getElementById('project_responsible').value = data.responsible;
+// Поиск проектов
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.querySelector('input[placeholder="Поиск"]');
+    const projectContainer = document.getElementById('project-container').getElementsByTagName('tbody')[0];
 
-                    // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `/projects/edit/${projectId}/`);
-                    submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
-                })
-                .catch(error => console.error('Ошибка:', error));
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value;
+
+        fetch(`/search/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                // Очистить предыдущие результаты
+                projectContainer.innerHTML = '';
+
+                // Если проекты найдены, добавить их в таблицу
+                data.projects.forEach(project => {
+                    const row = document.createElement('tr');
+                    row.classList.add('hover:bg-gray-50');
+
+                    row.innerHTML = `
+                        <td class="px-4 py-4 border-b text-left">${project.id}</td>
+                        <td class="px-4 py-4 border-b text-left truncate">${project.name}</td>
+                        <td class="px-4 py-4 border-b text-left">
+                            <div class="inline-flex -space-x-2">
+                                ${project.participants.map(participant => `
+                                    <img src="${participant.avatar || '{% static "images/icon-user-project.png" %}'}" alt="" class="inline-block border border-white rounded-full w-6 h-6">
+                                `).join('')}
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 border-b text-left w-[60%] overflow-auto break-words whitespace-normal">${project.description}</td>
+                        <td class="px-4 py-4 border-b text-left">${project.date_created}</td>
+                        <td class="px-4 py-4 border-b text-center">
+                            <button class="text-red-600 hover:text-red-800 edit-project-button" data-project-id="${project.id}">
+                                <!-- Иконка редактирования -->
+                                <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12.4525 7.73527L12.448 7.74157L6.02434 14.1658L7.94954 16.0903L14.3786 9.66156L12.4525 7.73527Z" fill="#0C0C0C"/>
+                                    <path d="M2.82559 10.9668L4.75078 12.893L11.1753 6.46878L11.1816 6.46428L9.2546 4.53709L2.82559 10.9668Z" fill="#0C0C0C"/>
+                                    <path d="M1.79594 12.4826L0.0462492 17.7313C-0.0617561 18.0544 0.0228479 18.4118 0.26406 18.6521C0.435068 18.824 0.66548 18.9167 0.900391 18.9167C0.995796 18.9167 1.0921 18.9014 1.18481 18.8699L6.43297 17.1201L1.79594 12.4826Z" fill="#0C0C0C"/>
+                                    <path d="M16.9401 1.97531C15.5279 0.563895 13.2292 0.563895 11.817 1.97531L10.5282 3.2643L15.6521 8.38877L16.941 7.09978C18.3532 5.68746 18.3532 3.38762 16.9401 1.97531Z" fill="#0C0C0C"/>
+                                </svg>
+                            </button>
+                        </td>
+                    `;
+
+                    projectContainer.appendChild(row);
+                });
+
+                // Если проектов не найдено
+                if (data.projects.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="6" class="px-4 py-4 text-center">Проекты не найдены.</td>`;
+                    projectContainer.appendChild(row);
+                }
+            })
+            .catch(error => console.error('Ошибка при поиске проектов:', error));
+    });
+    document.getElementById('clear-search').addEventListener('click', function() {
+        // Выполняем AJAX-запрос
+        fetch('/projects/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                // Если запрос успешен, перенаправляем на страницу всех проектов
+                window.location.href = '/projects/';
+            } else {
+                // Обработка ошибок
+                console.error('Ошибка при очистке запроса:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
         });
     });
-
-    // Закрытие попапа при нажатии на кнопку закрытия
-    const closeModalButton = document.getElementById('close-modal');
-    closeModalButton.addEventListener('click', function () {
-        modal.classList.add('hidden');
-        form.reset(); // Сбрасываем форму
-    });
-
-    // Закрытие попапа при клике вне его содержимого
-    window.addEventListener('click', function (event) {
-        if (event.target === modal) {
-            modal.classList.add('hidden');
-            form.reset(); // Сбрасываем форму
-        }
-    });
 });
-
-

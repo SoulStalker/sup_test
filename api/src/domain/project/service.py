@@ -1,6 +1,6 @@
-from .repository import IProjectRepository
+from .repository import IProjectRepository, IFeaturesRepository
 from src.domain.project.entity import ProjectEntity
-from .dtos import ProjectDTO, StatusObject
+from .dtos import ProjectDTO, StatusObject, FeaturesChoicesObject, FeaturesDTO
 
 class ProjectService:
 
@@ -19,6 +19,7 @@ class ProjectService:
         """Создание нового проекта."""
         project = ProjectEntity(
             name=dto.name,
+            logo=dto.logo,
             description=dto.description,
             status=dto.status,
             responsible_id=dto.responsible_id,
@@ -31,16 +32,9 @@ class ProjectService:
             return err
         return self.__project_repository.create_project(project)
 
-    def update_project(self, project_id: int, name: str, slug: str, description: str, status: str) -> ProjectDTO:
+    def update_project(self, project_id, dto):
         """Обновление существующего проекта."""
-        project = self.__project_repository.update_project(project_id, name, slug, description, status)
-        return ProjectDTO(
-            id=project.id,
-            name=project.name,
-            slug=project.slug,
-            description=project.description,
-            status=project.status
-        )
+        return self.__project_repository.update_project(project_id, dto)
 
     def delete_project(self, project_id: int):
         """Удаление существующего проекта."""
@@ -50,3 +44,16 @@ class ProjectService:
         """Возвращает доступные статусы проекта."""
         return StatusObject.choices()
 
+
+    def get_project_by_id(self, project_id: int) -> ProjectDTO:
+        """Получение проекта по его id."""
+        return self.__project_repository.get_project_by_id(project_id)
+
+    def search_projects(self, query: str):
+        return self.__project_repository.search_projects(query)
+
+class FeaturesService:
+    def __init__(self, Features_repository: IFeaturesRepository):
+        self.Features_repository = Features_repository
+    def get_Featuress_list(self) -> list[FeaturesDTO]:
+        return FeaturesChoicesObject.choices()
