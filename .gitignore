@@ -161,4 +161,4 @@ dmypy.json
 cython_debug/
 api/.env
 api/src/db.sqlite3
-
+.idea/
