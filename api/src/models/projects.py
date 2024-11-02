@@ -59,13 +59,28 @@ class Project(models.Model):
         verbose_name="Статус",
     )
 
+    date_created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата создания",
+    )
+
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
+        # Генерируем `slug` только если его нет
         if not self.slug:
-            self.slug = slugify(self.name) + "_" + str(self.pk)
-        return super().save()
+            base_slug = slugify(self.name)
+            unique_slug = base_slug
+            counter = 1
+
+            while Project.objects.filter(slug=unique_slug).exists():
+                unique_slug = f"{base_slug}_{counter}"
+                counter += 1
+
+            self.slug = unique_slug
+
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse(
