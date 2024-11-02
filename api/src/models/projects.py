@@ -5,9 +5,10 @@ from django.db import models
 from django.shortcuts import redirect
 from django.template.defaultfilters import slugify
 from django.urls import reverse
+from django.utils import timezone
 
 from src.models.choice_classes import (
-    FeatureChoices,
+    FeaturesChoices,
     ProjectChoices,
     TaskChoices,
 )
@@ -31,6 +32,7 @@ class Project(models.Model):
         unique=True,
         validators=[ModelValidator.validate_letters_space_only()]
     )
+
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     logo = models.ImageField(
         upload_to="project_logos",
@@ -117,7 +119,7 @@ class Tags(models.Model):
         )
 
 
-class Feature(models.Model):
+class Features(models.Model):
     """Модель фичи"""
 
     class Meta:
@@ -141,25 +143,38 @@ class Feature(models.Model):
     )
     tags = models.ManyToManyField(
         to=Tags,
-        related_name="feature_tags",
+        related_name="Features_tags",
         verbose_name="Теги",
     )
     participants = models.ManyToManyField(
         to=User,
-        related_name="feature_participants",
+        related_name="Features_participants",
         verbose_name="Исполнители",
     )
     responsible = models.ForeignKey(
         to=User,
-        related_name="feature_responsibles",
+        related_name="Features_responsibles",
         on_delete=models.CASCADE,
         verbose_name="Ответственный",
     )
     status = models.CharField(
         max_length=20,
-        choices=FeatureChoices,
-        default=FeatureChoices.NEW,
+        choices=FeaturesChoices,
+        default=FeaturesChoices.NEW,
         verbose_name="Статус",
+    )
+
+    date_created = models.DateTimeField(
+        default=None,
+        editable=False
+    )
+
+    project = models.ForeignKey(
+        to=Project,
+        related_name="Features_projects",
+        on_delete=models.CASCADE,
+        verbose_name="Проект",
+        default=None,
     )
 
     def __str__(self):
@@ -173,7 +188,7 @@ class Feature(models.Model):
     def get_absolute_url(self):
         return redirect(
             reverse(
-                viewname="projects:detail_feature", kwargs={"slug": self.slug}
+                viewname="projects:detail_Features", kwargs={"slug": self.slug}
             )
         )
 
@@ -223,9 +238,9 @@ class Task(models.Model):
         verbose_name="Статус",
     )
     date_execution = models.DateField(verbose_name="Дата исполнения")
-    feature = models.ForeignKey(
-        to=Feature,
-        related_name="task_features",
+    Features = models.ForeignKey(
+        to=Features,
+        related_name="task_Featuress",
         on_delete=models.CASCADE,
         verbose_name="Фича",
     )

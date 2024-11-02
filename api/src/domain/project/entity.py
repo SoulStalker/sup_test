@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from datetime import datetime
 from src.domain.validators.validators import DataVerifier
-
+from django.core.files import File
+from typing import Optional
 
 @dataclass
 class ProjectEntity:
     name: str
+    logo: Optional[File]
     description: str
     status: str
     participants: list

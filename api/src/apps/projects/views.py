@@ -7,8 +7,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.projects.forms import ProjectForm
-from src.models.choice_classes import ProjectChoices
-from src.domain.project.dtos import ProjectDTO
+from src.models.choice_classes import ProjectChoices, FeaturesChoices
+from src.domain.project.dtos import ProjectDTO, FeaturesDTO
 
 
 
@@ -51,7 +51,7 @@ class CreateProjectView(BaseView):
     Создание проекта
     """
     def get(self, request, *args, **kwargs):
-        form = ProjectForm(request.POST)
+        form = ProjectForm(request.POST, request.FILES)
 
         project_status_choices = self.project_service.get_project_status_choices()
 
@@ -66,12 +66,13 @@ class CreateProjectView(BaseView):
         )
 
     def post(self, request, *args, **kwargs):
-        form = ProjectForm(request.POST)
+        form = ProjectForm(request.POST, request.FILES)
 
         if form.is_valid():
             participants = request.POST.getlist('participants')
             project_dto = ProjectDTO(
                 name=form.cleaned_data["name"],
+                logo=form.cleaned_data["logo"],
                 description=form.cleaned_data["description"],
                 status=form.cleaned_data["status"],
                 participants=participants,
@@ -88,6 +89,7 @@ class CreateProjectView(BaseView):
                     "status": "success",
                     "project": {
                         "name": created_project.name,
+                        "logo": created_project.logo,
                         "slug": created_project.slug,
                         "description": created_project.description,
                         "status": created_project.status,
@@ -107,19 +109,91 @@ class EditProjectView(BaseView):
     """
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get("project_id")
-        project = self.project_service.get_project(pk=project_id)
+        project = self.project_service.get_project_by_id(project_id=project_id)
 
         project_status_choices = self.project_service.get_project_status_choices()
 
         data = {
             "name": project.name,
+            "logo": project.logo.url if project.logo else None,
             "slug": project.slug,
             "description": project.description,
             "status": project.status,
             "responsible": project.responsible_id,
-            "participants": project.participants,
+            "participants": list(project.participants.values("id", "username")),
             "date_created": project.date_created.isoformat(),
             "project_status_choices": project_status_choices
         }
 
         return JsonResponse(data)
+
+    def post(self, request, *args, **kwargs):
+        project_id = kwargs.get("project_id")
+        form = ProjectForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            project = self.project_service.get_project_by_id(project_id=project_id)
+            logo = form.cleaned_data.get("logo") if "logo" in request.FILES else None
+            self.project_service.update_project(project_id=project_id, dto=ProjectDTO(
+                name=form.cleaned_data["name"],
+                logo=logo if logo else project.logo,
+                description=form.cleaned_data["description"],
+                status=form.cleaned_data["status"],
+                responsible_id=form.cleaned_data["responsible"].id,
+                date_created=form.cleaned_data["date_created"],
+                participants=form.cleaned_data["participants"],
+            ))
+            try:
+                project = self.project_service.get_project_by_id(project_id=project_id)
+                return JsonResponse({
+                    "status": "success",
+                    "project": {
+                        "name": project.name,
+                        "logo": project.logo.url if project.logo else None,
+                        "slug": project.slug,
+                        "description": project.description,
+                        "status": project.status,
+                        "responsible_id": project.responsible_id,
+                        "participants": list(project.participants.values("id", "username")),
+                        "date_created": project.date_created.isoformat(),
+                    }
+                }, status=201)
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+
+
+class DeleteProjectView(BaseView):
+    """
+    Удаление проекта
+    """
+    def delete(self, *args, **kwargs):
+        project_id = kwargs.get("project_id")
+        try:
+            self.project_service.delete_project(project_id=project_id)
+            return JsonResponse({"status": "success", "message": "Project deleted"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=404)
+
+
+class SearchProjectView(BaseView):
+    """
+    Поиск проектов
+    """
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get("q", "")
+        projects = self.project_service.search_projects(query=query)
+
+        if not projects:
+            return render(self.request, "projects.html", {"projects": [], "query": query})
+        return render(self.request, "projects.html", {"projects": projects, "query": query})
+
+
+
+class FeaturesView(BaseView):
+    def get(self, request, *args, **kwargs):
+        Featuress = self.Features_service.get_Featuress_list()
+        return render(request, "Featuress.html", {
+            "Featuress": Featuress
+        })
