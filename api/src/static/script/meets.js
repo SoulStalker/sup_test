@@ -1,13 +1,20 @@
-function showTableStyle2() {
-    document.getElementById('table-style-1').classList.add('hidden');
-    document.getElementById('table-style-2').classList.remove('hidden');
-    document.getElementById('style2-button').classList.add('active-button');
-    document.getElementById('style1-button').classList.remove('active-button');
-    document.getElementById('style2-button').classList.remove('inactive-button');
-    document.getElementById('style1-button').classList.add('inactive-button');
-    document.querySelector('#style2-button svg').classList.add('fill-[#40454D]');
-    document.querySelector('#style1-button svg').classList.add('fill-[#FCFEFF]');
+// переключение на вторую таблицу
+function toggleTableStyle2() {
+    const tableStyle1 = document.getElementById('table-style-1');
+    const tableStyle2 = document.getElementById('table-style-2');
+    const style1Button = document.getElementById('style1-button');
+    const style2Button = document.getElementById('style2-button');
+
+    tableStyle1.classList.toggle('hidden');
+    tableStyle2.classList.toggle('hidden');
+    style1Button.classList.toggle('active-button');
+    style2Button.classList.toggle('active-button');
+    style1Button.classList.toggle('inactive-button');
+    style2Button.classList.toggle('inactive-button');
+    style2Button.querySelector('svg').classList.toggle('fill-[#40454D]');
+    style1Button.querySelector('svg').classList.toggle('fill-[#FCFEFF]');
 }
+
 // переключение на первую таблицу
 document.getElementById('style1-button').addEventListener('click', function() {
     document.getElementById('table-style-1').classList.remove('hidden');
