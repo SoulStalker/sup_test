@@ -1,6 +1,8 @@
-from django.http import HttpResponseNotAllowed, HttpResponse
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import HttpResponse, HttpResponseNotAllowed
+from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
+from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
 
 
@@ -9,14 +11,16 @@ class BaseView:
     Базовый класс для кастомных контроллеров вместо контроллеров джанги
     дополнительные передаваемые параметры идут в kwargs
     """
+
     category_service = MeetCategoryService(CategoryRepository())
     meet_service = MeetService(MeetsRepository(), CategoryRepository())
+    invite_service = InviteService(InviteRepository())
     http_method_names = ["get", "post", "put", "patch", "delete"]
     # Определяем, требуется ли аутентификация
     login_required = True
     # Параметры пагинации по умолчанию
     items_per_page = 10
-    page_param = 'page'
+    page_param = "page"
 
     def __init__(self, request, *args, **kwargs):
         self.request = request
@@ -38,13 +42,13 @@ class BaseView:
             paginated_items = paginator.page(paginator.num_pages)
 
         return {
-            'items': paginated_items,
-            'paginator': paginator,
-            'current_page': paginated_items.number,
-            'total_pages': paginator.num_pages,
-            'has_next': paginated_items.has_next(),
-            'has_previous': paginated_items.has_previous(),
-            'page_range': paginator.page_range,
+            "items": paginated_items,
+            "paginator": paginator,
+            "current_page": paginated_items.number,
+            "total_pages": paginator.num_pages,
+            "has_next": paginated_items.has_next(),
+            "has_previous": paginated_items.has_previous(),
+            "page_range": paginator.page_range,
         }
 
     @classmethod
