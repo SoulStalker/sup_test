@@ -48,3 +48,8 @@ class InviteRepository(IInviteRepository, ABC):
     def delete(self, invite_id: int):
         invite = get_object_or_404(Invite, pk=invite_id)
         invite.delete()
+
+    def update_status(self, invite_id: int, status: str):
+        invite = get_object_or_404(Invite, pk=invite_id)
+        invite.status = status
+        invite.save()

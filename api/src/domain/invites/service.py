@@ -17,3 +17,6 @@ class InviteService:
 
     def delete(self, pk):
         self.__repository.delete(pk)
+
+    def update_status(self, pk, status):
+        self.__repository.update_status(pk, status)
