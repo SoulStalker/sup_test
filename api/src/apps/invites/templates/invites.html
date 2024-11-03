@@ -84,7 +84,7 @@
                     <tbody>
                     {% for invite in invites %}
                     <tr data-category="">
-                        <td class="border-b py-2 px-4 max-w-[50px]">{{ invite.pk }}</td>
+                        <td class="border-b py-2 px-4 max-w-[50px]">{{ invite.link }}</td>
                         <td class="border-b py-2 px-4">{{ invite.status }}</td>
                         <td class="border-b py-2 px-4">{{ invite.created_at|date:"d.m.y" }}</td>
                         <td class="border-b py-2 px-4">{{ invite.expires_at|date:"d.m.y" }}</td>
@@ -96,7 +96,7 @@
                             </button>
                         </td>
                         <td class="max-w-[50px] border-b py-2 px-4">
-                            <button class="text-teal-600 hover:underline invite" data-invite-id="{{ invite.pk }}">
+                            <button class="text-teal-600 hover:underline copy-invite" data-invite-id="{{ invite.pk }}" data-invite-link="{{ invite.link }}">
                                 <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M12.4525 7.73527L12.448 7.74157L6.02434 14.1658L7.94954 16.0903L14.3786 9.66156L12.4525 7.73527Z" fill="#0C0C0C"/>
                                     <path d="M2.82559 10.9668L4.75078 12.893L11.1753 6.46878L11.1816 6.46428L9.2546 4.53709L2.82559 10.9668Z" fill="#0C0C0C"/>

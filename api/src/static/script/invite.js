@@ -34,6 +34,7 @@ function getCookie(name) {
   return cookieValue;
 }
 
+// Удаление приглашения
 document.addEventListener('DOMContentLoaded', function() {
     const csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
     const csrfToken = csrfMetaTag ? csrfMetaTag.getAttribute('content') : null;
@@ -100,4 +101,29 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Произошла ошибка при удалении инвайта');
         });
     }
+});
+
+// Получить ссылку в буфер обмена
+document.addEventListener('DOMContentLoaded', function() {
+    const copyButtons = document.querySelectorAll('.copy-invite');
+
+    copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const inviteLink = this.getAttribute('data-invite-link');
+
+            if (inviteLink) {
+                navigator.clipboard.writeText(inviteLink)
+                    .then(() => {
+                        console.log("Link copied to clipboard:", inviteLink);
+                        alert("Ссылка скопирована в буфер обмена!");
+                    })
+                    .catch(error => {
+                        console.error("Ошибка при копировании:", error);
+                        alert("Не удалось скопировать ссылку.");
+                    });
+            } else {
+                console.error("Link not found in data-invite-link attribute.");
+            }
+        });
+    });
 });
