@@ -14,6 +14,7 @@ class InviteRepository(IInviteRepository, ABC):
 
     def _invite_orm_to_dto(self, model) -> InviteDTO:
         return InviteDTO(
+            pk=model.id,
             link=model.link,
             status=model.status,
             created_at=model.created_at,
