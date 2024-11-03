@@ -19,3 +19,7 @@ class IInviteRepository(abc.ABC):
     @abc.abstractmethod
     def delete(self, invite_id: int):
         pass
+
+    @abc.abstractmethod
+    def update_status(self, invite_id: int, status: str):
+        pass
