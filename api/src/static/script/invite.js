@@ -33,3 +33,71 @@ function getCookie(name) {
   }
   return cookieValue;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfMetaTag ? csrfMetaTag.getAttribute('content') : null;
+
+    if (!csrfToken) {
+        console.error("CSRF token not found in meta tag!");
+        alert("CSRF token missing, please check the meta tag.");
+        return;
+    }
+
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const confirmDeletePopup = document.getElementById('confirm-delete-popup');
+    const confirmDeleteButton = document.getElementById('confirm-delete');
+    const cancelDeleteButton = document.getElementById('cancel-delete');
+
+    let currentInviteId = null;
+    let currentDeleteButton = null;
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentInviteId = this.getAttribute('data-invite-id');
+            currentDeleteButton = this;
+            confirmDeletePopup.classList.remove('hidden');
+        });
+    });
+
+    confirmDeleteButton.addEventListener('click', function() {
+        if (currentInviteId) {
+            deleteInvite(currentInviteId, currentDeleteButton);
+        }
+        confirmDeletePopup.classList.add('hidden');
+    });
+
+    cancelDeleteButton.addEventListener('click', function() {
+        confirmDeletePopup.classList.add('hidden');
+        currentInviteId = null;
+        currentDeleteButton = null;
+    });
+
+    function deleteInvite(inviteId, buttonElement) {
+        console.log(`Attempting to delete invite with ID: ${inviteId}`);
+
+        fetch(`delete/${inviteId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            console.log(`Response status: ${response.status}`);
+            if (response.ok) {
+                console.log(`Invite with ID: ${inviteId} deleted successfully.`);
+                buttonElement.closest('tr').remove();
+            } else {
+                return response.text().then(text => {
+                    console.error(`Error response text: ${text}`);
+                    throw new Error('Ошибка при удалении инвайта');
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при удалении инвайта');
+        });
+    }
+});

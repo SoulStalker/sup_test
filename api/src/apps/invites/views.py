@@ -15,5 +15,13 @@ class InvitesView(BaseView):
             return JsonResponse({"message": "success"})
 
     def delete(self, *args, **kwargs):
-        invite = self.invite_service.delete(self.request.data["id"])
-        return JsonResponse({"invite": invite})
+        invite_id = kwargs.get("invite_id")
+        try:
+            self.invite_service.delete(invite_id)
+            return JsonResponse(
+                {"status": "success", "message": "Invite deleted"}
+            )
+        except Exception as e:
+            return JsonResponse(
+                {"status": "error", "message": str(e)}, status=404
+            )
