@@ -1,13 +1,20 @@
-function showTableStyle2() {
-    document.getElementById('table-style-1').classList.add('hidden');
-    document.getElementById('table-style-2').classList.remove('hidden');
-    document.getElementById('style2-button').classList.add('active-button');
-    document.getElementById('style1-button').classList.remove('active-button');
-    document.getElementById('style2-button').classList.remove('inactive-button');
-    document.getElementById('style1-button').classList.add('inactive-button');
-    document.querySelector('#style2-button svg').classList.add('fill-[#40454D]');
-    document.querySelector('#style1-button svg').classList.add('fill-[#FCFEFF]');
+// переключение на вторую таблицу
+function toggleTableStyle2() {
+    const tableStyle1 = document.getElementById('table-style-1');
+    const tableStyle2 = document.getElementById('table-style-2');
+    const style1Button = document.getElementById('style1-button');
+    const style2Button = document.getElementById('style2-button');
+
+    tableStyle1.classList.toggle('hidden');
+    tableStyle2.classList.toggle('hidden');
+    style1Button.classList.toggle('active-button');
+    style2Button.classList.toggle('active-button');
+    style1Button.classList.toggle('inactive-button');
+    style2Button.classList.toggle('inactive-button');
+    style2Button.querySelector('svg').classList.toggle('fill-[#40454D]');
+    style1Button.querySelector('svg').classList.toggle('fill-[#FCFEFF]');
 }
+
 // переключение на первую таблицу
 document.getElementById('style1-button').addEventListener('click', function() {
     document.getElementById('table-style-1').classList.remove('hidden');
@@ -305,12 +312,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const categoryModal = document.getElementById('modal-add-category');
     const categoryForm = document.getElementById('add-category-form');
     const categorySelect = document.getElementById('category');
-    const createMeetForm = document.getElementById('create-meet-form');
 
     // Открытие модального окна для добавления категории
     openCategoryModalButton.addEventListener('click', function (e) {
-        e.preventDefault(); // Предотвращаем отправку формы создания meet
-        e.stopPropagation(); // Останавливаем всплытие события
+        e.preventDefault();
         categoryModal.classList.remove('hidden');
     });
 
@@ -321,46 +326,46 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Обработка отправки формы добавления категории
-    addCategoryForm.addEventListener('submit', function(e) {
-    e.preventDefault();
+    categoryForm.addEventListener('submit', function(e) {
+        e.preventDefault();
 
-    const categoryName = document.getElementById('category-name').value;
-    const url = `${addCategoryForm.action}?category_name=${encodeURIComponent(categoryName)}`;
+        const categoryName = document.getElementById('category-name').value;
+        const url = categoryForm.action;
 
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const option = new Option(data.category_name, data.category_id);
-            categorySelect.add(option);
-            categorySelect.value = data.category_id;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                'category_name': categoryName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const option = new Option(data.category_name, data.category_id);
+                categorySelect.add(option);
+                categorySelect.value = data.category_id;
 
-            categoryModal.classList.add('hidden');
-            addCategoryForm.reset();
-        } else {
-            alert('Ошибка при добавлении категории: ' + (data.error || 'Неизвестная ошибка'));
-        }
-    })
-    .catch(error => {
-        console.error('Ошибка:', error);
-        alert('Произошла ошибка при отправке формы');
+                categoryModal.classList.add('hidden');
+                categoryForm.reset();
+            } else {
+                alert('Ошибка при добавлении категории: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при отправке формы');
+        });
     });
 });
 
-    // Предотвращаем всплытие событий с модального окна категории на форму создания meet
-    categoryModal.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
-});
+
 
 // Обработка поиска
 function handleSearch(event) {
     tableConfig.searchTerm = event.target.value.toLowerCase();
     tableConfig.currentPage = 1;
 }
-

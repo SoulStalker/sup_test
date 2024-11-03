@@ -1,6 +1,9 @@
 from pprint import pprint
 
 from django.contrib.auth.models import User
+
+from django.db.utils import IntegrityError
+
 from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
@@ -66,23 +69,29 @@ class CreateMeetView(BaseView):
     def post(self, request):
         form = CreateMeetForm(request.POST)
         if form.is_valid():
-            err = self.meet_service.create(
-                MeetDTO(
-                    category_id=form.cleaned_data["category"].id,
-                    title=form.cleaned_data["title"],
-                    start_time=form.cleaned_data["start_time"],
-                    author_id=request.user.id,
-                    responsible_id=form.cleaned_data["responsible"].id,
-                    participant_statuses=form.cleaned_data[
-                        "participant_statuses"
-                    ],
+            try:
+                err = self.meet_service.create(
+                    MeetDTO(
+                        category_id=form.cleaned_data["category"].id,
+                        title=form.cleaned_data["title"],
+                        start_time=form.cleaned_data["start_time"],
+                        author_id=request.user.id,
+                        responsible_id=form.cleaned_data["responsible"].id,
+                        participant_statuses=form.cleaned_data[
+                            "participant_statuses"
+                        ],
+                    )
                 )
-            )
-            if err:
+                if err:
+                    return JsonResponse(
+                        {"status": "error", "message": str(err)}, status=400
+                    )
+                return JsonResponse({"status": "success"}, status=201)
+            except IntegrityError:
                 return JsonResponse(
-                    {"status": "error", "message": str(err)}, status=400
+                    {"status": "error", "message": "Такой мит уже существует"},
+                    status=400,
                 )
-            return JsonResponse({"status": "success"}, status=201)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -109,28 +118,34 @@ class EditMeetView(BaseView):
         return JsonResponse(data)
 
     def post(self, request, *args, **kwargs):
-        meet_id = kwargs.get("meet_id")
-        form = CreateMeetForm(request.POST)
+        try:
+            meet_id = kwargs.get("meet_id")
+            form = CreateMeetForm(request.POST)
 
-        if form.is_valid():
-            self.meet_service.update(
-                meet_id=meet_id,
-                dto=MeetDTO(
-                    category_id=form.cleaned_data["category"].id,
-                    title=form.cleaned_data["title"],
-                    start_time=form.cleaned_data["start_time"],
-                    author_id=request.user.id,
-                    responsible_id=form.cleaned_data["responsible"].id,
-                    participant_statuses=form.cleaned_data[
-                        "participant_statuses"
-                    ],
-                ),
+            if form.is_valid():
+                self.meet_service.update(
+                    meet_id=meet_id,
+                    dto=MeetDTO(
+                        category_id=form.cleaned_data["category"].id,
+                        title=form.cleaned_data["title"],
+                        start_time=form.cleaned_data["start_time"],
+                        author_id=request.user.id,
+                        responsible_id=form.cleaned_data["responsible"].id,
+                        participant_statuses=form.cleaned_data[
+                            "participant_statuses"
+                        ],
+                    ),
+                )
+                return JsonResponse({"status": "success"}, status=201)
+
+            return JsonResponse(
+                {"status": "error", "errors": form.errors}, status=400
             )
-            return JsonResponse({"status": "success"}, status=201)
-
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        except IntegrityError:
+            return JsonResponse(
+                {"status": "error", "message": "Такой мит уже существует"},
+                status=400,
+            )
 
 
 class CategoryView(BaseView):
@@ -139,23 +154,31 @@ class CategoryView(BaseView):
         return JsonResponse({"categories": categories})
 
     def post(self, request, *args, **kwargs):
-        category_name = request.POST.get("category_name")
-        if category_name:
-            # Создаем новую категорию
-            # category = Category.objects.create(name=category_name)
-            category = self.category_service.create(category_name)
-            print(category)
+        try:
+            category_name = request.POST.get("category_name")
+            if category_name:
+                # Создаем новую категорию
+                category, err = self.category_service.create(category_name)
+                if err:
+                    return JsonResponse(
+                        {"status": "error", "error": str(err)}, status=400
+                    )
+                return JsonResponse(
+                    {
+                        "status": "success",
+                        "category_id": category.pk,
+                        "category_name": category.name,
+                    }
+                )
+            else:
+                return JsonResponse(
+                    {
+                        "status": "error",
+                        "error": "Название категории не может быть пустым.",
+                    }
+                )
+        except IntegrityError:
             return JsonResponse(
-                {
-                    "status": "success",
-                    "category_id": category.pk,
-                    "category_name": category.name,
-                }
-            )
-        else:
-            return JsonResponse(
-                {
-                    "status": "error",
-                    "error": "Название категории не может быть пустым.",
-                }
+                {"status": "error", "error": "Такая категория уже существует"},
+                status=400,
             )
