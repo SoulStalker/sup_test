@@ -4,6 +4,8 @@ from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
+from src.domain.project.service import ProjectService
+from src.apps.projects.repository import ProjectRepository
 
 
 class BaseView:
@@ -15,6 +17,7 @@ class BaseView:
     category_service = MeetCategoryService(CategoryRepository())
     meet_service = MeetService(MeetsRepository(), CategoryRepository())
     invite_service = InviteService(InviteRepository())
+    project_service = ProjectService(ProjectRepository())
     http_method_names = ["get", "post", "put", "patch", "delete"]
     # Определяем, требуется ли аутентификация
     login_required = True
