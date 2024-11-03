@@ -7,7 +7,7 @@ class InviteDTO:
     link: str
     status: str
     created_at: datetime
-    updated_at: datetime
+    expires_at: datetime
 
     def verify_data(self):
         pass

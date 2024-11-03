@@ -6,8 +6,8 @@ class InviteService:
     def __init__(self, repository: IInviteRepository):
         self.__repository = repository
 
-    def create(self, dto: InviteDTO):
-        self.__repository.create(dto)
+    def create(self):
+        self.__repository.create()
 
     def get_invites_list(self) -> list[InviteDTO]:
         return self.__repository.get_invites_list()

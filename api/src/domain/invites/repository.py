@@ -13,7 +13,7 @@ class IInviteRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def create(self, dto: InviteDTO) -> InviteDTO:
+    def create(self) -> InviteDTO:
         pass
 
     @abc.abstractmethod
