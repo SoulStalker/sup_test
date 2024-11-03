@@ -1,13 +1,13 @@
+// Создание приглашения
 const openModalButton = document.getElementById('open-modal');
 const url = openModalButton.getAttribute('data-url');
 
 openModalButton.addEventListener('click', () => {
-  // Send a POST request to the invite
   fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie('csrftoken')  // Добавлено для CSRF
+      'X-CSRFToken': getCookie('csrftoken')
     },
     body: JSON.stringify({
       // Добавьте необходимые данные, которые нужно отправить на сервер
