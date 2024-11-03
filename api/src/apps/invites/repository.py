@@ -31,7 +31,6 @@ class InviteRepository(IInviteRepository, ABC):
         ]
 
     def create(self) -> InviteDTO:
-        # Generate a random invite link
         invite_link = f"https://домен/registration/{secrets.token_urlsafe(16)}"
         created_at = timezone.now()
         expires_at = created_at + timedelta(days=7)
@@ -41,8 +40,8 @@ class InviteRepository(IInviteRepository, ABC):
             created_at=created_at,
             expires_at=expires_at,
         )
-
         model.save()
+
         return self._invite_orm_to_dto(model)
 
     def delete(self, invite_id: int):
