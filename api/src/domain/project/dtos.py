@@ -46,6 +46,7 @@ class StatusObject:
     def __repr__(self):
         return f"StatusObject(status='{self.status}')"
 
+@dataclass
 class FeaturesDTO:
     name: str
     description: str

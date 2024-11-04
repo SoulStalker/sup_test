@@ -2,7 +2,7 @@ from django.http import HttpResponseNotAllowed, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.domain.meet.service import MeetCategoryService, MeetService
-from src.domain.project.service import ProjectService, FeaturesService
+from src.domain.project.service import ProjectService, FeatureService
 from src.apps.projects.repository import ProjectRepository, FeaturesRepository
 
 
@@ -16,7 +16,7 @@ class BaseView:
 
 
     project_service = ProjectService(ProjectRepository())
-    Features_service = FeaturesService(FeaturesRepository())
+    features_service = FeatureService(FeaturesRepository())
 
 
     http_method_names = ["get", "post", "put", "patch", "delete"]

@@ -1,7 +1,7 @@
 from abc import ABC
 from src.domain.project.dtos import ProjectDTO, StatusObject, FeaturesDTO, FeaturesChoicesObject
 from src.domain.project.repository import IProjectRepository, IFeaturesRepository
-from src.models.projects import Project, Features
+from src.models.projects import Project, Features, Tags
 from django.db.models import Q
 
 class ProjectRepository(IProjectRepository, ABC):
@@ -102,5 +102,48 @@ class FeaturesRepository(IFeaturesRepository, ABC):
 
     model = Features
 
-    def get_Featuress_list(self) -> FeaturesDTO:
+    def get_features_list(self) -> FeaturesDTO:
         return Features.objects.all().order_by('id')
+
+    def get_features_tags_list(self) -> list:
+        return Tags.objects.filter(features_tags__in=self.get_features_list()).distinct()
+
+    def get_features_status_list(self) -> list:
+        return Features.objects.values_list('status', flat=True).distinct()
+
+    def get_feature_project_list(self) -> list:
+        return Features.objects.values('project__id', 'project__name').distinct()
+
+    def create_feature(self, dto: FeaturesDTO) -> FeaturesDTO:
+        # Создаем объект Features без тегов
+        feature = Features.objects.create(
+            name=dto.name,
+            importance=dto.importance,
+            description=dto.description,
+            responsible_id=dto.responsible_id,
+            project_id=dto.project_id,
+            status=dto.status
+        )
+
+        if dto.tags:
+            feature.tags.set(dto.tags)
+
+        if dto.participants:
+            feature.participants.set(dto.participants)
+
+        # Возвращаем созданный объект в виде FeaturesDTO без тегов
+        return FeaturesDTO(
+            name=feature.name,
+            importance=feature.importance,
+            description=feature.description,
+            tags=dto.tags,
+            participants=dto.participants,
+            responsible_id=feature.responsible_id,
+            project_id=feature.project_id,
+            status=feature.status
+        )
+
+    def get_feature_by_id(self, feature_id: int) -> FeaturesDTO:
+        return Features.objects.get(id=feature_id)
+
+

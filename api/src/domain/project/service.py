@@ -1,5 +1,5 @@
 from .repository import IProjectRepository, IFeaturesRepository
-from src.domain.project.entity import ProjectEntity
+from src.domain.project.entity import ProjectEntity, FeaturesEntity
 from .dtos import ProjectDTO, StatusObject, FeaturesChoicesObject, FeaturesDTO
 
 class ProjectService:
@@ -52,8 +52,38 @@ class ProjectService:
     def search_projects(self, query: str):
         return self.__project_repository.search_projects(query)
 
-class FeaturesService:
-    def __init__(self, Features_repository: IFeaturesRepository):
-        self.Features_repository = Features_repository
-    def get_Featuress_list(self) -> list[FeaturesDTO]:
-        return FeaturesChoicesObject.choices()
+class FeatureService:
+    def __init__(self, features_repository: IFeaturesRepository):
+        self.__features_repository = features_repository
+
+    def get_features_list(self) -> list[FeaturesDTO]:
+        return self.__features_repository.get_features_list()
+
+    def get_features_tags_list(self) -> list:
+        return self.__features_repository.get_features_tags_list()
+
+    def get_features_status_list(self) -> list:
+        return self.__features_repository.get_features_status_list()
+
+    def get_feature_project_list(self) -> list:
+        return self.__features_repository.get_feature_project_list()
+
+    def create_features(self, dto: FeaturesDTO):
+        feature = FeaturesEntity(
+            name=dto.name,
+            importance=dto.importance,
+            description=dto.description,
+            tags=dto.tags,
+            participants=dto.participants,
+            responsible_id=dto.responsible_id,
+            project_id=dto.project_id,
+            status=dto.status
+        )
+
+        err = feature.verify_data()
+        if err:
+            return err
+        return self.__features_repository.create_feature(feature)
+
+    def get_feature_by_id(self, feature_id: int) -> FeaturesDTO:
+        return self.__features_repository.get_feature_by_id(feature_id)

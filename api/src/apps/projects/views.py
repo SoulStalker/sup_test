@@ -6,7 +6,7 @@ from django.http import JsonResponse
 
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
-from src.apps.projects.forms import ProjectForm
+from src.apps.projects.forms import ProjectForm, CreateFeaturesForm
 from src.models.choice_classes import ProjectChoices, FeaturesChoices
 from src.domain.project.dtos import ProjectDTO, FeaturesDTO
 
@@ -192,8 +192,148 @@ class SearchProjectView(BaseView):
 
 
 class FeaturesView(BaseView):
+
+    items_per_page = 16
+
     def get(self, request, *args, **kwargs):
-        Featuress = self.Features_service.get_Featuress_list()
-        return render(request, "Featuress.html", {
-            "Featuress": Featuress
+        features = self.features_service.get_features_list()
+        tags = self.features_service.get_features_tags_list()
+        statuses = self.features_service.get_features_status_list()
+        projectes = self.features_service.get_feature_project_list()
+
+
+        return render(request, "features.html", {
+            "features": features,
+            "users": User.objects.order_by("id"),
+            "tags": tags,
+            "statuses": [str(status) for status in statuses],
+            "project": projectes
         })
+
+class CreateFeatureView(BaseView):
+    def get(self, request, *args, **kwargs):
+        form = CreateFeaturesForm(request.POST)
+        tags = self.features_service.get_features_tags_list()
+        statuses = self.features_service.get_features_status_list()
+        projectes = self.features_service.get_feature_project_list()
+
+
+        return render(
+            request,
+            "create_features_modal.html",
+            {
+                "form": form,
+                "users": User.objects.order_by("id"),
+                "tags": tags,
+                "statuses": [str(status) for status in statuses],
+                "project": projectes
+             },
+        )
+
+    def post(self, request, *args, **kwargs):
+        form = CreateFeaturesForm(request.POST)
+        if form.is_valid():
+            tags = request.POST.getlist('tags')
+            participants = request.POST.getlist('participants')
+            features_dto = (FeaturesDTO(
+                name=form.cleaned_data["name"],
+                description=form.cleaned_data["description"],
+                status=form.cleaned_data["status"],
+                responsible_id=form.cleaned_data["responsible"].id,
+                participants=list(participants),
+                importance=form.cleaned_data["importance"],
+                tags=list(tags),  # Передаем список ID тегов
+                project_id=form.cleaned_data["project"].id,
+            ))
+            try:
+                created_feature = self.features_service.create_features(features_dto)
+
+                # Возвращаем успешный ответ с данными о созданной функции
+                return JsonResponse({
+                    "status": "success",
+                    "feature": {
+                        "name": created_feature.name,
+                        "description": created_feature.description,
+                        "status": created_feature.status,
+                        "responsible_id": created_feature.responsible_id,
+                        "importance": created_feature.importance,
+                        "participants": list(participants),
+                        "tags": list(tags),
+                        "project_id": created_feature.project_id,
+                    }
+                }, status=201)
+
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+
+
+class EditFeatureView(BaseView):
+    def get(self, request, *args, **kwargs):
+        feature_id = kwargs.get("feature_id")
+        feature = self.features_service.get_feature_by_id(feature_id=feature_id)
+
+        # Преобразование QuerySet в список словарей
+        tags = list(feature.tags.values("id", "name"))  # Пример
+        statuses = list(self.features_service.get_features_status_list().values("id", "name"))  # Пример
+        projectes = list(self.features_service.get_feature_project_list().values("id", "name"))  # Пример
+
+        data = {
+            "name": feature.name,
+            "description": feature.description,
+            "status": feature.status,  # Возвращаем текущее значение статуса
+            "responsible": feature.responsible_id,
+            "importance": feature.importance,
+            "tags": tags,
+            "participants": list(feature.participants.values("id", "username")),
+            "date_created": feature.date_created.isoformat(),
+            "project": feature.project_id,  # Возвращаем текущее значение проекта
+            "projectes": projectes,  # Вся информация о проектах
+            "statuses": statuses  # Вся информация о статусах
+        }
+
+        return JsonResponse(data)
+
+
+    def post(self, request, *args, **kwargs):
+        feature_id = kwargs.get("feature_id")
+        form = CreateFeaturesForm(request.POST)
+        if form.is_valid():
+            tags = request.POST.getlist('tags')
+            participants = request.POST.getlist('participants')
+            features_dto = (FeaturesDTO(
+                name=form.cleaned_data["name"],
+                description=form.cleaned_data["description"],
+                status=form.cleaned_data["status"],
+                responsible_id=form.cleaned_data["responsible"].id,
+                participants=list(participants),
+                importance=form.cleaned_data["importance"],
+                tags=list(tags),  # Передаем список ID тегов
+                project_id=form.cleaned_data["project"].id,
+            ))
+            try:
+                created_feature = self.features_service.update_features(feature_id=feature_id, features_dto=features_dto)
+
+                # Возвращаем успешный ответ с данными о созданной функции
+                return JsonResponse({
+                    "status": "success",
+                    "feature": {
+                        "name": created_feature.name,
+                        "description": created_feature.description,
+                        "status": created_feature.status,
+                        "responsible_id": created_feature.responsible_id,
+                        "importance": created_feature.importance,
+                        "participants": list(participants),
+                        "tags": list(tags),
+                        "project_id": created_feature.project_id,
+                    }
+                }, status=201)
+
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+        return JsonResponse({
+            "status": "error",
+            "errors": form.errors
+                })

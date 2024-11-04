@@ -306,7 +306,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name="Features",
+            name="features",
             fields=[
                 (
                     "id",
@@ -368,7 +368,7 @@ class Migration(migrations.Migration):
                 (
                     "participants",
                     models.ManyToManyField(
-                        related_name="Features_participants",
+                        related_name="features_participants",
                         to=settings.AUTH_USER_MODEL,
                         verbose_name="Исполнители",
                     ),
@@ -377,7 +377,7 @@ class Migration(migrations.Migration):
                     "responsible",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="Features_responsibles",
+                        related_name="features_responsibles",
                         to=settings.AUTH_USER_MODEL,
                         verbose_name="Ответственный",
                     ),
@@ -387,7 +387,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         default=None,
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="Features_projects",
+                        related_name="features_projects",
                         to="models.project",
                         verbose_name="Проект",
                     ),
@@ -395,7 +395,7 @@ class Migration(migrations.Migration):
                 (
                     "tags",
                     models.ManyToManyField(
-                        related_name="Features_tags",
+                        related_name="features_tags",
                         to="models.tags",
                         verbose_name="Теги",
                     ),
@@ -469,10 +469,10 @@ class Migration(migrations.Migration):
                 ),
                 ("date_execution", models.DateField(verbose_name="Дата исполнения")),
                 (
-                    "Features",
+                    "features",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="task_Featuress",
+                        related_name="task_features",
                         to="models.features",
                         verbose_name="Фича",
                     ),

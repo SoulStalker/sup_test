@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -5,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Таблица пользователей</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="./css/add-style.css" rel="stylesheet">
-    <link href="./output.css" rel="stylesheet">
+    <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
+    <link href="{% static 'output.css' %}" rel="stylesheet">
 </head>
 <body class="bg-gray-100 h-screen flex">
 
@@ -34,13 +35,13 @@
             </a>
         </div>
     </div>
-
+{% block content %}
     <!-- Основной контент -->
     <div class="flex-1 flex flex-col">
 
         <!-- Верхняя панель -->
         <div class="flex justify-between items-center mb-4 p-6">
-            <h1 class="text-2xl font-bold">Таблица ссылок инвайта</h1>
+            <h1 class="text-2xl font-bold">Таблица фичи</h1>
         </div>
 
         <!-- Таблица -->
@@ -50,30 +51,33 @@
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
                     <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
-                        <option>Исполнители</option>
-                        <option>Исполнители</option>
-                        <option>Исполнители</option>
+                        <option>Пользователи</option>
+                        {% for item_user in users %}
+                            <option value="{{ item_user.id }}">{{ item_user.username }}</option>
+                        {% endfor %}
                     </select>
-
                     <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
                         <option>Теги</option>
-                        <option>Теги</option>
-                        <option>Теги</option>
+                        {% for item_tag in tags %}
+                            <option value="{{ item_tag.id }}">{{ item_tag.name }}</option>
+                        {% endfor %}
                     </select>
 
                     <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
                         <option>Статус</option>
-                        <option>Статус</option>
-                        <option>Статус</option>
+                        {% for item_status in statuses %}
+                            <option value="{{ item_status }}">{{ item_status }}</option>
+                        {% endfor %}
                     </select>
 
                     <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
                         <option>Проекты</option>
-                        <option>Проекты</option>
-                        <option>Проекты</option>
+                        {% for item_project in project %}
+                            <option value="{{ item_project.project__id }}">{{ item_project.project__name }}</option>
+                        {% endfor %}
                     </select>
 
-                    <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать Фитчу</button>
+                    <button id="open-modal-create" class="open-modal-btn bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать проект</button>
                 </div>
             </div>
 
@@ -82,35 +86,36 @@
                     <tr>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Название</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Исполнители</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Проект</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Дата создания</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Важность</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Статус</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Действие</th>
+                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Исполнители</th>
+                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Проект</th>
+                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Дата создания</th>
+                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Важность</th>
+                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Статус</th>
+                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Действие</th>
                     </tr>
                 </thead>
                 <tbody>
+                {% for item_features in features %}
                     <!-- Пример строки с данными -->
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-4 border-b">1</td>
+                    <tr class="hover:bg-gray-50" data-project-id="{{ item_features.project.id }}" data-status="{{ item_features.status }}">
+                        <td class="px-4 py-4 border-b">{{ item_features.id }}</td>
                         <td class="px-4 py-4 border-b items-center">
-                            <span class="tag font-medium text-sm">типы оборудования</span><br>
-                            Разработка таблицы грейдов по Python
+                            <span class="tag font-medium text-sm">{{ item_features.name }}</span><br>
+                            {{ item_features.description|truncatechars:50 }}
                         </td>
-                        <td class="px-4 py-4 border-b text-left">
+                        <td class="px-4 py-4 border-b text-center">
                             <div class="inline-flex -space-x-2">
-                                <img src="./images/icon-user-project.png" alt="" class="inline-block border border-white rounded-full w-6 h-6">
-                                <img src="./images/icon-user-project.png" alt="" class="inline-block border border-white rounded-full w-6 h-6">
-                                <img src="./images/icon-user-project.png" alt="" class="inline-block border border-white rounded-full w-6 h-6">
+                                {% for item_features_user in item_features.participants.all %}
+                                    <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}" alt="{{ item_features_user.username }}" class="inline-block border border-white rounded-full w-6 h-6">
+                                {% endfor %}
                             </div>
                         </td>
-                        <td class="px-4 py-4 border-b">СУП</td>
-                        <td class="px-4 py-4 border-b">13.12.2023</td>
-                        <td class="px-4 py-4 border-b text-center">123456</td>
-                        <td class="px-4 py-4 border-b text-center">Готово</td>
+                        <td class="px-4 py-4 text-center border-b">{{ item_features.project }}</td>
+                        <td class="px-4 py-4 text-center border-b">{{ item_features.date_created }}</td>
+                        <td class="px-4 py-4 border-b text-center">{{ item_features.importance }}</td>
+                        <td class="px-4 py-4 border-b text-center">{{ item_features.status }}</td>
                         <td class="px-4 py-4 border-b text-center">
-                            <button id="open-new-modal" type="button" class="text-red-600 hover:text-red-800">
+                            <button id="open-modal-edit" type="button" class="open-modal-btn text-red-600 hover:text-red-800" data-feature-id="{{ item_features.id }}">
                                 <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M15.4525 10.7353L15.448 10.7416L9.02434 17.1658L10.9495 19.0903L17.3786 12.6616L15.4525 10.7353Z" fill="#0C0C0C"/>
                                     <path d="M5.82559 13.9668L7.75078 15.893L14.1753 9.46878L14.1816 9.46428L12.2546 7.53709L5.82559 13.9668Z" fill="#0C0C0C"/>
@@ -120,107 +125,16 @@
                             </button>
                         </td>
                     </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-4 border-b">2</td>
-                        <td class="px-4 py-4 border-b items-center">
-                            <span class="tag font-medium text-sm">типы оборудования</span><br>
-                            Разработка таблицы грейдов по Python
-                        </td>
-                        <td class="px-4 py-4 border-b text-left">
-                            <div class="inline-flex -space-x-2">
-                                <img src="./images/icon-user-project.png" alt="" class="inline-block border border-white rounded-full w-6 h-6">
-                                <img src="./images/icon-user-project.png" alt="" class="inline-block border border-white rounded-full w-6 h-6">
-                                <img src="./images/icon-user-project.png" alt="" class="inline-block border border-white rounded-full w-6 h-6">
-                            </div>
-                        </td>
-                        <td class="px-4 py-4 border-b">СУП</td>
-                        <td class="px-4 py-4 border-b">13.12.2023</td>
-                        <td class="px-4 py-4 border-b text-center">123456</td>
-                        <td class="px-4 py-4 border-b text-center">Готово</td>
-                        <td class="px-4 py-4 border-b text-center">
-                            <button id="open-new-modal" type="button" class="text-red-600 hover:text-red-800">
-                                <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15.4525 10.7353L15.448 10.7416L9.02434 17.1658L10.9495 19.0903L17.3786 12.6616L15.4525 10.7353Z" fill="#0C0C0C"/>
-                                    <path d="M5.82559 13.9668L7.75078 15.893L14.1753 9.46878L14.1816 9.46428L12.2546 7.53709L5.82559 13.9668Z" fill="#0C0C0C"/>
-                                    <path d="M4.79594 15.4826L3.04625 20.7313C2.93824 21.0544 3.02285 21.4118 3.26406 21.6521C3.43507 21.824 3.66548 21.9167 3.90039 21.9167C3.9958 21.9167 4.0921 21.9014 4.18481 21.8699L9.43297 20.1201L4.79594 15.4826Z" fill="#0C0C0C"/>
-                                    <path d="M19.9401 4.97531C18.5279 3.5639 16.2292 3.5639 14.817 4.97531L13.5282 6.2643L18.6521 11.3888L19.941 10.0998C21.3532 8.68746 21.3532 6.38762 19.9401 4.97531Z" fill="#0C0C0C"/>
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
 
     </div>
 
-     <!-- Модальное окно для создания фитчи -->
-     <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
-            <h2 class="text-xl mb-4">Создать фичу</h2>
-            <form>
-                <div class="mb-4 flex">
-                    <div class="w-1/2">
-                        <label for="project-name" class="block text-sm font-medium text-gray-700">Название проекта</label>
-                        <input type="text" id="project-name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                    </div>
-                    <div class="w-1/2 pl-2 custom-select">
-                        <label for="project-participants" class="block text-sm font-medium text-gray-700">Участники*</label>
-                        <div id="select-container" class="select-selected">Выберите участников</div>
-                        <div id="select-items" class="select-items">
-                            <div data-value="team-lead">Тим лид</div>
-                            <div data-value="someone">Кто-то там</div>
-                            <div data-value="me">Я</div>
-                        </div>
-                        <select id="project-participants" multiple class="hidden">
-                            <option value="team-lead">Тим лид</option>
-                            <option value="someone">Кто-то там</option>
-                            <option value="me">Я</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="project-description" class="block text-sm font-medium text-gray-700">Описание фитчи</label>
-                    <textarea id="project-description" class="editor mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"></textarea>
-                </div>
-                <div class="mb-4 flex">
-                    <div class="w-1/3 pr-2">
-                        <label for="project-status" class="block text-sm font-medium text-gray-700">Теги*</label>
-                        <select id="project-status" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                            <option value="in-discussion">Теги</option>
-                            <option value="in-development">Теги</option>
-                            <option value="in-support">Теги</option>
-                            <option value="closed">Теги</option>
-                        </select>
-                    </div>
-                    <div class="w-1/3 pl-2">
-                        <label for="project-status" class="block text-sm font-medium text-gray-700">Исполнители*</label>
-                        <select id="project-status" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                            <option value="in-discussion">Исполнители</option>
-                            <option value="in-development">Исполнители</option>
-                            <option value="in-support">Исполнители</option>
-                            <option value="closed">Исполнители</option>
-                        </select>
-                    </div>
-                    <div class="w-1/3 pl-2">
-                        <label for="project-status" class="block text-sm font-medium text-gray-700">Важность*</label>
-                        <select id="project-status" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                            <option value="in-discussion">Новая</option>
-                            <option value="in-development">Ожидание</option>
-                            <option value="in-support">Готово</option>
-                            <option value="closed">В работе</option>
-                        </select>
-                    </div>
-                </div>
+    {% include 'create_features_modal.html' %}
 
-                <div class="flex justify-end space-x-2">
-                    <button id="delete-project" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
-                    <button id="close-modal" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-                    <button type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
     <!-- Модальное окно для просмотра фитчи -->
     <div id="new-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
@@ -284,9 +198,11 @@
             </div>
         </div>
     </div>
+{% endblock %}
 
 
-    <script src="./script/script.js"></script>
-
+    <script src="{% static 'script/features.js' %}"></script>
+    {% block extra_js %}
+    {% endblock %}
 </body>
 </html>
