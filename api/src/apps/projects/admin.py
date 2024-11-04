@@ -14,7 +14,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 @admin.register(Features)
-class FeaturesAdmin(admin.ModelAdmin):
+class featuresAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
 

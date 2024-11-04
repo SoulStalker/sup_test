@@ -42,5 +42,24 @@ class IProjectRepository(abc.ABC):
 
 class IFeaturesRepository(abc.ABC):
     @abc.abstractmethod
-    def get_Featuress_list(self) -> list[FeaturesDTO]:
+    def get_features_list(self) -> list[FeaturesDTO]:
+        pass
+
+    @abc.abstractmethod
+    def get_features_tags_list(self, feature_id: int) -> list[str]:
+        pass
+
+    @abc.abstractmethod
+    def get_features_status_list(self) -> list:
+        pass
+
+    @abc.abstractmethod
+    def get_feature_project_list(self) -> list:
+        pass
+
+    @abc.abstractmethod
+    def create_feature(self, dto: FeaturesDTO) -> FeaturesDTO:
+        pass
+
+    def get_feature_by_id(self, feature_id: int) -> FeaturesDTO:
         pass

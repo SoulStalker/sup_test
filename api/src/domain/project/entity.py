@@ -16,3 +16,18 @@ class ProjectEntity:
 
     def verify_data(self):
         return DataVerifier.verify_max_value(self.name, 100)
+
+
+@dataclass
+class FeaturesEntity:
+    name: str
+    description: str
+    importance: int
+    tags: list
+    participants: list
+    responsible_id: int
+    project_id: int
+    status: str
+
+    def verify_data(self):
+        return DataVerifier.verify_max_value(self.name, 100)

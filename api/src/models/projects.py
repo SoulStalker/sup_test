@@ -143,17 +143,17 @@ class Features(models.Model):
     )
     tags = models.ManyToManyField(
         to=Tags,
-        related_name="Features_tags",
+        related_name="features_tags",
         verbose_name="Теги",
     )
     participants = models.ManyToManyField(
         to=User,
-        related_name="Features_participants",
+        related_name="features_participants",
         verbose_name="Исполнители",
     )
     responsible = models.ForeignKey(
         to=User,
-        related_name="Features_responsibles",
+        related_name="features_responsibles",
         on_delete=models.CASCADE,
         verbose_name="Ответственный",
     )
@@ -165,13 +165,14 @@ class Features(models.Model):
     )
 
     date_created = models.DateTimeField(
-        default=None,
+        auto_now_add=True,
+        verbose_name="Дата создания",
         editable=False
     )
 
     project = models.ForeignKey(
         to=Project,
-        related_name="Features_projects",
+        related_name="features_projects",
         on_delete=models.CASCADE,
         verbose_name="Проект",
         default=None,
@@ -188,7 +189,7 @@ class Features(models.Model):
     def get_absolute_url(self):
         return redirect(
             reverse(
-                viewname="projects:detail_Features", kwargs={"slug": self.slug}
+                viewname="projects:detail_features", kwargs={"slug": self.slug}
             )
         )
 
@@ -238,9 +239,9 @@ class Task(models.Model):
         verbose_name="Статус",
     )
     date_execution = models.DateField(verbose_name="Дата исполнения")
-    Features = models.ForeignKey(
+    features = models.ForeignKey(
         to=Features,
-        related_name="task_Featuress",
+        related_name="task_features",
         on_delete=models.CASCADE,
         verbose_name="Фича",
     )

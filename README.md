@@ -25,7 +25,7 @@
                 - \_\_init\_\_.py
                 - admin.py
                 - apps.py
-                - Features.py
+                - features.py
                 - forms.py
                 - tags.py
                 - task.py
