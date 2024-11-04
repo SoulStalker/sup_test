@@ -24,7 +24,7 @@ class CustomUserForm(ModelForm):
         ]
 
 
-class ListUserForm(ModelForm):
+class CustomUserListForm(ModelForm):
     """Форма для просмотра списка пользователей."""
 
     role = forms.ModelChoiceField(

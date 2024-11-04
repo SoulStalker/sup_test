@@ -1,95 +1,83 @@
-from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ValidationError
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, TemplateView
-from src.apps.users.forms import CustomUserForm, ListUserForm
-from src.models.models import CustomUser, CustomUserList
-from src.validators.validators import ModelValidator
+from django.http import JsonResponse
+from src.apps.custom_view import BaseView
+from src.apps.users.forms import (  # CustomUserForm,; CustomUserListForm,; PermissionsForm,
+    RoleForm,
+)
+from src.domain.user.dtos import RoleDTO
 
 
-class UserLogin(TemplateView, CustomUserForm):
-    """Представление для авторизации пользователя."""
+class RoleListView(BaseView):
+    """Список ролей."""
 
-    template_name = "index.html"
-    success_url = reverse_lazy("login")
-    form_class = CustomUserForm
-    success_message = "Вы успешно вошли."
+    def get(self, *args, **kwargs):
+        roles = self.role_service.get_role_list()
+
+        return JsonResponse({"roles": [vars(role) for role in roles]})
 
 
-class ChangePasswordView(LoginRequiredMixin, TemplateView):
-    """Представление для изменения пароля пользователю."""
+class RoleDetailView(BaseView):
+    """Просмотр роли."""
 
-    template_name = "password.html"
-    success_url = reverse_lazy("user_list")
+    def get(self, *args, **kwargs):
+        role_id = kwargs.get("role_id")
+        role = self.role_service.get_role(role_id)
+
+        return JsonResponse(role)
+
+
+class RoleCreateView(BaseView):
+    """Создание роли."""
+
+    def post(self, request):
+        form = RoleForm(request.post)
+        if form.is_valid():
+            self.role_service.create(
+                RoleDTO(
+                    name=form.cleaned_data["name"],
+                    color=form.cleaned_data["color"],
+                )
+            )
+            return JsonResponse({"status": "success"}, status=201)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
+
+
+class RoleUpdateView(BaseView):
+    """Редактирование роли."""
 
     def post(self, request, *args, **kwargs):
-        old_password: str = request.POST.get("old_password")
-        new_password1: str = request.POST.get("new_password1")
-        new_password2: str = request.POST.get("new_password2")
+        role_id = kwargs.get("role_id")
+        form = RoleForm(request.POST)
 
-        user: CustomUser = request.user
-
-        if not user.check_password(old_password):
-            messages.error(request, "Неверный пароль")
-            return redirect("password")
-
-        if len(new_password1) < 8:
-            messages.error(
-                request, "Пароль должен содержать минимум 8 символов."
+        if form.is_valid():
+            self.role_service.update(
+                role_id=role_id,
+                dto=RoleDTO(
+                    name=form.cleaned_data["name"],
+                    color=form.cleaned_data["color"],
+                ),
             )
-            return redirect("password")
 
-        if new_password1 == old_password:
-            messages.error(
-                request, "Новый пароль не может совпадать с предыдущим."
+            return JsonResponse(
+                {"status": "success", "message": "Role updated"}, status=200
             )
-            return redirect("password")
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
-        if new_password1 != new_password2:
-            messages.error(request, "Пароли должны совпадать.")
-            return redirect("password")
 
+class RoleDeleteView(BaseView):
+    """Удаление роли."""
+
+    def delete(self, *args, **kwargs):
+        role_id = kwargs.get("role_id")
         try:
-            ModelValidator.validate_password(new_password1)
-        except ValidationError as e:
-            messages.error(request, e.message)
-            return redirect("password")
-
-        user.set_password(new_password1)
-        user.save()
-        update_session_auth_hash(request, user)
-        messages.success(request, "Пароль успешно изменен.")
-        return redirect("user_list")
-
-
-class SignUpView(CreateView):
-    """Представление для создания пользователя."""
-
-    template_name = "reg.html"
-    success_url = reverse_lazy("user_list")
-    form_class = CustomUserForm
-    success_message = "Профиль был успешно создан."
-
-
-class UserListView(ListView):
-    """Представление для просмотра списка пользователей с фильтрацией по ролям ."""
-
-    model = CustomUserList
-    paginate_by = 50
-    template_name = "UserTable.html"
-    context_object_name = "users"
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        role = self.request.GET.get("role")
-        if role:
-            queryset = queryset.filter(role=role)
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["filter-form"] = ListUserForm(self.request.GET)
-        return context
+            self.role_service.delete(role_id)
+            return JsonResponse(
+                {"status": "success", "message": "Role deleted"}, status=200
+            )
+        except Exception as err:
+            return JsonResponse(
+                {"status": "error", "message": str(err)}, status=404
+            )
