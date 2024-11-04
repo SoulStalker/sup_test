@@ -15,41 +15,6 @@ class PermissionAdmin(admin.ModelAdmin):
     search_fields = ("name", "code")
 
 
-# @admin.register(CustomUser)
-# class CustomUserAdmin(UserAdmin):
-#     list_display = (
-#         "name",
-#         "surname",
-#         "email",
-#         "tg_name",
-#         "tg_nickname",
-#         "google_meet_nickname",
-#         "gitlab_nickname",
-#         "github_nickname",
-#         "role",
-#         "is_active",
-#         "is_admin",
-#     )
-#     search_fields = ("name", "surname", "email", "tg_name", "tg_nickname")
-#     list_filter = ("role", "is_active", "is_admin")
-#     fieldsets = (
-#         (None, {"fields": ("name", "surname", "email", "password")}),
-#         ("Telegram", {"fields": ("tg_name", "tg_nickname")}),
-#         (
-#             "Nicknames",
-#             {
-#                 "fields": (
-#                     "google_meet_nickname",
-#                     "gitlab_nickname",
-#                     "github_nickname",
-#                 )
-#             },
-#         ),
-#         ("Avatar", {"fields": ("avatar",)}),
-#         ("Role and Status", {"fields": ("role", "is_active", "is_admin")}),
-#     )
-
-
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     list_display = (
