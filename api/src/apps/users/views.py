@@ -1,6 +1,11 @@
 from django.http import JsonResponse
 from src.apps.custom_view import BaseView
-from src.apps.users.forms import CustomUserForm, PermissionsForm, RoleForm
+from src.apps.users.forms import (
+    CustomUserForm,
+    PasswordChangeForm,
+    PermissionsForm,
+    RoleForm,
+)
 from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
 
 
@@ -264,6 +269,27 @@ class UserDeleteView(BaseView):
             return JsonResponse(
                 {"status": "success", "message": "User delete"}, status=200
             )
+        except Exception as err:
+            return JsonResponse(
+                {"status": "error", "message": str(err)}, status=404
+            )
+
+
+class UserPasswordChangeView(BaseView):
+    """Смена пароля пользователя."""
+
+    def post(self, request, *args, **kwargs):
+        user_id = kwargs.get("user_id")
+        try:
+            form = PasswordChangeForm(request.POST)
+            if form.is_valid():
+                self.user_service.change_password(
+                    user_id=user_id,
+                    dto=UserDTO(
+                        password=form.cleaned_data["password"],
+                    ),
+                )
+                return JsonResponse({"status": "success"}, status=200)
         except Exception as err:
             return JsonResponse(
                 {"status": "error", "message": str(err)}, status=404

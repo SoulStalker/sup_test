@@ -64,3 +64,8 @@ class UserService:
 
     def delete(self, user_id: int):
         self.__repository.delete(user_id)
+
+    def change_password(self, user_id: int, new_password: str):
+        user = self.__repository.get_user_by_id(user_id)
+        user.set_password(new_password)
+        user.save()

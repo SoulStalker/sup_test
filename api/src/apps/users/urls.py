@@ -7,18 +7,29 @@ from src.apps.users.views import (
     RoleUpdateView,
     UserCreateView,
     UserDeleteView,
+    UserDetailView,
     UserListView,
+    UserPasswordChangeView,
     UserUpdateView,
 )
 
 app_name = "apps.users"
 
 urlpatterns = [
-    path("create/", UserCreateView.as_view(), name="create_user"),
-    path("update/<int:pk>/", UserUpdateView.as_view(), name="update_user"),
+    path("users/create/", UserCreateView.as_view(), name="create_user"),
+    path(
+        "users/update/<int:pk>/", UserUpdateView.as_view(), name="update_user"
+    ),
     path("users/", UserListView.as_view(), name="users"),
-    path("delete/<int:pk>/", UserDeleteView.as_view(), name="delete_user"),
-    path("<int:pk>/", UserListView.as_view(), name="user_detail"),
+    path(
+        "users/delete/<int:pk>/", UserDeleteView.as_view(), name="delete_user"
+    ),
+    path("users/<int:pk>/", UserDetailView.as_view(), name="user_detail"),
+    path(
+        "users/password/<int:pk>/",
+        UserPasswordChangeView.as_view(),
+        name="update_password",
+    ),
     path("role/create/", RoleCreateView.as_view(), name="create_role"),
     path("role/update<int:pk>/", RoleUpdateView.as_view(), name="update_role"),
     path("roles/", RoleListView.as_view(), name="roles"),
