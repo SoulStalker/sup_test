@@ -1,6 +1,8 @@
+import os
 import secrets
 from abc import ABC
 from datetime import timedelta
+from pprint import pprint
 
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -32,7 +34,7 @@ class InviteRepository(IInviteRepository, ABC):
         ]
 
     def create(self) -> InviteDTO:
-        invite_link = f"https://домен/registration/{secrets.token_urlsafe(16)}"
+        invite_link = f"{os.getenv('FRONTEND_URL')}/registration/{secrets.token_urlsafe(16)}"
         created_at = timezone.now()
         expires_at = created_at + timedelta(days=7)
 
@@ -53,3 +55,5 @@ class InviteRepository(IInviteRepository, ABC):
         invite = get_object_or_404(Invite, pk=invite_id)
         invite.status = status
         invite.save()
+
+        pprint(invite.status)
