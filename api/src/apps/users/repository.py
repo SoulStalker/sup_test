@@ -7,8 +7,7 @@ from src.domain.user.repository import (
     IRoleRepository,
     IUserRepository,
 )
-
-from api.src.models.models import CustomUser, Permission, Role
+from src.models.models import CustomUser, Permission, Role
 
 
 class RoleRepository(IRoleRepository, ABC):
