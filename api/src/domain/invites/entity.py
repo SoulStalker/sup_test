@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from src.models.choice_classes import InviteChoices
+
 
 @dataclass
 class InviteEntity:
@@ -11,9 +13,13 @@ class InviteEntity:
     expires_at: datetime
 
     def expire_status(self):
-        if self.status == "ACTIVE" and self.expires_at < datetime.now():
-            self.status = "EXPIRED"
+        if (
+            self.status == InviteChoices.ACTIVE
+            and self.expires_at.replace(tzinfo=None) < datetime.now()
+        ):
+            self.status = InviteChoices.EXPIRED
         return self.status
 
     def use_invite(self):
-        self.status = "USED"
+        self.status = InviteChoices.USED
+        return self.status

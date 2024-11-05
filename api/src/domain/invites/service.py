@@ -1,4 +1,5 @@
 from src.domain.invites.dtos import InviteDTO
+from src.domain.invites.entity import InviteEntity
 from src.domain.invites.repository import IInviteRepository
 
 
@@ -18,5 +19,18 @@ class InviteService:
     def delete(self, pk):
         self.__repository.delete(pk)
 
-    def update_status(self, pk, status):
-        self.__repository.update_status(pk, status)
+    def update_status(self, dto: InviteDTO, status: str = "EXPIRED"):
+        invite = InviteEntity(
+            pk=dto.pk,
+            link=dto.link,
+            status=dto.status,
+            created_at=dto.created_at,
+            expires_at=dto.expires_at,
+        )
+        if status == "EXPIRED":
+            status = invite.expire_status()
+        elif status == "USED":
+            status = invite.use_invite()
+        else:
+            return "Invalid status"
+        self.__repository.update_status(invite.pk, status)
