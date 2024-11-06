@@ -1,3 +1,6 @@
+import secrets
+import string
+
 from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
 from src.domain.user.repository import (
     IPermissionRepository,
@@ -69,3 +72,13 @@ class UserService:
         user = self.__repository.get_user_by_id(user_id)
         user.set_password(new_password)
         user.save()
+
+    def generate_password(self) -> str:
+        return secrets.choice(string.ascii_letters + string.digits)
+
+    def create_user_with_generated_password(self, dto: UserDTO):
+        password = self.generate_password()
+        user = self.__repository.create(dto)
+        user.set_password(password)
+        user.save()
+        return user

@@ -191,30 +191,35 @@ class UserCreateView(BaseView):
     def post(self, request, *args, **kwargs):
         form = CustomUserForm(request.POST)
         if form.is_valid():
-            self.user_service.create(
-                UserDTO(
-                    username=form.cleaned_data["username"],
-                    password=form.cleaned_data["password"],
-                    email=form.cleaned_data["email"],
-                    role_id=form.cleaned_data["role"].id,
-                    permission_id=form.cleaned_data["permission"].id,
-                    is_active=form.cleaned_data["is_active"],
-                    is_staff=form.cleaned_data["is_staff"],
-                    is_superuser=form.cleaned_data["is_superuser"],
-                    is_admin=form.cleaned_data["is_admin"],
-                    name=form.cleaned_data["name"],
-                    surname=form.cleaned_data["surname"],
-                    tg_name=form.cleaned_data["tg_name"],
-                    tg_nickname=form.cleaned_data["tg_nickname"],
-                    google_meet_nickname=form.cleaned_data[
-                        "google_meet_nickname"
-                    ],
-                    gitlab_nickname=form.cleaned_data["gitlab_nickname"],
-                    github_nickname=form.cleaned_data["github_nickname"],
-                    avatar=form.cleaned_data["avatar"],
-                )
+            user_dto = UserDTO(
+                username=form.cleaned_data["username"],
+                password=form.cleaned_data["password"],
+                email=form.cleaned_data["email"],
+                role_id=form.cleaned_data["role"].id,
+                permission_id=form.cleaned_data["permission"].id,
+                is_active=form.cleaned_data["is_active"],
+                is_staff=form.cleaned_data["is_staff"],
+                is_superuser=form.cleaned_data["is_superuser"],
+                is_admin=form.cleaned_data["is_admin"],
+                name=form.cleaned_data["name"],
+                surname=form.cleaned_data["surname"],
+                tg_name=form.cleaned_data["tg_name"],
+                tg_nickname=form.cleaned_data["tg_nickname"],
+                google_meet_nickname=form.cleaned_data["google_meet_nickname"],
+                gitlab_nickname=form.cleaned_data["gitlab_nickname"],
+                github_nickname=form.cleaned_data["github_nickname"],
+                avatar=form.cleaned_data["avatar"],
             )
-            return JsonResponse({"status": "success"}, status=201)
+            generated_password = (
+                self.user_service.create_user_with_generated_password(user_dto)
+            )
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "generated_password": generated_password,
+                },
+                status=201,
+            )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )

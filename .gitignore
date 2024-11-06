@@ -5,6 +5,7 @@ idea/
 *.egg-info/
 .installed.cfg
 *.egg
+.ruff_cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
