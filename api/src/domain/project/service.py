@@ -87,3 +87,6 @@ class FeatureService:
 
     def get_feature_by_id(self, feature_id: int) -> FeaturesDTO:
         return self.__features_repository.get_feature_by_id(feature_id)
+
+    def update_features(self, feature_id: int, dto):
+        return self.__features_repository.update_features(feature_id, dto)

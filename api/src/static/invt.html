@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица пользователей</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="./css/add-style.css" rel="stylesheet">
+    <link href="./output.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 h-screen flex">
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="w-16 bg-gray-800 text-white flex flex-col items-center p-4 h-screen transition-all duration-300">
+        <button id="sidebar-toggle" class="mb-8 focus:outline-none">
+            <span class="text-xl">&#9776;</span>
+        </button>
+        <div class="space-y-6">
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">🏠</span>
+                <span class="hidden sidebar-text">Главная</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">📊</span>
+                <span class="hidden sidebar-text">Отчеты</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">⚙️</span>
+                <span class="hidden sidebar-text">Настройки</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">🧑‍💼</span>
+                <span class="hidden sidebar-text">Пользователи</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="flex-1 flex flex-col">
+
+        <!-- Верхняя панель -->
+        <div class="flex justify-between items-center mb-4 p-6">
+            <h1 class="text-2xl font-bold">Таблица ссылок инвайта</h1>
+        </div>
+
+        <!-- Таблица -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden m-2.5 w-1/2"> <!-- Добавлен внешний отступ -->
+            <div class="p-4 flex items-center">
+                <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
+                <div class="flex items-center ml-auto space-x-4">
+                    <!-- Выпадающий список для количества строк -->
+                    <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 select-width bg-green-custom text-white">
+                        <option>50</option>
+                        <option>25</option>
+                        <option>100</option>
+                    </select>
+
+                    <!-- Пагинация -->
+                    <div class="flex items-center space-x-2">
+                        <span class="text-green-custom">Пагинация</span>
+                        <button class="bg-green-custom text-white border border-gray-300 p-2 rounded-l hover:bg-green-dark">❮</button>
+                        <button class="bg-green-custom text-white border border-gray-300 p-2 rounded-r hover:bg-green-dark">❯</button>
+                    </div>
+
+                    <!-- Кнопка "Создать пользователя" -->
+                    <button class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать пользователя</button>
+                </div>
+            </div>
+
+            <table class="w-auto table-fixed">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Инвайт ссылка</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Статус</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Дата создания</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Дата окончания</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ДЕЙСТВИЯ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Пример строки с данными -->
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-4 border-b">1</td>
+                        <td class="px-4 py-4 border-b flex items-center">
+                            <a href="https://junovnet.gitbook.io/sup/tekhnicheskoe-zadanie..." class="truncate-link text-blue-600 hover:underline" id="link1">https://junovnet.gitbook.io/sup/tekhnicheskoe-zadanie...https://junovnet.gitbook.io/sup/tekhnicheskoe-zadanie...</a>
+                            <button onclick="copyLink('link1')" class="ml-2 text-blue-600 hover:text-blue-800">
+                                <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11.3948 1.66675H8.40168C8.17649 1.66614 7.95342 1.71319 7.74538 1.80519C7.53735 1.89719 7.34848 2.03231 7.18971 2.20273L6.78572 2.63261C6.72237 2.70421 6.67646 2.79131 6.65201 2.88627H9.10909C9.7101 2.89222 10.2843 3.15239 10.7058 3.60966C11.1272 4.06693 11.3615 4.68394 11.357 5.32529V11.4229H11.3948C11.6927 11.4171 11.9764 11.2855 12.1835 11.0569C12.3907 10.8282 12.5045 10.5213 12.4999 10.2033V2.88627C12.5045 2.5683 12.3907 2.26136 12.1835 2.03275C11.9764 1.80415 11.6927 1.67253 11.3948 1.66675Z" fill="#0C0C0C"/>
+                                    <path d="M5.64289 7.15454V4.10576C5.64364 4.0169 5.66317 3.92936 5.70003 3.84967C5.32194 3.93385 4.97515 4.13414 4.70234 4.42589L3.08581 6.15089C2.82815 6.42761 2.64721 6.77496 2.56296 7.15454H5.64289Z" fill="#0C0C0C"/>
+                                    <path d="M9.10909 3.80089H6.69829C6.75285 3.89216 6.78307 3.99756 6.78572 4.10577V7.15455C6.78572 7.47799 6.66531 7.78818 6.45099 8.01688C6.23667 8.24558 5.94598 8.37407 5.64289 8.37407H2.50011V12.6424C2.49553 13.0411 2.63931 13.4255 2.89993 13.7112C3.16054 13.997 3.51672 14.1608 3.89036 14.1667H9.10909C9.48278 14.1608 9.83901 13.997 10.0997 13.7113C10.3604 13.4255 10.5043 13.0411 10.4999 12.6424V5.32528C10.5043 4.92651 10.3604 4.54212 10.0997 4.25638C9.83901 3.97063 9.48278 3.80684 9.10909 3.80089Z" fill="#0C0C0C"/>
+                                </svg>
+                            </button>
+                        </td>
+                        <td class="px-4 py-4 border-b status-active">Активная</td>
+                        <td class="px-4 py-4 border-b">14.11.23</td>
+                        <td class="px-4 py-4 border-b">14.12.23</td>
+                        <td class="px-4 py-4 border-b text-center">
+                            <button class="text-red-600 hover:text-red-800">
+                                <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 7.12727H16V5.02201C16 4.46366 15.7893 3.92818 15.4142 3.53337C15.0391 3.13855 14.5304 2.91675 14 2.91675H10C9.46957 2.91675 8.96086 3.13855 8.58579 3.53337C8.21071 3.92818 8 4.46366 8 5.02201V7.12727H4C3.73478 7.12727 3.48043 7.23818 3.29289 7.43558C3.10536 7.63299 3 7.90073 3 8.17991C3 8.45908 3.10536 8.72682 3.29289 8.92423C3.48043 9.12164 3.73478 9.23254 4 9.23254H5V20.8115C5 21.3698 5.21071 21.9053 5.58579 22.3001C5.96086 22.6949 6.46957 22.9167 7 22.9167H17C17.5304 22.9167 18.0391 22.6949 18.4142 22.3001C18.7893 21.9053 19 21.3698 19 20.8115V9.23254H20C20.2652 9.23254 20.5196 9.12164 20.7071 8.92423C20.8946 8.72682 21 8.45908 21 8.17991C21 7.90073 20.8946 7.63299 20.7071 7.43558C20.5196 7.23818 20.2652 7.12727 20 7.12727ZM10 5.02201H14V7.12727H10V5.02201ZM11 18.7062C11 18.9854 10.8946 19.2531 10.7071 19.4505C10.5196 19.648 10.2652 19.7589 10 19.7589C9.73478 19.7589 9.48043 19.648 9.29289 19.4505C9.10536 19.2531 9 18.9854 9 18.7062V11.3378C9 11.0586 9.10536 10.7909 9.29289 10.5935C9.48043 10.3961 9.73478 10.2852 10 10.2852C10.2652 10.2852 10.5196 10.3961 10.7071 10.5935C10.8946 10.7909 11 11.0586 11 11.3378V18.7062ZM15 18.7062C15 18.9854 14.8946 19.2531 14.7071 19.4505C14.5196 19.648 14.2652 19.7589 14 19.7589C13.7348 19.7589 13.4804 19.648 13.2929 19.4505C13.1054 19.2531 13 18.9854 13 18.7062V11.3378C13 11.0586 13.1054 10.7909 13.2929 10.5935C13.4804 10.3961 13.7348 10.2852 14 10.2852C14.2652 10.2852 14.5196 10.3961 14.7071 10.5935C14.8946 10.7909 15 11.0586 15 11.3378V18.7062Z" fill="#0C0C0C"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- Добавьте дополнительные строки по аналогии -->
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-4 border-b">2</td>
+                        <td class="px-4 py-4 border-b flex items-center">
+                            <a href="https://example.com" class="truncate-link text-blue-600 hover:underline" id="link2">https://example.com</a>
+                            <button onclick="copyLink('link2')" class="ml-2 text-blue-600 hover:text-blue-800">
+                                <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.3948 1.66675H8.40168C8.17649 1.66614 7.95342 1.71319 7.74538 1.80519C7.53735 1.89719 7.34848 2.03231 7.18971 2.20273L6.78572 2.63261C6.72237 2.70421 6.67646 2.79131 6.65201 2.88627H9.10909C9.7101 2.89222 10.2843 3.15239 10.7058 3.60966C11.1272 4.06693 11.3615 4.68394 11.357 5.32529V11.4229H11.3948C11.6927 11.4171 11.9764 11.2855 12.1835 11.0569C12.3907 10.8282 12.5045 10.5213 12.4999 10.2033V2.88627C12.5045 2.5683 12.3907 2.26136 12.1835 2.03275C11.9764 1.80415 11.6927 1.67253 11.3948 1.66675Z" fill="#0C0C0C"/>
+                                <path d="M5.64289 7.15454V4.10576C5.64364 4.0169 5.66317 3.92936 5.70003 3.84967C5.32194 3.93385 4.97515 4.13414 4.70234 4.42589L3.08581 6.15089C2.82815 6.42761 2.64721 6.77496 2.56296 7.15454H5.64289Z" fill="#0C0C0C"/>
+                                <path d="M9.10909 3.80089H6.69829C6.75285 3.89216 6.78307 3.99756 6.78572 4.10577V7.15455C6.78572 7.47799 6.66531 7.78818 6.45099 8.01688C6.23667 8.24558 5.94598 8.37407 5.64289 8.37407H2.50011V12.6424C2.49553 13.0411 2.63931 13.4255 2.89993 13.7112C3.16054 13.997 3.51672 14.1608 3.89036 14.1667H9.10909C9.48278 14.1608 9.83901 13.997 10.0997 13.7113C10.3604 13.4255 10.5043 13.0411 10.4999 12.6424V5.32528C10.5043 4.92651 10.3604 4.54212 10.0997 4.25638C9.83901 3.97063 9.48278 3.80684 9.10909 3.80089Z" fill="#0C0C0C"/>
+                                </svg>
+                            </button>
+                        </td>
+                        <td class="px-4 py-4 border-b status-expired">Истек</td>
+                        <td class="px-4 py-4 border-b">01.01.23</td>
+                        <td class="px-4 py-4 border-b">01.08.23</td>
+                        <td class="px-4 py-4 border-b text-center">
+                            <button class="text-red-600 hover:text-red-800">
+                                <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 7.12727H16V5.02201C16 4.46366 15.7893 3.92818 15.4142 3.53337C15.0391 3.13855 14.5304 2.91675 14 2.91675H10C9.46957 2.91675 8.96086 3.13855 8.58579 3.53337C8.21071 3.92818 8 4.46366 8 5.02201V7.12727H4C3.73478 7.12727 3.48043 7.23818 3.29289 7.43558C3.10536 7.63299 3 7.90073 3 8.17991C3 8.45908 3.10536 8.72682 3.29289 8.92423C3.48043 9.12164 3.73478 9.23254 4 9.23254H5V20.8115C5 21.3698 5.21071 21.9053 5.58579 22.3001C5.96086 22.6949 6.46957 22.9167 7 22.9167H17C17.5304 22.9167 18.0391 22.6949 18.4142 22.3001C18.7893 21.9053 19 21.3698 19 20.8115V9.23254H20C20.2652 9.23254 20.5196 9.12164 20.7071 8.92423C20.8946 8.72682 21 8.45908 21 8.17991C21 7.90073 20.8946 7.63299 20.7071 7.43558C20.5196 7.23818 20.2652 7.12727 20 7.12727ZM10 5.02201H14V7.12727H10V5.02201ZM11 18.7062C11 18.9854 10.8946 19.2531 10.7071 19.4505C10.5196 19.648 10.2652 19.7589 10 19.7589C9.73478 19.7589 9.48043 19.648 9.29289 19.4505C9.10536 19.2531 9 18.9854 9 18.7062V11.3378C9 11.0586 9.10536 10.7909 9.29289 10.5935C9.48043 10.3961 9.73478 10.2852 10 10.2852C10.2652 10.2852 10.5196 10.3961 10.7071 10.5935C10.8946 10.7909 11 11.0586 11 11.3378V18.7062ZM15 18.7062C15 18.9854 14.8946 19.2531 14.7071 19.4505C14.5196 19.648 14.2652 19.7589 14 19.7589C13.7348 19.7589 13.4804 19.648 13.2929 19.4505C13.1054 19.2531 13 18.9854 13 18.7062V11.3378C13 11.0586 13.1054 10.7909 13.2929 10.5935C13.4804 10.3961 13.7348 10.2852 14 10.2852C14.2652 10.2852 14.5196 10.3961 14.7071 10.5935C14.8946 10.7909 15 11.0586 15 11.3378V18.7062Z" fill="#0C0C0C"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+    <script src="./script/script.js"></script>
+    <script>
+        function copyLink(linkId) {
+            const linkText = document.getElementById(linkId).href;
+            navigator.clipboard.writeText(linkText).then(() => {
+                showModal("Ссылка скопирована!");
+            }).catch(err => {
+                showModal("Ошибка при копировании. Пожалуйста, попробуйте снова.");
+                console.error("Ошибка при копировании: ", err);
+            });
+        }
+
+        function showModal(message) {
+            document.getElementById("modal-text").textContent = message;
+            document.getElementById("confirmation-modal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("confirmation-modal").classList.add("hidden");
+        }
+    </script>
+
+    <!-- Модальное окно подтверждения -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
+            <div class="flex justify-between">
+                <h2 id="modal-text" class="text-lg mb-4"></h2>
+                <button onclick="closeModal()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">ОК</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

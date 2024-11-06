@@ -1,16 +1,12 @@
 from django.contrib import admin
 
-from src.models.projects import Features, Project, Tags, Task
+from src.models.projects import Features, Project, Tags
 
 
 @admin.register(Tags)
 class TagsAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
-
-@admin.register(Task)
-class TaskAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("name",)}
 
 
 @admin.register(Features)

@@ -243,7 +243,7 @@ class CreateFeatureView(BaseView):
                 participants=list(participants),
                 importance=form.cleaned_data["importance"],
                 tags=list(tags),  # Передаем список ID тегов
-                project_id=form.cleaned_data["project"].id,
+                project_id=form.cleaned_data["project"].id
             ))
             try:
                 created_feature = self.features_service.create_features(features_dto)
@@ -274,23 +274,15 @@ class EditFeatureView(BaseView):
         feature_id = kwargs.get("feature_id")
         feature = self.features_service.get_feature_by_id(feature_id=feature_id)
 
-        # Преобразование QuerySet в список словарей
-        tags = list(feature.tags.values("id", "name"))  # Пример
-        statuses = list(self.features_service.get_features_status_list().values("id", "name"))  # Пример
-        projectes = list(self.features_service.get_feature_project_list().values("id", "name"))  # Пример
-
         data = {
             "name": feature.name,
             "description": feature.description,
-            "status": feature.status,  # Возвращаем текущее значение статуса
+            "status": feature.status,
             "responsible": feature.responsible_id,
             "importance": feature.importance,
-            "tags": tags,
-            "participants": list(feature.participants.values("id", "username")),
-            "date_created": feature.date_created.isoformat(),
-            "project": feature.project_id,  # Возвращаем текущее значение проекта
-            "projectes": projectes,  # Вся информация о проектах
-            "statuses": statuses  # Вся информация о статусах
+            "tags": feature.tags,
+            "participants": feature.participants,
+            "project": feature.project_id,
         }
 
         return JsonResponse(data)
@@ -299,41 +291,48 @@ class EditFeatureView(BaseView):
     def post(self, request, *args, **kwargs):
         feature_id = kwargs.get("feature_id")
         form = CreateFeaturesForm(request.POST)
+
         if form.is_valid():
+            # Получаем данные из формы
             tags = request.POST.getlist('tags')
             participants = request.POST.getlist('participants')
-            features_dto = (FeaturesDTO(
+
+            # Создаем объект DTO для фичи
+            features_dto = FeaturesDTO(
                 name=form.cleaned_data["name"],
                 description=form.cleaned_data["description"],
                 status=form.cleaned_data["status"],
                 responsible_id=form.cleaned_data["responsible"].id,
-                participants=list(participants),
+                participants=list(participants),  # Убедитесь, что передаете ID участников
                 importance=form.cleaned_data["importance"],
-                tags=list(tags),  # Передаем список ID тегов
+                tags=list(tags),  # Убедитесь, что передаете ID тегов
                 project_id=form.cleaned_data["project"].id,
-            ))
-            try:
-                created_feature = self.features_service.update_features(feature_id=feature_id, features_dto=features_dto)
+            )
 
-                # Возвращаем успешный ответ с данными о созданной функции
+            try:
+                updated_feature = self.features_service.update_features(feature_id=feature_id, dto=features_dto)
                 return JsonResponse({
                     "status": "success",
                     "feature": {
-                        "name": created_feature.name,
-                        "description": created_feature.description,
-                        "status": created_feature.status,
-                        "responsible_id": created_feature.responsible_id,
-                        "importance": created_feature.importance,
-                        "participants": list(participants),
-                        "tags": list(tags),
-                        "project_id": created_feature.project_id,
+                        "name": updated_feature.name,
+                        "description": updated_feature.description,
+                        "status": updated_feature.status,
+                        "responsible_id": updated_feature.responsible_id,
+                        "importance": updated_feature.importance,
+                        "participants": updated_feature.participants,
+                        "tags": updated_feature.tags,
+                        "project_id": updated_feature.project_id,
                     }
-                }, status=201)
+                }, status=200)  # Статус 200 для успешного обновления
 
             except Exception as e:
+                print(f"Ошибка при обновлении фичи: {e}")
                 return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
-        return JsonResponse({
-            "status": "error",
-            "errors": form.errors
-                })
+        else:
+            print(f"Ошибки формы: {form.errors}")
+            return JsonResponse({
+                "status": "error",
+                "errors": form.errors
+            }, status=400)
+
