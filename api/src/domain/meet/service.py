@@ -1,13 +1,29 @@
 from src.domain.meet.dtos import CategoryObject, MeetDTO
-from src.domain.meet.repository import IMeetRepository, ICategoryRepository
+from src.domain.meet.entity import CategoryEntity, MeetEntity
+from src.domain.meet.repository import ICategoryRepository, IMeetRepository
 
 
 class MeetService:
-    def __init__(self, repository: IMeetRepository, category_repository: ICategoryRepository):
+    def __init__(
+        self,
+        repository: IMeetRepository,
+        category_repository: ICategoryRepository,
+    ):
         self.__repository = repository
         self.__category_repository = category_repository
 
-    def create(self, dto):
+    def create(self, dto: MeetDTO):
+        meet = MeetEntity(
+            dto.category_id,
+            dto.title,
+            dto.start_time,
+            dto.author_id,
+            dto.responsible_id,
+            dto.participant_statuses,
+        )
+        err = meet.verify_data()
+        if err:
+            return err
         self.__repository.create(dto)
 
     def update(self, meet_id, dto):
@@ -26,7 +42,9 @@ class MeetService:
         return self.__repository.get_meets_by_category(dto)
 
     def set_participants_statuses(self, participant_statuses, meet_id: int):
-        return self.__repository.set_participant_statuses(participant_statuses, meet_id)
+        return self.__repository.set_participant_statuses(
+            participant_statuses, meet_id
+        )
 
     def get_participants_statuses(self, meet_id: int):
         return self.__repository.get_participants_statuses(meet_id)
@@ -37,7 +55,12 @@ class MeetCategoryService:
         self.__repository = repository
 
     def create(self, category_name):
-        return self.__repository.create(category_name)
+        category = CategoryEntity(name=category_name)
+        err = category.verify_data()
+        if err:
+            return None, err
+        result = self.__repository.create(category_name)
+        return result, None
 
     def update(self, pk):
         self.__repository.update(pk)

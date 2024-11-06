@@ -275,3 +275,22 @@ a {
 .hidden {
     display: none;
 }
+
+.error {
+    border-color: red;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+.general-error, .network-error {
+    color: red;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid red;
+    border-radius: 4px;
+    background-color: rgba(255, 0, 0, 0.1);
+}
