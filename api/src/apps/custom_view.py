@@ -1,3 +1,4 @@
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse, HttpResponseNotAllowed
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.apps.users.repository import (
@@ -24,15 +25,41 @@ class BaseView:
     http_method_names = ["get", "post", "put", "patch", "delete"]
     # Определяем, требуется ли аутентификация
     login_required = True
+    # Параметры пагинации по умолчанию
+    items_per_page = 10
+    page_param = "page"
 
     def __init__(self, request, *args, **kwargs):
         self.request = request
         self.args = args
         self.kwargs = kwargs
 
+    def paginate_queryset(self, queryset):
+        """
+        Метод для пагинации queryset
+        """
+        paginator = Paginator(queryset, self.items_per_page)
+        page = self.request.GET.get(self.page_param, 1)
+
+        try:
+            paginated_items = paginator.page(page)
+        except PageNotAnInteger:
+            paginated_items = paginator.page(1)
+        except EmptyPage:
+            paginated_items = paginator.page(paginator.num_pages)
+
+        return {
+            "items": paginated_items,
+            "paginator": paginator,
+            "current_page": paginated_items.number,
+            "total_pages": paginator.num_pages,
+            "has_next": paginated_items.has_next(),
+            "has_previous": paginated_items.has_previous(),
+            "page_range": paginator.page_range,
+        }
+
     @classmethod
     def as_view(cls):
-        # Создаем метод as_view для интеграции с Django
         def view(request, *args, **kwargs):
             self = cls(request, *args, **kwargs)
             return self.dispatch()
@@ -40,12 +67,9 @@ class BaseView:
         return view
 
     def dispatch(self):
-        # Проверка авторизации
         if self.login_required and not self.request.user.is_authenticated:
-            # todo add redirect to login page
             return HttpResponse("Залогинься")
 
-        # Определяет возможность использования передаваемого метода
         method = getattr(self, self.request.method.lower(), None)
         if not method or not callable(method):
             return HttpResponseNotAllowed(self._get_allowed_methods())
@@ -53,5 +77,4 @@ class BaseView:
         return method(self.request, *self.args, **self.kwargs)
 
     def _get_allowed_methods(self):
-        # Получение доступных методов
         return [m.upper() for m in self.http_method_names if hasattr(self, m)]

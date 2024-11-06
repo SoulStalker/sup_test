@@ -7,12 +7,12 @@ class CategoryObject:
     ValueObject: Категория мита
     """
 
+    pk: int
+    name: str
+
     def __init__(self, pk: int, name: str):
         self.pk = pk
         self.name = name
-
-    pk: int
-    name: str
 
 
 @dataclass
@@ -29,6 +29,7 @@ class StatusObject:
     """
     ValueObject: Статусы участников мита
     """
+
     PRESENT = "PRESENT"
     ABSENT = "ABSENT"
     WARNED = "WARNED"
@@ -36,14 +37,10 @@ class StatusObject:
     _descriptions = {
         PRESENT: "Присутствует",
         ABSENT: "Отсутствует",
-        WARNED: "Предупредил"
+        WARNED: "Предупредил",
     }
 
-    _colors = {
-        PRESENT: "green",
-        ABSENT: "red",
-        WARNED: "yellow"
-    }
+    _colors = {PRESENT: "green", ABSENT: "red", WARNED: "yellow"}
 
     def __init__(self, status: str):
         if status not in [self.PRESENT, self.ABSENT, self.WARNED]:

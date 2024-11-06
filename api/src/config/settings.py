@@ -3,10 +3,11 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
+load_dotenv()
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
@@ -24,10 +25,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "src.models",
     "src.apps.meets",
     "src.apps.projects",
-    "src.apps.users",
+    "src.apps.invites",
+    "src.models",
 ]
 
 MIDDLEWARE = [

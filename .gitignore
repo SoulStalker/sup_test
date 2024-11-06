@@ -128,9 +128,10 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+infrasructure/.env
 .venv
 env/
+.env
 venv/
 ENV/
 env.bak/
@@ -161,4 +162,4 @@ dmypy.json
 cython_debug/
 api/.env
 api/src/db.sqlite3
-.idea/
+*~
