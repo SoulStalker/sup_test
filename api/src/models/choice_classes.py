@@ -36,3 +36,9 @@ class TaskChoices(models.TextChoices):
     TESTING = "Тестирование", "Тестирование"
     SUCCESS = "Готов", "Готов"
     BACKLOG = "Бэклог", "Бэклог"
+
+
+class InviteChoices(models.TextChoices):
+    ACTIVE = "Активна", "Активна"
+    USED = "Использована", "Использована"
+    EXPIRED = "Срок истёк", "Срок истёк"
