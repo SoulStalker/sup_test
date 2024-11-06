@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
 
 from ..domain.validators.validators import ModelValidator
 from .choice_classes import MeetStatusChoice
@@ -45,6 +46,9 @@ class Meet(models.Model):
         unique=True,
         verbose_name="Название",
         validators=[ModelValidator.validate_letters_space_only()],
+    )
+    start_time = models.DateTimeField(
+        default=timezone.now, verbose_name="Дата"
     )
     author = models.ForeignKey(
         User,
