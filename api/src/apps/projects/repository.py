@@ -106,13 +106,13 @@ class FeaturesRepository(IFeaturesRepository, ABC):
         return Features.objects.all().order_by('id')
 
     def get_features_tags_list(self) -> list:
-        return Tags.objects.filter(features_tags__in=self.get_features_list()).distinct()
+        return Tags.objects.all().order_by('id')
 
-    def get_features_status_list(self) -> list:
-        return Features.objects.values_list('status', flat=True).distinct()
+    def get_features_status_list(self):
+        return FeaturesChoicesObject.get_valid_statuses()
 
     def get_feature_project_list(self) -> list:
-        return Features.objects.values('project__id', 'project__name').distinct()
+        return Project.objects.all().order_by('id')
 
     def create_feature(self, dto: FeaturesDTO) -> FeaturesDTO:
         # Создаем объект Features без тегов
@@ -144,6 +144,47 @@ class FeaturesRepository(IFeaturesRepository, ABC):
         )
 
     def get_feature_by_id(self, feature_id: int) -> FeaturesDTO:
-        return Features.objects.get(id=feature_id)
+        feature = Features.objects.get(id=feature_id)  # может быть исключение
+        return FeaturesDTO(
+            name=feature.name,
+            importance=feature.importance,
+            description=feature.description,
+            tags=[tag.id for tag in feature.tags.all()],  # Преобразуем теги в список ID
+            participants=[participant.id for participant in feature.participants.all()],
+            responsible_id=feature.responsible_id,
+            project_id=feature.project_id,
+            status=feature.status
+        )
+
+    def update_feature(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+        try:
+            feature = Features.objects.get(id=feature_id)
+        except Features.DoesNotExist:
+            raise ValueError(f"Feature with ID {feature_id} not found")
+
+        feature.name = dto.name
+        feature.importance = dto.importance
+        feature.description = dto.description
+        feature.responsible_id = dto.responsible_id
+        feature.project_id = dto.project_id
+        feature.status = dto.status
+        feature.save()
+
+        if dto.tags:
+            feature.tags.set(dto.tags)  # Передаем список ID тегов
+
+        if dto.participants:
+            feature.participants.set(dto.participants)  # Передаем список ID участников
+
+        return FeaturesDTO(
+            name=feature.name,
+            importance=feature.importance,
+            description=feature.description,
+            tags=dto.tags,
+            participants=dto.participants,
+            responsible_id=feature.responsible_id,
+            project_id=feature.project_id,
+            status=feature.status
+        )
 
 

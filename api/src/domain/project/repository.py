@@ -63,3 +63,6 @@ class IFeaturesRepository(abc.ABC):
 
     def get_feature_by_id(self, feature_id: int) -> FeaturesDTO:
         pass
+
+    def update_features(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+        pass

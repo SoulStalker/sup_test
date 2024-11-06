@@ -131,10 +131,13 @@ a {
     margin-right: 8px;
 }
 .truncate-link {
+    display: inline-block;
+    max-width: 400px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
+    vertical-align: middle;
+}
 
 .hidden-menu {
     display: none;
@@ -319,4 +322,18 @@ a {
     border-radius: 4px;
     padding: 5px;
     gap: 10px;
+}
+
+
+.project-table {
+    overflow: auto;
+    max-height: calc(100vh - (0.625rem*2) - 138px);
+}
+.fitch-table, .user-table{
+    overflow: auto;
+    max-height: calc(100vh - (0.625rem*2) - 154px);
+}
+.meets-table{
+    overflow: auto;
+    max-height: calc(100vh - (1.5rem*5) - 136px);
 }

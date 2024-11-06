@@ -2,7 +2,7 @@
      <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
         <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
             <h2 class="text-xl mb-4">Создать фичу</h2>
-            <form id="create-project-form" method="POST" enctype="multipart/form-data">
+            <form id="create-project-form" method="POST" action="{% url 'projects:create_features' %}" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="mb-4 flex">
                     <div class="w-1/2">
@@ -25,7 +25,7 @@
                 <div class="mb-4 flex">
                     <div class="w-1/3 pr-2">
                         <label for="project-tags" class="block text-sm font-medium text-gray-700">Теги*</label>
-                        <select id="project-tags" name="tags" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <select id="project-tags" name="tags" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" multiple>
                             {% for item_tags in tags %}
                                 <option value="{{ item_tags.id }}">{{ item_tags.name }}</option>
                             {% endfor %}
@@ -63,8 +63,9 @@
                     <div class="w-1/3 pl-2">
                         <label for="project-project" class="block text-sm font-medium text-gray-700">Проект*</label>
                         <select id="project-project" name="project" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                            <option>Выберите проект</option>
                             {% for item_project in project %}
-                                <option value="{{ item_project.project__id }}">{{ item_project.project__name }}</option>
+                                <option value="{{ item_project.id }}">{{ item_project.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -78,3 +79,4 @@
             </form>
         </div>
     </div>
+

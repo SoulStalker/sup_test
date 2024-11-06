@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таблица пользователей</title>
+    <title>Таблица фичей</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
     <link href="{% static 'output.css' %}" rel="stylesheet">
@@ -73,61 +73,63 @@
                     <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
                         <option>Проекты</option>
                         {% for item_project in project %}
-                            <option value="{{ item_project.project__id }}">{{ item_project.project__name }}</option>
+                            <option value="{{ item_project.project__id }}">{{ item_project.name }}</option>
                         {% endfor %}
                     </select>
 
                     <button id="open-modal-create" class="open-modal-btn bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать проект</button>
                 </div>
             </div>
+            <div class="fitch-table">
+                <table class="w-full">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
+                            <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Название</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Исполнители</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Проект</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Дата создания</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Важность</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Статус</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item_features in features %}
+                        <!-- Пример строки с данными -->
+                        <tr class="hover:bg-gray-50" data-project-id="{{ item_features.project.id }}" data-status="{{ item_features.status }}">
+                            <td class="px-4 py-4 border-b">{{ item_features.id }}</td>
+                            <td class="px-4 py-4 border-b items-center">
+                                <span class="tag font-medium text-sm">{{ item_features.name }}</span><br>
+                                {{ item_features.description|truncatechars:50 }}
+                            </td>
+                            <td class="px-4 py-4 border-b text-center">
+                                <div class="inline-flex -space-x-2">
+                                    {% for item_features_user in item_features.participants.all %}
+                                        <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}" alt="{{ item_features_user.username }}" class="inline-block border border-white rounded-full w-6 h-6">
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 text-center border-b">{{ item_features.project }}</td>
+                            <td class="px-4 py-4 text-center border-b">{{ item_features.date_created }}</td>
+                            <td class="px-4 py-4 border-b text-center">{{ item_features.importance }}</td>
+                            <td class="px-4 py-4 border-b text-center">{{ item_features.status }}</td>
+                            <td class="px-4 py-4 border-b text-center">
 
-            <table class="w-full">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Название</th>
-                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Исполнители</th>
-                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Проект</th>
-                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Дата создания</th>
-                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Важность</th>
-                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Статус</th>
-                        <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Действие</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for item_features in features %}
-                    <!-- Пример строки с данными -->
-                    <tr class="hover:bg-gray-50" data-project-id="{{ item_features.project.id }}" data-status="{{ item_features.status }}">
-                        <td class="px-4 py-4 border-b">{{ item_features.id }}</td>
-                        <td class="px-4 py-4 border-b items-center">
-                            <span class="tag font-medium text-sm">{{ item_features.name }}</span><br>
-                            {{ item_features.description|truncatechars:50 }}
-                        </td>
-                        <td class="px-4 py-4 border-b text-center">
-                            <div class="inline-flex -space-x-2">
-                                {% for item_features_user in item_features.participants.all %}
-                                    <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}" alt="{{ item_features_user.username }}" class="inline-block border border-white rounded-full w-6 h-6">
-                                {% endfor %}
-                            </div>
-                        </td>
-                        <td class="px-4 py-4 text-center border-b">{{ item_features.project }}</td>
-                        <td class="px-4 py-4 text-center border-b">{{ item_features.date_created }}</td>
-                        <td class="px-4 py-4 border-b text-center">{{ item_features.importance }}</td>
-                        <td class="px-4 py-4 border-b text-center">{{ item_features.status }}</td>
-                        <td class="px-4 py-4 border-b text-center">
-                            <button id="open-modal-edit" type="button" class="open-modal-btn text-red-600 hover:text-red-800" data-feature-id="{{ item_features.id }}">
-                                <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15.4525 10.7353L15.448 10.7416L9.02434 17.1658L10.9495 19.0903L17.3786 12.6616L15.4525 10.7353Z" fill="#0C0C0C"/>
-                                    <path d="M5.82559 13.9668L7.75078 15.893L14.1753 9.46878L14.1816 9.46428L12.2546 7.53709L5.82559 13.9668Z" fill="#0C0C0C"/>
-                                    <path d="M4.79594 15.4826L3.04625 20.7313C2.93824 21.0544 3.02285 21.4118 3.26406 21.6521C3.43507 21.824 3.66548 21.9167 3.90039 21.9167C3.9958 21.9167 4.0921 21.9014 4.18481 21.8699L9.43297 20.1201L4.79594 15.4826Z" fill="#0C0C0C"/>
-                                    <path d="M19.9401 4.97531C18.5279 3.5639 16.2292 3.5639 14.817 4.97531L13.5282 6.2643L18.6521 11.3888L19.941 10.0998C21.3532 8.68746 21.3532 6.38762 19.9401 4.97531Z" fill="#0C0C0C"/>
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                                <button id="open-modal-edit" type="button" class="open-modal-btn text-red-600 hover:text-red-800" data-feature-id="{{ item_features.id }}">
+                                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M15.4525 10.7353L15.448 10.7416L9.02434 17.1658L10.9495 19.0903L17.3786 12.6616L15.4525 10.7353Z" fill="#0C0C0C"/>
+                                        <path d="M5.82559 13.9668L7.75078 15.893L14.1753 9.46878L14.1816 9.46428L12.2546 7.53709L5.82559 13.9668Z" fill="#0C0C0C"/>
+                                        <path d="M4.79594 15.4826L3.04625 20.7313C2.93824 21.0544 3.02285 21.4118 3.26406 21.6521C3.43507 21.824 3.66548 21.9167 3.90039 21.9167C3.9958 21.9167 4.0921 21.9014 4.18481 21.8699L9.43297 20.1201L4.79594 15.4826Z" fill="#0C0C0C"/>
+                                        <path d="M19.9401 4.97531C18.5279 3.5639 16.2292 3.5639 14.817 4.97531L13.5282 6.2643L18.6521 11.3888L19.941 10.0998C21.3532 8.68746 21.3532 6.38762 19.9401 4.97531Z" fill="#0C0C0C"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
