@@ -336,3 +336,21 @@ class EditFeatureView(BaseView):
                 "errors": form.errors
             }, status=400)
 
+
+class DeleteFeatureView(BaseView):
+    def delete(self, *args, **kwargs):
+        feature_id = kwargs.get("feature_id")
+        try:
+            self.features_service.delete_features(feature_id=feature_id)
+            return JsonResponse({"status": "success", "message": "Feature deleted"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=404)
+
+class SearchFeatureView(BaseView):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get("q", "")
+        features = self.features_service.get_search_features(query=query)
+
+        if not features:
+            return render(self.request, "features.html", {"features": [], "query": query})
+        return render(self.request, "features.html", {"features": features, "query": query})

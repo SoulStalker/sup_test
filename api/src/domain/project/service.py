@@ -90,3 +90,9 @@ class FeatureService:
 
     def update_features(self, feature_id: int, dto):
         return self.__features_repository.update_features(feature_id, dto)
+
+    def delete_features(self, feature_id: int):
+        return self.__features_repository.delete_features(feature_id)
+
+    def get_search_features(self, query: str):
+        return self.__features_repository.get_search_features(query)
