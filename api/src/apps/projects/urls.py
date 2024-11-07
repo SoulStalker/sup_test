@@ -9,6 +9,8 @@ from src.apps.projects.views import (
     FeaturesView,
     CreateFeatureView,
     EditFeatureView,
+    DeleteFeatureView,
+    SearchFeatureView,
 )
 
 app_name = "apps.projects"
@@ -22,4 +24,6 @@ urlpatterns = [
     path("features/", FeaturesView.as_view(), name="features"),
     path("features/create/", CreateFeatureView.as_view(), name="create_features"),
     path("features/edit/<int:feature_id>/", EditFeatureView.as_view(), name="edit_features"),
+    path("features/delete/<int:feature_id>/", DeleteFeatureView.as_view(), name="delete_features"),
+    path("features/search/", SearchFeatureView.as_view(), name="search_features"),
 ]

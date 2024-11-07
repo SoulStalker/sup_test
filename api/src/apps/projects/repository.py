@@ -156,7 +156,7 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             status=feature.status
         )
 
-    def update_feature(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+    def update_features(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
         try:
             feature = Features.objects.get(id=feature_id)
         except Features.DoesNotExist:
@@ -187,4 +187,25 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             status=feature.status
         )
 
+    def delete_features(self, feature_id: int):
+        feature = Features.objects.get(id=feature_id)
+        feature.delete()
 
+    def get_search_features(self, query: str) -> list[FeaturesDTO]:
+        if not query:
+            return []
+        # Поиск фичей по имени или описанию
+        features = Features.objects.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        ).order_by('id')
+
+        return [FeaturesDTO(
+            name=feature.name,
+            importance=feature.importance,
+            description=feature.description,
+            tags=[tag.id for tag in feature.tags.all()],  # Преобразуем теги в список ID
+            participants=[participant.id for participant in feature.participants.all()],
+            responsible_id=feature.responsible_id,
+            project_id=feature.project_id,
+            status=feature.status
+        ) for feature in features]

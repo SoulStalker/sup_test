@@ -66,3 +66,9 @@ class IFeaturesRepository(abc.ABC):
 
     def update_features(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
         pass
+
+    def delete_features(self, feature_id: int):
+        pass
+
+    def get_search_features(self, query: str) -> list[FeaturesDTO]:
+        pass
