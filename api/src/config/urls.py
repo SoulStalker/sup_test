@@ -5,5 +5,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("meets/", include("src.apps.meets.urls", namespace="meets")),
     path("invites/", include("src.apps.invites.urls", namespace="invites")),
-    path('projects/', include('src.apps.projects.urls', namespace='projects')),
+    path("projects/", include("src.apps.projects.urls", namespace="projects")),
 ]

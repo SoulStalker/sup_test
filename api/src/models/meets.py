@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from .choice_classes import MeetStatusChoice
 from ..domain.validators.validators import ModelValidator
+from .choice_classes import MeetStatusChoice
 
 User = get_user_model()
 
@@ -17,7 +17,7 @@ class Category(models.Model):
         max_length=100,
         unique=True,
         verbose_name="Категория",
-        validators=[ModelValidator.validate_letters_only()]
+        validators=[ModelValidator.validate_letters_only()],
     )
 
     class Meta:
@@ -36,15 +36,20 @@ class Meet(models.Model):
     """
 
     category = models.ForeignKey(
-        "Category", on_delete=models.PROTECT, verbose_name="Категория", null=True
+        "Category",
+        on_delete=models.PROTECT,
+        verbose_name="Категория",
+        null=True,
     )
     title = models.CharField(
         max_length=20,
         unique=True,
         verbose_name="Название",
-        validators=[ModelValidator.validate_letters_space_only()]
+        validators=[ModelValidator.validate_letters_space_only()],
     )
-    start_time = models.DateTimeField(default=timezone.now, verbose_name="Дата")
+    start_time = models.DateTimeField(
+        default=timezone.now, verbose_name="Дата"
+    )
     author = models.ForeignKey(
         User,
         related_name="author_meets",

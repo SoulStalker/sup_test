@@ -1,6 +1,8 @@
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from src.models.meets import Category
+
+User = get_user_model()
 
 
 class CreateMeetForm(forms.Form):

@@ -1,5 +1,7 @@
-from .dtos import ProjectDTO
 import abc
+
+from .dtos import ProjectDTO
+
 
 class IProjectRepository(abc.ABC):
     @abc.abstractmethod
@@ -7,7 +9,14 @@ class IProjectRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def update_project(self, project_id: int, name: str, slug: str, description: str, status: str) -> ProjectDTO:
+    def update_project(
+        self,
+        project_id: int,
+        name: str,
+        slug: str,
+        description: str,
+        status: str,
+    ) -> ProjectDTO:
         pass
 
     @abc.abstractmethod

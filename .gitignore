@@ -5,6 +5,7 @@ idea/
 *.egg-info/
 .installed.cfg
 *.egg
+.ruff_cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -131,6 +132,7 @@ celerybeat.pid
 infrasructure/.env
 .venv
 env/
+.env
 venv/
 ENV/
 env.bak/
@@ -162,4 +164,3 @@ cython_debug/
 api/.env
 api/src/db.sqlite3
 *~
-
