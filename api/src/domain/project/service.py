@@ -1,6 +1,8 @@
-from .repository import IProjectRepository
 from src.domain.project.entity import ProjectEntity
+
 from .dtos import ProjectDTO, StatusObject
+from .repository import IProjectRepository
+
 
 class ProjectService:
 
@@ -23,7 +25,7 @@ class ProjectService:
             status=dto.status,
             responsible_id=dto.responsible_id,
             participants=dto.participants,
-            date_created=dto.date_created
+            date_created=dto.date_created,
         )
 
         err = project.verify_data()
@@ -31,15 +33,24 @@ class ProjectService:
             return err
         return self.__project_repository.create_project(project)
 
-    def update_project(self, project_id: int, name: str, slug: str, description: str, status: str) -> ProjectDTO:
+    def update_project(
+        self,
+        project_id: int,
+        name: str,
+        slug: str,
+        description: str,
+        status: str,
+    ) -> ProjectDTO:
         """Обновление существующего проекта."""
-        project = self.__project_repository.update_project(project_id, name, slug, description, status)
+        project = self.__project_repository.update_project(
+            project_id, name, slug, description, status
+        )
         return ProjectDTO(
             id=project.id,
             name=project.name,
             slug=project.slug,
             description=project.description,
-            status=project.status
+            status=project.status,
         )
 
     def delete_project(self, project_id: int):
@@ -49,4 +60,3 @@ class ProjectService:
     def get_project_status_choices(self):
         """Возвращает доступные статусы проекта."""
         return StatusObject.choices()
-

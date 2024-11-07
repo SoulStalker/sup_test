@@ -5,14 +5,12 @@ from django.db import models
 from django.shortcuts import redirect
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-
+from src.domain.validators.validators import ModelValidator
 from src.models.choice_classes import (
     FeatureChoices,
     ProjectChoices,
     TaskChoices,
 )
-
-from src.domain.validators.validators import ModelValidator
 
 User = get_user_model()
 
@@ -29,7 +27,7 @@ class Project(models.Model):
         max_length=20,
         verbose_name="Название",
         unique=True,
-        validators=[ModelValidator.validate_letters_space_only()]
+        validators=[ModelValidator.validate_letters_space_only()],
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     logo = models.ImageField(
@@ -128,7 +126,7 @@ class Feature(models.Model):
         max_length=50,
         verbose_name="Название",
         unique=True,
-        validators=[ModelValidator.validate_letters_space_only()]
+        validators=[ModelValidator.validate_letters_space_only()],
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     description = models.TextField(
@@ -137,7 +135,7 @@ class Feature(models.Model):
     importance = models.PositiveIntegerField(
         default=0,
         verbose_name="Важность",
-        validators=[ModelValidator.validate_max_value()]
+        validators=[ModelValidator.validate_max_value()],
     )
     tags = models.ManyToManyField(
         to=Tags,
@@ -196,7 +194,7 @@ class Task(models.Model):
         max_length=50,
         verbose_name="Название",
         unique=True,
-        validators=[ModelValidator.validate_letters_space_only()]
+        validators=[ModelValidator.validate_letters_space_only()],
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     description = models.TextField(
@@ -206,7 +204,7 @@ class Task(models.Model):
         default=0,
         verbose_name="Важность",
         null=True,
-        validators=[ModelValidator.validate_max_value()]
+        validators=[ModelValidator.validate_max_value()],
     )
     tags = models.ManyToManyField(
         to=Tags,

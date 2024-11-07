@@ -1,11 +1,13 @@
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse, HttpResponseNotAllowed
-from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
-from src.domain.invites.service import InviteService
+from src.apps.users.repository import (
+    PermissionRepository,
+    RoleRepository,
+    UserRepository,
+)
 from src.domain.meet.service import MeetCategoryService, MeetService
-from src.domain.project.service import ProjectService
-from src.apps.projects.repository import ProjectRepository
+from src.domain.user.service import PermissionService, RoleService, UserService
 
 
 class BaseView:
@@ -16,8 +18,10 @@ class BaseView:
 
     category_service = MeetCategoryService(CategoryRepository())
     meet_service = MeetService(MeetsRepository(), CategoryRepository())
-    invite_service = InviteService(InviteRepository())
-    project_service = ProjectService(ProjectRepository())
+    user_service = UserService(UserRepository())
+    role_service = RoleService(RoleRepository())
+    permission_service = PermissionService(PermissionRepository())
+
     http_method_names = ["get", "post", "put", "patch", "delete"]
     # Определяем, требуется ли аутентификация
     login_required = True

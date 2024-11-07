@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+
 from src.domain.validators.validators import DataVerifier
 
 

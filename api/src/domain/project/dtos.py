@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+
 @dataclass
 class ProjectDTO:
     name: str
@@ -10,6 +11,7 @@ class ProjectDTO:
     date_created: datetime
     responsible_id: int
     slug: str = None
+
 
 class StatusObject:
     """ValueObject: Статусы проекта"""
@@ -42,4 +44,3 @@ class StatusObject:
 
     def __repr__(self):
         return f"StatusObject(status='{self.status}')"
-
