@@ -2,7 +2,6 @@ import os
 import secrets
 from abc import ABC
 from datetime import timedelta
-from pprint import pprint
 
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -55,5 +54,3 @@ class InviteRepository(IInviteRepository, ABC):
         invite = get_object_or_404(Invite, pk=invite_id)
         invite.status = status
         invite.save()
-
-        pprint(invite.status)
