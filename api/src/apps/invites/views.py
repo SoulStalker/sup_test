@@ -17,6 +17,7 @@ class InvitesView(BaseView):
                     expires_at=invite.expires_at,
                 )
             )
+        invites = self.invite_service.get_invites_list()
         context = {"invites": invites}
         return render(self.request, "invites.html", context)
 
