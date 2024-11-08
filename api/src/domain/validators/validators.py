@@ -1,6 +1,6 @@
 import re
-from django.core.validators import MaxValueValidator, RegexValidator
-
+from django.core.validators import MaxValueValidator, RegexValidator, FileExtensionValidator
+from django.core.exceptions import ValidationError
 
 class DataVerifier:
     @staticmethod
@@ -70,6 +70,19 @@ class DataVerifier:
             return "Цвет должен состоять из 6 цифр"
         return None
 
+    @staticmethod
+    def validate_file_extension(value):
+        """
+            Проверяет, является ли файл jpeg, png, 2Mb.
+            """
+        # Проверка на разрешение
+        file_extension_validator = FileExtensionValidator(allowed_extensions=["jpg", "jpeg", "png"])
+        file_extension_validator(value)  # Вызов валидатора расширения
+
+        # Проверка на размер
+        max_size = 2 * 1024 * 1024  # 2 MB
+        if value.size > max_size:
+            raise ValidationError("Размер файла не должен превышать 2MB.")
 
 class ModelValidator:
     @staticmethod
@@ -145,3 +158,5 @@ class ModelValidator:
             message="Цвет должен состоять из 6 цифр.",
             code="invalid_color"
         )
+
+

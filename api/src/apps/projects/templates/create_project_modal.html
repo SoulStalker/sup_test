@@ -2,11 +2,18 @@
 <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
     <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
         <h2 class="text-xl mb-4">Создать проект</h2>
-        <form id="create-project-form" method="POST" action="{% url 'projects:create_project' %}">
+        <form id="create-project-form" method="POST" action="{% url 'projects:create_project' %}" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="mb-4">
-                <label for="project-name" class="block text-sm font-medium text-gray-700">Название проекта</label>
-                <input type="text" id="project-name" name="name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+            <div class="mb-4 flex">
+                <div class="w-1/2 pr-2">
+                    <label for="project-name" class="block text-sm font-medium text-gray-700">Название проекта</label>
+                    <input type="text" id="project-name" name="name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                </div>
+                <div class="w-1/2 pr-2">
+                    <label for="project-logo" class="block text-sm font-medium text-gray-700">Логотип проекта</label>
+                    <input type="file" id="project-logo" name="logo" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                    <img id="logo-preview" src="" alt="Логотип проекта" class="mt-2 hidden w-1/2 h-auto">
+                </div>
             </div>
             <div class="mb-4">
                 <label for="project-description" class="block text-sm font-medium text-gray-700">Описание проекта</label>
@@ -49,10 +56,22 @@
                 <input type="date" id="project-date" name="date_created" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
             </div>
             <div class="flex justify-end space-x-2">
-                <button id="delete-project" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
+                <button id="delete-project-button" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" data-project-id="{{ project.id }}">Удалить</button>
                 <button id="close-modal" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-                <button type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
+                <button id="submit-button" type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
             </div>
         </form>
+    </div>
+</div>
+
+
+<!-- Попап подтверждения удаления -->
+<div id="confirm-delete-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
+        <h2 class="text-lg mb-4">Данный проект будет удален</h2>
+        <div class="flex justify-end space-x-2">
+            <button id="confirm-delete" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
+            <button id="cancel-delete" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+        </div>
     </div>
 </div>
