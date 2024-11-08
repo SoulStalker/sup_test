@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from src.domain.validators.validators import DataVerifier
-
 
 class CategoryObject:
     """
@@ -16,13 +14,6 @@ class CategoryObject:
         self.pk = pk
         self.name = name
 
-    def verify_data(self):
-        letters_error = DataVerifier.verify_letters_only(self.name)
-        len_error = DataVerifier.verify_max_value(self.name, 20)
-        if letters_error:
-            return letters_error
-        elif len_error:
-            return len_error
 
 @dataclass
 class MeetDTO:
@@ -38,6 +29,7 @@ class StatusObject:
     """
     ValueObject: Статусы участников мита
     """
+
     PRESENT = "PRESENT"
     ABSENT = "ABSENT"
     WARNED = "WARNED"
@@ -45,14 +37,10 @@ class StatusObject:
     _descriptions = {
         PRESENT: "Присутствует",
         ABSENT: "Отсутствует",
-        WARNED: "Предупредил"
+        WARNED: "Предупредил",
     }
 
-    _colors = {
-        PRESENT: "green",
-        ABSENT: "red",
-        WARNED: "yellow"
-    }
+    _colors = {PRESENT: "green", ABSENT: "red", WARNED: "yellow"}
 
     def __init__(self, status: str):
         if status not in [self.PRESENT, self.ABSENT, self.WARNED]:
