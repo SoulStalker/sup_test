@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "src.apps.projects",
     "src.apps.invites",
     "src.models",
+    "src.apps.users",
 ]
 
 MIDDLEWARE = [
