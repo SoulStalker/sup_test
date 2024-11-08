@@ -114,7 +114,6 @@ class MeetParticipant(models.Model):
 
     def __str__(self):
         return (
-            f"{self.custom_user.first_name} - "
-            # todo изменить на  .name
+            f"{self.custom_user.name} - "
             f"{self.status_color} на {self.meet.title}"
         )

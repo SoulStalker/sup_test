@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from src.models.choice_classes import InviteChoices
 
@@ -13,10 +13,9 @@ class InviteEntity:
     expires_at: datetime
 
     def expire_status(self):
-        if (
-            self.status == InviteChoices.ACTIVE
-            and self.expires_at.replace(tzinfo=None) < datetime.now()
-        ):
+        if self.status == InviteChoices.ACTIVE and self.created_at.replace(
+            tzinfo=None
+        ) < datetime.now() - timedelta(days=7):
             self.status = InviteChoices.EXPIRED
         return self.status
 

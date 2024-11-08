@@ -14,7 +14,7 @@ class CreateMeetForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["participants"] = forms.MultipleChoiceField(
-            choices=[(user.id, user.username) for user in User.objects.all()],
+            choices=[(user.id, user.name) for user in User.objects.all()],
             widget=forms.CheckboxSelectMultiple,
             required=False,
         )
