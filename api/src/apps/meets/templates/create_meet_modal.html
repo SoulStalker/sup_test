@@ -24,11 +24,11 @@
                     {% for user in users %}
                         <tr>
                             <td class="border-b py-2 px-4">{{ user.id }}</td>
-                            <td class="border-b py-2 px-4">{{ user.first_name }}</td>
-                            <td class="border-b py-2 px-4">{{ user.email }}</td>
+                            <td class="border-b py-2 px-4">{{ user.name }}</td>
+                            <td class="border-b py-2 px-4">{{ user.tg_nickname }}</td>
                             <td class="border-b py-2 px-4">
                                 <input type="checkbox" name="participants" value="{{ user.id }}" id="participant_{{ user.id }}" class="hidden">
-                                <label for="participant_{{ user.id }}" class="cursor-pointer">{{ user.username }}</label>
+                                <label for="participant_{{ user.id }}" class="cursor-pointer">{{ user.tg_name }}</label>
                             </td>
                             <td class="border-b py-2 px-4">
                                 <div id="container_{{ user.id }}" class="w-full flex bg-gray-300 border rounded-lg border-[#666666] py-0 px-0">
@@ -66,7 +66,7 @@
                 <label for="responsible" class="block text-sm font-medium text-gray-700">Ответственный*</label>
                 <select id="responsible" name="responsible" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
                     {% for user in users %}
-                        <option value="{{ user.id }}">{{ user.username }}</option>
+                        <option value="{{ user.id }}">{{ user.name }}</option>
                     {% endfor %}
                 </select>
             </div>

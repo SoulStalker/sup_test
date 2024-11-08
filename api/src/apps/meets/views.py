@@ -1,14 +1,12 @@
-from pprint import pprint
-
-from django.contrib.auth.models import User
-
+from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
-
 from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
 from src.domain.meet.dtos import MeetDTO
+
+User = get_user_model()
 
 
 class MeetsView(BaseView):
@@ -34,8 +32,6 @@ class MeetsView(BaseView):
                 "page_range": paginated_meets["page_range"],
             },
         }
-
-        pprint(paginated_meets)
 
         return render(self.request, "meets.html", context)
 
