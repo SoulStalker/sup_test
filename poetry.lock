@@ -178,7 +178,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 [[package]]
 name = "click-didyoumean"
 version = "0.3.1"
-description = "Enables git-like *did-you-mean* feature in click"
+description = "Enables git-like *did-you-mean* features in click"
 optional = false
 python-versions = ">=3.6.2"
 files = [

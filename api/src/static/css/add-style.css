@@ -131,10 +131,13 @@ a {
     margin-right: 8px;
 }
 .truncate-link {
+    display: inline-block;
+    max-width: 400px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
+    vertical-align: middle;
+}
 
 .hidden-menu {
     display: none;
@@ -293,4 +296,44 @@ a {
     border: 1px solid red;
     border-radius: 4px;
     background-color: rgba(255, 0, 0, 0.1);
+}
+.w-50% {
+    width: 50%;
+}
+.w-100% {
+    width: 100%;
+}
+.w-50px {
+    width: 50px;
+}
+.w-100px {
+    width: 100px;
+}
+.w-200px {
+    width: 200px;
+}
+.search_info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 5px;
+    gap: 10px;
+}
+
+
+.project-table {
+    overflow: auto;
+    max-height: calc(100vh - (0.625rem*2) - 138px);
+}
+.fitch-table, .user-table{
+    overflow: auto;
+    max-height: calc(100vh - (0.625rem*2) - 154px);
+}
+.meets-table{
+    overflow: auto;
+    max-height: calc(100vh - (1.5rem*5) - 136px);
 }

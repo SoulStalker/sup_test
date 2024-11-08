@@ -5,12 +5,15 @@ from django.db import models
 from django.shortcuts import redirect
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from src.domain.validators.validators import ModelValidator
+from django.utils import timezone
+
 from src.models.choice_classes import (
-    FeatureChoices,
+    FeaturesChoices,
     ProjectChoices,
     TaskChoices,
 )
+
+from src.domain.validators.validators import ModelValidator
 
 User = get_user_model()
 
@@ -27,8 +30,9 @@ class Project(models.Model):
         max_length=20,
         verbose_name="Название",
         unique=True,
-        validators=[ModelValidator.validate_letters_space_only()],
+        validators=[ModelValidator.validate_letters_space_only()]
     )
+
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     logo = models.ImageField(
         upload_to="project_logos",
@@ -115,7 +119,7 @@ class Tags(models.Model):
         )
 
 
-class Feature(models.Model):
+class Features(models.Model):
     """Модель фичи"""
 
     class Meta:
@@ -126,7 +130,7 @@ class Feature(models.Model):
         max_length=50,
         verbose_name="Название",
         unique=True,
-        validators=[ModelValidator.validate_letters_space_only()],
+        validators=[ModelValidator.validate_letters_space_only()]
     )
     slug = models.SlugField(unique=True, verbose_name="Ссылка")
     description = models.TextField(
@@ -135,29 +139,43 @@ class Feature(models.Model):
     importance = models.PositiveIntegerField(
         default=0,
         verbose_name="Важность",
-        validators=[ModelValidator.validate_max_value()],
+        validators=[ModelValidator.validate_max_value()]
     )
     tags = models.ManyToManyField(
         to=Tags,
-        related_name="feature_tags",
+        related_name="features_tags",
         verbose_name="Теги",
     )
     participants = models.ManyToManyField(
         to=User,
-        related_name="feature_participants",
+        related_name="features_participants",
         verbose_name="Исполнители",
     )
     responsible = models.ForeignKey(
         to=User,
-        related_name="feature_responsibles",
+        related_name="features_responsibles",
         on_delete=models.CASCADE,
         verbose_name="Ответственный",
     )
     status = models.CharField(
         max_length=20,
-        choices=FeatureChoices,
-        default=FeatureChoices.NEW,
+        choices=FeaturesChoices,
+        default=FeaturesChoices.NEW,
         verbose_name="Статус",
+    )
+
+    date_created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата создания",
+        editable=False
+    )
+
+    project = models.ForeignKey(
+        to=Project,
+        related_name="features_projects",
+        on_delete=models.CASCADE,
+        verbose_name="Проект",
+        default=None,
     )
 
     def __str__(self):
@@ -171,74 +189,7 @@ class Feature(models.Model):
     def get_absolute_url(self):
         return redirect(
             reverse(
-                viewname="projects:detail_feature", kwargs={"slug": self.slug}
+                viewname="projects:detail_features", kwargs={"slug": self.slug}
             )
         )
 
-
-class Task(models.Model):
-    """Модель задачи"""
-
-    class Meta:
-        verbose_name = "Задача"
-        verbose_name_plural = "Задачи"
-
-    author = models.ForeignKey(
-        to=User,
-        related_name="task_authors",
-        on_delete=models.CASCADE,
-        verbose_name="Автор",
-    )
-
-    name = models.CharField(
-        max_length=50,
-        verbose_name="Название",
-        unique=True,
-        validators=[ModelValidator.validate_letters_space_only()],
-    )
-    slug = models.SlugField(unique=True, verbose_name="Ссылка")
-    description = models.TextField(
-        max_length=10000, verbose_name="Описание", null=True, blank=True
-    )
-    importance = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Важность",
-        null=True,
-        validators=[ModelValidator.validate_max_value()],
-    )
-    tags = models.ManyToManyField(
-        to=Tags,
-        related_name="task_tags",
-        verbose_name="Теги",
-    )
-    participants = models.ManyToManyField(
-        to=User, related_name="task_participants", verbose_name="Исполнители"
-    )
-    status = models.CharField(
-        max_length=20,
-        choices=TaskChoices,
-        default=TaskChoices.NEW,
-        verbose_name="Статус",
-    )
-    date_execution = models.DateField(verbose_name="Дата исполнения")
-    feature = models.ForeignKey(
-        to=Feature,
-        related_name="task_features",
-        on_delete=models.CASCADE,
-        verbose_name="Фича",
-    )
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name) + "_" + f"{uuid4().hex}"
-        return super().save()
-
-    def get_absolute_url(self):
-        return redirect(
-            reverse(
-                viewname="projects:update_task", kwargs={"slug": self.slug}
-            )
-        )

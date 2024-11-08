@@ -23,7 +23,7 @@ class ProjectChoices(models.TextChoices):
     SUPPORT = "В поддержке", "В поддержке"
 
 
-class FeatureChoices(models.TextChoices):
+class FeaturesChoices(models.TextChoices):
     NEW = "Новая", "Новая"
     DEVELOPMENT = "Разработка", "Разработка"
     TESTING = "Тестирование", "Тестирование"
