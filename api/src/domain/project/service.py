@@ -1,6 +1,6 @@
 from .repository import IProjectRepository, IFeaturesRepository
 from src.domain.project.entity import ProjectEntity, FeaturesEntity
-from .dtos import ProjectDTO, StatusObject, FeaturesChoicesObject, FeaturesDTO
+from .dtos import ProjectDTO, StatusObject, FeaturesDTO
 
 class ProjectService:
 

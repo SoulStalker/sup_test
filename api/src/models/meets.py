@@ -47,9 +47,7 @@ class Meet(models.Model):
         verbose_name="Название",
         validators=[ModelValidator.validate_letters_space_only()],
     )
-    start_time = models.DateTimeField(
-        default=timezone.now, verbose_name="Дата"
-    )
+    start_time = models.DateTimeField(default=timezone.now, verbose_name="Дата")
     author = models.ForeignKey(
         User,
         related_name="author_meets",
@@ -86,9 +84,7 @@ class MeetParticipant(models.Model):
     Промежуточная модель, связывающая миты и участников
     """
 
-    meet = models.ForeignKey(
-        Meet, on_delete=models.CASCADE, verbose_name="Мит"
-    )
+    meet = models.ForeignKey(Meet, on_delete=models.CASCADE, verbose_name="Мит")
     custom_user = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -113,7 +109,4 @@ class MeetParticipant(models.Model):
         return MeetStatusChoice.get_color(self.status)
 
     def __str__(self):
-        return (
-            f"{self.custom_user.name} - "
-            f"{self.status_color} на {self.meet.title}"
-        )
+        return f"{self.custom_user.name} - " f"{self.status_color} на {self.meet.title}"

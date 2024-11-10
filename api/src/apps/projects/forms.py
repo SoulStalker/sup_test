@@ -1,9 +1,13 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.utils.functional import cached_property
+from django.contrib.auth import get_user_model
+
 from src.models.choice_classes import ProjectChoices, FeaturesChoices
 from src.domain.validators.validators import DataVerifier
 from src.models.projects import Tags, Project
+
+User = get_user_model()
+
 
 class ProjectForm(forms.Form):
 

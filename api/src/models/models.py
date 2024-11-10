@@ -2,7 +2,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from src.models.managers import CustomUserManager
-from src.validators.validators import ModelValidator
+from ..domain.validators.validators import ModelValidator
 
 
 class Role(models.Model):
@@ -68,37 +68,37 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         max_length=50,
         unique=True,
-        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        validators=[ModelValidator.validate_email()],
         verbose_name="email",
     )
     tg_name = models.CharField(
         max_length=50,
         unique=True,
-        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        validators=[ModelValidator.validate_letter_digits_symbols()],
         verbose_name="tg имя",
     )
     tg_nickname = models.CharField(
         max_length=50,
         unique=True,
-        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        validators=[ModelValidator.validate_letter_digits_symbols()],
         verbose_name="tg ник",
     )
     google_meet_nickname = models.CharField(
         max_length=50,
         unique=True,
-        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        validators=[ModelValidator.validate_letter_digits_symbols()],
         verbose_name="googlemeet ник",
     )
     gitlab_nickname = models.CharField(
         max_length=50,
         unique=True,
-        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        validators=[ModelValidator.validate_letter_digits_symbols()],
         verbose_name="gitlab ник",
     )
     github_nickname = models.CharField(
         max_length=50,
         unique=True,
-        validators=[ModelValidator.validate_letters_digits_symbols_no_space()],
+        validators=[ModelValidator.validate_letter_digits_symbols()],
         verbose_name="github ник",
     )
     avatar = models.ImageField(
