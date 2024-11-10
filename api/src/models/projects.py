@@ -5,12 +5,10 @@ from django.db import models
 from django.shortcuts import redirect
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from django.utils import timezone
 
 from src.models.choice_classes import (
     FeaturesChoices,
     ProjectChoices,
-    TaskChoices,
 )
 
 from src.domain.validators.validators import ModelValidator

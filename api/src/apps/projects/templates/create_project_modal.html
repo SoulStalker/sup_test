@@ -32,7 +32,7 @@
                     <label for="project-responsible" class="block text-sm font-medium text-gray-700">Ответсвенный*</label>
                     <select id="project-responsible" name="responsible" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                         {% for user in users %}
-                            <option value="{{ user.id }}">{{ user.username }}</option>
+                            <option value="{{ user.id }}">{{ user.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -41,12 +41,12 @@
                     <div id="select-container" class="select-selected">Выберите участников</div>
                     <div id="select-items" class="select-items">
                         {% for user in users %}
-                            <div data-value="{{ user.id }}">{{ user.username }}</div>
+                            <div data-value="{{ user.id }}">{{ user.name }}</div>
                         {% endfor %}
                     </div>
                     <select id="project-participants" name="participants" multiple class="hidden">
                         {% for user in users %}
-                            <option value="{{ user.id }}">{{ user.username }}</option>
+                            <option value="{{ user.id }}">{{ user.name }}</option>
                         {% endfor %}
                     </select>
                 </div>

@@ -1,6 +1,7 @@
 """
-Импортируется репозиторий из домена и преобразуется джанговский qureryset в нужную сущность (entity или dto)
+Импортируется репозиторий из домена и преобразуется джанговский qureryset в dto
 """
+
 from abc import ABC
 
 from django.shortcuts import get_object_or_404
@@ -24,10 +25,12 @@ class MeetsRepository(IMeetRepository, ABC):
             participant_statuses=meet.participants,
         )
 
-    def _status_orm_to_dto(self, participant_status: MeetParticipant) -> ParticipantStatusDTO:
+    def _status_orm_to_dto(
+        self, participant_status: MeetParticipant
+    ) -> ParticipantStatusDTO:
         return ParticipantStatusDTO(
             participant_id=participant_status.custom_user.id,
-            status=participant_status.status
+            status=participant_status.status,
         )
 
     def create(self, dto: MeetDTO) -> MeetDTO:
@@ -66,22 +69,25 @@ class MeetsRepository(IMeetRepository, ABC):
         return self._meet_orm_to_dto(Meet.objects.get(id=meet_id))
 
     def get_meets_list(self) -> list[Meet]:
-        return list(Meet.objects.select_related('category').order_by('-start_time'))
+        return list(Meet.objects.select_related("category").order_by("-start_time"))
 
     def get_meets_by_category(self, category_id: int) -> list[Meet]:
         return [meet for meet in Meet.objects.filter(category_id=category_id)]
 
-    def set_participant_statuses(self, participant_statuses: dict, meet_id: int) -> None:
+    def set_participant_statuses(
+        self, participant_statuses: dict, meet_id: int
+    ) -> None:
         """
-       Метод проставления статусов участников для мита.
-       Если участник уже существует — обновляем статус, если нет — создаем новую запись.
-       """
+        Метод проставления статусов участников для мита.
+        Если участник уже существует — обновляем статус, если нет — создаем новую запись.
+        """
         for user_id, status in participant_statuses.items():
             # Проверяем, существует ли участник в данном мите
             participant, created = MeetParticipant.objects.update_or_create(
                 meet_id=meet_id,
                 custom_user_id=user_id,
-                defaults={'status': status}  # Обновляем статус, если запись уже существует
+                defaults={"status": status},
+                # Обновляем статус, если запись уже существует
             )
             if not created:
                 # Если запись не была создана, но была обновлена, просто продолжаем

@@ -54,7 +54,7 @@
                     <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
                         <option>Пользователи</option>
                         {% for item_user in users %}
-                            <option value="{{ item_user.id }}">{{ item_user.username }}</option>
+                            <option value="{{ item_user.id }}">{{ item_user.name }}</option>
                         {% endfor %}
                     </select>
                     <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
@@ -107,7 +107,7 @@
                             <td class="px-4 py-4 border-b text-center">
                                 <div class="inline-flex -space-x-2">
                                     {% for item_features_user in item_features.participants.all %}
-                                        <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}" alt="{{ item_features_user.username }}" class="inline-block border border-white rounded-full w-6 h-6">
+                                        <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}" alt="{{ item_features_user.name }}" class="inline-block border border-white rounded-full w-6 h-6">
                                     {% endfor %}
                                 </div>
                             </td>

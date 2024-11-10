@@ -4,11 +4,16 @@
 преобразует данные в нативные объекты питона и наоборот
 пишет в базу и читает из базы
 """
+
 import abc
 from .dtos import MeetDTO, CategoryObject
 
 
 class IMeetRepository(abc.ABC):
+    """
+    Интерфейс репозитория митов
+    """
+
     @abc.abstractmethod
     def create(self, dto: MeetDTO) -> MeetDTO:
         pass
@@ -42,6 +47,10 @@ class IMeetRepository(abc.ABC):
 
 
 class ICategoryRepository(abc.ABC):
+    """
+    Интерфейс репозитория категорий
+    """
+
     @abc.abstractmethod
     def create(self, category_name: str):
         pass
