@@ -14,10 +14,12 @@ class Category(models.Model):
     """
 
     name = models.CharField(
-        max_length=100,
+        max_length=20,
         unique=True,
         verbose_name="Категория",
-        validators=[ModelValidator.validate_letters_only()],
+        validators=[
+            ModelValidator.validate_letters_only(),
+        ],
     )
 
     class Meta:
