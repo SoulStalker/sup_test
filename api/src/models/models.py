@@ -11,13 +11,13 @@ class Role(models.Model):
 
     name = models.CharField(
         max_length=20,
-        validators=[ModelValidator.validate_letters_only],
+        validators=[ModelValidator.validate_letters_only()],
         verbose_name="название",
         help_text="Введите название роли до 20 символов(допускаются только буквы кириллицы и латиницы.",
     )
     color = models.CharField(
         max_length=6,
-        validators=[ModelValidator.validate_color],
+        validators=[ModelValidator.validate_color()],
         verbose_name="цвет",
         help_text="Введите цвет в формате 6 цифр.",
     )
@@ -36,7 +36,7 @@ class Permission(models.Model):
 
     name = models.CharField(
         max_length=20,
-        validators=[ModelValidator.validate_letters_only],
+        validators=[ModelValidator.validate_letters_only()],
         verbose_name="название",
     )
     code = models.IntegerField(verbose_name="код")

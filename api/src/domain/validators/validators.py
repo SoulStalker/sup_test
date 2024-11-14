@@ -15,7 +15,7 @@ class DataVerifier:
             "letters_space_only": r"^[а-яА-ЯёЁa-zA-Z]+(?:\s[а-яА-ЯёЁa-zA-Z]+)*$",  # Буквы и пробелы
             "email": r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",  # Email
             "letters_digits_symbols": r"^[a-zA-Zа-яА-Я0-9._%+-]+$",  # Буквы, цифры и спец. символы
-            "hex_color": r"^\d{6}$",  # 6 цифр для цвета
+            "hex_color": r"^([A-Fa-f0-9]{6})$",  # 6 цифр для цвета
         }
 
     @staticmethod
