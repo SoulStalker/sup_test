@@ -14,24 +14,25 @@ class BaseView:
     дополнительные передаваемые параметры идут в kwargs
     """
 
+    def __init__(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+
+    # Сервисы приложений
     category_service = MeetCategoryService(CategoryRepository())
     meet_service = MeetService(MeetsRepository(), CategoryRepository())
     invite_service = InviteService(InviteRepository())
-
     project_service = ProjectService(ProjectRepository())
     features_service = FeatureService(FeaturesRepository())
 
+    # Разрешенные методы
     http_method_names = ["get", "post", "put", "patch", "delete"]
     # Определяем, требуется ли аутентификация
     login_required = True
     # Параметры пагинации по умолчанию
     items_per_page = 10
     page_param = "page"
-
-    def __init__(self, request, *args, **kwargs):
-        self.request = request
-        self.args = args
-        self.kwargs = kwargs
 
     def paginate_queryset(self, queryset):
         """
