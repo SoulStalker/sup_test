@@ -3,9 +3,11 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.apps.projects.repository import FeaturesRepository, ProjectRepository
+from src.apps.users.repository import UserRepository
 from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.project.service import FeatureService, ProjectService
+from src.domain.user.service import UserService
 
 
 class BaseView:
@@ -25,6 +27,7 @@ class BaseView:
     invite_service = InviteService(InviteRepository())
     project_service = ProjectService(ProjectRepository())
     features_service = FeatureService(FeaturesRepository())
+    user_service = UserService(UserRepository())
 
     # Разрешенные методы
     http_method_names = ["get", "post", "put", "patch", "delete"]

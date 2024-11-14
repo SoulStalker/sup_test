@@ -100,21 +100,23 @@
                     </tr>
                 </thead>
                 <tbody>
+                {% for user in users %}
                     <!-- Пример строки с данными -->
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-4 border-b">1</td>
-                        <td class="px-4 py-4 border-b">Александра</td>
-                        <td class="px-4 py-4 border-b">Иванова</td>
-                        <td class="px-4 py-4 border-b">codingmaster@gmail.com</td>
-                        <td class="px-4 py-4 border-b">@DJWOMS</td>
-                        <td class="px-4 py-4 border-b">SunshineAlex</td>
-                        <td class="px-4 py-4 border-b">MeetMaster</td>
-                        <td class="px-4 py-4 border-b">CodeWiz</td>
-                        <td class="px-4 py-4 border-b">GitStar</td>
-                        <td class="px-4 py-4 border-b">Тимлид</td>
+
+                        <td class="px-4 py-4 border-b">{{ user.id }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.name }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.surname }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.email }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.tg_nickname }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.tg_name }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.google_meet_nickname }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.gitlab_nickname }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.github_nickname }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.role_id }}</td>
                         <td class="px-4 py-4 border-b">
                             <span class="role-circle bg-blue-500"></span> <!-- Пример цветного кружочка -->
-                            Кто-то там
+                            {{ user.role_id }}
                         </td>
                         <td class="px-4 py-4 border-b">12.02.2019</td>
                         <td class="px-4 py-4 border-b text-center"><input type="checkbox" checked></td>
@@ -124,75 +126,8 @@
                             </button>
                         </td>
                     </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-4 border-b">2</td>
-                        <td class="px-4 py-4 border-b">Александра</td>
-                        <td class="px-4 py-4 border-b">Иванова</td>
-                        <td class="px-4 py-4 border-b">codingmaster@gmail.com</td>
-                        <td class="px-4 py-4 border-b">@DJWOMS</td>
-                        <td class="px-4 py-4 border-b">SunshineAlex</td>
-                        <td class="px-4 py-4 border-b">MeetMaster</td>
-                        <td class="px-4 py-4 border-b">CodeWiz</td>
-                        <td class="px-4 py-4 border-b">GitStar</td>
-                        <td class="px-4 py-4 border-b">Тимлид</td>
-                        <td class="px-4 py-4 border-b">
-                            <span class="role-circle bg-blue-500"></span> <!-- Пример цветного кружочка -->
-                            Кто-то там
-                        </td>
-                        <td class="px-4 py-4 border-b">12.02.2019</td>
-                        <td class="px-4 py-4 border-b text-center"><input type="checkbox" checked></td>
-                        <td class="px-4 py-4 border-b text-center">
-                            <button class="text-gray-600 hover:text-gray-900">
-                                ✏️
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-4 border-b">3</td>
-                        <td class="px-4 py-4 border-b">Александра</td>
-                        <td class="px-4 py-4 border-b">Иванова</td>
-                        <td class="px-4 py-4 border-b">codingmaster@gmail.com</td>
-                        <td class="px-4 py-4 border-b">@DJWOMS</td>
-                        <td class="px-4 py-4 border-b">SunshineAlex</td>
-                        <td class="px-4 py-4 border-b">MeetMaster</td>
-                        <td class="px-4 py-4 border-b">CodeWiz</td>
-                        <td class="px-4 py-4 border-b">GitStar</td>
-                        <td class="px-4 py-4 border-b">Тимлид</td>
-                        <td class="px-4 py-4 border-b">
-                            <span class="role-circle bg-blue-500"></span>
-                            Кто-то там
-                        </td>
-                        <td class="px-4 py-4 border-b">12.02.2019</td>
-                        <td class="px-4 py-4 border-b text-center"><input type="checkbox" checked></td>
-                        <td class="px-4 py-4 border-b text-center">
-                            <button class="text-gray-600 hover:text-gray-900">
-                                ✏️
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-4 border-b">4</td>
-                        <td class="px-4 py-4 border-b">Александра</td>
-                        <td class="px-4 py-4 border-b">Иванова</td>
-                        <td class="px-4 py-4 border-b">codingmaster@gmail.com</td>
-                        <td class="px-4 py-4 border-b">@DJWOMS</td>
-                        <td class="px-4 py-4 border-b">SunshineAlex</td>
-                        <td class="px-4 py-4 border-b">MeetMaster</td>
-                        <td class="px-4 py-4 border-b">CodeWiz</td>
-                        <td class="px-4 py-4 border-b">GitStar</td>
-                        <td class="px-4 py-4 border-b">Тимлид</td>
-                        <td class="px-4 py-4 border-b">
-                            <span class="role-circle bg-blue-500"></span>
-                            Кто-то там
-                        </td>
-                        <td class="px-4 py-4 border-b">12.02.2019</td>
-                        <td class="px-4 py-4 border-b text-center"><input type="checkbox" checked></td>
-                        <td class="px-4 py-4 border-b text-center">
-                            <button class="text-gray-600 hover:text-gray-900">
-                                ✏️
-                            </button>
-                        </td>
-                    </tr>
+                {% endfor %}
+
                 </tbody>
             </table>
         </div>
