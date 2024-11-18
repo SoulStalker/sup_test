@@ -120,6 +120,7 @@ class UserRepository(IUserRepository, ABC):
             is_admin=user.is_admin,
             is_superuser=user.is_superuser,
             is_staff=user.is_staff,
+            date_joined=user.date_joined,
         )
 
     def _get_user_by_id(self, user_id: int) -> CustomUser:

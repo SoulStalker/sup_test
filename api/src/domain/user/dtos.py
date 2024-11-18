@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 
@@ -35,3 +36,4 @@ class UserDTO:
     is_admin: Optional[bool]
     is_superuser: bool
     is_staff: bool
+    date_joined: datetime

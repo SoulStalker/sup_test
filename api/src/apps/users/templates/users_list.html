@@ -118,7 +118,7 @@
                             <span class="role-circle bg-blue-500"></span> <!-- Пример цветного кружочка -->
                             {{ user.role_id }}
                         </td>
-                        <td class="px-4 py-4 border-b">12.02.2019</td>
+                        <td class="px-4 py-4 border-b">{{ user.date_joined | date:"d.m.y" }}</td>
                         <td class="px-4 py-4 border-b text-center"><input type="checkbox" checked></td>
                         <td class="px-4 py-4 border-b text-center">
                             <button class="text-gray-600 hover:text-gray-900">
