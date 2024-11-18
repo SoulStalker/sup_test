@@ -1,5 +1,6 @@
+from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponseNotAllowed
 from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.apps.projects.repository import FeaturesRepository, ProjectRepository
@@ -72,7 +73,8 @@ class BaseView:
 
     def dispatch(self):
         if self.login_required and not self.request.user.is_authenticated:
-            return HttpResponse("Залогинься")
+            # Перенаправление на страницу авторизации
+            return redirect_to_login(self.request, login_url="/admin/")
 
         method = getattr(self, self.request.method.lower(), None)
         if not method or not callable(method):

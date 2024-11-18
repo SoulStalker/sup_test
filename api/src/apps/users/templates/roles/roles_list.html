@@ -72,7 +72,7 @@
                         <option>100</option>
                     </select>
                     <!-- Кнопка "Создать роль" -->
-                    <button class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать роль</button>
+                    <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать роль</button>
                 </div>
             </div>
 
@@ -93,7 +93,7 @@
                         <td class="px-4 py-4 border-b">{{ role.id }}</td>
                         <td class="px-4 py-4 border-b">{{ role.name }}</td>
                         <td class="px-4 py-4 border-b">
-                            <div style="background-color: #{{ role.color }}; width: 20px; height: 20px;"></div>
+                            <div class="w-5 h-5" style="background-color: #{{ role.color }}"></div>
                         </td>
                         <td class="px-4 py-4 border-b">{{ role.participants }}</td>
                         <td class="px-4 py-4 border-b text-center">
@@ -109,7 +109,6 @@
 
     </div>
 
-    <script src="./script/roles.js"></script>
-
+    <script src="{% static 'script/roles.js' %}"></script>
 </body>
 </html>
