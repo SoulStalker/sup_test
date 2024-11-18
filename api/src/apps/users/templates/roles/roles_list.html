@@ -70,7 +70,7 @@
                         <option>25</option>
                         <option>100</option>
                     </select>
-                    <!-- Кнопка "Создать пользователя" -->
+                    <!-- Кнопка "Создать роль" -->
                     <button class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать роль</button>
                 </div>
             </div>
@@ -91,12 +91,10 @@
 
                         <td class="px-4 py-4 border-b">{{ role.id }}</td>
                         <td class="px-4 py-4 border-b">{{ role.name }}</td>
-                        <td class="px-4 py-4 border-b">{{ role.color }}</td>
-                        <td class="px-4 py-4 border-b">{{ role.users }}</td>
                         <td class="px-4 py-4 border-b">
-                            <span class="role-circle bg-blue-500"></span> <!-- Пример цветного кружочка -->
-                            {{ role.id }}
+                            <div style="background-color: #{{ role.color }}; width: 20px; height: 20px;"></div>
                         </td>
+                        <td class="px-4 py-4 border-b">{{ role.users }}</td>
                         <td class="px-4 py-4 border-b text-center">
                             <button class="text-gray-600 hover:text-gray-900">
                                 ✏️
