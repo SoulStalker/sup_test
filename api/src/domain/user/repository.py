@@ -24,6 +24,10 @@ class IRoleRepository(abc.ABC):
     def delete(self, role_id: int):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def get_roles_participants_count(self, role_id: int) -> int:
+        raise NotImplementedError
+
 
 class IPermissionRepository(abc.ABC):
     @abc.abstractmethod

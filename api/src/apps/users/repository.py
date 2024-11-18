@@ -52,6 +52,10 @@ class RoleRepository(IRoleRepository, ABC):
         models = get_list_or_404(self.model)
         return [self._role_orm_to_dto(model) for model in models]
 
+    def get_roles_participants_count(self, role_id: int) -> int:
+        participants = CustomUser.objects.filter(role_id=role_id).count()
+        return participants
+
 
 class PermissionRepository(IPermissionRepository, ABC):
     model = Permission
