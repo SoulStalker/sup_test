@@ -28,6 +28,9 @@ class RoleService:
     def delete(self, role_id: int):
         self.__repository.delete(role_id)
 
+    def get_roles_participants_count(self, role_id: int):
+        return self.__repository.get_roles_participants_count(role_id)
+
 
 class PermissionService:
     def __init__(self, repository: IPermissionRepository):
