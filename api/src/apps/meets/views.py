@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
+from src.apps.permissions import AdminPermission
 from src.domain.meet.dtos import MeetDTO
 
 User = get_user_model()
@@ -48,7 +49,7 @@ class MeetsView(BaseView):
             )
 
 
-class CreateMeetView(BaseView):
+class CreateMeetView(AdminPermission, BaseView):
     """
     Создание мита
     """

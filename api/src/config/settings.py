@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "src.apps.invites",
     "src.models",
     "src.apps.users",
+    "src.apps.auth_app",
 ]
 
 MIDDLEWARE = [
