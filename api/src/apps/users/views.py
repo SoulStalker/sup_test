@@ -16,7 +16,8 @@ class RoleListView(BaseView):
     def get(self, *args, **kwargs):
         roles = self.role_service.get_role_list()
 
-        return JsonResponse({"roles": [vars(role) for role in roles]})
+        # return JsonResponse({"roles": [vars(role) for role in roles]})
+        return render(self.request, "roles/roles_list.html", {"roles": roles})
 
 
 class RoleDetailView(BaseView):
