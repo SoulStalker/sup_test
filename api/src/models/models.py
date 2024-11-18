@@ -124,6 +124,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         default=False, verbose_name="суперпользователь"
     )
     is_staff = models.BooleanField(default=False, verbose_name="персонал")
+    date_joined = models.DateTimeField(
+        auto_now_add=True, verbose_name="дата регистрации"
+    )
 
     objects = CustomUserManager()
 
