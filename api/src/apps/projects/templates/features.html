@@ -1,0 +1,211 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица фичей</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
+    <link href="{% static 'output.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 h-screen flex">
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="w-16 bg-gray-800 text-white flex flex-col items-center p-4 h-screen transition-all duration-300">
+        <button id="sidebar-toggle" class="mb-8 focus:outline-none">
+            <span class="text-xl">&#9776;</span>
+        </button>
+        <div class="space-y-6">
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">🏠</span>
+                <span class="hidden sidebar-text">Главная</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">📊</span>
+                <span class="hidden sidebar-text">Отчеты</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">⚙️</span>
+                <span class="hidden sidebar-text">Настройки</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">🧑‍💼</span>
+                <span class="hidden sidebar-text">Пользователи</span>
+            </a>
+        </div>
+    </div>
+{% block content %}
+    <!-- Основной контент -->
+    <div class="flex-1 flex flex-col">
+
+        <!-- Верхняя панель -->
+        <div class="flex justify-between items-center mb-4 p-6">
+            <h1 class="text-2xl font-bold">Таблица фичи</h1>
+        </div>
+
+        <!-- Таблица -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden m-2.5 w-1/1.5"> <!-- Добавлен внешний отступ -->
+            <div class="p-4 flex items-center">
+
+                <input type="text" placeholder="Поиск" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-1/3 mr-4">
+                <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
+                <div class="flex items-center ml-auto space-x-4">
+                    <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option>Пользователи</option>
+                        {% for item_user in users %}
+                            <option value="{{ item_user.id }}">{{ item_user.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option>Теги</option>
+                        {% for item_tag in tags %}
+                            <option value="{{ item_tag.id }}">{{ item_tag.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option>Статус</option>
+                        {% for item_status in statuses %}
+                            <option value="{{ item_status }}">{{ item_status }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option>Проекты</option>
+                        {% for item_project in project %}
+                            <option value="{{ item_project.project__id }}">{{ item_project.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button id="open-modal-create" class="open-modal-btn bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать проект</button>
+                </div>
+            </div>
+            <div class="fitch-table">
+                <table class="w-full" id="feature-container">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
+                            <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Название</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Исполнители</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Проект</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Дата создания</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Важность</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Статус</th>
+                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item_features in features %}
+                        <!-- Пример строки с данными -->
+                        <tr class="hover:bg-gray-50" data-project-id="{{ item_features.project.id }}" data-status="{{ item_features.status }}">
+                            <td class="px-4 py-4 border-b">{{ item_features.id }}</td>
+                            <td class="px-4 py-4 border-b items-center">
+                                <span class="tag font-medium text-sm">{{ item_features.name }}</span><br>
+                                {{ item_features.description|truncatechars:50 }}
+                            </td>
+                            <td class="px-4 py-4 border-b text-center">
+                                <div class="inline-flex -space-x-2">
+                                    {% for item_features_user in item_features.participants.all %}
+                                        <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}" alt="{{ item_features_user.name }}" class="inline-block border border-white rounded-full w-6 h-6">
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 text-center border-b">{{ item_features.project }}</td>
+                            <td class="px-4 py-4 text-center border-b">{{ item_features.date_created }}</td>
+                            <td class="px-4 py-4 border-b text-center">{{ item_features.importance }}</td>
+                            <td class="px-4 py-4 border-b text-center">{{ item_features.status }}</td>
+                            <td class="px-4 py-4 border-b text-center">
+
+                                <button id="open-modal-edit" type="button" class="open-modal-btn text-red-600 hover:text-red-800" data-feature-id="{{ item_features.id }}">
+                                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M15.4525 10.7353L15.448 10.7416L9.02434 17.1658L10.9495 19.0903L17.3786 12.6616L15.4525 10.7353Z" fill="#0C0C0C"/>
+                                        <path d="M5.82559 13.9668L7.75078 15.893L14.1753 9.46878L14.1816 9.46428L12.2546 7.53709L5.82559 13.9668Z" fill="#0C0C0C"/>
+                                        <path d="M4.79594 15.4826L3.04625 20.7313C2.93824 21.0544 3.02285 21.4118 3.26406 21.6521C3.43507 21.824 3.66548 21.9167 3.90039 21.9167C3.9958 21.9167 4.0921 21.9014 4.18481 21.8699L9.43297 20.1201L4.79594 15.4826Z" fill="#0C0C0C"/>
+                                        <path d="M19.9401 4.97531C18.5279 3.5639 16.2292 3.5639 14.817 4.97531L13.5282 6.2643L18.6521 11.3888L19.941 10.0998C21.3532 8.68746 21.3532 6.38762 19.9401 4.97531Z" fill="#0C0C0C"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    {% include 'create_features_modal.html' %}
+
+
+
+    <!-- Модальное окно для просмотра фитчи -->
+    <div id="new-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
+            <div class="header-fitch flex">
+                <div class="w-2/3">
+                    <h2 class="text-xl mb-4">Разработка таблицы грейдов по Python</h2>
+                    <p>Создана 14.11.23 в 18:35</p>
+                </div>
+                <div class="w-1/3">
+                    <div class="flex items-center justify-end">
+                        <svg width="20" height="17" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2.54009 6.15998L3.98609 14.836C4.01203 14.9673 4.01133 15.1025 3.98404 15.2335C3.95676 15.3646 3.90344 15.4888 3.82725 15.5989C3.75106 15.7089 3.65355 15.8026 3.5405 15.8743C3.42745 15.9459 3.30116 15.9942 3.16911 16.0162C3.03707 16.0381 2.90196 16.0333 2.77179 16.0021C2.64163 15.9709 2.51905 15.9139 2.41134 15.8344C2.30363 15.7549 2.21296 15.6546 2.14473 15.5395C2.07649 15.4243 2.03207 15.2966 2.01409 15.164L0.0140938 3.16398C-0.149906 2.18298 1.06409 1.59098 1.73709 2.32398L6.20009 7.19198L9.08409 0.599982C9.43409 -0.199018 10.5671 -0.199018 10.9161 0.599982L13.8011 7.19298L18.2631 2.32498C18.9351 1.59198 20.1501 2.18398 19.9861 3.16498L17.9861 15.165C17.9471 15.3983 17.8266 15.6102 17.6461 15.7631C17.4655 15.916 17.2367 15.9999 17.0001 16L7.00009 16C6.73488 16 6.48052 15.8946 6.29299 15.7071C6.10545 15.5196 6.00009 15.2652 6.00009 15C6.00009 14.7348 6.10545 14.4804 6.29299 14.2929C6.48052 14.1053 6.73488 14 7.00009 14L16.1531 14L17.4591 6.15998L14.2371 9.67598C14.1246 9.79862 13.9833 9.89124 13.8259 9.94545C13.6686 9.99966 13.5002 10.0138 13.3361 9.98644C13.1719 9.95913 13.0172 9.89128 12.8859 9.78905C12.7545 9.68682 12.6508 9.55343 12.5841 9.40098L10.0001 3.49498L7.41609 9.39998C7.34936 9.55243 7.24564 9.68582 7.11433 9.78805C6.98302 9.89028 6.82828 9.95813 6.66412 9.98544C6.49996 10.0128 6.33158 9.99866 6.17424 9.94445C6.01691 9.89024 5.87559 9.79762 5.76309 9.67498L2.54009 6.15998Z" fill="#0C0C0C"/>
+                        </svg>
+                        <img src="./images/icon-user-project.png" class="inline-block border border-white rounded-full w-10 h-10">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="tags flex py-4 space-x-2">
+                <div class="bg-blue-500 p-2 px-3 border rounded text-white">Python</div>
+                <div class="bg-green-500 p-2 px-3 border rounded text-white">Python</div>
+                <div class="bg-red-500 p-2 px-3 border rounded text-white">Python</div>
+            </div>
+
+            <div class="info-block flex space-x-2 w-1/4 bg-gray-100 p-2.5">
+                <div class="w-1/2">
+                    <span clsss="font-medium text-gray-700 text-lg">Важность</span>
+                    <p>1</p>
+                </div>
+                <div class="w-1/2">
+                    <h4>Статус работ</h4>
+                    <p>Новая</p>
+                </div>
+            </div>
+
+            <div class="content-fitch max-h-60vh overflow-auto mb-4">
+                <h2 class="text-xl mt-4 font-bold">User story</h2>
+                <h2 class="text-xl mt-4 font-bold">Ссылки</h2>
+                <p>https://junovnet.gitbook.io/sup/tekhnicheskoe-zadanie/rabota-s-pravami/sozdanie-prav</p>
+                <h2 class="text-xl mt-4 font-bold">Описание</h2>
+                <p>Одним из важных вопросов в организации заработной платы является формирование тесной взаимосвязи между результатами труда и вознаграждением, при этом должны учитываться интересы работников, касающиеся компенсационного пакета, особенно социальных выплат. Процедура формирования квалификационных групп и разработка межквалификационных соотношений создает фундамент для внедрения всей компенсационной политики предприятий. Практическим инструментом, дающим возможность оценить должности и рабочие места и на их основе сформировать квалификационные группы, является система грейдов.</p><p>Автор рассказывает о грейдовой системе и задачах, которые можно решить путем ее внедрения.</p><p>Важным вопросом в организации заработной платы является обеспечение объективной дифференциации, разработка конкурентоспособной и прозрачной компенсационной политики, создание тесной взаимосвязи между результатами труда и вознаграждением, учет интересов наемных работников относительно структуры компенсационного пакета, особенно социальных выплат.</p><p>Для обеспечения объективной дифференциации основной (базовой) части заработной платы существенное значение имеет процедура формирования квалификационных групп и разработка межквалификационных соотношений, что, в свою очередь, является фундаментом, основой для разработки всей компенсационной политики предприятий, организаций, учреждений (далее — предприятие).</p><p>Формирование квалификационных групп в прошлом — до периода рыночных преобразований — выступало неотъемлемым элементом тарифной системы. Квалификационные группы (разряды) определялись на основании единых тарифно-квалификационных справочников. На многих отечественных предприятиях эта практика сохранилась и ныне, хотя в большинстве случаев она не соответствует потребностям бизнеса, стратегическим целям предприятия, не учитывает специфику его деятельности и главное — не выполняет мотивационную функцию, отрицательно влияя на конкурентоспособность компенсационной политики.</p><p>Необходимо выяснить: почему формирование квалификационных групп на основании лишь тарификации работ в большинстве случаев не соответствует современным требованиям? В пределах традиционного тарифного подхода та или иная должность принадлежит к соответствующим разрядам тарифной сетки и схемы должностных окладов на основании квалификационных характеристик профессий работников. Они содержатся в соответствующих выпусках Справочника квалификационных характеристик профессий работников (далее — СКХП). В Украине работа по разработке квалификационных характеристик профессий работников продолжается, отдельные выпуски СКХП лишь планируются к изданию, поэтому в действующем Национальном классификаторе Украины ДК 003:2010 «Классификатор профессий» (далее — КП) отсутствуют ссылки на отдельные выпуски СКХП. Компенсационную же политику предприятия следует разрабатывать и при необходимости совершенствовать уже сегодня.</p>
+            </div>
+
+            <div class="flex justify-end space-x-2">
+                <button id="delete-project" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
+                <button id="close-new-modal" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+                <button type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Попап подтверждения удаления -->
+    <div id="confirm-delete-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
+            <h2 class="text-lg mb-4">Данная фитча будет удалена</h2>
+            <div class="flex justify-end space-x-2">
+                <button id="confirm-delete" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
+                <button id="cancel-delete" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+    <script src="{% static 'script/features.js' %}"></script>
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

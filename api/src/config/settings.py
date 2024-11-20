@@ -3,11 +3,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 load_dotenv()
 
@@ -31,6 +29,7 @@ INSTALLED_APPS = [
     "src.apps.projects",
     "src.apps.invites",
     "src.models",
+    "src.apps.users",
 ]
 
 MIDDLEWARE = [
@@ -96,7 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "ru-ru"
 
-TIME_ZONE = "Asia/Yekaterinburg"
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -107,4 +106,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# AUTH_USER_MODEL = "users.CustomUser"
+AUTH_USER_MODEL = "models.CustomUser"
+
+AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)

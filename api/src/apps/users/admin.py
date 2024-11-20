@@ -1,6 +1,6 @@
 from django.contrib import admin
-
-from apps.users.models import CustomUser, Permissions, Role
+from django.contrib.auth.admin import UserAdmin
+from src.models.models import CustomUser, Permission, Role
 
 
 @admin.register(Role)
@@ -9,14 +9,14 @@ class RoleAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
-@admin.register(Permissions)
-class PermissionsAdmin(admin.ModelAdmin):
+@admin.register(Permission)
+class PermissionAdmin(admin.ModelAdmin):
     list_display = ("name", "code", "description")
     search_fields = ("name", "code")
 
 
 @admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
+class CustomUserAdmin(UserAdmin):
     list_display = (
         "name",
         "surname",
@@ -29,6 +29,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         "role",
         "is_active",
         "is_admin",
+        "date_joined",
     )
     search_fields = ("name", "surname", "email", "tg_name", "tg_nickname")
     list_filter = ("role", "is_active", "is_admin")
@@ -46,5 +47,44 @@ class CustomUserAdmin(admin.ModelAdmin):
             },
         ),
         ("Avatar", {"fields": ("avatar",)}),
-        ("Role and Status", {"fields": ("role", "is_active", "is_admin")}),
+        (
+            "Role and Status",
+            {
+                "fields": (
+                    "role",
+                    "is_active",
+                    "is_admin",
+                    "is_staff",
+                    "is_superuser",
+                )
+            },
+        ),
     )
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "email",
+                    "password1",
+                    "password2",
+                    "name",
+                    "surname",
+                    "tg_name",
+                    "tg_nickname",
+                    "google_meet_nickname",
+                    "gitlab_nickname",
+                    "github_nickname",
+                    "avatar",
+                    "role",
+                    "is_active",
+                    "is_admin",
+                    "is_staff",
+                    "is_superuser",
+                ),
+            },
+        ),
+    )
+    ordering = ("email",)
+    filter_horizontal = ()

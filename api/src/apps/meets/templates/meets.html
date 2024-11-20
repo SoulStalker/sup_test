@@ -109,7 +109,7 @@
                     <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать Meet</button>
                 </div>
             </div>
-            <div id="table-container">
+            <div id="table-container" class="meets-table">
                 <!-- Таблица 1 -->
                  <table id="table-style-1" class="w-full table-fixed mx-auto text-center">
                     <thead class="bg-gray-100 text-xs">
@@ -130,10 +130,10 @@
                         {% for user in users %}
                             <tr>
                                 <td class="border-b py-2 px-4 w-[50px] text-center whitespace-nowrap">{{ user.id }}</td>
-                                <td class="border-b py-2 px-4">{{ user.first_name }}</td>
-                                <td class="border-b py-2 px-4">{{ user.last_name }}</td>
-                                <td class="border-b py-2 px-4">{{ user.email }}</td>
-                                <td class="border-b py-2 px-4">{{ user }}</td>
+                                <td class="border-b py-2 px-4">{{ user.name }}</td>
+                                <td class="border-b py-2 px-4">{{ user.surname }}</td>
+                                <td class="border-b py-2 px-4">{{ user.tg_nickname }}</td>
+                                <td class="border-b py-2 px-4">{{ user.tg_name }}</td>
                                 {% for meet in meets %}
                                     {% if user in meet.participants.all %}
                                         <td data-category="{{ meet.category.pk }}" class="border-b py-2 px-4 text-center">
@@ -161,7 +161,7 @@
                 </table>
 
                 <!-- Таблица 2 -->
-                <table id="table-style-2" class="w-full table-fixed mx-auto hidden">
+                <table id="table-style-2" class="w-full table-fixed mx-auto hidden meets-table">
                     <thead class="bg-gray-100 text-xs">
                     <tr>
                         <th class="border-b py-2 px-4 text-left">ID</th>

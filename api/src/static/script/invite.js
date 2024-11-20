@@ -13,8 +13,18 @@ openModalButton.addEventListener('click', () => {
       // Добавьте необходимые данные, которые нужно отправить на сервер
     }),
   })
-  .then(response => response.json())
-  .then(data => console.log(data))
+  .then(response => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error("Ошибка при создании приглашения");
+    }
+  })
+  .then(data => {
+    console.log("Перед перезагрузкой", data);
+    location.reload();
+    console.log("После перезагрузки"); // Этот лог мы не увидим, если перезагрузка сработает
+    })
   .catch(error => console.error(error));
 });
 
@@ -33,6 +43,7 @@ function getCookie(name) {
   }
   return cookieValue;
 }
+
 
 // Удаление приглашения
 document.addEventListener('DOMContentLoaded', function() {

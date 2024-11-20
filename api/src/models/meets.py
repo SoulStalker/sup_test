@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 from .choice_classes import MeetStatusChoice
-from ..domain.validators.validators import ModelValidator
+from .validators import ModelValidator
 
 User = get_user_model()
 
@@ -14,10 +14,12 @@ class Category(models.Model):
     """
 
     name = models.CharField(
-        max_length=100,
+        max_length=20,
         unique=True,
         verbose_name="Категория",
-        validators=[ModelValidator.validate_letters_only()]
+        validators=[
+            ModelValidator.validate_letters_only(),
+        ],
     )
 
     class Meta:
@@ -36,15 +38,20 @@ class Meet(models.Model):
     """
 
     category = models.ForeignKey(
-        "Category", on_delete=models.PROTECT, verbose_name="Категория", null=True
+        "Category",
+        on_delete=models.PROTECT,
+        verbose_name="Категория",
+        null=True,
     )
     title = models.CharField(
         max_length=20,
         unique=True,
         verbose_name="Название",
-        validators=[ModelValidator.validate_letters_space_only()]
+        validators=[ModelValidator.validate_letters_space_only()],
     )
-    start_time = models.DateTimeField(default=timezone.now, verbose_name="Дата")
+    start_time = models.DateTimeField(
+        default=timezone.now, verbose_name="Дата"
+    )
     author = models.ForeignKey(
         User,
         related_name="author_meets",
@@ -109,7 +116,6 @@ class MeetParticipant(models.Model):
 
     def __str__(self):
         return (
-            f"{self.custom_user.first_name} - "
-            # todo изменить на  .name
+            f"{self.custom_user.name} - "
             f"{self.status_color} на {self.meet.title}"
         )

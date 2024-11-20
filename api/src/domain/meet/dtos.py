@@ -17,6 +17,10 @@ class CategoryObject:
 
 @dataclass
 class MeetDTO:
+    """
+    DTO: Объект мита
+    """
+
     category_id: int
     title: str
     start_time: datetime
@@ -64,5 +68,9 @@ class StatusObject:
 
 @dataclass
 class ParticipantStatusDTO:
+    """
+    DTO: Статус участника мита
+    """
+
     participant_id: int
     status: StatusObject

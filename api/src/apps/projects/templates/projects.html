@@ -48,14 +48,16 @@
             <!-- Поиск и элементы управления -->
             <div class="p-4 flex items-center">
                 <!-- Поиск -->
-                <input type="text" placeholder="Поиск" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-1/3 mr-4">
+                <form id="search-form" action="{% url 'projects:search_project' %}" method="get" class="flex items-center space-x-2 w-1/2">
+                    <input type="text" name="q" placeholder="Поиск" id="search-input" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-1/3 mr-4">
+                </form>
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
                     <!-- Выпадающий список для количества строк -->
-                    <select class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 bg-green-custom text-white">
-                        <option>50</option>
-                        <option>25</option>
-                        <option>100</option>
+                    <select id="project-select" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 bg-green-custom text-white">
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
                     </select>
 
                     <!-- Пагинация -->
@@ -69,21 +71,32 @@
                     <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать проект</button>
                 </div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="table-fixed">
+            <div class="project-table">
+                <table id="project-container" class="table-fixed w-full"> <!-- Установить ширину таблицы на 100% -->
                     <thead class="bg-gray-100 text-lg">
                         <tr>
-                            <th class="px-4 py-3 border-b text-left w-[100px]">ID</th>
-                            <th class="px-4 py-3 border-b text-left w-[300px]">Название</th>
-                            <th class="px-4 py-3 border-b text-left w-[200px]">Исполнители</th>
-                            <th class="px-4 py-3 border-b text-left w-[500px]">Описание</th>
-                            <th class="px-4 py-3 border-b text-left w-[150px]">Дата</th>
-                            <th class="px-4 py-3 border-b text-center w-[150px]">Действия</th>
+                            <th class="px-4 py-3 border-b text-left w-50px">ID</th>
+                            <th class="px-4 py-3 border-b text-left w-200px">Название</th>
+                            <th class="px-4 py-3 border-b text-left w-200px">Исполнители</th>
+                            <th class="px-4 py-3 border-b text-left w-50%">Описание</th> <!-- Установить ширину на 60% -->
+                            <th class="px-4 py-3 border-b text-left w-200px">Дата</th>
+                            <th class="px-4 py-3 border-b text-center w-200px">Действия</th>
                         </tr>
                     </thead>
                     <tbody>
+                    {% if query %}
+                        <div class="search_info">
+                             {% if projects %}
+                                <h2 id="search-info">Ваш поисковый запрос: <strong>{{ query }}</strong></h2>
+                            {% else %}
+                                <p><strong>По вашему запросу ничего не найдено.</strong></p>
+                            {% endif %}
+                            <button id="clear-search">Очистить поиск</button>
+                        </div>
+                    {% endif %}
+
                     {% for item_project in projects %}
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50 ">
                             <td class="px-4 py-4 border-b text-left">{{ item_project.id }}</td>
                             <td class="px-4 py-4 border-b text-left truncate">{{ item_project.name }}</td>
                             <td class="px-4 py-4 border-b text-left">
@@ -93,7 +106,7 @@
                                     {% endfor %}
                                 </div>
                             </td>
-                            <td class="px-4 py-4 border-b text-left w-[500px] overflow-auto break-words whitespace-normal">{{ item_project.description }}</td>
+                            <td class="px-4 py-4 border-b text-left w-[60%] overflow-auto break-words whitespace-normal">{{ item_project.description }}</td>
                             <td class="px-4 py-4 border-b text-left">{{ item_project.date_created }}</td>
                             <td class="px-4 py-4 border-b text-center">
                                 <button class="text-red-600 hover:text-red-800 edit-project-button" data-project-id="{{ item_project.id }}">
@@ -115,19 +128,6 @@
     </div>
     <!-- projects.html -->
     {% include 'create_project_modal.html' %}
-
-
-
-    <!-- Попап подтверждения удаления -->
-    <div id="confirm-delete-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
-            <h2 class="text-lg mb-4">Данный проект будет удален</h2>
-            <div class="flex justify-end space-x-2">
-                <button id="confirm-delete" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
-                <button id="cancel-delete" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-            </div>
-        </div>
-    </div>
 
     <script src="{% static 'script/project.js' %}"></script>
     {% block extra_js %}

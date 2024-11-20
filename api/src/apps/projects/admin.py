@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from src.models.projects import Feature, Project, Tags, Task
+from src.models.projects import Features, Project, Tags
 
 
 @admin.register(Tags)
@@ -8,13 +8,9 @@ class TagsAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
 
-@admin.register(Task)
-class TaskAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("name",)}
 
-
-@admin.register(Feature)
-class FeatureAdmin(admin.ModelAdmin):
+@admin.register(Features)
+class featuresAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
 
