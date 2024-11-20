@@ -29,6 +29,7 @@ class CustomUserAdmin(UserAdmin):
         "role",
         "is_active",
         "is_admin",
+        "date_joined",
     )
     search_fields = ("name", "surname", "email", "tg_name", "tg_nickname")
     list_filter = ("role", "is_active", "is_admin")

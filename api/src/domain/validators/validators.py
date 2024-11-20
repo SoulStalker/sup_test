@@ -77,7 +77,7 @@ class DataVerifier:
         if not re.match(
             DataVerifier._get_regex_patterns()["hex_color"], value
         ):
-            return "Цвет должен состоять из 6 цифр"
+            return "Цвет должен быть в формате RRGGBB"
         return None
 
     @staticmethod

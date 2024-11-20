@@ -1,6 +1,6 @@
 import abc
 
-from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import CreateRoleDTO, PermissionDTO, RoleDTO, UserDTO
 
 
 class IRoleRepository(abc.ABC):
@@ -13,7 +13,7 @@ class IRoleRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create(self, dto: RoleDTO):
+    def create(self, dto: CreateRoleDTO):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -22,6 +22,10 @@ class IRoleRepository(abc.ABC):
 
     @abc.abstractmethod
     def delete(self, role_id: int):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_roles_participants_count(self, role_id: int) -> int:
         raise NotImplementedError
 
 
