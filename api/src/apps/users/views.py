@@ -1,3 +1,4 @@
+from django.db.utils import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
@@ -7,7 +8,7 @@ from src.apps.users.forms import (
     PermissionsForm,
     RoleForm,
 )
-from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import CreateRoleDTO, PermissionDTO, RoleDTO, UserDTO
 
 
 class RoleListView(BaseView):
@@ -22,62 +23,6 @@ class RoleListView(BaseView):
         # return JsonResponse({"roles": [vars(role) for role in roles]})
         return render(self.request, "roles/roles_list.html", {"roles": roles})
 
-
-class RoleDetailView(BaseView):
-    """Просмотр роли."""
-
-    def get(self, *args, **kwargs):
-        role_id = kwargs.get("role_id")
-        role = self.role_service.get_role(role_id)
-
-        return JsonResponse(role)
-
-
-class RoleCreateView(BaseView):
-    """Создание роли."""
-
-    def post(self, request):
-        form = RoleForm(request.POST)
-        if form.is_valid():
-            self.role_service.create(
-                RoleDTO(
-                    name=form.cleaned_data["name"],
-                    color=form.cleaned_data["color"],
-                )
-            )
-            return JsonResponse({"status": "success"}, status=201)
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
-
-
-class RoleUpdateView(BaseView):
-    """Редактирование роли."""
-
-    def post(self, request, *args, **kwargs):
-        role_id = kwargs.get("role_id")
-        form = RoleForm(request.POST)
-
-        if form.is_valid():
-            self.role_service.update(
-                role_id=role_id,
-                dto=RoleDTO(
-                    name=form.cleaned_data["name"],
-                    color=form.cleaned_data["color"],
-                ),
-            )
-
-            return JsonResponse(
-                {"status": "success", "message": "Role updated"}, status=200
-            )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
-
-
-class RoleDeleteView(BaseView):
-    """Удаление роли."""
-
     def delete(self, *args, **kwargs):
         role_id = kwargs.get("role_id")
         try:
@@ -88,6 +33,74 @@ class RoleDeleteView(BaseView):
         except Exception as err:
             return JsonResponse(
                 {"status": "error", "message": str(err)}, status=404
+            )
+
+
+class RoleCreateView(BaseView):
+    """Создание роли."""
+
+    def post(self, request):
+        print(request.POST)
+        form = RoleForm(request.POST)
+        if form.is_valid():
+            try:
+                self.role_service.create(
+                    CreateRoleDTO(
+                        name=form.cleaned_data["name"],
+                        color=form.cleaned_data["color"],
+                    )
+                )
+                return JsonResponse({"status": "success"}, status=201)
+            except IntegrityError:
+                return JsonResponse(
+                    {
+                        "status": "error",
+                        "message": "Такая роль уже существует",
+                    },
+                    status=400,
+                )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
+
+
+class RoleEditView(BaseView):
+    """Редактирование роли."""
+
+    def get(self, request, *args, **kwargs):
+        role_id = kwargs.get("role_id")
+        role = self.role_service.get_role(role_id)
+
+        data = {
+            "name": role.name,
+            "color": role.color,
+        }
+
+        return JsonResponse(data)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            role_id = kwargs.get("role_id")
+            form = RoleForm(request.POST)
+
+            if form.is_valid():
+                self.role_service.update(
+                    role_id=role_id,
+                    dto=RoleDTO(
+                        id=role_id,
+                        name=form.cleaned_data["name"],
+                        color=form.cleaned_data["color"],
+                    ),
+                )
+
+                return JsonResponse(
+                    {"status": "success", "message": "Role updated"},
+                    status=201,
+                )
+        except IntegrityError:
+            return JsonResponse(
+                {"status": "error", "message": "Такая роль уже существует"},
+                status=400,
             )
 
 

@@ -4,12 +4,12 @@
         <form id="create-role-form" method="POST" action="{% url 'users:roles' %}">
             {% csrf_token %}
             <div class="mb-4">
-                <label for="title" class="block text-sm font-medium text-gray-700">Название роли*</label>
-                <input type="text" id="title" name="title" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                <label for="name" class="block text-sm font-medium text-gray-700">Название роли*</label>
+                <input type="text" id="name" name="name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
             </div>
             <div class="mb-4">
-                <label for="role_color" class="block text-sm font-medium text-gray-700">Цвет роли*</label>
-                <input type="text" id="role_color" name="role_color" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                <label for="color" class="block text-sm font-medium text-gray-700">Цвет роли*</label>
+                <input type="text" id="color" name="color" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
             </div>
             <div class="flex justify-end space-x-2">
                 <button id="delete-role" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" data-role-id="{{ role.id }}">Удалить</button>

@@ -11,6 +11,12 @@ class RoleDTO:
 
 
 @dataclass
+class CreateRoleDTO:
+    name: str
+    color: str
+
+
+@dataclass
 class PermissionDTO:
     id: int
     name: str

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
         clearErrors();
         openModalButton.addEventListener('click', function () {
             modal.classList.remove('hidden');
-            form.setAttribute('action', '/roles/create/');
+            form.setAttribute('action', '/users/roles/create/');
             submitButton.textContent = 'Создать';
             form.reset();
         });
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
             modal.classList.remove('hidden');
 
             // Загружаем данные роли через fetch
-            fetch(`/roles/edit/${RoleId}/`)
+            fetch(`/users/roles/edit/${RoleId}/`)
                 .then(response => response.json())
                 .then(data => {
                     // Заполняем форму полученными данными
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('responsible').value = data.responsible;
 
                     // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `/roles/edit/${roleId}/`);
+                    form.setAttribute('action', `/users/roles/edit/${roleId}/`);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
                 .catch(error => console.error('Ошибка:', error));

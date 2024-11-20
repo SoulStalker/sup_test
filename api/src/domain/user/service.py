@@ -1,7 +1,7 @@
 import secrets
 import string
 
-from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import CreateRoleDTO, PermissionDTO, RoleDTO, UserDTO
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
@@ -19,7 +19,7 @@ class RoleService:
     def get_role_list(self) -> list[RoleDTO]:
         return self.__repository.get_role_list()
 
-    def create(self, dto: RoleDTO):
+    def create(self, dto: CreateRoleDTO):
         self.__repository.create(dto)
 
     def update(self, role_id: int, dto: RoleDTO):
