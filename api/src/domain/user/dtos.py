@@ -1,10 +1,17 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 
 @dataclass
 class RoleDTO:
     id: int
+    name: str
+    color: str
+
+
+@dataclass
+class CreateRoleDTO:
     name: str
     color: str
 
@@ -35,3 +42,4 @@ class UserDTO:
     is_admin: Optional[bool]
     is_superuser: bool
     is_staff: bool
+    date_joined: datetime

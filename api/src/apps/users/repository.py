@@ -1,7 +1,7 @@
 from abc import ABC
 
 from django.shortcuts import get_list_or_404, get_object_or_404
-from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import CreateRoleDTO, PermissionDTO, RoleDTO, UserDTO
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
@@ -23,7 +23,7 @@ class RoleRepository(IRoleRepository, ABC):
     def _get_role_by_id(self, role_id: int) -> Role:
         return get_object_or_404(self.model, id=role_id)
 
-    def create(self, dto: RoleDTO) -> RoleDTO:
+    def create(self, dto: CreateRoleDTO) -> RoleDTO:
         model = self.model(
             name=dto.name,
             color=dto.color,
@@ -51,6 +51,10 @@ class RoleRepository(IRoleRepository, ABC):
     def get_role_list(self) -> list[RoleDTO]:
         models = get_list_or_404(self.model)
         return [self._role_orm_to_dto(model) for model in models]
+
+    def get_roles_participants_count(self, role_id: int) -> int:
+        participants = CustomUser.objects.filter(role_id=role_id).count()
+        return participants
 
 
 class PermissionRepository(IPermissionRepository, ABC):
@@ -116,6 +120,7 @@ class UserRepository(IUserRepository, ABC):
             is_admin=user.is_admin,
             is_superuser=user.is_superuser,
             is_staff=user.is_staff,
+            date_joined=user.date_joined,
         )
 
     def _get_user_by_id(self, user_id: int) -> CustomUser:

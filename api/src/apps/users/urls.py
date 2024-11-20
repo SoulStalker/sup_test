@@ -1,10 +1,8 @@
 from django.urls import path
 from src.apps.users.views import (
     RoleCreateView,
-    RoleDeleteView,
-    RoleDetailView,
+    RoleEditView,
     RoleListView,
-    RoleUpdateView,
     UserCreateView,
     UserDeleteView,
     UserDetailView,
@@ -26,19 +24,11 @@ urlpatterns = [
         UserPasswordChangeView.as_view(),
         name="update_password",
     ),
-    path("role/create/", RoleCreateView.as_view(), name="create_role"),
-    path("role/update<int:pk>/", RoleUpdateView.as_view(), name="update_role"),
     path("roles/", RoleListView.as_view(), name="roles"),
-    path(
-        "role/delete/<int:pk>/", RoleDeleteView.as_view(), name="delete_role"
-    ),
-    path("role/<int:pk>/", RoleDetailView.as_view(), name="role_detail"),
+    path("roles/create/", RoleCreateView.as_view(), name="create_role"),
+    path("roles/edit/<int:pk>/", RoleEditView.as_view(), name="update_role"),
+    path("roles/delete/<int:pk>/", RoleEditView.as_view(), name="delete_role"),
     path("permissions/", RoleListView.as_view(), name="permissions"),
-    path(
-        "permissions/<int:pk>/",
-        RoleDetailView.as_view(),
-        name="permission_detail",
-    ),
     path(
         "permissions/create/",
         RoleCreateView.as_view(),
@@ -46,12 +36,7 @@ urlpatterns = [
     ),
     path(
         "permissions/update/<int:pk>/",
-        RoleUpdateView.as_view(),
+        RoleEditView.as_view(),
         name="update_permission",
-    ),
-    path(
-        "permissions/delete/<int:pk>/",
-        RoleDeleteView.as_view(),
-        name="delete_permission",
     ),
 ]

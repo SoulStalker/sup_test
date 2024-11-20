@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таблица пользователей</title>
+    <title>Таблица ролей</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
@@ -41,7 +41,7 @@
 
         <!-- Верхняя панель -->
         <div class="flex justify-between items-center mb-4 p-6">
-            <h1 class="text-2xl font-bold">Таблица пользователей</h1>
+            <h1 class="text-2xl font-bold">Таблица ролей</h1>
         </div>
 
         <!-- Таблица -->
@@ -54,17 +54,12 @@
                 <div class="relative mr-4">
                     <button id="menu-toggle" class="bg-green-custom text-white border border-gray-300 p-2 rounded hover:bg-green-dark">Меню таблицы</button>
                     <div id="menu-options" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg hidden-menu">
-                        <a href="#" class="block px-4 py-4 text-gray-800 hover:bg-gray-100">Действие 1</a>
-                        <a href="#" class="block px-4 py-4 text-gray-800 hover:bg-gray-100">Действие 2</a>
-                        <a href="#" class="block px-4 py-4 text-gray-800 hover:bg-gray-100">Действие 3</a>
                     </div>
                 </div>
 
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
                     <!-- Выпадающий список для количества строк -->
-
-
                     <!-- Пагинация -->
                     <div class="flex items-center space-x-2">
                         <span class="text-green-custom">Пагинация</span>
@@ -76,8 +71,8 @@
                         <option>25</option>
                         <option>100</option>
                     </select>
-                    <!-- Кнопка "Создать пользователя" -->
-                    <button class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать пользователя</button>
+                    <!-- Кнопка "Создать роль" -->
+                    <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать роль</button>
                 </div>
             </div>
 
@@ -85,57 +80,39 @@
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Имя</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Фамилия</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">E-MAIL</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК TELEGRAM</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ИМЯ TELEGRAM</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК ГУГЛ МИТ</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК В GITLAB</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК В GITHUB</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">КОМАНДА</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">РОЛЬ</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ДАТА РЕГИСТРАЦИИ</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">АКТИВНЫЙ</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ДЕЙСТВИЯ</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Название</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Цвет</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Количество участников</th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for user in users %}
+                {% for role in roles %}
                     <!-- Пример строки с данными -->
                     <tr class="hover:bg-gray-50">
 
-                        <td class="px-4 py-4 border-b">{{ user.id }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.name }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.surname }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.email }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.tg_nickname }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.tg_name }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.google_meet_nickname }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.gitlab_nickname }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.github_nickname }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.role_id }}</td>
+                        <td class="px-4 py-4 border-b">{{ role.id }}</td>
+                        <td class="px-4 py-4 border-b">{{ role.name }}</td>
                         <td class="px-4 py-4 border-b">
-                            <span class="role-circle bg-blue-500"></span> <!-- Пример цветного кружочка -->
-                            {{ user.role_id }}
+                            <div class="w-5 h-5" style="background-color: #{{ role.color }}"></div>
                         </td>
-                        <td class="px-4 py-4 border-b">{{ user.date_joined | date:"d.m.y" }}</td>
-                        <td class="px-4 py-4 border-b text-center"><input type="checkbox" checked></td>
-                        <td class="px-4 py-4 border-b text-center">
+                        <td class="px-4 py-4 border-b">{{ role.participants }}</td>
+                        <td class="px-4 py-4 border-b text-center edit-role-button" data-role-id="{{ role.id }}">
                             <button class="text-gray-600 hover:text-gray-900">
                                 ✏️
                             </button>
                         </td>
                     </tr>
                 {% endfor %}
-
                 </tbody>
             </table>
         </div>
 
+            <!-- Модальное окно для Cоздать Meet -->
+    <!-- Включаем модальное окно через include -->
+    {% include 'roles/create_role_modal.html' %}
+
     </div>
 
-    <script src="{% static 'script/users.js' %}"></script>
-
+    <script src="{% static 'script/roles.js' %}"></script>
 </body>
 </html>

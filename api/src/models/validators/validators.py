@@ -74,6 +74,6 @@ class ModelValidator:
         """
         return RegexValidator(
             regex=ModelValidator._get_regex_patterns()["hex_color"],
-            message="Цвет должен состоять из 6 цифр.",
+            message="Цвет должен быть в формате RRGGBB",
             code="invalid_color",
         )
