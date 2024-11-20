@@ -5,11 +5,18 @@
             {% csrf_token %}
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700">Название роли*</label>
-                <input type="text" id="name" name="name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                <input type="text" id="name" name="name" maxlength="20" pattern="[A-Za-zА-Яа-я]+"
+                    class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
             </div>
-            <div class="mb-4">
+            <div class="mb-4 relative">
                 <label for="color" class="block text-sm font-medium text-gray-700">Цвет роли*</label>
-                <input type="text" id="color" name="color" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                <div>
+                    <input type="color" id="color-picker" class="color-picker" value="#FFB43F">
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="color" name="color" maxlength="6"
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                </div>
             </div>
             <div class="flex justify-end space-x-2">
                 <button id="delete-role" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 delete-btn">Удалить</button>
@@ -19,6 +26,8 @@
         </form>
     </div>
 </div>
+
+
 
 <!-- Попап подтверждения удаления -->
 <div id="confirm-delete-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
