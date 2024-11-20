@@ -23,24 +23,11 @@ class RoleListView(BaseView):
         # return JsonResponse({"roles": [vars(role) for role in roles]})
         return render(self.request, "roles/roles_list.html", {"roles": roles})
 
-    def delete(self, *args, **kwargs):
-        role_id = kwargs.get("role_id")
-        try:
-            self.role_service.delete(role_id)
-            return JsonResponse(
-                {"status": "success", "message": "Role deleted"}, status=200
-            )
-        except Exception as err:
-            return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
-            )
-
 
 class RoleCreateView(BaseView):
     """Создание роли."""
 
     def post(self, request):
-        print(request.POST)
         form = RoleForm(request.POST)
         if form.is_valid():
             try:
@@ -59,6 +46,7 @@ class RoleCreateView(BaseView):
                     },
                     status=400,
                 )
+        print(form.errors)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -68,19 +56,18 @@ class RoleEditView(BaseView):
     """Редактирование роли."""
 
     def get(self, request, *args, **kwargs):
-        role_id = kwargs.get("role_id")
+        role_id = kwargs.get("pk")
         role = self.role_service.get_role(role_id)
 
         data = {
             "name": role.name,
             "color": role.color,
         }
-
         return JsonResponse(data)
 
     def post(self, request, *args, **kwargs):
         try:
-            role_id = kwargs.get("role_id")
+            role_id = kwargs.get("pk")
             form = RoleForm(request.POST)
 
             if form.is_valid():
@@ -101,6 +88,18 @@ class RoleEditView(BaseView):
             return JsonResponse(
                 {"status": "error", "message": "Такая роль уже существует"},
                 status=400,
+            )
+
+    def delete(self, *args, **kwargs):
+        role_id = kwargs.get("pk")
+        try:
+            self.role_service.delete(role_id)
+            return JsonResponse(
+                {"status": "success", "message": "Role deleted"}, status=200
+            )
+        except Exception as err:
+            return JsonResponse(
+                {"status": "error", "message": str(err)}, status=404
             )
 
 

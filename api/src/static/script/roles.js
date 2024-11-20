@@ -92,85 +92,104 @@ document.addEventListener('DOMContentLoaded', function () {
     const editRoleButtons = document.querySelectorAll('.edit-role-button');
     const modal = document.getElementById('modal-create-role');
     const form = document.getElementById('create-role-form');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    let submitButton = form.querySelector('button[type="submit"]');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const confirmDeletePopup = document.getElementById('confirm-delete-popup');
+    const confirmDeleteButton = document.getElementById('confirm-delete');
+    const cancelDeleteButton = document.getElementById('cancel-delete');
 
+    let currentDeleteButton = null; // Текущая кнопка для удаления
+    let currentRoleId = null; // Текущий ID роли для удаления
+
+    // Обработка редактирования роли
     editRoleButtons.forEach(button => {
         button.addEventListener('click', function () {
-            const RoleId = this.getAttribute('data-role-id');
+            const roleId = this.getAttribute('data-role-id');
+            currentRoleId = roleId;// Устанавливаем текущий ID роли
+            confirmDeleteButton.setAttribute('data-role-id', currentRoleId);
+
+            const deleteRoleButton = document.getElementById('delete-role');
+            deleteRoleButton.setAttribute('data-role-id', roleId);
 
             // Открываем модальное окно
             modal.classList.remove('hidden');
 
             // Загружаем данные роли через fetch
-            fetch(`/users/roles/edit/${RoleId}/`)
+            fetch(`/users/roles/edit/${roleId}/`)
                 .then(response => response.json())
                 .then(data => {
                     // Заполняем форму полученными данными
-                    document.getElementById('title').value = data.title;
-                    document.getElementById('start_time').value = data.start_time;
-                    document.getElementById('category').value = data.category;
-                    document.getElementById('responsible').value = data.responsible;
+                    document.getElementById('name').value = data.name;
+                    document.getElementById('color').value = data.color;
 
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/users/roles/edit/${roleId}/`);
-                    submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
+                    form.querySelector('button[type="submit"]').textContent = 'Сохранить';
                 })
-                .catch(error => console.error('Ошибка:', error));
+                .catch(error => console.error('Ошибка при загрузке данных роли:', error));
         });
+    });
+
+    // Обработка удаления роли
+    deleteButtons.forEach(button => {
+    button.addEventListener('click', function () {
+        console.log("Кнопка удаления:", this); // Проверяем выбранный элемент
+        const roleId = this.getAttribute('data-role-id');
+        console.log("Удаление роли с ID:", roleId); // Проверяем значение атрибута
+
+        currentRoleId = roleId; // Устанавливаем текущий ID роли для удаления
+        currentDeleteButton = this; // Устанавливаем текущую кнопку для удаления
+
+        if (!roleId) {
+            console.error("Ошибка: отсутствует data-role-id у кнопки удаления.");
+            return;
+        }
+
+        // Открываем popup подтверждения удаления
+        confirmDeletePopup.classList.remove('hidden');
     });
 });
 
-// Удаление роли
-document.addEventListener('DOMContentLoaded', function() {
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-            const confirmDeletePopup = document.getElementById('confirm-delete-popup');
-            const confirmDeleteButton = document.getElementById('confirm-delete');
-            const cancelDeleteButton = document.getElementById('cancel-delete');
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            let currentRoleId = null;
-            let currentDeleteButton = null;
+    // Подтверждение удаления
+    confirmDeleteButton.addEventListener('click', function () {
+        if (currentRoleId) {
+            deleteRole(currentRoleId, currentDeleteButton);
+            currentRoleId = null; // Сбрасываем текущий ID роли
+            currentDeleteButton = null; // Сбрасываем текущую кнопку
+        }
+        confirmDeletePopup.classList.add('hidden');
+    });
 
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    currentRoleId = this.getAttribute('data-role-id');
-                    currentDeleteButton = this;
-                    confirmDeletePopup.classList.remove('hidden');
-                });
-            });
+    // Отмена удаления
+    cancelDeleteButton.addEventListener('click', function () {
+        confirmDeletePopup.classList.add('hidden');
+        currentRoleId = null; // Сбрасываем текущий ID роли
+        currentDeleteButton = null; // Сбрасываем текущую кнопку
+    });
 
-            confirmDeleteButton.addEventListener('click', function() {
-                if (currentRoleId) {
-                    deleteRole(currentRoleId, currentDeleteButton);
-                }
-                confirmDeletePopup.classList.add('hidden');
-            });
-
-            cancelDeleteButton.addEventListener('click', function() {
-                confirmDeletePopup.classList.add('hidden');
-                currentRoleId = null;
-                currentDeleteButton = null;
-            });
-
-            function deleteRole(roleId, buttonElement) {
-                fetch(`delete/${roleId}/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': csrfToken,
-                        'Content-Type': 'application/json'
-                    },
-                })
-                .then(response => {
-                    if (response.ok) {
-                        buttonElement.closest('tr').remove();
-                    } else {
-                        throw new Error('Ошибка при удалении роли');
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    alert('Произошла ошибка при удалении роли');
-                });
+    // Функция удаления роли
+    function deleteRole(roleId, buttonElement) {
+        fetch(`/users/roles/delete/${roleId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("Роль успешно удалена");
+                modal.classList.add('hidden');
+                location.reload();
+            } else {
+                throw new Error('Ошибка при удалении роли');
             }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при удалении роли');
         });
+    }
+});
