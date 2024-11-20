@@ -337,3 +337,11 @@ a {
     overflow: auto;
     max-height: calc(100vh - (1.5rem*5) - 136px);
 }
+
+.color-picker {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px; /* При желании можно изменить форму */
+    border: none; /* Убираем рамку */
+    cursor: pointer; /* Указатель для интерактивности */
+}

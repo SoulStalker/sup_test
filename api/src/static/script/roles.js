@@ -193,3 +193,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const colorInput = document.getElementById('color');
+    const colorPicker = document.getElementById('color-picker');
+
+    // Устанавливаем цвет по умолчанию в текстовое поле
+    colorInput.value = colorPicker.value.replace('#', '');
+
+    // Обновление текстового поля при выборе цвета
+    colorPicker.addEventListener('input', function() {
+        console.log("Выбранный цвет:", this.value);
+        colorInput.value = this.value.replace('#', ''); // Убираем #
+    });
+
+    // Валидация текстового поля для ввода вручную
+    colorInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9A-Fa-f]/g, '').slice(0, 6); // Только hex-символы
+    });
+});
