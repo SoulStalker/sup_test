@@ -74,6 +74,7 @@ class PermissionRepository(IPermissionRepository, ABC):
     def create(self, dto: PermissionDTO) -> PermissionDTO:
         model = self.model(
             name=dto.name,
+            code=dto.code,
             description=dto.description,
         )
         model.save()
