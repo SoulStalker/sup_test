@@ -63,6 +63,7 @@ class PermissionRepository(IPermissionRepository, ABC):
     def _permission_orm_to_dto(self, permission: Permission) -> PermissionDTO:
         return PermissionDTO(
             id=permission.id,
+            code=permission.code,
             name=permission.name,
             description=permission.description,
         )

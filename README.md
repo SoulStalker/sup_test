@@ -97,7 +97,7 @@ docker volume rm sup_db_data
 Мы используем **Ruff**, **Black**, и **isort** для поддержания чистоты и структурированности кода. Установите **pre-commit** для проверки кода перед коммитом:
 
 ```
-pre-cpmmit install
+pre-commit install
 ```
     
 
