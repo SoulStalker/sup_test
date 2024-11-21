@@ -46,7 +46,6 @@ class RoleCreateView(BaseView):
                     },
                     status=400,
                 )
-        print(form.errors)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -108,9 +107,11 @@ class PermissionListView(BaseView):
 
     def get(self, *args, **kwargs):
         permissions = self.permission_service.get_permission_list()
-
-        return JsonResponse(
-            {"permissions": [vars(permission) for permission in permissions]}
+        # return JsonResponse({"roles": [vars(role) for role in roles]})
+        return render(
+            self.request,
+            "permissions/permission_list.html",
+            {"permissions": permissions},
         )
 
 
