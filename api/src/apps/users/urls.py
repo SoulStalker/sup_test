@@ -1,5 +1,6 @@
 from django.urls import path
 from src.apps.users.views import (
+    PermissionCreateView,
     PermissionListView,
     RoleCreateView,
     RoleEditView,
@@ -34,7 +35,7 @@ urlpatterns = [
     path("permissions/", PermissionListView.as_view(), name="permissions"),
     path(
         "permissions/create/",
-        PermissionListView.as_view(),
+        PermissionCreateView.as_view(),
         name="create_permission",
     ),
     path(

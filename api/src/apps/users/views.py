@@ -115,21 +115,15 @@ class PermissionListView(BaseView):
         )
 
 
-class PermissionDetailView(BaseView):
-    """Просмотр разрешения."""
-
-    def get(self, *args, **kwargs):
-        permission_id = kwargs.get("permission_id")
-        permission = self.permission_service.get_permission(permission_id)
-
-        return JsonResponse(permission)
-
-
 class PermissionCreateView(BaseView):
     """Создание разрешения."""
 
     def post(self, request):
+
+        print(request.POST)
+
         form = PermissionsForm(request.post)
+
         if form.is_valid():
             self.permission_service.create(
                 PermissionDTO(
