@@ -202,9 +202,7 @@ class UserListView(BaseView):
 
     def get(self, *args, **kwargs):
         users = self.user_service.get_user_list()
-
-        # return JsonResponse({"users": [user.name for user in users]})
-        return render(self.request, "users_list.html", {"users": users})
+        return render(self.request, "users/users_list.html", {"users": users})
 
 
 class UserDetailView(BaseView):
