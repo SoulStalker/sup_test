@@ -36,7 +36,7 @@ class Permission(models.Model):
 
     name = models.CharField(
         max_length=20,
-        validators=[ModelValidator.validate_letters_only()],
+        validators=[ModelValidator.validate_letters_space_only()],
         verbose_name="название",
     )
     code = models.IntegerField(verbose_name="код")

@@ -1,7 +1,13 @@
 from abc import ABC
 
 from django.shortcuts import get_list_or_404, get_object_or_404
-from src.domain.user.dtos import CreateRoleDTO, PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import (
+    CreatePermissionDTO,
+    CreateRoleDTO,
+    PermissionDTO,
+    RoleDTO,
+    UserDTO,
+)
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
@@ -63,6 +69,7 @@ class PermissionRepository(IPermissionRepository, ABC):
     def _permission_orm_to_dto(self, permission: Permission) -> PermissionDTO:
         return PermissionDTO(
             id=permission.id,
+            code=permission.code,
             name=permission.name,
             description=permission.description,
         )
@@ -70,17 +77,24 @@ class PermissionRepository(IPermissionRepository, ABC):
     def _get_permission_by_id(self, permission_id: int) -> Permission:
         return get_object_or_404(self.model, id=permission_id)
 
-    def create(self, dto: PermissionDTO) -> PermissionDTO:
+    def create(self, dto: CreatePermissionDTO) -> PermissionDTO:
         model = self.model(
             name=dto.name,
+            code=dto.code,
             description=dto.description,
         )
         model.save()
         return self._permission_orm_to_dto(model)
 
     def update(self, permission_id: int, dto: PermissionDTO) -> PermissionDTO:
+        print(permission_id)
+
         model = self._get_permission_by_id(permission_id)
+
+        print(model)
+
         model.name = dto.name
+        model.code = dto.code
         model.description = dto.description
 
         model.save()
