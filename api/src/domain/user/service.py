@@ -1,9 +1,7 @@
-import secrets
-import string
-
 from src.domain.user.dtos import (
     CreatePermissionDTO,
     CreateRoleDTO,
+    CreateUserDTO,
     PermissionDTO,
     RoleDTO,
     UserDTO,
@@ -68,7 +66,7 @@ class UserService:
     def get_user_list(self) -> list[UserDTO]:
         return self.__repository.get_user_list()
 
-    def create(self, dto: UserDTO):
+    def create(self, dto: CreateUserDTO):
         self.__repository.create(dto)
 
     def update(self, user_id: int, dto: UserDTO):
@@ -82,12 +80,12 @@ class UserService:
         user.set_password(new_password)
         user.save()
 
-    def generate_password(self) -> str:
-        return secrets.choice(string.ascii_letters + string.digits)
+    # def generate_password(self) -> str:
+    #     return secrets.choice(string.ascii_letters + string.digits)
 
-    def create_user_with_generated_password(self, dto: UserDTO):
-        password = self.generate_password()
-        user = self.__repository.create(dto)
-        user.set_password(password)
-        user.save()
-        return user
+    # def create_user_with_generated_password(self, dto: UserDTO):
+    #     password = self.generate_password()
+    #     user = self.__repository.create(dto)
+    #     user.set_password(password)
+    #     user.save()
+    #     return user

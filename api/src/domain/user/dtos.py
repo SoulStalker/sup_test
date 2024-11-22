@@ -32,6 +32,27 @@ class CreatePermissionDTO:
 
 
 @dataclass
+class CreateUserDTO:
+    name: str
+    surname: str
+    email: str
+    tg_name: str
+    tg_nickname: str
+    google_meet_nickname: str
+    gitlab_nickname: str
+    github_nickname: str
+    avatar: Optional[str]
+    role_id: int
+    permissions_ids: list[int]
+    is_active: Optional[bool]
+    is_admin: Optional[bool]
+    is_superuser: bool
+
+    def set_password(self, password: str):
+        self.password = password
+
+
+@dataclass
 class UserDTO:
     id: int
     name: str
