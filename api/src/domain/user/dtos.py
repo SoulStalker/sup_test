@@ -25,6 +25,13 @@ class PermissionDTO:
 
 
 @dataclass
+class CreatePermissionDTO:
+    name: str
+    code: int
+    description: str
+
+
+@dataclass
 class UserDTO:
     id: int
     name: str

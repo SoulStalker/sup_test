@@ -8,7 +8,13 @@ from src.apps.users.forms import (
     PermissionsForm,
     RoleForm,
 )
-from src.domain.user.dtos import CreateRoleDTO, PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import (
+    CreatePermissionDTO,
+    CreateRoleDTO,
+    PermissionDTO,
+    RoleDTO,
+    UserDTO,
+)
 
 
 class RoleListView(BaseView):
@@ -46,7 +52,6 @@ class RoleCreateView(BaseView):
                     },
                     status=400,
                 )
-        print(form.errors)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -108,36 +113,34 @@ class PermissionListView(BaseView):
 
     def get(self, *args, **kwargs):
         permissions = self.permission_service.get_permission_list()
-
-        return JsonResponse(
-            {"permissions": [vars(permission) for permission in permissions]}
+        # return JsonResponse({"roles": [vars(role) for role in roles]})
+        return render(
+            self.request,
+            "permissions/permission_list.html",
+            {"permissions": permissions},
         )
-
-
-class PermissionDetailView(BaseView):
-    """Просмотр разрешения."""
-
-    def get(self, *args, **kwargs):
-        permission_id = kwargs.get("permission_id")
-        permission = self.permission_service.get_permission(permission_id)
-
-        return JsonResponse(permission)
 
 
 class PermissionCreateView(BaseView):
     """Создание разрешения."""
 
-    def post(self, request):
-        form = PermissionsForm(request.post)
-        if form.is_valid():
-            self.permission_service.create(
-                PermissionDTO(
-                    name=form.cleaned_data["name"],
-                    description=form.cleaned_data["description"],
-                    code=form.cleaned_data["code"],
-                )
-            )
+    def post(self, request, *args, **kwargs):
 
+        print(request.POST)
+
+        form = PermissionsForm(request.POST)
+
+        if form.is_valid():
+            try:
+                self.permission_service.create(
+                    CreatePermissionDTO(
+                        name=form.cleaned_data["name"],
+                        description=form.cleaned_data["description"],
+                        code=form.cleaned_data["code"],
+                    )
+                )
+            except Exception as err:
+                print(err)
             return JsonResponse({"status": "success"}, status=201)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
@@ -147,34 +150,45 @@ class PermissionCreateView(BaseView):
 class PermissionUpdateView(BaseView):
     """Редактирование разрешения."""
 
-    def post(self, request, *args, **kwargs):
-        permission_id = kwargs.get("permission_id")
-        form = PermissionsForm(request.POST)
+    def get(self, request, *args, **kwargs):
+        permission_id = kwargs.get("pk")
+        permission = self.permission_service.get_permission(permission_id)
 
+        data = {
+            "id": permission.id,
+            "name": permission.name,
+            "code": permission.code,
+            "description": permission.description,
+        }
+        return JsonResponse(data)
+
+    def post(self, request, *args, **kwargs):
+        permission_id = kwargs.get("pk")
+        form = PermissionsForm(request.POST)
         if form.is_valid():
-            self.permission_service.update(
-                permission_id=permission_id,
-                dto=PermissionDTO(
-                    name=form.cleaned_data["name"],
-                    description=form.cleaned_data["description"],
-                    code=form.cleaned_data["code"],
-                ),
-            )
+            try:
+                self.permission_service.update(
+                    permission_id=permission_id,
+                    dto=PermissionDTO(
+                        id=permission_id,
+                        name=form.cleaned_data["name"],
+                        description=form.cleaned_data["description"],
+                        code=form.cleaned_data["code"],
+                    ),
+                )
+            except Exception as err:
+                print(err)
             return JsonResponse({"status": "success"}, status=200)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
 
-
-class PermissionDeleteView(BaseView):
-    """Удаление разрешения."""
-
     def delete(self, *args, **kwargs):
-        permission_id = kwargs.get("permission_id")
+        permission_id = kwargs.get("pk")
         try:
             self.permission_service.delete(permission_id)
             return JsonResponse(
-                {"status": "success", "message": "permission deleted"},
+                {"status": "success", "message": "Permission deleted"},
                 status=200,
             )
         except Exception as err:
