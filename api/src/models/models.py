@@ -28,7 +28,7 @@ class Role(models.Model):
         ordering = ["-id"]
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 
 class Permission(models.Model):
