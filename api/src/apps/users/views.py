@@ -8,7 +8,13 @@ from src.apps.users.forms import (
     PermissionsForm,
     RoleForm,
 )
-from src.domain.user.dtos import CreateRoleDTO, PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import (
+    CreatePermissionDTO,
+    CreateRoleDTO,
+    PermissionDTO,
+    RoleDTO,
+    UserDTO,
+)
 
 
 class RoleListView(BaseView):
@@ -118,21 +124,23 @@ class PermissionListView(BaseView):
 class PermissionCreateView(BaseView):
     """Создание разрешения."""
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
 
         print(request.POST)
 
-        form = PermissionsForm(request.post)
+        form = PermissionsForm(request.POST)
 
         if form.is_valid():
-            self.permission_service.create(
-                PermissionDTO(
-                    name=form.cleaned_data["name"],
-                    description=form.cleaned_data["description"],
-                    code=form.cleaned_data["code"],
+            try:
+                self.permission_service.create(
+                    CreatePermissionDTO(
+                        name=form.cleaned_data["name"],
+                        description=form.cleaned_data["description"],
+                        code=form.cleaned_data["code"],
+                    )
                 )
-            )
-
+            except Exception as err:
+                print(err)
             return JsonResponse({"status": "success"}, status=201)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
