@@ -44,4 +44,9 @@ urlpatterns = [
         PermissionUpdateView.as_view(),
         name="update_permission",
     ),
+    path(
+        "permissions/delete/<int:pk>/",
+        PermissionUpdateView.as_view(),
+        name="delete_permission",
+    ),
 ]

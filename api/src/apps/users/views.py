@@ -183,16 +183,12 @@ class PermissionUpdateView(BaseView):
             {"status": "error", "errors": form.errors}, status=400
         )
 
-
-class PermissionDeleteView(BaseView):
-    """Удаление разрешения."""
-
     def delete(self, *args, **kwargs):
-        permission_id = kwargs.get("permission_id")
+        permission_id = kwargs.get("pk")
         try:
             self.permission_service.delete(permission_id)
             return JsonResponse(
-                {"status": "success", "message": "permission deleted"},
+                {"status": "success", "message": "Permission deleted"},
                 status=200,
             )
         except Exception as err:
