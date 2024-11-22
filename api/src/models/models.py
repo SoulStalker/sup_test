@@ -72,6 +72,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         validators=[ModelValidator.validate_email()],
         verbose_name="email",
     )
+    password = models.CharField(
+        max_length=150,
+        validators=[ModelValidator.validate_password()],
+        verbose_name="пароль",
+    )
     tg_name = models.CharField(
         max_length=50,
         unique=True,
@@ -108,8 +113,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     role = models.ForeignKey(
         Role, on_delete=models.CASCADE, null=True, verbose_name="роль"
     )
-    permissions = models.ForeignKey(
-        Permission, on_delete=models.PROTECT, null=True, verbose_name="права"
+    permissions = models.ManyToManyField(
+        to=Permission,
+        related_name="customuser_permissions",
+        verbose_name="права",
     )
     is_active = models.BooleanField(
         default=False, blank=True, null=True, verbose_name="активный статус"

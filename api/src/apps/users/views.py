@@ -11,6 +11,7 @@ from src.apps.users.forms import (
 from src.domain.user.dtos import (
     CreatePermissionDTO,
     CreateRoleDTO,
+    CreateUserDTO,
     PermissionDTO,
     RoleDTO,
     UserDTO,
@@ -201,8 +202,14 @@ class UserListView(BaseView):
     """Список пользователей."""
 
     def get(self, *args, **kwargs):
+        roles = self.role_service.get_role_list()
+        permissions = self.permission_service.get_permission_list()
         users = self.user_service.get_user_list()
-        return render(self.request, "users/users_list.html", {"users": users})
+        return render(
+            self.request,
+            "users/users_list.html",
+            {"users": users, "roles": roles, "permissions": permissions},
+        )
 
 
 class UserDetailView(BaseView):
@@ -218,36 +225,50 @@ class UserDetailView(BaseView):
 class UserCreateView(BaseView):
     """Создание пользователя."""
 
+    # def get(self, request, *args, **kwargs):
+    #     form = CustomUserForm(request.POST)
+    #     roles = self.role_service.get_role_list()
+    #     permissions = self.permission_service.get_permission_list()
+    #
+    #     print(roles)
+    #     print(permissions)
+    #
+    #     return render(
+    #         request,
+    #         "create_meet_modal.html",
+    #         {"form": form, "roles": roles, "permissions": permissions},
+    #     )
+
     def post(self, request, *args, **kwargs):
+
         form = CustomUserForm(request.POST)
         if form.is_valid():
-            user_dto = UserDTO(
-                username=form.cleaned_data["name"],
-                password=form.cleaned_data["password"],
-                email=form.cleaned_data["email"],
-                role_id=form.cleaned_data["role"].id,
-                permission_id=form.cleaned_data["permission"].id,
-                is_active=form.cleaned_data["is_active"],
-                is_staff=form.cleaned_data["is_staff"],
-                is_superuser=form.cleaned_data["is_superuser"],
-                is_admin=form.cleaned_data["is_admin"],
-                name=form.cleaned_data["name"],
-                surname=form.cleaned_data["surname"],
-                tg_name=form.cleaned_data["tg_name"],
-                tg_nickname=form.cleaned_data["tg_nickname"],
-                google_meet_nickname=form.cleaned_data["google_meet_nickname"],
-                gitlab_nickname=form.cleaned_data["gitlab_nickname"],
-                github_nickname=form.cleaned_data["github_nickname"],
-                avatar=form.cleaned_data["avatar"],
+            user_dto = self.user_service.create(
+                CreateUserDTO(
+                    name=form.cleaned_data["name"],
+                    surname=form.cleaned_data["surname"],
+                    email=form.cleaned_data["email"],
+                    tg_name=form.cleaned_data["tg_name"],
+                    tg_nickname=form.cleaned_data["tg_nickname"],
+                    google_meet_nickname=form.cleaned_data[
+                        "google_meet_nickname"
+                    ],
+                    gitlab_nickname=form.cleaned_data["gitlab_nickname"],
+                    github_nickname=form.cleaned_data["github_nickname"],
+                    avatar=form.cleaned_data["avatar"],
+                    role_id=form.cleaned_data["role"].id,
+                    permissions_ids=[
+                        int(permission.id)
+                        for permission in form.cleaned_data["permissions"]
+                    ],
+                    is_active=form.cleaned_data.get("is_active", False),
+                    is_admin=form.cleaned_data.get("is_admin", False),
+                    is_superuser=form.cleaned_data.get("is_superuser", False),
+                )
             )
-            generated_password = (
-                self.user_service.create_user_with_generated_password(user_dto)
-            )
+
             return JsonResponse(
-                {
-                    "status": "success",
-                    "generated_password": generated_password,
-                },
+                {"status": "success", "user": user_dto},
                 status=201,
             )
         return JsonResponse(

@@ -3,6 +3,7 @@ import abc
 from src.domain.user.dtos import (
     CreatePermissionDTO,
     CreateRoleDTO,
+    CreateUserDTO,
     PermissionDTO,
     RoleDTO,
     UserDTO,
@@ -67,7 +68,7 @@ class IUserRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create(self, dto: UserDTO):
+    def create(self, dto: CreateUserDTO):
         raise NotImplementedError
 
     @abc.abstractmethod
