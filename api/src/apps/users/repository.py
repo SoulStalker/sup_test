@@ -132,11 +132,12 @@ class UserRepository(IUserRepository, ABC):
             github_nickname=user.github_nickname,
             avatar=user.avatar,
             role_id=user.role,
-            permission_id=user.permissions,
+            permissions_ids=list(
+                user.permissions.values_list("id", flat=True)
+            ),
             is_active=user.is_active,
             is_admin=user.is_admin,
             is_superuser=user.is_superuser,
-            is_staff=user.is_staff,
             date_joined=user.date_joined,
         )
 
@@ -183,8 +184,6 @@ class UserRepository(IUserRepository, ABC):
         model.is_active = dto.is_active
         model.is_admin = dto.is_admin
         model.is_superuser = dto.is_superuser
-        model.is_staff = dto.is_staff
-
         model.save()
         return self._user_orm_to_dto(model)
 

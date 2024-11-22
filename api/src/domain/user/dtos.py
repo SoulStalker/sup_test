@@ -48,9 +48,6 @@ class CreateUserDTO:
     is_admin: Optional[bool]
     is_superuser: bool
 
-    def set_password(self, password: str):
-        self.password = password
-
 
 @dataclass
 class UserDTO:
@@ -65,9 +62,8 @@ class UserDTO:
     github_nickname: str
     avatar: Optional[str]
     role_id: int
-    permission_id: int
+    permissions_ids: list[int]
     is_active: Optional[bool]
     is_admin: Optional[bool]
     is_superuser: bool
-    is_staff: bool
-    date_joined: datetime
+    date_joined: Optional[datetime]
