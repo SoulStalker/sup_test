@@ -87,8 +87,14 @@ class PermissionRepository(IPermissionRepository, ABC):
         return self._permission_orm_to_dto(model)
 
     def update(self, permission_id: int, dto: PermissionDTO) -> PermissionDTO:
+        print(permission_id)
+
         model = self._get_permission_by_id(permission_id)
+
+        print(model)
+
         model.name = dto.name
+        model.code = dto.code
         model.description = dto.description
 
         model.save()

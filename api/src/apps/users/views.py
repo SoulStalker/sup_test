@@ -150,19 +150,34 @@ class PermissionCreateView(BaseView):
 class PermissionUpdateView(BaseView):
     """Редактирование разрешения."""
 
-    def post(self, request, *args, **kwargs):
-        permission_id = kwargs.get("permission_id")
-        form = PermissionsForm(request.POST)
+    def get(self, request, *args, **kwargs):
+        permission_id = kwargs.get("pk")
+        permission = self.permission_service.get_permission(permission_id)
 
+        data = {
+            "id": permission.id,
+            "name": permission.name,
+            "code": permission.code,
+            "description": permission.description,
+        }
+        return JsonResponse(data)
+
+    def post(self, request, *args, **kwargs):
+        permission_id = kwargs.get("pk")
+        form = PermissionsForm(request.POST)
         if form.is_valid():
-            self.permission_service.update(
-                permission_id=permission_id,
-                dto=PermissionDTO(
-                    name=form.cleaned_data["name"],
-                    description=form.cleaned_data["description"],
-                    code=form.cleaned_data["code"],
-                ),
-            )
+            try:
+                self.permission_service.update(
+                    permission_id=permission_id,
+                    dto=PermissionDTO(
+                        id=permission_id,
+                        name=form.cleaned_data["name"],
+                        description=form.cleaned_data["description"],
+                        code=form.cleaned_data["code"],
+                    ),
+                )
+            except Exception as err:
+                print(err)
             return JsonResponse({"status": "success"}, status=200)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
