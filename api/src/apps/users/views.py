@@ -279,25 +279,41 @@ class UserCreateView(BaseView):
 class UserUpdateView(BaseView):
     """Редактирование пользователя."""
 
+    def get(self, request, *args, **kwargs):
+        user_id = kwargs.get("pk")
+        user = self.user_service.get_user(user_id)
+
+        data = {
+            "id": user.id,
+            "name": user.name,
+            "surname": user.surname,
+            "email": user.email,
+            "tg_name": user.tg_name,
+            "tg_nickname": user.tg_nickname,
+            "google_meet_nickname": user.google_meet_nickname,
+            "gitlab_nickname": user.gitlab_nickname,
+            "github_nickname": user.github_nickname,
+            # "avatar": user.avatar,
+            "role_id": user.role_id.id,
+            "permissions_ids": user.permissions_ids,
+        }
+        return JsonResponse(data)
+
     def post(self, request, *args, **kwargs):
-        user_id = kwargs.get("user_id")
+        user_id = kwargs.get("pk")
         try:
             form = CustomUserForm(request.POST)
+
+            print(form.errors)
+
             if form.is_valid():
                 self.user_service.update(
                     user_id=user_id,
                     dto=UserDTO(
-                        username=form.cleaned_data["name"],
-                        password=form.cleaned_data["password"],
-                        email=form.cleaned_data["email"],
-                        role_id=form.cleaned_data["role"].id,
-                        permission_id=form.cleaned_data["permission"].id,
-                        is_active=form.cleaned_data["is_active"],
-                        is_staff=form.cleaned_data["is_staff"],
-                        is_superuser=form.cleaned_data["is_superuser"],
-                        is_admin=form.cleaned_data["is_admin"],
+                        id=user_id,
                         name=form.cleaned_data["name"],
                         surname=form.cleaned_data["surname"],
+                        email=form.cleaned_data["email"],
                         tg_name=form.cleaned_data["tg_name"],
                         tg_nickname=form.cleaned_data["tg_nickname"],
                         google_meet_nickname=form.cleaned_data[
@@ -306,6 +322,17 @@ class UserUpdateView(BaseView):
                         gitlab_nickname=form.cleaned_data["gitlab_nickname"],
                         github_nickname=form.cleaned_data["github_nickname"],
                         avatar=form.cleaned_data["avatar"],
+                        role_id=form.cleaned_data["role"].id,
+                        permissions_ids=[
+                            int(permission.id)
+                            for permission in form.cleaned_data["permissions"]
+                        ],
+                        is_active=form.cleaned_data.get("is_active", False),
+                        is_admin=form.cleaned_data.get("is_admin", False),
+                        is_superuser=form.cleaned_data.get(
+                            "is_superuser", False
+                        ),
+                        date_joined=form.cleaned_data.get("date_joined", None),
                     ),
                 )
                 return JsonResponse({"status": "success"}, status=200)

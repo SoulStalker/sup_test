@@ -87,12 +87,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// Редактирование мита
+// Редактирование юзера
 document.addEventListener('DOMContentLoaded', function () {
     const edituserButtons = document.querySelectorAll('.edit-user-button');
     const modal = document.getElementById('modal-create-user');
     const form = document.getElementById('create-user-form');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const confirmDeletePopup = document.getElementById('confirm-delete-popup');
+    const confirmDeleteButton = document.getElementById('confirm-delete');
+    const cancelDeleteButton = document.getElementById('cancel-delete');
+
+    let currentDeleteButton = null; // Текущая кнопка для удаления
+    let currentUserId = null; // Текущий ID роли для удаления
     let submitButton = form.querySelector('button[type="submit"]');
 
     edituserButtons.forEach(button => {
@@ -103,182 +111,27 @@ document.addEventListener('DOMContentLoaded', function () {
             modal.classList.remove('hidden');
 
             // Загружаем данные мита через fetch
-            fetch(`/users/edit/${userId}/`)
+            fetch(`/users/update/${userId}/`)
                 .then(response => response.json())
                 .then(data => {
                     // Заполняем форму полученными данными
-                    document.getElementById('title').value = data.title;
-                    document.getElementById('start_time').value = data.start_time;
-                    document.getElementById('category').value = data.category;
-                    document.getElementById('responsible').value = data.responsible;
+                    document.getElementById('name').value = data.name;
+                    document.getElementById('surname').value = data.surname;
+                    document.getElementById('email').value = data.email;
+                    document.getElementById('tg_nickname').value = data.tg_nickname;
+                    document.getElementById('tg_name').value = data.tg_name;
+                    document.getElementById('google_meet_nickname').value = data.google_meet_nickname;
+                    document.getElementById('gitlab_nickname').value = data.gitlab_nickname;
+                    document.getElementById('github_nickname').value = data.github_nickname;
+                    document.getElementById('role').value = data.role_id;
 
-                   // Заполняем статусы участников
-                    data.participants.forEach(participant => {
-                        const participantCheckbox = document.getElementById(`participant_${participant.participant_id}`);
-                        const participantStatusInput = document.getElementById(`participant_status_${participant.participant_id}`);
-                        const container = document.getElementById(`container_${participant.participant_id}`);
-
-                        if (participantCheckbox) {
-                            participantCheckbox.checked = true;  // Отмечаем участника
-                        }
-
-                        if (participantStatusInput) {
-                            participantStatusInput.value = participant.status;  // Проставляем статус
-                        }
-
-                        if (container) {
-                            setStatus(participant.participant_id, participant.status);  // Устанавливаем статус
-                        }
-                    });
+                    // Надо добавить заполнение текущих прав пользователя
 
                     // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `/users/edit/${userId}/`);
+                    form.setAttribute('action', `/users/update/${userId}/`);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
                 .catch(error => console.error('Ошибка:', error));
         });
     });
 });
-
-// Удаление мита
-document.addEventListener('DOMContentLoaded', function() {
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-            const confirmDeletePopup = document.getElementById('confirm-delete-popup');
-            const confirmDeleteButton = document.getElementById('confirm-delete');
-            const cancelDeleteButton = document.getElementById('cancel-delete');
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            let currentuserId = null;
-            let currentDeleteButton = null;
-
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    currentuserId = this.getAttribute('data-user-id');
-                    currentDeleteButton = this;
-                    confirmDeletePopup.classList.remove('hidden');
-                });
-            });
-
-            confirmDeleteButton.addEventListener('click', function() {
-                if (currentuserId) {
-                    deleteuser(currentuserId, currentDeleteButton);
-                }
-                confirmDeletePopup.classList.add('hidden');
-            });
-
-            cancelDeleteButton.addEventListener('click', function() {
-                confirmDeletePopup.classList.add('hidden');
-                currentuserId = null;
-                currentDeleteButton = null;
-            });
-
-            function deleteuser(userId, buttonElement) {
-                fetch(`delete/${userId}/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': csrfToken,
-                        'Content-Type': 'application/json'
-                    },
-                })
-                .then(response => {
-                    if (response.ok) {
-                        buttonElement.closest('tr').remove();
-                    } else {
-                        throw new Error('Ошибка при удалении встречи');
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    alert('Произошла ошибка при удалении встречи');
-                });
-            }
-        });
-
-// Устанавливает статус участника в мите
-function setStatus(userId, status) {
-    const container = document.getElementById(`container_${userId}`);
-    const statusInput = document.getElementById(`participant_status_${userId}`);
-    const participantCheckbox = document.getElementById(`participant_${userId}`);
-
-    // Сброс всех цветов
-    container.children[0].classList.remove('bg-blue-500');
-    container.children[1].classList.remove('bg-green-500');
-    container.children[2].classList.remove('bg-red-500');
-
-    // Установка нового цвета и статуса
-    if (status === 'PRESENT') {
-        container.children[0].classList.add('bg-blue-500');
-    } else if (status === 'WARNED') {
-        container.children[1].classList.add('bg-green-500');
-    } else if (status === 'ABSENT') {
-        container.children[2].classList.add('bg-red-500');
-    }
-
-    statusInput.value = status;
-    participantCheckbox.checked = true;
-}
-
-// Добавление новой категории
-document.addEventListener('DOMContentLoaded', function () {
-    const openCategoryModalButton = document.getElementById('open-add-category-modal');
-    const closeCategoryModalButton = document.getElementById('cancel-add-category');
-    const categoryModal = document.getElementById('modal-add-category');
-    const categoryForm = document.getElementById('add-category-form');
-    const categorySelect = document.getElementById('category');
-
-    // Открытие модального окна для добавления категории
-    openCategoryModalButton.addEventListener('click', function (e) {
-        e.preventDefault();
-        categoryModal.classList.remove('hidden');
-    });
-
-    // Закрытие модального окна для добавления категории
-    closeCategoryModalButton.addEventListener('click', function () {
-        categoryModal.classList.add('hidden');
-        categoryForm.reset(); // Сбрасываем форму при закрытии
-    });
-
-    // Обработка отправки формы добавления категории
-    categoryForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const categoryName = document.getElementById('category-name').value;
-        const url = categoryForm.action;
-
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                'category_name': categoryName
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                const option = new Option(data.category_name, data.category_id);
-                categorySelect.add(option);
-                categorySelect.value = data.category_id;
-
-                categoryModal.classList.add('hidden');
-                categoryForm.reset();
-            } else {
-                alert('Ошибка при добавлении категории: ' + (data.error || 'Неизвестная ошибка'));
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-            alert('Произошла ошибка при отправке формы');
-        });
-    });
-});
-
-
-
-// Обработка поиска
-function handleSearch(event) {
-    tableConfig.searchTerm = event.target.value.toLowerCase();
-    tableConfig.currentPage = 1;
-}
