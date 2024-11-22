@@ -116,15 +116,16 @@ document.addEventListener('DOMContentLoaded', function () {
             modal.classList.remove('hidden');
 
             // Загружаем данные прав через fetch
-            fetch(`/users/permissions/edit/${permissionId}/`)
+            fetch(`/users/permissions/update/${permissionId}/`)
                 .then(response => response.json())
                 .then(data => {
                     // Заполняем форму полученными данными
                     document.getElementById('name').value = data.name;
-                    document.getElementById('color').value = data.color;
+                    document.getElementById('code').value = data.code;
+                    document.getElementById('description').value = data.description;
 
                     // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `/users/permissions/edit/${permissionId}/`);
+                    form.setAttribute('action', `/users/permissions/update/${permissionId}/`);
                     form.querySelector('button[type="submit"]').textContent = 'Сохранить';
                 })
                 .catch(error => console.error('Ошибка при загрузке данных прав:', error));
@@ -192,24 +193,4 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Произошла ошибка при удалении прав');
         });
     }
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    const colorInput = document.getElementById('color');
-    const colorPicker = document.getElementById('color-picker');
-
-    // Устанавливаем цвет по умолчанию в текстовое поле
-    colorInput.value = colorPicker.value.replace('#', '');
-
-    // Обновление текстового поля при выборе цвета
-    colorPicker.addEventListener('input', function() {
-        console.log("Выбранный цвет:", this.value);
-        colorInput.value = this.value.replace('#', ''); // Убираем #
-    });
-
-    // Валидация текстового поля для ввода вручную
-    colorInput.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9A-Fa-f]/g, '').slice(0, 6); // Только hex-символы
-    });
 });

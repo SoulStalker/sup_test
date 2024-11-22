@@ -2,6 +2,7 @@ from django.urls import path
 from src.apps.users.views import (
     PermissionCreateView,
     PermissionListView,
+    PermissionUpdateView,
     RoleCreateView,
     RoleEditView,
     RoleListView,
@@ -40,7 +41,7 @@ urlpatterns = [
     ),
     path(
         "permissions/update/<int:pk>/",
-        RoleEditView.as_view(),
+        PermissionUpdateView.as_view(),
         name="update_permission",
     ),
 ]
