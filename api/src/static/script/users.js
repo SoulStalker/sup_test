@@ -104,34 +104,43 @@ document.addEventListener('DOMContentLoaded', function () {
     let submitButton = form.querySelector('button[type="submit"]');
 
     edituserButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const userId = this.getAttribute('data-user-id');
+    button.addEventListener('click', function () {
+        const userId = this.getAttribute('data-user-id');
 
-            // Открываем модальное окно
-            modal.classList.remove('hidden');
+        // Открываем модальное окно
+        modal.classList.remove('hidden');
 
-            // Загружаем данные мита через fetch
-            fetch(`/users/update/${userId}/`)
-                .then(response => response.json())
-                .then(data => {
-                    // Заполняем форму полученными данными
-                    document.getElementById('name').value = data.name;
-                    document.getElementById('surname').value = data.surname;
-                    document.getElementById('email').value = data.email;
-                    document.getElementById('tg_nickname').value = data.tg_nickname;
-                    document.getElementById('tg_name').value = data.tg_name;
-                    document.getElementById('google_meet_nickname').value = data.google_meet_nickname;
-                    document.getElementById('gitlab_nickname').value = data.gitlab_nickname;
-                    document.getElementById('github_nickname').value = data.github_nickname;
-                    document.getElementById('role').value = data.role_id;
+        // Загружаем данные пользователя через fetch
+        fetch(`/users/update/${userId}/`)
+            .then(response => response.json())
+            .then(data => {
+                // Заполняем форму полученными данными
+                document.getElementById('name').value = data.name;
+                document.getElementById('surname').value = data.surname;
+                document.getElementById('email').value = data.email;
+                document.getElementById('tg_nickname').value = data.tg_nickname;
+                document.getElementById('tg_name').value = data.tg_name;
+                document.getElementById('google_meet_nickname').value = data.google_meet_nickname;
+                document.getElementById('gitlab_nickname').value = data.gitlab_nickname;
+                document.getElementById('github_nickname').value = data.github_nickname;
+                document.getElementById('role').value = data.role_id;
+                document.getElementById('is_active').checked = data.is_active;
+                document.getElementById('is_admin').checked = data.is_admin;
 
-                    // Надо добавить заполнение текущих прав пользователя
+                console.log(data)
 
-                    // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `/users/update/${userId}/`);
-                    submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
-                })
-                .catch(error => console.error('Ошибка:', error));
-        });
+                // Заполняем мультиселект с правами
+                const permissionsSelect = document.getElementById('permissions');
+                Array.from(permissionsSelect.options).forEach(option => {
+                    option.selected = data.permissions_ids.includes(parseInt(option.value, 10));
+                });
+
+                // Меняем action формы для отправки на обновление
+                form.setAttribute('action', `/users/update/${userId}/`);
+                submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
+            })
+            .catch(error => console.error('Ошибка:', error));
     });
+});
+
 });
