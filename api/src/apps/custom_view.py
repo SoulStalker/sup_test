@@ -55,10 +55,7 @@ class BaseView:
         try:
             per_page = int(per_page)
         except (TypeError, ValueError):
-            print("all")
             return queryset
-
-        print(self.request.GET)
 
         paginator = Paginator(queryset, per_page)
         page = self.request.GET.get(self.page_param, 1)

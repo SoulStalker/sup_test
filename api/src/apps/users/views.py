@@ -217,20 +217,6 @@ class UserListView(BaseView):
 class UserCreateView(BaseView):
     """Создание пользователя."""
 
-    # def get(self, request, *args, **kwargs):
-    #     form = CustomUserForm(request.POST)
-    #     roles = self.role_service.get_role_list()
-    #     permissions = self.permission_service.get_permission_list()
-    #
-    #     print(roles)
-    #     print(permissions)
-    #
-    #     return render(
-    #         request,
-    #         "create_meet_modal.html",
-    #         {"form": form, "roles": roles, "permissions": permissions},
-    #     )
-
     def post(self, request, *args, **kwargs):
 
         form = CreateUserForm(request.POST)
