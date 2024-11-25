@@ -11,11 +11,11 @@ from src.apps.users.forms import (
 from src.domain.user.dtos import (
     CreatePermissionDTO,
     CreateRoleDTO,
-    CreateUserDTO,
     PermissionDTO,
     RoleDTO,
     UserDTO,
 )
+from src.domain.user.entity import CreateUserEntity
 
 
 class RoleListView(BaseView):
@@ -245,10 +245,11 @@ class UserCreateView(BaseView):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user_dto = self.user_service.create(
-                CreateUserDTO(
+                CreateUserEntity(
                     name=form.cleaned_data["name"],
                     surname=form.cleaned_data["surname"],
                     email=form.cleaned_data["email"],
+                    password=form.cleaned_data["password"],
                     tg_name=form.cleaned_data["tg_name"],
                     tg_nickname=form.cleaned_data["tg_nickname"],
                     google_meet_nickname=form.cleaned_data[

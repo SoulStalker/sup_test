@@ -1,16 +1,14 @@
-import secrets
-import string
 from abc import ABC
 
 from django.shortcuts import get_list_or_404, get_object_or_404
 from src.domain.user.dtos import (
     CreatePermissionDTO,
     CreateRoleDTO,
-    CreateUserDTO,
     PermissionDTO,
     RoleDTO,
     UserDTO,
 )
+from src.domain.user.entity import CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
@@ -144,10 +142,7 @@ class UserRepository(IUserRepository, ABC):
     def _get_user_by_id(self, user_id: int) -> CustomUser:
         return get_object_or_404(self.model, id=user_id)
 
-    def _generate_password(self) -> str:
-        return secrets.choice(string.ascii_letters + string.digits)
-
-    def create(self, dto: CreateUserDTO) -> UserDTO:
+    def create(self, dto: CreateUserEntity) -> UserDTO:
         model = CustomUser.objects.create(
             name=dto.name,
             surname=dto.surname,
@@ -163,8 +158,10 @@ class UserRepository(IUserRepository, ABC):
             is_admin=dto.is_admin,
             is_superuser=dto.is_superuser,
         )
+        # установка прав пользователю
         model.permissions.set(dto.permissions_ids)
-        model.password = self._generate_password()
+        # шифрование пароля
+        model.set_password(dto.password)
         model.save()
         return self._user_orm_to_dto(model)
 
