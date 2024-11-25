@@ -45,32 +45,6 @@ class CreateUserForm(forms.Form):
         return cleaned_data
 
 
-class CustomUserForm(ModelForm):
-    """Форма модели CustomUser."""
-
-    password = ReadOnlyPasswordHashField(
-        label="пароль",
-        help_text="Пароли не хранятся в открытом виде, поэтому мы не можем показать вам пароль, но вы можете изменить его.",
-    )
-
-    class Meta:
-        model = CustomUser
-        fields = [
-            "name",
-            "surname",
-            "password",
-            "email",
-            "tg_name",
-            "tg_nickname",
-            "google_meet_nickname",
-            "gitlab_nickname",
-            "github_nickname",
-            "role",
-            "avatar",
-            "permissions",
-        ]
-
-
 class CustomUserListForm(ModelForm):
     """Форма для просмотра списка пользователей."""
 

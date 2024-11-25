@@ -127,8 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('is_active').checked = data.is_active;
                 document.getElementById('is_admin').checked = data.is_admin;
 
-                console.log(data)
-
                 // Заполняем мультиселект с правами
                 const permissionsSelect = document.getElementById('permissions');
                 Array.from(permissionsSelect.options).forEach(option => {

@@ -1,11 +1,11 @@
 from src.domain.user.dtos import (
     CreatePermissionDTO,
     CreateRoleDTO,
-    CreateUserDTO,
     PermissionDTO,
     RoleDTO,
     UserDTO,
 )
+from src.domain.user.entity import CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
@@ -66,7 +66,8 @@ class UserService:
     def get_user_list(self) -> list[UserDTO]:
         return self.__repository.get_user_list()
 
-    def create(self, dto: CreateUserDTO):
+    def create(self, dto: CreateUserEntity):
+        dto.password = dto.generate_password()
         self.__repository.create(dto)
 
     def update(self, user_id: int, dto: UserDTO):
