@@ -41,14 +41,26 @@ class BaseView:
     # Определяем, требуется ли аутентификация
     login_required = True
     # Параметры пагинации по умолчанию
-    items_per_page = 10
+    items_per_page = 50
     page_param = "page"
+    per_page = "per_page"
 
     def paginate_queryset(self, queryset):
         """
-        Метод для пагинации queryset
+        Метод для пагинации
         """
-        paginator = Paginator(queryset, self.items_per_page)
+        # page = self.request.GET.get(self.page_param, 1)
+
+        per_page = self.request.GET.get(self.per_page, self.items_per_page)
+        try:
+            per_page = int(per_page)
+        except (TypeError, ValueError):
+            print("all")
+            return queryset
+
+        print(self.request.GET)
+
+        paginator = Paginator(queryset, per_page)
         page = self.request.GET.get(self.page_param, 1)
 
         try:
@@ -58,15 +70,7 @@ class BaseView:
         except EmptyPage:
             paginated_items = paginator.page(paginator.num_pages)
 
-        return {
-            "items": paginated_items,
-            "paginator": paginator,
-            "current_page": paginated_items.number,
-            "total_pages": paginator.num_pages,
-            "has_next": paginated_items.has_next(),
-            "has_previous": paginated_items.has_previous(),
-            "page_range": paginator.page_range,
-        }
+        return paginated_items
 
     @classmethod
     def as_view(cls):
