@@ -297,6 +297,8 @@ class UserUpdateView(BaseView):
             # "avatar": user.avatar,
             "role_id": user.role_id.id,
             "permissions_ids": user.permissions_ids,
+            "is_active": user.is_active,
+            "is_admin": user.is_admin,
         }
         return JsonResponse(data)
 
