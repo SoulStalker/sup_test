@@ -52,14 +52,21 @@
 
                 <!-- Выпадающий список "Меню таблицы" -->
                 <div class="relative mr-4">
-                    <button id="menu-toggle" class="bg-green-custom text-white border border-gray-300 p-2 rounded hover:bg-green-dark">Меню таблицы</button>
-                    <div id="menu-options" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg hidden-menu">
-                        <a href="#" class="block px-4 py-4 text-gray-800 hover:bg-gray-100">Действие 1</a>
-                        <a href="#" class="block px-4 py-4 text-gray-800 hover:bg-gray-100">Действие 2</a>
-                        <a href="#" class="block px-4 py-4 text-gray-800 hover:bg-gray-100">Действие 3</a>
-                    </div>
+                    <select id="role-select" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark focus:ring-2 focus:ring-teal-500">
+                        <option value="Роль">Роль</option>
+                        {% for role in roles %}
+                        <option value="{{ role.id }}">{{ role.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-
+                <div class="relative mr-4">
+                    <select id="team-select"  class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark focus:ring-2 focus:ring-teal-500">
+                        <option value="Команда">Команда</option>
+                        {% for team in teams %}
+                        <option value="{{ team.pk }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
                     <!-- Выпадающий список для количества строк -->
@@ -82,7 +89,7 @@
                 </div>
             </div>
 
-            <table class="min-w-full table-auto">
+            <table id="table-users" class="min-w-full table-auto">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
@@ -102,7 +109,7 @@
                 </thead>
                     <tbody>
                     {% for user in users %}
-                    <tr class="hover:bg-gray-50">
+                    <tr data-role="{{ user.role_id.id }}" class="hover:bg-gray-50">
                         <td class="px-4 py-4 border-b">{{ user.id }}</td>
                         <td class="px-4 py-4 border-b">{{ user.name }}</td>
                         <td class="px-4 py-4 border-b">{{ user.surname }}</td>

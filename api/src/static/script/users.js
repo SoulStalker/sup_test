@@ -155,3 +155,34 @@ document.addEventListener('DOMContentLoaded', function () {
         rowsPerPageForm.submit();
     });
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role-select');
+
+    // Слушаем изменения в селекторе категорий
+    roleSelect.addEventListener('change', function() {
+        const selectedRole = this.value;
+        filterTablesByRole(selectedRole);
+    });
+
+    function filterTablesByRole(role) {
+        const tables = ['table-users'];
+
+        // Проходим по всем таблицам
+        tables.forEach(tableId => {
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const rowRole = row.getAttribute('data-role');
+                // Скрываем или показываем строку в зависимости от выбранной категории
+                if (role === 'Роль' || rowRole === role) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
