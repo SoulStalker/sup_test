@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.users.forms import (
-    CustomUserForm,
+    CreateUserForm,
     PasswordChangeForm,
     PermissionsForm,
     RoleForm,
@@ -212,14 +212,15 @@ class UserListView(BaseView):
         )
 
 
-class UserDetailView(BaseView):
-    """Просмотр пользователя."""
-
-    def get(self, *args, **kwargs):
-        user_id = kwargs.get("user_id")
-        user = self.user_service.get_user(user_id)
-
-        return JsonResponse(user)
+#
+# class UserDetailView(BaseView):
+#     """Просмотр пользователя."""
+#
+#     def get(self, *args, **kwargs):
+#         user_id = kwargs.get("user_id")
+#         user = self.user_service.get_user(user_id)
+#
+#         return JsonResponse(user)
 
 
 class UserCreateView(BaseView):
@@ -241,7 +242,7 @@ class UserCreateView(BaseView):
 
     def post(self, request, *args, **kwargs):
 
-        form = CustomUserForm(request.POST)
+        form = CreateUserForm(request.POST)
         if form.is_valid():
             user_dto = self.user_service.create(
                 CreateUserDTO(
@@ -302,10 +303,7 @@ class UserUpdateView(BaseView):
     def post(self, request, *args, **kwargs):
         user_id = kwargs.get("pk")
         try:
-            form = CustomUserForm(request.POST)
-
-            print(form.errors)
-
+            form = CreateUserForm(request.POST)
             if form.is_valid():
                 self.user_service.update(
                     user_id=user_id,
@@ -322,7 +320,7 @@ class UserUpdateView(BaseView):
                         gitlab_nickname=form.cleaned_data["gitlab_nickname"],
                         github_nickname=form.cleaned_data["github_nickname"],
                         avatar=form.cleaned_data["avatar"],
-                        role_id=form.cleaned_data["role"].id,
+                        role_id=form.cleaned_data["role"],
                         permissions_ids=[
                             int(permission.id)
                             for permission in form.cleaned_data["permissions"]
@@ -336,22 +334,6 @@ class UserUpdateView(BaseView):
                     ),
                 )
                 return JsonResponse({"status": "success"}, status=200)
-        except Exception as err:
-            return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
-            )
-
-
-class UserDeleteView(BaseView):
-    """Удаление пользователя."""
-
-    def delete(self, *args, **kwargs):
-        user_id = kwargs.get("user_id")
-        try:
-            self.user_service.delete(user_id)
-            return JsonResponse(
-                {"status": "success", "message": "User delete"}, status=200
-            )
         except Exception as err:
             return JsonResponse(
                 {"status": "error", "message": str(err)}, status=404

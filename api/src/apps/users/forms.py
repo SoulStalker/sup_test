@@ -4,6 +4,47 @@ from django.forms import ModelForm
 from src.models.models import CustomUser, CustomUserList, Permission, Role
 
 
+class CreateUserForm(forms.Form):
+    """Форма для создания пользователя."""
+
+    password = ReadOnlyPasswordHashField(
+        label="пароль",
+        help_text="Пароли не хранятся в открытом виде, поэтому мы не можем показать вам пароль, но вы можете изменить его.",
+    )
+
+    name = forms.CharField(max_length=30)
+    surname = forms.CharField(max_length=30)
+    email = forms.EmailField(max_length=254)
+    tg_name = forms.CharField(max_length=30, required=False)
+    tg_nickname = forms.CharField(max_length=30, required=False)
+    google_meet_nickname = forms.CharField(max_length=30, required=False)
+    gitlab_nickname = forms.CharField(max_length=30, required=False)
+    github_nickname = forms.CharField(max_length=30, required=False)
+    role = forms.ModelChoiceField(
+        queryset=Role.objects.all(),
+        label="Роль",
+        help_text="Выберите роль пользователя",
+    )
+    avatar = forms.ImageField(required=False)
+    permissions = forms.ModelMultipleChoiceField(
+        queryset=Permission.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    is_active = forms.BooleanField(required=False)
+    is_admin = forms.BooleanField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["permissions"].queryset = Permission.objects.all()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("permissions") is None:
+            cleaned_data["permissions"] = []
+        return cleaned_data
+
+
 class CustomUserForm(ModelForm):
     """Форма модели CustomUser."""
 

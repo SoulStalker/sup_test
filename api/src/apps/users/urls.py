@@ -7,8 +7,6 @@ from src.apps.users.views import (
     RoleEditView,
     RoleListView,
     UserCreateView,
-    UserDeleteView,
-    UserDetailView,
     UserListView,
     UserPasswordChangeView,
     UserUpdateView,
@@ -20,8 +18,6 @@ urlpatterns = [
     path("", UserListView.as_view(), name="users"),
     path("create/", UserCreateView.as_view(), name="create_user"),
     path("update/<int:pk>/", UserUpdateView.as_view(), name="update_user"),
-    path("delete/<int:pk>/", UserDeleteView.as_view(), name="delete_user"),
-    path("<int:pk>/", UserDetailView.as_view(), name="user_detail"),
     path(
         "password/<int:pk>/",
         UserPasswordChangeView.as_view(),
