@@ -205,22 +205,13 @@ class UserListView(BaseView):
         roles = self.role_service.get_role_list()
         permissions = self.permission_service.get_permission_list()
         users = self.user_service.get_user_list()
+        users = self.paginate_queryset(users)
+
         return render(
             self.request,
             "users/users_list.html",
             {"users": users, "roles": roles, "permissions": permissions},
         )
-
-
-#
-# class UserDetailView(BaseView):
-#     """Просмотр пользователя."""
-#
-#     def get(self, *args, **kwargs):
-#         user_id = kwargs.get("user_id")
-#         user = self.user_service.get_user(user_id)
-#
-#         return JsonResponse(user)
 
 
 class UserCreateView(BaseView):
