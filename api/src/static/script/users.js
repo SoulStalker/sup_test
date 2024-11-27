@@ -186,3 +186,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const teamSelect = document.getElementById('team-select');
+
+    // Слушаем изменения в селекторе категорий
+    teamSelect.addEventListener('change', function() {
+        const selectedTeam = this.value;
+        filterTablesByTeam(selectedTeam);
+    });
+
+    function filterTablesByTeam(team) {
+        const tables = ['table-users'];
+
+        // Проходим по всем таблицам
+        tables.forEach(tableId => {
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const rowTeam = row.getAttribute('data-team');
+                // Скрываем или показываем строку в зависимости от выбранной категории
+                if (team === 'Команда' || rowTeam === team) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
