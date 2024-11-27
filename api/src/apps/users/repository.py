@@ -6,15 +6,17 @@ from src.domain.user.dtos import (
     CreateRoleDTO,
     PermissionDTO,
     RoleDTO,
+    TeamDTO,
     UserDTO,
 )
 from src.domain.user.entity import CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
+    ITeamRepository,
     IUserRepository,
 )
-from src.models.models import CustomUser, Permission, Role
+from src.models.models import CustomUser, Permission, Role, Team
 
 
 class RoleRepository(IRoleRepository, ABC):
@@ -130,6 +132,7 @@ class UserRepository(IUserRepository, ABC):
             github_nickname=user.github_nickname,
             avatar=user.avatar,
             role_id=user.role,
+            team_id=user.team,
             permissions_ids=list(
                 user.permissions.values_list("id", flat=True)
             ),
@@ -154,6 +157,7 @@ class UserRepository(IUserRepository, ABC):
             github_nickname=dto.github_nickname,
             avatar=dto.avatar,
             role_id=dto.role_id,
+            team_id=dto.team_id,
             is_active=dto.is_active,
             is_admin=dto.is_admin,
             is_superuser=dto.is_superuser,
@@ -196,3 +200,15 @@ class UserRepository(IUserRepository, ABC):
     def get_user_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
+
+
+class TeamRepository(ITeamRepository, ABC):
+    model = Team
+
+    @classmethod
+    def _team_orm_to_dto(cls, team):
+        return TeamDTO(id=team.id, name=team.name)
+
+    def get_team_list(self) -> list[TeamDTO]:
+        teams = self.model.objects.all()
+        return [self._team_orm_to_dto(team) for team in teams]

@@ -1,12 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from src.models.models import CustomUser, Permission, Role
+from src.models.models import CustomUser, Permission, Role, Team
 
 
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
     list_display = ("name", "color")
     search_fields = ("name",)
+
+
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    list_filter = ("name",)
 
 
 @admin.register(Permission)
@@ -27,6 +33,7 @@ class CustomUserAdmin(UserAdmin):
         "gitlab_nickname",
         "github_nickname",
         "role",
+        "team",
         "is_active",
         "is_admin",
         "date_joined",
@@ -52,6 +59,7 @@ class CustomUserAdmin(UserAdmin):
             {
                 "fields": (
                     "role",
+                    "team",
                     "is_active",
                     "is_admin",
                     "is_staff",

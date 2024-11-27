@@ -32,6 +32,22 @@ class Role(models.Model):
         return f"{self.name}"
 
 
+class Team(models.Model):
+    name = models.CharField(
+        max_length=20,
+        verbose_name="Команда",
+        validators=[ModelValidator.validate_letters_space_only()],
+    )
+
+    class Meta:
+        verbose_name = "команда"
+        verbose_name_plural = "команды"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
 class Permission(models.Model):
     """Модель прав пользователя."""
 
@@ -113,6 +129,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     role = models.ForeignKey(
         Role, on_delete=models.CASCADE, null=True, verbose_name="роль"
+    )
+    team = models.ForeignKey(
+        Team, on_delete=models.CASCADE, null=True, verbose_name="команда"
     )
     permissions = models.ManyToManyField(
         to=Permission,
