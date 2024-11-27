@@ -97,8 +97,18 @@
                             <option value="{{ role.id }}">{{ role.name }}</option>
                         {% endfor %}
                     </select>
-                </div>
 
+                <!-- Команда -->
+
+                   <label for="team" class="block text-sm font-medium text-gray-700">Команда</label>
+                    <select id="team" name="team"
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <option value="">Без команды</option>
+                        {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <!-- Права -->
                 <div>
                     <label for="permissions" class="block text-sm font-medium text-gray-700">Права*</label>

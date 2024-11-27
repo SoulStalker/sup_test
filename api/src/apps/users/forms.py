@@ -1,7 +1,13 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.forms import ModelForm
-from src.models.models import CustomUser, CustomUserList, Permission, Role
+from src.models.models import (
+    CustomUser,
+    CustomUserList,
+    Permission,
+    Role,
+    Team,
+)
 
 
 class CreateUserForm(forms.Form):
@@ -24,6 +30,12 @@ class CreateUserForm(forms.Form):
         queryset=Role.objects.all(),
         label="Роль",
         help_text="Выберите роль пользователя",
+    )
+    team = forms.ModelChoiceField(
+        queryset=Team.objects.all(),
+        label="Команда",
+        help_text="Выберите команду для пользователя",
+        required=False,
     )
     avatar = forms.ImageField(required=False)
     permissions = forms.ModelMultipleChoiceField(

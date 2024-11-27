@@ -101,6 +101,7 @@
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК ГУГЛ МИТ</th>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК В GITLAB</th>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК В GITHUB</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">КОМАНДА</th>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">РОЛЬ</th>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ДАТА РЕГИСТРАЦИИ</th>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">АКТИВНЫЙ</th>
@@ -124,12 +125,14 @@
                         <td class="px-4 py-4 border-b">{{ user.google_meet_nickname }}</td>
                         <td class="px-4 py-4 border-b">{{ user.gitlab_nickname }}</td>
                         <td class="px-4 py-4 border-b">{{ user.github_nickname }}</td>
+                        <td class="px-4 py-4 border-b">{{ user.team_id.name }}</td>
                         <td class="px-4 py-4 border-b">
                             <!-- Цветной кружочек с цветом роли -->
                             <span
                                 class="inline-block w-6 h-6 rounded-full border border-gray-300 align-middle"
                                 style="background-color: #{{ user.role_id.color }};">
                             </span>
+
                             <span class="ml-2 align-middle">{{ user.role_id }}</span>
                         </td>
 
