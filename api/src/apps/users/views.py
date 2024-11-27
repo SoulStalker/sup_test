@@ -204,13 +204,20 @@ class UserListView(BaseView):
     def get(self, *args, **kwargs):
         roles = self.role_service.get_role_list()
         permissions = self.permission_service.get_permission_list()
+        teams = self.team_service.get_team_list()
+
         users = self.user_service.get_user_list()
         users = self.paginate_queryset(users)
 
         return render(
             self.request,
             "users/users_list.html",
-            {"users": users, "roles": roles, "permissions": permissions},
+            {
+                "users": users,
+                "roles": roles,
+                "permissions": permissions,
+                "teams": teams,
+            },
         )
 
 
@@ -236,6 +243,7 @@ class UserCreateView(BaseView):
                     github_nickname=form.cleaned_data["github_nickname"],
                     avatar=form.cleaned_data["avatar"],
                     role_id=form.cleaned_data["role"].id,
+                    team_id=form.cleaned_data["team"].id,
                     permissions_ids=[
                         int(permission.id)
                         for permission in form.cleaned_data["permissions"]
@@ -274,6 +282,7 @@ class UserUpdateView(BaseView):
             "github_nickname": user.github_nickname,
             # "avatar": user.avatar,
             "role_id": user.role_id.id,
+            "team_id": user.team_id.id,
             "permissions_ids": user.permissions_ids,
             "is_active": user.is_active,
             "is_admin": user.is_admin,
@@ -301,6 +310,7 @@ class UserUpdateView(BaseView):
                         github_nickname=form.cleaned_data["github_nickname"],
                         avatar=form.cleaned_data["avatar"],
                         role_id=form.cleaned_data["role"],
+                        team_id=form.cleaned_data["team"],
                         permissions_ids=[
                             int(permission.id)
                             for permission in form.cleaned_data["permissions"]

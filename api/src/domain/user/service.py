@@ -3,12 +3,14 @@ from src.domain.user.dtos import (
     CreateRoleDTO,
     PermissionDTO,
     RoleDTO,
+    TeamDTO,
     UserDTO,
 )
 from src.domain.user.entity import CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
+    ITeamRepository,
     IUserRepository,
 )
 
@@ -90,3 +92,11 @@ class UserService:
     #     user.set_password(password)
     #     user.save()
     #     return user
+
+
+class TeamService:
+    def __init__(self, repository: ITeamRepository):
+        self.__repository = repository
+
+    def get_team_list(self) -> list[TeamDTO]:
+        return self.__repository.get_team_list()

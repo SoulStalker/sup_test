@@ -17,6 +17,7 @@ class CreateUserEntity:
     github_nickname: str
     avatar: Optional[str]
     role_id: int
+    team_id: Optional[int]
     permissions_ids: list[int]
     is_active: Optional[bool]
     is_admin: Optional[bool]
