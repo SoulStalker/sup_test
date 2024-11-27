@@ -162,6 +162,7 @@ class UserRepository(IUserRepository, ABC):
             is_admin=dto.is_admin,
             is_superuser=dto.is_superuser,
         )
+
         # установка прав пользователю
         model.permissions.set(dto.permissions_ids)
         # шифрование пароля
@@ -181,12 +182,14 @@ class UserRepository(IUserRepository, ABC):
         model.github_nickname = dto.github_nickname
         model.avatar = dto.avatar
         model.role = dto.role_id
+        model.team = dto.team_id
         model.permissions.set(dto.permissions_ids)
         model.is_active = dto.is_active
         model.is_admin = dto.is_admin
         model.is_superuser = dto.is_superuser
 
         model.save()
+
         return self._user_orm_to_dto(model)
 
     def delete(self, user_id: int):

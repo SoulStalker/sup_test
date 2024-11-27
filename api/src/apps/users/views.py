@@ -243,7 +243,11 @@ class UserCreateView(BaseView):
                     github_nickname=form.cleaned_data["github_nickname"],
                     avatar=form.cleaned_data["avatar"],
                     role_id=form.cleaned_data["role"].id,
-                    team_id=form.cleaned_data["team"].id,
+                    team_id=(
+                        form.cleaned_data["team"].id
+                        if form.cleaned_data["team"]
+                        else None
+                    ),
                     permissions_ids=[
                         int(permission.id)
                         for permission in form.cleaned_data["permissions"]
@@ -282,7 +286,7 @@ class UserUpdateView(BaseView):
             "github_nickname": user.github_nickname,
             # "avatar": user.avatar,
             "role_id": user.role_id.id,
-            "team_id": user.team_id.id,
+            "team_id": user.team_id.id if user.team_id else None,
             "permissions_ids": user.permissions_ids,
             "is_active": user.is_active,
             "is_admin": user.is_admin,
@@ -310,7 +314,7 @@ class UserUpdateView(BaseView):
                         github_nickname=form.cleaned_data["github_nickname"],
                         avatar=form.cleaned_data["avatar"],
                         role_id=form.cleaned_data["role"],
-                        team_id=form.cleaned_data["team"],
+                        team_id=form.cleaned_data.get("team_id", None),
                         permissions_ids=[
                             int(permission.id)
                             for permission in form.cleaned_data["permissions"]
