@@ -12,7 +12,6 @@ from src.apps.users.repository import (
 )
 from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
-from src.domain.user.service import UserService
 from src.domain.project.service import FeatureService, ProjectService
 from src.domain.user.service import (
     PermissionService,
@@ -57,8 +56,6 @@ class BaseView:
         """
         Метод для пагинации
         """
-        # page = self.request.GET.get(self.page_param, 1)
-
         per_page = self.request.GET.get(self.per_page, self.items_per_page)
         try:
             per_page = int(per_page)
