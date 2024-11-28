@@ -189,9 +189,6 @@ class UserRepository(IUserRepository, ABC):
         model.is_admin = dto.is_admin
         model.is_superuser = dto.is_superuser
 
-        print((dto.team_id))
-        print("role and team", model.role, model.team)
-
         model.save()
 
         return self._user_orm_to_dto(model)

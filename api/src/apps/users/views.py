@@ -244,7 +244,11 @@ class UserCreateView(BaseView):
                     ],
                     gitlab_nickname=form.cleaned_data["gitlab_nickname"],
                     github_nickname=form.cleaned_data["github_nickname"],
-                    avatar=form.cleaned_data["avatar"],
+                    avatar=(
+                        request.FILES["avatar"]
+                        if "avatar" in request.FILES
+                        else None
+                    ),
                     role_id=form.cleaned_data["role"].id,
                     team_id=(
                         form.cleaned_data["team"].id
@@ -277,6 +281,8 @@ class UserUpdateView(BaseView):
         user_id = kwargs.get("pk")
         user = self.user_service.get_user(user_id)
 
+        print(user.avatar)
+
         data = {
             "id": user.id,
             "name": user.name,
@@ -287,7 +293,7 @@ class UserUpdateView(BaseView):
             "google_meet_nickname": user.google_meet_nickname,
             "gitlab_nickname": user.gitlab_nickname,
             "github_nickname": user.github_nickname,
-            # "avatar": user.avatar,
+            "avatar": user.avatar if user.avatar else None,
             "role_id": user.role_id.id,
             "team_id": user.team_id.id if user.team_id else None,
             "permissions_ids": user.permissions_ids,
@@ -301,9 +307,6 @@ class UserUpdateView(BaseView):
         try:
             form = CreateUserForm(request.POST)
             if form.is_valid():
-
-                print(form.cleaned_data)
-
                 self.user_service.update(
                     user_id=user_id,
                     dto=UserDTO(
@@ -318,7 +321,11 @@ class UserUpdateView(BaseView):
                         ],
                         gitlab_nickname=form.cleaned_data["gitlab_nickname"],
                         github_nickname=form.cleaned_data["github_nickname"],
-                        avatar=form.cleaned_data["avatar"],
+                        avatar=(
+                            request.FILES["avatar"]
+                            if "avatar" in request.FILES
+                            else None
+                        ),
                         role_id=form.cleaned_data["role"],
                         team_id=form.cleaned_data.get("team", None),
                         permissions_ids=[
