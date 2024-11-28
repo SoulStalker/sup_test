@@ -5,8 +5,10 @@ from src.domain.user.dtos import (
     CreateRoleDTO,
     PermissionDTO,
     RoleDTO,
+    TeamDTO,
     UserDTO,
 )
+from src.domain.user.entity import CreateUserEntity
 
 
 class IRoleRepository(abc.ABC):
@@ -67,7 +69,7 @@ class IUserRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create(self, dto: UserDTO):
+    def create(self, dto: CreateUserEntity):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -76,4 +78,10 @@ class IUserRepository(abc.ABC):
 
     @abc.abstractmethod
     def delete(self, user_id: int):
+        raise NotImplementedError
+
+
+class ITeamRepository(abc.ABC):
+    @abc.abstractmethod
+    def get_team_list(self) -> list[TeamDTO]:
         raise NotImplementedError

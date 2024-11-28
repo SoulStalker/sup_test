@@ -6,14 +6,17 @@ from src.domain.user.dtos import (
     CreateRoleDTO,
     PermissionDTO,
     RoleDTO,
+    TeamDTO,
     UserDTO,
 )
+from src.domain.user.entity import CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
+    ITeamRepository,
     IUserRepository,
 )
-from src.models.models import CustomUser, Permission, Role
+from src.models.models import CustomUser, Permission, Role, Team
 
 
 class RoleRepository(IRoleRepository, ABC):
@@ -129,20 +132,21 @@ class UserRepository(IUserRepository, ABC):
             github_nickname=user.github_nickname,
             avatar=user.avatar,
             role_id=user.role,
-            permission_id=user.permissions,
+            team_id=user.team,
+            permissions_ids=list(
+                user.permissions.values_list("id", flat=True)
+            ),
             is_active=user.is_active,
             is_admin=user.is_admin,
             is_superuser=user.is_superuser,
-            is_staff=user.is_staff,
             date_joined=user.date_joined,
         )
 
     def _get_user_by_id(self, user_id: int) -> CustomUser:
         return get_object_or_404(self.model, id=user_id)
 
-    def create(self, dto: UserDTO) -> UserDTO:
-        model = self.model(
-            id=dto.id,
+    def create(self, dto: CreateUserEntity) -> UserDTO:
+        model = CustomUser.objects.create(
             name=dto.name,
             surname=dto.surname,
             email=dto.email,
@@ -152,13 +156,17 @@ class UserRepository(IUserRepository, ABC):
             gitlab_nickname=dto.gitlab_nickname,
             github_nickname=dto.github_nickname,
             avatar=dto.avatar,
-            role_id=dto.role,
-            permission_id=dto.permissions,
+            role_id=dto.role_id,
+            team_id=dto.team_id,
             is_active=dto.is_active,
             is_admin=dto.is_admin,
             is_superuser=dto.is_superuser,
-            is_staff=dto.is_staff,
         )
+
+        # установка прав пользователю
+        model.permissions.set(dto.permissions_ids)
+        # шифрование пароля
+        model.set_password(dto.password)
         model.save()
         return self._user_orm_to_dto(model)
 
@@ -174,13 +182,14 @@ class UserRepository(IUserRepository, ABC):
         model.github_nickname = dto.github_nickname
         model.avatar = dto.avatar
         model.role = dto.role_id
-        model.permissions = dto.permission_id
+        model.team = dto.team_id
+        model.permissions.set(dto.permissions_ids)
         model.is_active = dto.is_active
         model.is_admin = dto.is_admin
         model.is_superuser = dto.is_superuser
-        model.is_staff = dto.is_staff
 
         model.save()
+
         return self._user_orm_to_dto(model)
 
     def delete(self, user_id: int):
@@ -194,3 +203,15 @@ class UserRepository(IUserRepository, ABC):
     def get_user_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
+
+
+class TeamRepository(ITeamRepository, ABC):
+    model = Team
+
+    @classmethod
+    def _team_orm_to_dto(cls, team):
+        return TeamDTO(id=team.id, name=team.name)
+
+    def get_team_list(self) -> list[TeamDTO]:
+        teams = self.model.objects.all()
+        return [self._team_orm_to_dto(team) for team in teams]
