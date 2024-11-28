@@ -1,6 +1,7 @@
 from abc import ABC
 
 from django.shortcuts import get_list_or_404, get_object_or_404
+from django.contrib.auth.models import make_password
 from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
 from src.domain.user.repository import (
     IPermissionRepository,
@@ -97,10 +98,9 @@ class PermissionRepository(IPermissionRepository, ABC):
 
 class UserRepository(IUserRepository, ABC):
     model = CustomUser
-
     def _user_orm_to_dto(self, user: CustomUser) -> UserDTO:
         return UserDTO(
-            id=user.id,
+            # id=user.id,
             name=user.name,
             surname=user.surname,
             email=user.email,
@@ -123,7 +123,7 @@ class UserRepository(IUserRepository, ABC):
 
     def create(self, dto: UserDTO) -> UserDTO:
         model = self.model(
-            id=dto.id,
+            # id=dto.id,
             name=dto.name,
             surname=dto.surname,
             email=dto.email,
@@ -133,8 +133,8 @@ class UserRepository(IUserRepository, ABC):
             gitlab_nickname=dto.gitlab_nickname,
             github_nickname=dto.github_nickname,
             avatar=dto.avatar,
-            role_id=dto.role,
-            permission_id=dto.permissions,
+            role_id=dto.role_id,
+            permissions=dto.permission_id,
             is_active=dto.is_active,
             is_admin=dto.is_admin,
             is_superuser=dto.is_superuser,
@@ -175,3 +175,11 @@ class UserRepository(IUserRepository, ABC):
     def get_user_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
+
+    def set_password_registration(self, user_email, password1, password2):
+        model = self.model.objects.get(email=user_email)
+        if password1 == password2:
+            model.password = make_password(password2)
+            model.save()
+        else:
+            raise ValueError('Пароли не совпадают')

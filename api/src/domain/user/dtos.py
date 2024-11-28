@@ -19,7 +19,7 @@ class PermissionDTO:
 
 @dataclass
 class UserDTO:
-    id: int
+    # id: int
     name: str
     surname: str
     email: str

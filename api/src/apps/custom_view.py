@@ -3,8 +3,10 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.apps.projects.repository import FeaturesRepository, ProjectRepository
+from src.apps.users.repository import UserRepository
 from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
+from src.domain.user.service import UserService
 from src.domain.project.service import FeatureService, ProjectService
 
 
@@ -20,6 +22,7 @@ class BaseView:
 
     project_service = ProjectService(ProjectRepository())
     features_service = FeatureService(FeaturesRepository())
+    user_service = UserService(UserRepository())
 
     http_method_names = ["get", "post", "put", "patch", "delete"]
     # Определяем, требуется ли аутентификация

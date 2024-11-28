@@ -11,11 +11,13 @@ from src.apps.users.views import (
     UserListView,
     UserPasswordChangeView,
     UserUpdateView,
+    UserRegistration,
 )
 
 app_name = "apps.users"
 
 urlpatterns = [
+    path("registration/", UserRegistration.as_view(), name="registration"),
     path("users/create/", UserCreateView.as_view(), name="create_user"),
     path(
         "users/update/<int:pk>/", UserUpdateView.as_view(), name="update_user"
