@@ -104,6 +104,11 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
+# Путь для хранения загружаемых файлов
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"  # Папка для загрузок
+
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "models.CustomUser"

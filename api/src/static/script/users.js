@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('gitlab_nickname').value = data.gitlab_nickname;
                 document.getElementById('github_nickname').value = data.github_nickname;
                 document.getElementById('role').value = data.role_id;
+                document.getElementById('team').value = data.team_id;
                 document.getElementById('is_active').checked = data.is_active;
                 document.getElementById('is_admin').checked = data.is_admin;
 
@@ -160,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function() {
     const roleSelect = document.getElementById('role-select');
 
-    // Слушаем изменения в селекторе категорий
+    // Слушаем изменения в селекторе ролей
     roleSelect.addEventListener('change', function() {
         const selectedRole = this.value;
         filterTablesByRole(selectedRole);
@@ -176,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             rows.forEach(row => {
                 const rowRole = row.getAttribute('data-role');
-                // Скрываем или показываем строку в зависимости от выбранной категории
+                // Скрываем или показываем строку в зависимости от выбранной роли
                 if (role === 'Роль' || rowRole === role) {
                     row.style.display = '';
                 } else {
@@ -185,4 +186,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+});
+
+// Загрузка аватара
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('avatar');
+    const dropzone = fileInput.parentElement;
+
+    // Открыть выбор файла при клике на область
+    dropzone.addEventListener('click', function() {
+        fileInput.click(); // Имитация клика на input
+    });
+
+    // Обновление отображения после выбора файла
+    fileInput.addEventListener('change', function() {
+        const fileName = fileInput.files[0]?.name || 'Файл не выбран';
+        dropzone.querySelector('span').textContent = fileName;
+    });
 });
