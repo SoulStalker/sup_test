@@ -63,7 +63,28 @@ FRONTEND_URL=https://junov.net
      python manage.py migrate
      python manage.py createsuperuser
      ```
-    
+    **Если возникла проблема с миграциями, а данные хотим сохранить, можно выгрузить данные из базы и загрузить их в новую базу после миграций:**    
+        
+Выгрузка данных из базы в json:
+
+```
+ python -Xutf-8 manage.py dumpdata --indent=2 --output=sup_test_data.json 
+```
+После этого удаляем базу из контейнера:
+
+```
+docker volume rm sup_db_data
+```
+Повторно проводим миграции после запуска контейнеров:
+
+Загрузка из json в базу
+
+```
+ python manage.py loaddata sup_test_data.json
+```
+
+
+
 6. **Запуск приложения локально**:
     
     
@@ -76,7 +97,7 @@ FRONTEND_URL=https://junov.net
 Мы используем **Ruff**, **Black**, и **isort** для поддержания чистоты и структурированности кода. Установите **pre-commit** для проверки кода перед коммитом:
 
 ```
-pre-cpmmit install
+pre-commit install
 ```
     
 

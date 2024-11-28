@@ -1,6 +1,14 @@
 import abc
 
-from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import (
+    CreatePermissionDTO,
+    CreateRoleDTO,
+    PermissionDTO,
+    RoleDTO,
+    TeamDTO,
+    UserDTO,
+)
+from src.domain.user.entity import CreateUserEntity
 
 
 class IRoleRepository(abc.ABC):
@@ -13,7 +21,7 @@ class IRoleRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create(self, dto: RoleDTO):
+    def create(self, dto: CreateRoleDTO):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -22,6 +30,10 @@ class IRoleRepository(abc.ABC):
 
     @abc.abstractmethod
     def delete(self, role_id: int):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_roles_participants_count(self, role_id: int) -> int:
         raise NotImplementedError
 
 
@@ -35,7 +47,7 @@ class IPermissionRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create(self, dto: PermissionDTO):
+    def create(self, dto: CreatePermissionDTO):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -57,7 +69,7 @@ class IUserRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create(self, dto: UserDTO):
+    def create(self, dto: CreateUserEntity):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -66,4 +78,10 @@ class IUserRepository(abc.ABC):
 
     @abc.abstractmethod
     def delete(self, user_id: int):
+        raise NotImplementedError
+
+
+class ITeamRepository(abc.ABC):
+    @abc.abstractmethod
+    def get_team_list(self) -> list[TeamDTO]:
         raise NotImplementedError

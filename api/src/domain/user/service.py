@@ -1,10 +1,16 @@
-import secrets
-import string
-
-from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import (
+    CreatePermissionDTO,
+    CreateRoleDTO,
+    PermissionDTO,
+    RoleDTO,
+    TeamDTO,
+    UserDTO,
+)
+from src.domain.user.entity import CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
+    ITeamRepository,
     IUserRepository,
 )
 
@@ -19,7 +25,7 @@ class RoleService:
     def get_role_list(self) -> list[RoleDTO]:
         return self.__repository.get_role_list()
 
-    def create(self, dto: RoleDTO):
+    def create(self, dto: CreateRoleDTO):
         self.__repository.create(dto)
 
     def update(self, role_id: int, dto: RoleDTO):
@@ -27,6 +33,9 @@ class RoleService:
 
     def delete(self, role_id: int):
         self.__repository.delete(role_id)
+
+    def get_roles_participants_count(self, role_id: int):
+        return self.__repository.get_roles_participants_count(role_id)
 
 
 class PermissionService:
@@ -39,7 +48,7 @@ class PermissionService:
     def get_permission_list(self) -> list[PermissionDTO]:
         return self.__repository.get_permission_list()
 
-    def create(self, dto: PermissionDTO):
+    def create(self, dto: CreatePermissionDTO):
         self.__repository.create(dto)
 
     def update(self, permission_id: int, dto: PermissionDTO):
@@ -59,7 +68,8 @@ class UserService:
     def get_user_list(self) -> list[UserDTO]:
         return self.__repository.get_user_list()
 
-    def create(self, dto: UserDTO):
+    def create(self, dto: CreateUserEntity):
+        dto.password = dto.generate_password()
         self.__repository.create(dto)
 
     def update(self, user_id: int, dto: UserDTO):
@@ -73,8 +83,8 @@ class UserService:
         user.set_password(new_password)
         user.save()
 
-    def generate_password(self) -> str:
-        return secrets.choice(string.ascii_letters + string.digits)
+    # def generate_password(self) -> str:
+    #     return secrets.choice(string.ascii_letters + string.digits)
 
     def create_user_with_generated_password(self, dto: UserDTO):
         password = self.generate_password()
@@ -85,3 +95,11 @@ class UserService:
 
     def set_password_registration(self, user_email, password1, password2):
         self.__repository.set_password_registration(user_email, password1, password2)
+
+        
+class TeamService:
+    def __init__(self, repository: ITeamRepository):
+        self.__repository = repository
+
+    def get_team_list(self) -> list[TeamDTO]:
+        return self.__repository.get_team_list()

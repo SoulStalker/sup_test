@@ -1,13 +1,12 @@
 from django.urls import path
 from src.apps.users.views import (
+    PermissionCreateView,
+    PermissionListView,
+    PermissionUpdateView,
     RoleCreateView,
-    RoleDeleteView,
-    RoleDetailView,
+    RoleEditView,
     RoleListView,
-    RoleUpdateView,
     UserCreateView,
-    UserDeleteView,
-    UserDetailView,
     UserListView,
     UserPasswordChangeView,
     UserUpdateView,
@@ -19,45 +18,34 @@ app_name = "apps.users"
 urlpatterns = [
     path("registration/", UserRegistration.as_view(), name="registration"),
     path("users/create/", UserCreateView.as_view(), name="create_user"),
+    path("", UserListView.as_view(), name="users"),
+    path("create/", UserCreateView.as_view(), name="create_user"),
+    path("update/<int:pk>/", UserUpdateView.as_view(), name="update_user"),
     path(
-        "users/update/<int:pk>/", UserUpdateView.as_view(), name="update_user"
-    ),
-    path("users/", UserListView.as_view(), name="users"),
-    path(
-        "users/delete/<int:pk>/", UserDeleteView.as_view(), name="delete_user"
-    ),
-    path("users/<int:pk>/", UserDetailView.as_view(), name="user_detail"),
-    path(
-        "users/password/<int:pk>/",
+        "password/<int:pk>/",
         UserPasswordChangeView.as_view(),
         name="update_password",
     ),
-    path("role/create/", RoleCreateView.as_view(), name="create_role"),
-    path("role/update<int:pk>/", RoleUpdateView.as_view(), name="update_role"),
+    # roles
     path("roles/", RoleListView.as_view(), name="roles"),
-    path(
-        "role/delete/<int:pk>/", RoleDeleteView.as_view(), name="delete_role"
-    ),
-    path("role/<int:pk>/", RoleDetailView.as_view(), name="role_detail"),
-    path("permissions/", RoleListView.as_view(), name="permissions"),
-    path(
-        "permissions/<int:pk>/",
-        RoleDetailView.as_view(),
-        name="permission_detail",
-    ),
+    path("roles/create/", RoleCreateView.as_view(), name="create_role"),
+    path("roles/edit/<int:pk>/", RoleEditView.as_view(), name="update_role"),
+    path("roles/delete/<int:pk>/", RoleEditView.as_view(), name="delete_role"),
+    # permissions
+    path("permissions/", PermissionListView.as_view(), name="permissions"),
     path(
         "permissions/create/",
-        RoleCreateView.as_view(),
+        PermissionCreateView.as_view(),
         name="create_permission",
     ),
     path(
         "permissions/update/<int:pk>/",
-        RoleUpdateView.as_view(),
+        PermissionUpdateView.as_view(),
         name="update_permission",
     ),
     path(
         "permissions/delete/<int:pk>/",
-        RoleDeleteView.as_view(),
+        PermissionUpdateView.as_view(),
         name="delete_permission",
     ),
 ]
