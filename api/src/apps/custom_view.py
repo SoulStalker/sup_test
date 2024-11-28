@@ -12,6 +12,7 @@ from src.apps.users.repository import (
 )
 from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
+from src.domain.user.service import UserService
 from src.domain.project.service import FeatureService, ProjectService
 from src.domain.user.service import (
     PermissionService,

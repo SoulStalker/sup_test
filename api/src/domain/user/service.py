@@ -86,14 +86,17 @@ class UserService:
     # def generate_password(self) -> str:
     #     return secrets.choice(string.ascii_letters + string.digits)
 
-    # def create_user_with_generated_password(self, dto: UserDTO):
-    #     password = self.generate_password()
-    #     user = self.__repository.create(dto)
-    #     user.set_password(password)
-    #     user.save()
-    #     return user
+    def create_user_with_generated_password(self, dto: UserDTO):
+        password = self.generate_password()
+        user = self.__repository.create(dto)
+        user.set_password(password)
+        user.save()
+        return user
 
+    def set_password_registration(self, user_email, password1, password2):
+        self.__repository.set_password_registration(user_email, password1, password2)
 
+        
 class TeamService:
     def __init__(self, repository: ITeamRepository):
         self.__repository = repository

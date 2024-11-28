@@ -1,3 +1,5 @@
+import re
+from django.db import IntegrityError
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -7,6 +9,7 @@ from src.apps.users.forms import (
     PasswordChangeForm,
     PermissionsForm,
     RoleForm,
+    RegistrationForm,
 )
 from src.domain.user.dtos import (
     CreatePermissionDTO,
@@ -350,6 +353,57 @@ class UserPasswordChangeView(BaseView):
                 )
                 return JsonResponse({"status": "success"}, status=200)
         except Exception as err:
-            return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(err)}, status=404)
+
+
+class UserRegistration(BaseView):
+    """Регистрация пользователя"""
+
+    def get(self, request, *args, **kwargs):
+        form = RegistrationForm()
+        return render(
+            request,
+            "reg.html",
+            {"form": form},
+        )
+    
+    def post(self, request):
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            try:
+                user_dto = UserDTO(
+                        name = form.cleaned_data['name'],
+                        surname = form.cleaned_data['surname'],
+                        email = form.cleaned_data['email'],
+                        tg_name = form.cleaned_data['tg_name'],
+                        tg_nickname = form.cleaned_data['tg_nickname'],
+                        google_meet_nickname = form.cleaned_data[
+                            'google_meet_nickname'
+                            ],
+                        gitlab_nickname = form.cleaned_data['gitlab_nickname'],
+                        github_nickname = form.cleaned_data['github_nickname'],
+                        role_id=None,
+                        permission_id=None,
+                        is_active=None,
+                        is_admin=False,
+                        is_superuser=False,
+                        is_staff=False,
+                        avatar=None,
+                    )
+                self.user_service.create(user_dto)
+                self.user_service.set_password_registration(
+                    form.cleaned_data['email'],
+                    form.cleaned_data['password1'],
+                    form.cleaned_data['password2']
+                    )
+                return JsonResponse({"status": "success"}, status=201)
+            except IntegrityError as err:
+                matches = re.findall(r'\((.*?)\)', str(err))
+                return JsonResponse(
+                    {"status": "error",
+                     "message": f"Такой {matches[0]} уже существует"},
+                    status=400,
+                )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
