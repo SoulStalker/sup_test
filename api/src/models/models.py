@@ -1,8 +1,10 @@
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from src.models.managers import CustomUserManager
-from ..domain.validators.validators import ModelValidator
+
+from .validators import ModelValidator
 
 
 class Role(models.Model):
@@ -10,13 +12,13 @@ class Role(models.Model):
 
     name = models.CharField(
         max_length=20,
-        validators=[ModelValidator.validate_letters_only],
+        validators=[ModelValidator.validate_letters_only()],
         verbose_name="название",
         help_text="Введите название роли до 20 символов(допускаются только буквы кириллицы и латиницы.",
     )
     color = models.CharField(
         max_length=6,
-        validators=[ModelValidator.validate_color],
+        validators=[ModelValidator.validate_color()],
         verbose_name="цвет",
         help_text="Введите цвет в формате 6 цифр.",
     )
@@ -27,6 +29,22 @@ class Role(models.Model):
         ordering = ["-id"]
 
     def __str__(self):
+        return f"{self.name}"
+
+
+class Team(models.Model):
+    name = models.CharField(
+        max_length=20,
+        verbose_name="Команда",
+        validators=[ModelValidator.validate_letters_space_only()],
+    )
+
+    class Meta:
+        verbose_name = "команда"
+        verbose_name_plural = "команды"
+        ordering = ["name"]
+
+    def __str__(self):
         return self.name
 
 
@@ -35,7 +53,7 @@ class Permission(models.Model):
 
     name = models.CharField(
         max_length=20,
-        validators=[ModelValidator.validate_letters_only],
+        validators=[ModelValidator.validate_letters_space_only()],
         verbose_name="название",
     )
     code = models.IntegerField(verbose_name="код")
@@ -70,6 +88,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         unique=True,
         validators=[ModelValidator.validate_email()],
         verbose_name="email",
+    )
+    password = models.CharField(
+        max_length=150,
+        validators=[ModelValidator.validate_password()],
+        verbose_name="пароль",
     )
     tg_name = models.CharField(
         max_length=50,
@@ -107,8 +130,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     role = models.ForeignKey(
         Role, on_delete=models.CASCADE, null=True, verbose_name="роль"
     )
-    permissions = models.ForeignKey(
-        Permission, on_delete=models.PROTECT, null=True, verbose_name="права"
+    team = models.ForeignKey(
+        Team, on_delete=models.CASCADE, null=True, verbose_name="команда"
+    )
+    permissions = models.ManyToManyField(
+        to=Permission,
+        related_name="customuser_permissions",
+        verbose_name="права",
     )
     is_active = models.BooleanField(
         default=False, blank=True, null=True, verbose_name="активный статус"
@@ -123,6 +151,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         default=False, verbose_name="суперпользователь"
     )
     is_staff = models.BooleanField(default=False, verbose_name="персонал")
+    date_joined = models.DateTimeField(
+        auto_now_add=True, verbose_name="дата регистрации"
+    )
 
     objects = CustomUserManager()
 
@@ -137,6 +168,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.name} {self.surname} {self.email}"
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+        self.save()
 
 
 class CustomUserList(models.Model):

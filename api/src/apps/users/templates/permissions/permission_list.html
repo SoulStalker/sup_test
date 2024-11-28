@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Таблица прав</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+
+</head>
+<body class="bg-gray-100 h-screen flex">
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="w-16 bg-gray-800 text-white flex flex-col items-center p-4 h-screen transition-all duration-300">
+        <button id="sidebar-toggle" class="mb-8 focus:outline-none">
+            <span class="text-xl">&#9776;</span>
+        </button>
+        <div class="space-y-6">
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">🏠</span>
+                <span class="hidden sidebar-text">Главная</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">📊</span>
+                <span class="hidden sidebar-text">Отчеты</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">⚙️</span>
+                <span class="hidden sidebar-text">Настройки</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">🧑‍💼</span>
+                <span class="hidden sidebar-text">Пользователи</span>
+            </a>
+        </div>
+    </div>
+
+{% block content %}
+    <div class="flex-grow p-6">
+        <h1 class="text-2xl font-semibold mb-6">Таблица прав</h1>
+        <div class="bg-white shadow rounded-lg p-6">
+            <!-- Поиск и элементы управления -->
+            <div class="p-4 flex items-center">
+                <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
+                <div class="flex items-center ml-auto space-x-4">
+
+                    <!-- Пагинация -->
+                    <div class="flex items-center space-x-2 pagination">
+                    <div id="pagination-data"
+                         data-current-page="{{ pagination.current_page }}"
+                         data-rows-per-page="{{ pagination.rows_per_page }}"
+                         data-total-pages="{{ pagination.total_pages }}"
+                         data-has-previous="{{ pagination.has_previous }}"
+                         data-has-next="{{ pagination.has_next }}">
+                    </div>
+
+                    <span class="text-green-custom">Пагинация</span>
+                    <button
+                        id="prev-page"
+                        class="bg-green-custom text-white border border-gray-300 p-2 rounded-l hover:bg-green-dark {% if not pagination.has_previous %}opacity-50 cursor-not-allowed{% endif %}"
+                        {% if not pagination.has_previous %}disabled{% endif %}
+                        data-page="{{ pagination.current_page|add:'-1' }}"
+                    >❮</button>
+                    <span id="page-info">
+                        Страница {{ pagination.current_page }} из {{ pagination.total_pages }}
+                    </span>
+                    <button
+                        id="next-page"
+                        class="bg-green-custom text-white border border-gray-300 p-2 rounded-r hover:bg-green-dark {% if not pagination.has_next %}opacity-50 cursor-not-allowed{% endif %}"
+                        {% if not pagination.has_next %}disabled{% endif %}
+                        data-page="{{ pagination.current_page|add:'1' }}"
+                    >❯</button>
+                </div>
+                    <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать права</button>
+                </div>
+            </div>
+            <div id="table-container" class="permissions-table">
+                <!-- Таблица 1 -->
+                 <table id="table-style-1" class="w-full table-fixed mx-auto text-center">
+                    <thead class="bg-gray-100 text-xs">
+                        <tr>
+                            <th class="border-b py-2 w-[50px] whitespace-nowrap">ID</th>
+                            <th class="border-b py-2">НАЗВАНИЕ</th>
+                            <th class="border-b py-2">КОД</th>
+                            <th class="border-b py-2">ОПИСАНИЕ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for permission in permissions %}
+                            <tr>
+                                <td class="border-b py-2 px-4 w-[50px] text-center whitespace-nowrap">{{ permission.id }}</td>
+                                <td class="border-b py-2 px-4">{{ permission.name }}</td>
+                                <td class="border-b py-2 px-4">{{ permission.code }}</td>
+                                <td class="border-b py-2 px-4">{{ permission.description }}</td>
+                                <td class="max-w-[50px] border-b py-2 px-4">
+                                    <button class="text-teal-600 hover:underline edit-permission-button" data-permission-id="{{ permission.id }}">
+                                        <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12.4525 7.73527L12.448 7.74157L6.02434 14.1658L7.94954 16.0903L14.3786 9.66156L12.4525 7.73527Z" fill="#0C0C0C"/>
+                                            <path d="M2.82559 10.9668L4.75078 12.893L11.1753 6.46878L11.1816 6.46428L9.2546 4.53709L2.82559 10.9668Z" fill="#0C0C0C"/>
+                                            <path d="M1.79594 12.4826L0.0462492 17.7313C-0.0617561 18.0544 0.0228479 18.4118 0.26406 18.6521C0.435068 18.824 0.66548 18.9167 0.900391 18.9167C0.995796 18.9167 1.0921 18.9014 1.18481 18.8699L6.43297 17.1201L1.79594 12.4826Z" fill="#0C0C0C"/>
+                                            <path d="M16.9401 1.97531C15.5279 0.563895 13.2292 0.563895 11.817 1.97531L10.5282 3.2643L15.6521 8.38877L16.941 7.09978C18.3532 5.68746 18.3532 3.38762 16.9401 1.97531Z" fill="#0C0C0C"/>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    {% include 'permissions/create_permission_modal.html' %}
+
+    <!--    <script src="{% static 'script/script.js' %}"></script>-->
+
+    <script src="{% static 'script/permissions.js' %}"></script>
+
+{% endblock %}
+
+</body>
+</html>

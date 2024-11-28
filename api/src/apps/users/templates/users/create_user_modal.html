@@ -1,0 +1,144 @@
+<div id="modal-create-user" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-3/4">
+        <h2 class="text-xl mb-6">Создать пользователя</h2>
+        <form id="create-user-form" method="POST" action="{% url 'users:create_user' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Колонки -->
+            <div class="grid grid-cols-2 gap-8">
+                <!-- Первая колонка -->
+                <div>
+                    <!-- Имя -->
+                    <div class="mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700">Имя*</label>
+                        <input type="text" id="name" name="name" maxlength="50"
+                            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    </div>
+
+                    <!-- Фамилия -->
+                    <div class="mb-4">
+                        <label for="surname" class="block text-sm font-medium text-gray-700">Фамилия*</label>
+                        <input type="text" id="surname" name="surname" maxlength="50"
+                            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email*</label>
+                        <input type="email" id="email" name="email" maxlength="50"
+                            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    </div>
+
+                    <!-- Пароль -->
+                    <div class="mb-4">
+                        <label for="password" class="block text-sm font-medium text-gray-700">Пароль*</label>
+                        <input type="text" id="password" name="password" readonly
+                            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full bg-gray-100" placeholder="Будет сгенерирован автоматически">
+                    </div>
+
+                    <!-- Аватар -->
+                    <div class="mb-4">
+                        <label for="avatar" class="block text-sm font-medium text-gray-700">Аватар</label>
+                        <div class="border-dashed border-2 border-gray-300 rounded-lg p-4 cursor-pointer text-center">
+                            <input type="file" id="avatar" name="avatar" accept="image/*"
+                                class="hidden">
+                            <span class="text-gray-500">Перетащите файл сюда или нажмите для загрузки</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вторая колонка -->
+                <div>
+                    <!-- Имя в ТГ -->
+                    <div class="mb-4">
+                        <label for="tg_name" class="block text-sm font-medium text-gray-700">Имя в ТГ*</label>
+                        <input type="text" id="tg_name" name="tg_name" maxlength="50"
+                            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    </div>
+
+                    <!-- Ник ТГ -->
+                    <div class="mb-4">
+                        <label for="tg_nickname" class="block text-sm font-medium text-gray-700">Ник ТГ*</label>
+                        <input type="text" id="tg_nickname" name="tg_nickname" maxlength="50"
+                            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    </div>
+
+                    <!-- Ник в Google Meet -->
+                    <div class="mb-4">
+                        <label for="google_meet_nickname" class="block text-sm font-medium text-gray-700">Ник в Гугл мит*</label>
+                        <input type="text" id="google_meet_nickname" name="google_meet_nickname" maxlength="50"
+                            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    </div>
+
+                    <!-- Ник в GitLab -->
+                    <div class="mb-4">
+                        <label for="gitlab_nickname" class="block text-sm font-medium text-gray-700">Ник в GitLab*</label>
+                        <input type="text" id="gitlab_nickname" name="gitlab_nickname" maxlength="50"
+                            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    </div>
+
+                    <!-- Ник в GitHub -->
+                    <div class="mb-4">
+                        <label for="github_nickname" class="block text-sm font-medium text-gray-700">Ник в GitHub*</label>
+                        <input type="text" id="github_nickname" name="github_nickname" maxlength="50"
+                            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Под второй колонкой -->
+            <div class="grid grid-cols-2 gap-8 mt-6">
+                <!-- Роль -->
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700">Роль*</label>
+                    <select id="role" name="role"
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                        {% for role in roles %}
+                            <option value="{{ role.id }}">{{ role.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                <!-- Команда -->
+
+                   <label for="team" class="block text-sm font-medium text-gray-700">Команда</label>
+                    <select id="team" name="team"
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <option value="">Без команды</option>
+                        {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Права -->
+                <div>
+                    <label for="permissions" class="block text-sm font-medium text-gray-700">Права*</label>
+                    <select id="permissions" name="permissions" multiple
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                        {% for permission in permissions %}
+                            <option value="{{ permission.id }}">{{ permission.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Под аватаром -->
+            <div class="flex items-center mt-6 space-x-4">
+                <label class="flex items-center">
+                    <input type="checkbox" id="is_active" name="is_active" class="mr-2">
+                    Активный
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" id="is_admin" name="is_admin" class="mr-2">
+                    Администратор
+                </label>
+
+                <!-- Кнопки справа -->
+                <div class="ml-auto flex space-x-2">
+                    <button id="cancel-user" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+                    <button id="submit-user" type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
+                    <button id="submit-user-email" type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Создать и отправить Email</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

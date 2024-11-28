@@ -2,13 +2,22 @@ from abc import ABC
 
 from django.shortcuts import get_list_or_404, get_object_or_404
 from django.contrib.auth.models import make_password
-from src.domain.user.dtos import PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.dtos import (
+    CreatePermissionDTO,
+    CreateRoleDTO,
+    PermissionDTO,
+    RoleDTO,
+    TeamDTO,
+    UserDTO,
+)
+from src.domain.user.entity import CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
+    ITeamRepository,
     IUserRepository,
 )
-from src.models.models import CustomUser, Permission, Role
+from src.models.models import CustomUser, Permission, Role, Team
 
 
 class RoleRepository(IRoleRepository, ABC):
@@ -24,7 +33,7 @@ class RoleRepository(IRoleRepository, ABC):
     def _get_role_by_id(self, role_id: int) -> Role:
         return get_object_or_404(self.model, id=role_id)
 
-    def create(self, dto: RoleDTO) -> RoleDTO:
+    def create(self, dto: CreateRoleDTO) -> RoleDTO:
         model = self.model(
             name=dto.name,
             color=dto.color,
@@ -53,6 +62,10 @@ class RoleRepository(IRoleRepository, ABC):
         models = get_list_or_404(self.model)
         return [self._role_orm_to_dto(model) for model in models]
 
+    def get_roles_participants_count(self, role_id: int) -> int:
+        participants = CustomUser.objects.filter(role_id=role_id).count()
+        return participants
+
 
 class PermissionRepository(IPermissionRepository, ABC):
     model = Permission
@@ -60,6 +73,7 @@ class PermissionRepository(IPermissionRepository, ABC):
     def _permission_orm_to_dto(self, permission: Permission) -> PermissionDTO:
         return PermissionDTO(
             id=permission.id,
+            code=permission.code,
             name=permission.name,
             description=permission.description,
         )
@@ -67,17 +81,24 @@ class PermissionRepository(IPermissionRepository, ABC):
     def _get_permission_by_id(self, permission_id: int) -> Permission:
         return get_object_or_404(self.model, id=permission_id)
 
-    def create(self, dto: PermissionDTO) -> PermissionDTO:
+    def create(self, dto: CreatePermissionDTO) -> PermissionDTO:
         model = self.model(
             name=dto.name,
+            code=dto.code,
             description=dto.description,
         )
         model.save()
         return self._permission_orm_to_dto(model)
 
     def update(self, permission_id: int, dto: PermissionDTO) -> PermissionDTO:
+        print(permission_id)
+
         model = self._get_permission_by_id(permission_id)
+
+        print(model)
+
         model.name = dto.name
+        model.code = dto.code
         model.description = dto.description
 
         model.save()
@@ -111,11 +132,14 @@ class UserRepository(IUserRepository, ABC):
             github_nickname=user.github_nickname,
             avatar=user.avatar,
             role_id=user.role,
-            permission_id=user.permissions,
+            team_id=user.team,
+            permissions_ids=list(
+                user.permissions.values_list("id", flat=True)
+            ),
             is_active=user.is_active,
             is_admin=user.is_admin,
             is_superuser=user.is_superuser,
-            is_staff=user.is_staff,
+            date_joined=user.date_joined,
         )
 
     def _get_user_by_id(self, user_id: int) -> CustomUser:
@@ -155,13 +179,14 @@ class UserRepository(IUserRepository, ABC):
         model.github_nickname = dto.github_nickname
         model.avatar = dto.avatar
         model.role = dto.role_id
-        model.permissions = dto.permission_id
+        model.team = dto.team_id
+        model.permissions.set(dto.permissions_ids)
         model.is_active = dto.is_active
         model.is_admin = dto.is_admin
         model.is_superuser = dto.is_superuser
-        model.is_staff = dto.is_staff
 
         model.save()
+
         return self._user_orm_to_dto(model)
 
     def delete(self, user_id: int):
@@ -176,6 +201,7 @@ class UserRepository(IUserRepository, ABC):
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
 
+
     def set_password_registration(self, user_email, password1, password2):
         model = self.model.objects.get(email=user_email)
         if password1 == password2:
@@ -183,3 +209,16 @@ class UserRepository(IUserRepository, ABC):
             model.save()
         else:
             raise ValueError('Пароли не совпадают')
+
+
+class TeamRepository(ITeamRepository, ABC):
+    model = Team
+
+    @classmethod
+    def _team_orm_to_dto(cls, team):
+        return TeamDTO(id=team.id, name=team.name)
+
+    def get_team_list(self) -> list[TeamDTO]:
+        teams = self.model.objects.all()
+        return [self._team_orm_to_dto(team) for team in teams]
+
