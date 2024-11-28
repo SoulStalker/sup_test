@@ -17,6 +17,12 @@ class CreateRoleDTO:
 
 
 @dataclass
+class TeamDTO:
+    id: int
+    name: str
+
+
+@dataclass
 class PermissionDTO:
     id: int
     name: str
@@ -44,9 +50,9 @@ class UserDTO:
     github_nickname: str
     avatar: Optional[str]
     role_id: int
-    permission_id: int
+    team_id: Optional[int]
+    permissions_ids: list[int]
     is_active: Optional[bool]
     is_admin: Optional[bool]
     is_superuser: bool
-    is_staff: bool
-    date_joined: datetime
+    date_joined: Optional[datetime]

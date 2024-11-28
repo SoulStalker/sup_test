@@ -1,33 +1,60 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.forms import ModelForm
-from src.models.models import CustomUser, CustomUserList, Permission, Role
+from src.models.models import (
+    CustomUser,
+    CustomUserList,
+    Permission,
+    Role,
+    Team,
+)
 
 
-class CustomUserForm(ModelForm):
-    """Форма модели CustomUser."""
+class CreateUserForm(forms.Form):
+    """Форма для создания пользователя."""
 
     password = ReadOnlyPasswordHashField(
         label="пароль",
         help_text="Пароли не хранятся в открытом виде, поэтому мы не можем показать вам пароль, но вы можете изменить его.",
     )
 
-    class Meta:
-        model = CustomUser
-        fields = [
-            "name",
-            "surname",
-            "password",
-            "email",
-            "tg_name",
-            "tg_nickname",
-            "google_meet_nickname",
-            "gitlab_nickname",
-            "github_nickname",
-            "role",
-            "avatar",
-            "permissions",
-        ]
+    name = forms.CharField(max_length=30)
+    surname = forms.CharField(max_length=30)
+    email = forms.EmailField(max_length=254)
+    tg_name = forms.CharField(max_length=30, required=False)
+    tg_nickname = forms.CharField(max_length=30, required=False)
+    google_meet_nickname = forms.CharField(max_length=30, required=False)
+    gitlab_nickname = forms.CharField(max_length=30, required=False)
+    github_nickname = forms.CharField(max_length=30, required=False)
+    role = forms.ModelChoiceField(
+        queryset=Role.objects.all(),
+        label="Роль",
+        help_text="Выберите роль пользователя",
+    )
+    team = forms.ModelChoiceField(
+        queryset=Team.objects.all(),
+        label="Команда",
+        help_text="Выберите команду для пользователя",
+        required=False,
+    )
+    avatar = forms.ImageField(required=False)
+    permissions = forms.ModelMultipleChoiceField(
+        queryset=Permission.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    is_active = forms.BooleanField(required=False)
+    is_admin = forms.BooleanField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["permissions"].queryset = Permission.objects.all()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("permissions") is None:
+            cleaned_data["permissions"] = []
+        return cleaned_data
 
 
 class CustomUserListForm(ModelForm):
