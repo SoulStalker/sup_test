@@ -129,9 +129,6 @@ class PermissionCreateView(BaseView):
     """Создание разрешения."""
 
     def post(self, request, *args, **kwargs):
-
-        print(request.POST)
-
         form = PermissionsForm(request.POST)
 
         if form.is_valid():
@@ -280,9 +277,6 @@ class UserUpdateView(BaseView):
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get("pk")
         user = self.user_service.get_user(user_id)
-
-        print(user.avatar)
-
         data = {
             "id": user.id,
             "name": user.name,
@@ -293,7 +287,7 @@ class UserUpdateView(BaseView):
             "google_meet_nickname": user.google_meet_nickname,
             "gitlab_nickname": user.gitlab_nickname,
             "github_nickname": user.github_nickname,
-            "avatar": user.avatar if user.avatar else None,
+            "avatar": user.avatar.url if user.avatar else None,
             "role_id": user.role_id.id,
             "team_id": user.team_id.id if user.team_id else None,
             "permissions_ids": user.permissions_ids,
