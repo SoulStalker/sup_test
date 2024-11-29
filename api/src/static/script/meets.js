@@ -39,6 +39,22 @@ document.getElementById('style2-button').addEventListener('click', function() {
     document.querySelector('#style1-button svg').classList.add('fill-[#FCFEFF]');
 });
 
+// Пагинация
+document.addEventListener('DOMContentLoaded', function () {
+    const rowsPerPageSelect = document.getElementById('rows-per-page');
+    const rowsPerPageForm = document.getElementById('rows-per-page-form');
+
+    rowsPerPageSelect.addEventListener('change', function () {
+        // Сбрасываем номер страницы на 1 при изменении количества элементов
+        const pageInput = rowsPerPageForm.querySelector('input[name="page"]');
+        if (pageInput) {
+            pageInput.value = '1';
+        }
+        rowsPerPageForm.submit();
+    });
+});
+
+
 // Фильтрация по категориям
 document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('category-select');
