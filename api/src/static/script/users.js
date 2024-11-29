@@ -110,10 +110,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // Открываем модальное окно
         modal.classList.remove('hidden');
 
+
+
         // Загружаем данные пользователя через fetch
         fetch(`/users/update/${userId}/`)
             .then(response => response.json())
             .then(data => {
+
+
                 // Заполняем форму полученными данными
                 document.getElementById('name').value = data.name;
                 document.getElementById('surname').value = data.surname;
@@ -124,8 +128,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('gitlab_nickname').value = data.gitlab_nickname;
                 document.getElementById('github_nickname').value = data.github_nickname;
                 document.getElementById('role').value = data.role_id;
+                document.getElementById('team').value = data.team_id;
                 document.getElementById('is_active').checked = data.is_active;
                 document.getElementById('is_admin').checked = data.is_admin;
+
+                // Обновление аватара
+                const avatarContainer = document.querySelector('.mb-4');
+                const avatarImg = avatarContainer.querySelector('img');
+                const avatarSpan = avatarContainer.querySelector('span');
+
+                if (data.avatar) {
+                    if (avatarImg) {
+                        avatarImg.src = data.avatar;
+                        avatarImg.style.display = 'block';
+                    } else {
+                        const img = document.createElement('img');
+                        img.src = data.avatar;
+                        img.alt = 'Аватар';
+                        img.style.width = '100px';
+                        img.style.height = '100px';
+                        avatarContainer.insertBefore(img, avatarContainer.querySelector('.border-dashed'));
+                    }
+                    if (avatarSpan) avatarSpan.style.display = 'none';
+                } else {
+                    if (avatarImg) avatarImg.style.display = 'none';
+                    if (avatarSpan) avatarSpan.style.display = 'block';
+                }
 
                 // Заполняем мультиселект с правами
                 const permissionsSelect = document.getElementById('permissions');
@@ -160,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function() {
     const roleSelect = document.getElementById('role-select');
 
-    // Слушаем изменения в селекторе категорий
+    // Слушаем изменения в селекторе ролей
     roleSelect.addEventListener('change', function() {
         const selectedRole = this.value;
         filterTablesByRole(selectedRole);
@@ -176,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             rows.forEach(row => {
                 const rowRole = row.getAttribute('data-role');
-                // Скрываем или показываем строку в зависимости от выбранной категории
+                // Скрываем или показываем строку в зависимости от выбранной роли
                 if (role === 'Роль' || rowRole === role) {
                     row.style.display = '';
                 } else {
@@ -185,4 +213,52 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const teamSelect = document.getElementById('team-select');
+
+    // Слушаем изменения в селекторе команд
+    teamSelect.addEventListener('change', function() {
+        const selectedTeam = this.value;
+        filterTablesByTeam(selectedTeam);
+    });
+
+    function filterTablesByTeam(team) {
+        const tables = ['table-users'];
+
+        // Проходим по всем таблицам
+        tables.forEach(tableId => {
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const rowTeam = row.getAttribute('data-team');
+                // Скрываем или показываем строку в зависимости от выбранной команды
+                if (team === 'Команда' || rowTeam === team) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+
+// Загрузка аватара
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('avatar');
+    const dropzone = fileInput.parentElement;
+
+    // Открыть выбор файла при клике на область
+    dropzone.addEventListener('click', function() {
+        fileInput.click(); // Имитация клика на input
+    });
+
+    // Обновление отображения после выбора файла
+    fileInput.addEventListener('change', function() {
+        const fileName = fileInput.files[0]?.name || 'Файл не выбран';
+        dropzone.querySelector('span').textContent = fileName;
+    });
 });

@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -63,7 +64,7 @@
                     <select id="team-select"  class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark focus:ring-2 focus:ring-teal-500">
                         <option value="Команда">Команда</option>
                         {% for team in teams %}
-                        <option value="{{ team.pk }}">{{ team.name }}</option>
+                        <option value="{{ team.id }}">{{ team.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -110,7 +111,7 @@
                 </thead>
                     <tbody>
                     {% for user in users %}
-                    <tr data-role="{{ user.role_id.id }}" class="hover:bg-gray-50">
+                    <tr data-role="{{ user.role_id.id }}" data-team="{{ user.team_id.id }}" class="hover:bg-gray-50">
                         <td class="px-4 py-4 border-b">{{ user.id }}</td>
                         <td class="px-4 py-4 border-b">{{ user.name }}</td>
                         <td class="px-4 py-4 border-b">{{ user.surname }}</td>
@@ -168,9 +169,6 @@
         {% include 'users/create_user_modal.html' %}
 
     </div>
-
-
-
 
     <script src="{% static 'script/users.js' %}"></script>
 
