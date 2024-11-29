@@ -12,7 +12,8 @@ class ModelValidator:
             "letters_space_only": r"^[а-яА-ЯёЁa-zA-Z]+(?:\s[а-яА-ЯёЁa-zA-Z]+)*$",  # Буквы и пробелы
             "email": r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",  # Email
             "letters_digits_symbols": r"^[a-zA-Zа-яА-Я0-9._%+-]+$",  # Буквы, цифры и спец. символы
-            "hex_color": r"^([A-Fa-f0-9]{6})$",  # 6 цифр для цвета
+            "hex_color": r"^([A-Fa-f0-9]{6})$",
+            "password": r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$",  # пароль
         }
 
     @staticmethod
@@ -76,4 +77,15 @@ class ModelValidator:
             regex=ModelValidator._get_regex_patterns()["hex_color"],
             message="Цвет должен быть в формате RRGGBB",
             code="invalid_color",
+        )
+
+    @staticmethod
+    def validate_password():
+        """
+        Валидатор, проверяющий пароль.
+        """
+        return RegexValidator(
+            regex=ModelValidator._get_regex_patterns()["password"],
+            message="Пароль должен содержать строчные и заглавные буквы и цифры",
+            code="invalid_password",
         )

@@ -18,8 +18,9 @@ class InvitesView(BaseView):
                 )
             )
         invites = self.invite_service.get_invites_list()
+        invites = self.paginate_queryset(invites)
         context = {"invites": invites}
-        return render(self.request, "invites.html", context)
+        return render(self.request, "invites_list.html", context)
 
     def post(self, *args, **kwargs):
         invite = self.invite_service.create()

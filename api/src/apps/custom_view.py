@@ -7,12 +7,18 @@ from src.apps.projects.repository import FeaturesRepository, ProjectRepository
 from src.apps.users.repository import (
     PermissionRepository,
     RoleRepository,
+    TeamRepository,
     UserRepository,
 )
 from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.project.service import FeatureService, ProjectService
-from src.domain.user.service import PermissionService, RoleService, UserService
+from src.domain.user.service import (
+    PermissionService,
+    RoleService,
+    TeamService,
+    UserService,
+)
 
 
 class BaseView:
@@ -35,20 +41,28 @@ class BaseView:
     user_service = UserService(UserRepository())
     role_service = RoleService(RoleRepository())
     permission_service = PermissionService(PermissionRepository())
+    team_service = TeamService(TeamRepository())
 
     # Разрешенные методы
     http_method_names = ["get", "post", "put", "patch", "delete"]
     # Определяем, требуется ли аутентификация
     login_required = True
     # Параметры пагинации по умолчанию
-    items_per_page = 10
+    items_per_page = 50
     page_param = "page"
+    per_page = "per_page"
 
     def paginate_queryset(self, queryset):
         """
-        Метод для пагинации queryset
+        Метод для пагинации
         """
-        paginator = Paginator(queryset, self.items_per_page)
+        per_page = self.request.GET.get(self.per_page, self.items_per_page)
+        try:
+            per_page = int(per_page)
+        except (TypeError, ValueError):
+            return queryset
+
+        paginator = Paginator(queryset, per_page)
         page = self.request.GET.get(self.page_param, 1)
 
         try:
@@ -58,15 +72,7 @@ class BaseView:
         except EmptyPage:
             paginated_items = paginator.page(paginator.num_pages)
 
-        return {
-            "items": paginated_items,
-            "paginator": paginator,
-            "current_page": paginated_items.number,
-            "total_pages": paginator.num_pages,
-            "has_next": paginated_items.has_next(),
-            "has_previous": paginated_items.has_previous(),
-            "page_range": paginator.page_range,
-        }
+        return paginated_items
 
     @classmethod
     def as_view(cls):

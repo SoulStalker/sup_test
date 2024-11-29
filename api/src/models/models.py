@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from src.models.managers import CustomUserManager
@@ -26,6 +27,22 @@ class Role(models.Model):
         verbose_name = "роль"
         verbose_name_plural = "роли"
         ordering = ["-id"]
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Team(models.Model):
+    name = models.CharField(
+        max_length=20,
+        verbose_name="Команда",
+        validators=[ModelValidator.validate_letters_space_only()],
+    )
+
+    class Meta:
+        verbose_name = "команда"
+        verbose_name_plural = "команды"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -72,6 +89,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         validators=[ModelValidator.validate_email()],
         verbose_name="email",
     )
+    password = models.CharField(
+        max_length=150,
+        validators=[ModelValidator.validate_password()],
+        verbose_name="пароль",
+    )
     tg_name = models.CharField(
         max_length=50,
         unique=True,
@@ -103,13 +125,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name="github ник",
     )
     avatar = models.ImageField(
-        upload_to="avatars/", blank=True, null=True, verbose_name="аватар"
+        upload_to="images/avatars/",
+        blank=True,
+        null=True,
+        verbose_name="аватар",
     )
     role = models.ForeignKey(
         Role, on_delete=models.CASCADE, null=True, verbose_name="роль"
     )
-    permissions = models.ForeignKey(
-        Permission, on_delete=models.PROTECT, null=True, verbose_name="права"
+    team = models.ForeignKey(
+        Team, on_delete=models.CASCADE, null=True, verbose_name="команда"
+    )
+    permissions = models.ManyToManyField(
+        to=Permission,
+        related_name="customuser_permissions",
+        verbose_name="права",
     )
     is_active = models.BooleanField(
         default=False, blank=True, null=True, verbose_name="активный статус"
@@ -141,6 +171,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.name} {self.surname} {self.email}"
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+        self.save()
 
 
 class CustomUserList(models.Model):

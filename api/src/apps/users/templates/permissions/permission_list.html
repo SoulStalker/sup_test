@@ -44,34 +44,20 @@
             <div class="p-4 flex items-center">
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
+                    <!-- Выпадающий список для количества строк -->
+                    <form id="rows-per-page-form" method="get" class="flex items-center">
+                        <label for="rows-per-page" class="mr-2 text-green-custom">Строк на странице:</label>
+                        <select name="per_page" id="rows-per-page" class="p-2 border border-gray-300 rounded bg-green-custom text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="10" {% if request.GET.per_page == '10' %}selected{% endif %}>10</option>
+                            <option value="20" {% if request.GET.per_page == '20' %}selected{% endif %}>20</option>
+                            <option value="30" {% if request.GET.per_page == '30' %}selected{% endif %}>30</option>
+                            <option value="50" {% if request.GET.per_page|default:'50' == '50' %}selected{% endif %}>50</option>
+                            <option value="Все" {% if request.GET.per_page == 'Все' %}selected{% endif %}>Все</option>
+                        </select>
+                        <input type="hidden" name="page" value="{{ page.number }}">
 
-                    <!-- Пагинация -->
-                    <div class="flex items-center space-x-2 pagination">
-                    <div id="pagination-data"
-                         data-current-page="{{ pagination.current_page }}"
-                         data-rows-per-page="{{ pagination.rows_per_page }}"
-                         data-total-pages="{{ pagination.total_pages }}"
-                         data-has-previous="{{ pagination.has_previous }}"
-                         data-has-next="{{ pagination.has_next }}">
-                    </div>
-
-                    <span class="text-green-custom">Пагинация</span>
-                    <button
-                        id="prev-page"
-                        class="bg-green-custom text-white border border-gray-300 p-2 rounded-l hover:bg-green-dark {% if not pagination.has_previous %}opacity-50 cursor-not-allowed{% endif %}"
-                        {% if not pagination.has_previous %}disabled{% endif %}
-                        data-page="{{ pagination.current_page|add:'-1' }}"
-                    >❮</button>
-                    <span id="page-info">
-                        Страница {{ pagination.current_page }} из {{ pagination.total_pages }}
-                    </span>
-                    <button
-                        id="next-page"
-                        class="bg-green-custom text-white border border-gray-300 p-2 rounded-r hover:bg-green-dark {% if not pagination.has_next %}opacity-50 cursor-not-allowed{% endif %}"
-                        {% if not pagination.has_next %}disabled{% endif %}
-                        data-page="{{ pagination.current_page|add:'1' }}"
-                    >❯</button>
-                </div>
+                    </form>
+                    {% include "pagination.html" with page=users %}
                     <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать права</button>
                 </div>
             </div>
@@ -117,7 +103,7 @@
     <!--    <script src="{% static 'script/script.js' %}"></script>-->
 
     <script src="{% static 'script/permissions.js' %}"></script>
-
+    <script src="{% static 'script/pagination.js' %}"></script>
 {% endblock %}
 
 </body>
