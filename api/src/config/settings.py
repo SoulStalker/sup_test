@@ -106,8 +106,9 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 # Путь для хранения загружаемых файлов
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"  # Папка для загрузок
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+print(MEDIA_ROOT)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

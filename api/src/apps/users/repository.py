@@ -1,5 +1,7 @@
+import os
 from abc import ABC
 
+from django.conf import settings
 from django.contrib.auth.models import make_password
 from django.shortcuts import get_list_or_404, get_object_or_404
 from src.domain.user.dtos import (
@@ -91,12 +93,7 @@ class PermissionRepository(IPermissionRepository, ABC):
         return self._permission_orm_to_dto(model)
 
     def update(self, permission_id: int, dto: PermissionDTO) -> PermissionDTO:
-        print(permission_id)
-
         model = self._get_permission_by_id(permission_id)
-
-        print(model)
-
         model.name = dto.name
         model.code = dto.code
         model.description = dto.description
@@ -119,6 +116,7 @@ class PermissionRepository(IPermissionRepository, ABC):
 
 class UserRepository(IUserRepository, ABC):
     model = CustomUser
+    avatar_path = os.path.join(settings.MEDIA_ROOT, "images", "avatars")
 
     def _user_orm_to_dto(self, user: CustomUser) -> UserDTO:
         return UserDTO(
