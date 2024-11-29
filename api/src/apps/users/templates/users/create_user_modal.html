@@ -35,16 +35,23 @@
                         <input type="text" id="password" name="password" readonly
                             class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full bg-gray-100" placeholder="Будет сгенерирован автоматически">
                     </div>
-
                     <!-- Аватар -->
                     <div class="mb-4">
                         <label for="avatar" class="block text-sm font-medium text-gray-700">Аватар</label>
+                        <div class="flex items-center space-x-4">
+                            {% if user.avatar %}
+                                <img src="/media/{{ user.avatar }}" alt="Аватар" style="width: 100px; height: 100px;" class="rounded-full">
+                            {% else %}
+                                <span>Нет аватара</span>
+                            {% endif %}
+                        </div>
+
                         <div class="border-dashed border-2 border-gray-300 rounded-lg p-4 cursor-pointer text-center">
-                            <input type="file" id="avatar" name="avatar" accept="image/*"
-                                class="hidden">
+                            <input type="file" id="avatar" name="avatar" accept="image/*" class="hidden">
                             <span class="text-gray-500">Перетащите файл сюда или нажмите для загрузки</span>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Вторая колонка -->

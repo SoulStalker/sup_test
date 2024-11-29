@@ -39,6 +39,7 @@ document.getElementById('style2-button').addEventListener('click', function() {
     document.querySelector('#style1-button svg').classList.add('fill-[#FCFEFF]');
 });
 
+
 // Фильтрация по категориям
 document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('category-select');

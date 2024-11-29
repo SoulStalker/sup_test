@@ -1,0 +1,29 @@
+<div class="pagination flex items-center justify-center mt-4">
+    <nav class="step-links flex items-center space-x-2">
+        {% if page.has_previous %}
+            <a href="?page={{ page.previous_page_number }}&per_page={{ request.GET.per_page|default:10 }}"
+               class="w-10 h-10 flex items-center justify-center rounded bg-green-custom text-white hover:bg-green-dark">
+                ❮
+            </a>
+        {% else %}
+            <span class="w-10 h-10 flex items-center justify-center rounded bg-gray-300 text-gray-600 cursor-not-allowed">
+                ❮
+            </span>
+        {% endif %}
+
+        <span class="current text-green-custom">
+            Страница {{ page.number|default:1 }} из {{ page.paginator.num_pages|default:1 }}
+        </span>
+
+        {% if page.has_next %}
+            <a href="?page={{ page.next_page_number }}&per_page={{ request.GET.per_page|default:10 }}"
+               class="w-10 h-10 flex items-center justify-center rounded bg-green-custom text-white hover:bg-green-dark">
+                ❯
+            </a>
+        {% else %}
+            <span class="w-10 h-10 flex items-center justify-center rounded bg-gray-300 text-gray-600 cursor-not-allowed">
+                ❯
+            </span>
+        {% endif %}
+    </nav>
+</div>
