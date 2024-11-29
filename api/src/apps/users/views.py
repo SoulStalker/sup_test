@@ -30,7 +30,7 @@ class RoleListView(BaseView):
             role.participants = self.role_service.get_roles_participants_count(
                 role.id
             )
-        # return JsonResponse({"roles": [vars(role) for role in roles]})
+        roles = self.paginate_queryset(roles)
         return render(self.request, "roles/roles_list.html", {"roles": roles})
 
 
@@ -117,7 +117,7 @@ class PermissionListView(BaseView):
 
     def get(self, *args, **kwargs):
         permissions = self.permission_service.get_permission_list()
-        # return JsonResponse({"roles": [vars(role) for role in roles]})
+        permissions = self.paginate_queryset(permissions)
         return render(
             self.request,
             "permissions/permission_list.html",
