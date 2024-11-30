@@ -132,13 +132,18 @@ class UserRepository(IUserRepository, ABC):
             avatar=user.avatar,
             role_id=user.role,
             team_id=user.team,
-            permissions_ids=list(
-                user.permissions.values_list("id", flat=True)
-            ),
+            permissions_ids=list(user.permissions.values_list("id", flat=True)),
             is_active=user.is_active,
             is_admin=user.is_admin,
             is_superuser=user.is_superuser,
             date_joined=user.date_joined,
+            # meets_ids=list(user.meets.values_list("id", flat=True)),
+            meet_statuses={
+                meet.id: meet_participant.status_color
+                for meet in user.meets.all()
+                for meet_participant in meet.meetparticipant_set.all()
+                if meet_participant.custom_user == user
+            },
         )
 
     def _get_user_by_id(self, user_id: int) -> CustomUser:

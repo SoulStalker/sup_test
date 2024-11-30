@@ -21,6 +21,7 @@ class MeetDTO:
     DTO: Объект мита
     """
 
+    id: int
     category_id: int
     title: str
     start_time: datetime

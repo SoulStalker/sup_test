@@ -56,3 +56,4 @@ class UserDTO:
     is_admin: Optional[bool]
     is_superuser: bool
     date_joined: Optional[datetime]
+    meet_statuses: Optional[dict[int:str]]
