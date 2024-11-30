@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 
 @dataclass
@@ -48,12 +47,12 @@ class UserDTO:
     google_meet_nickname: str
     gitlab_nickname: str
     github_nickname: str
-    avatar: Optional[str]
+    avatar: str | None
     role_id: int
-    team_id: Optional[int]
+    team_id: int | None
     permissions_ids: list[int]
-    is_active: Optional[bool]
-    is_admin: Optional[bool]
-    is_superuser: bool
-    date_joined: Optional[datetime]
-    meet_statuses: Optional[dict[int:str]]
+    is_active: bool | None
+    is_admin: bool | None
+    is_superuser: bool | None
+    date_joined: datetime | None
+    meet_statuses: dict[int:str] | None

@@ -12,13 +12,13 @@ class InviteEntity:
     created_at: datetime
     expires_at: datetime
 
-    def expire_status(self):
+    def expire_status(self) -> str:
         if self.status == InviteChoices.ACTIVE and self.created_at.replace(
             tzinfo=None
         ) < datetime.now() - timedelta(days=7):
             self.status = InviteChoices.EXPIRED
         return self.status
 
-    def use_invite(self):
+    def use_invite(self) -> str:
         self.status = InviteChoices.USED
         return self.status
