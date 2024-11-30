@@ -8,6 +8,8 @@ from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
 from src.domain.meet.dtos import MeetDTO
 
+from src.domain.meet.entity import MeetEntity
+
 User = get_user_model()
 
 
@@ -63,7 +65,7 @@ class CreateMeetView(BaseView):
         if form.is_valid():
             try:
                 err = self.meet_service.create(
-                    MeetDTO(
+                    MeetEntity(
                         category_id=form.cleaned_data["category"].id,
                         title=form.cleaned_data["title"],
                         start_time=form.cleaned_data["start_time"],
@@ -114,6 +116,7 @@ class EditMeetView(BaseView):
                 self.meet_service.update(
                     meet_id=meet_id,
                     dto=MeetDTO(
+                        id=meet_id,
                         category_id=form.cleaned_data["category"].id,
                         title=form.cleaned_data["title"],
                         start_time=form.cleaned_data["start_time"],
