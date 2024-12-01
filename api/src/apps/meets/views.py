@@ -24,9 +24,6 @@ class MeetsView(BaseView):
         meets = self.meet_service.get_meets_list()
         meets = self.paginate_queryset(meets)
 
-        for user in users:
-            pprint(user)
-
         return render(
             self.request,
             "meets_list.html",
@@ -113,10 +110,9 @@ class EditMeetView(BaseView):
             form = CreateMeetForm(request.POST)
 
             if form.is_valid():
-                self.meet_service.update(
+                err = self.meet_service.update(
                     meet_id=meet_id,
-                    dto=MeetDTO(
-                        id=meet_id,
+                    dto=MeetEntity(
                         category_id=form.cleaned_data["category"].id,
                         title=form.cleaned_data["title"],
                         start_time=form.cleaned_data["start_time"],
@@ -125,6 +121,10 @@ class EditMeetView(BaseView):
                         participant_statuses=form.cleaned_data["participant_statuses"],
                     ),
                 )
+                if err:
+                    return JsonResponse(
+                        {"status": "error", "message": str(err)}, status=400
+                    )
                 return JsonResponse({"status": "success"}, status=201)
 
             return JsonResponse({"status": "error", "errors": form.errors}, status=400)
