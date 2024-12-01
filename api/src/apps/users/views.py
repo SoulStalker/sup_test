@@ -26,11 +26,9 @@ class RoleListView(BaseView):
 
     def get(self, *args, **kwargs):
         roles = self.role_service.get_role_list()
+        roles = self.paginate_queryset(roles)
         for role in roles:
-            role.participants = self.role_service.get_roles_participants_count(
-                role.id
-            )
-        # return JsonResponse({"roles": [vars(role) for role in roles]})
+            role.participants = self.role_service.get_roles_participants_count(role.id)
         return render(self.request, "roles/roles_list.html", {"roles": roles})
 
 
@@ -56,9 +54,7 @@ class RoleCreateView(BaseView):
                     },
                     status=400,
                 )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class RoleEditView(BaseView):
@@ -107,9 +103,7 @@ class RoleEditView(BaseView):
                 {"status": "success", "message": "Role deleted"}, status=200
             )
         except Exception as err:
-            return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(err)}, status=404)
 
 
 class PermissionListView(BaseView):
@@ -117,7 +111,7 @@ class PermissionListView(BaseView):
 
     def get(self, *args, **kwargs):
         permissions = self.permission_service.get_permission_list()
-        # return JsonResponse({"roles": [vars(role) for role in roles]})
+        permissions = self.paginate_queryset(permissions)
         return render(
             self.request,
             "permissions/permission_list.html",
@@ -143,9 +137,7 @@ class PermissionCreateView(BaseView):
             except Exception as err:
                 print(err)
             return JsonResponse({"status": "success"}, status=201)
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class PermissionUpdateView(BaseView):
@@ -180,9 +172,7 @@ class PermissionUpdateView(BaseView):
             except Exception as err:
                 print(err)
             return JsonResponse({"status": "success"}, status=200)
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
     def delete(self, *args, **kwargs):
         permission_id = kwargs.get("pk")
@@ -193,9 +183,7 @@ class PermissionUpdateView(BaseView):
                 status=200,
             )
         except Exception as err:
-            return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(err)}, status=404)
 
 
 class UserListView(BaseView):
@@ -236,15 +224,11 @@ class UserCreateView(BaseView):
                     password=form.cleaned_data["password"],
                     tg_name=form.cleaned_data["tg_name"],
                     tg_nickname=form.cleaned_data["tg_nickname"],
-                    google_meet_nickname=form.cleaned_data[
-                        "google_meet_nickname"
-                    ],
+                    google_meet_nickname=form.cleaned_data["google_meet_nickname"],
                     gitlab_nickname=form.cleaned_data["gitlab_nickname"],
                     github_nickname=form.cleaned_data["github_nickname"],
                     avatar=(
-                        request.FILES["avatar"]
-                        if "avatar" in request.FILES
-                        else None
+                        request.FILES["avatar"] if "avatar" in request.FILES else None
                     ),
                     role_id=form.cleaned_data["role"].id,
                     team_id=(
@@ -266,9 +250,7 @@ class UserCreateView(BaseView):
                 {"status": "success", "user": user_dto},
                 status=201,
             )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class UserUpdateView(BaseView):
@@ -310,9 +292,7 @@ class UserUpdateView(BaseView):
                         email=form.cleaned_data["email"],
                         tg_name=form.cleaned_data["tg_name"],
                         tg_nickname=form.cleaned_data["tg_nickname"],
-                        google_meet_nickname=form.cleaned_data[
-                            "google_meet_nickname"
-                        ],
+                        google_meet_nickname=form.cleaned_data["google_meet_nickname"],
                         gitlab_nickname=form.cleaned_data["gitlab_nickname"],
                         github_nickname=form.cleaned_data["github_nickname"],
                         avatar=(
@@ -328,18 +308,15 @@ class UserUpdateView(BaseView):
                         ],
                         is_active=form.cleaned_data.get("is_active", False),
                         is_admin=form.cleaned_data.get("is_admin", False),
-                        is_superuser=form.cleaned_data.get(
-                            "is_superuser", False
-                        ),
+                        is_superuser=form.cleaned_data.get("is_superuser", False),
                         date_joined=form.cleaned_data.get("date_joined", None),
+                        meet_statuses=None,
                     ),
                 )
 
                 return JsonResponse({"status": "success"}, status=200)
         except Exception as err:
-            return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(err)}, status=404)
 
 
 class UserPasswordChangeView(BaseView):
@@ -358,9 +335,7 @@ class UserPasswordChangeView(BaseView):
                 )
                 return JsonResponse({"status": "success"}, status=200)
         except Exception as err:
-            return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(err)}, status=404)
 
 
 class UserRegistration(BaseView):
@@ -384,9 +359,7 @@ class UserRegistration(BaseView):
                     email=form.cleaned_data["email"],
                     tg_name=form.cleaned_data["tg_name"],
                     tg_nickname=form.cleaned_data["tg_nickname"],
-                    google_meet_nickname=form.cleaned_data[
-                        "google_meet_nickname"
-                    ],
+                    google_meet_nickname=form.cleaned_data["google_meet_nickname"],
                     gitlab_nickname=form.cleaned_data["gitlab_nickname"],
                     github_nickname=form.cleaned_data["github_nickname"],
                     role_id=None,
@@ -413,6 +386,4 @@ class UserRegistration(BaseView):
                     },
                     status=400,
                 )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
