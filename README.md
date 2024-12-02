@@ -23,10 +23,22 @@
 
 1. **Клонирование репозитория**:
     ```bash
-    git clone https://github.com/Synt4xL4b/sup-backend-2.git cd sup
+    git clone https://github.com/Synt4xL4b/sup-backend-2.git
     ```
+    Дальше есть такой рабочий вариант: Открываем проект в IDE. На запрос где лежит poetry можно игнорировать. Затем закрываем и снова открываем IDE. Ставим poetry в папку 
+   проекта через pip. pip install poetry
+
+   2. **Установка зависимостей**: Убедитесь, что у вас установлен `Poetry`, затем выполните:
+       ```bash
+       poetry install   
+       ```
+
     
 2. **Настройка переменных окружения**: создайте файл `.env` с переменными для базы данных, Redis и секретов:
+    
+    ```bash
+    touch .env
+    ```
 
 ```python
 # Django settings  
@@ -44,11 +56,6 @@ DB_PORT=pg_port
   
 FRONTEND_URL=https://junov.net
 ```
-
-1. **Установка зависимостей**: Убедитесь, что у вас установлен `Poetry`, затем выполните:
-    ```bash
-	poetry install
-	```
     
 4. **Запуск Docker-контейнеров**: Проект включает Docker Compose файл для запуска контейнеров с PostgreSQL, Redis и Django. Запустите контейнеры:
     

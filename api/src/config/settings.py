@@ -7,15 +7,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-load_dotenv()
+print(os.getenv("DB_ENGINE"))
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1").split(
-    ","
-)
+ALLOWED_HOSTS = []
 
 
 INSTALLED_APPS = [

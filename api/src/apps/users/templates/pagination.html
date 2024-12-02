@@ -12,7 +12,7 @@
         {% endif %}
 
         <span class="current text-green-custom">
-            Страница {{ page.number|default:1 }} из {{ page.paginator.num_pages|default:1 }}
+            {{ page.number|default:1 }} из {{ page.paginator.num_pages|default:1 }}
         </span>
 
         {% if page.has_next %}

@@ -27,6 +27,17 @@ class MeetService:
         self.__repository.create(dto)
 
     def update(self, meet_id, dto):
+        meet = MeetEntity(
+            dto.category_id,
+            dto.title,
+            dto.start_time,
+            dto.author_id,
+            dto.responsible_id,
+            dto.participant_statuses,
+        )
+        err = meet.verify_data()
+        if err:
+            return err
         self.__repository.update(meet_id, dto)
 
     def delete(self, pk):
@@ -42,9 +53,7 @@ class MeetService:
         return self.__repository.get_meets_by_category(dto)
 
     def set_participants_statuses(self, participant_statuses, meet_id: int):
-        return self.__repository.set_participant_statuses(
-            participant_statuses, meet_id
-        )
+        return self.__repository.set_participant_statuses(participant_statuses, meet_id)
 
     def get_participants_statuses(self, meet_id: int):
         return self.__repository.get_participants_statuses(meet_id)
