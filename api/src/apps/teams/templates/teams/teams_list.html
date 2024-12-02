@@ -36,22 +36,10 @@
             </a>
         </div>
     </div>
-
-    <!-- Основной контент -->
-    <div class="flex-1 flex flex-col">
-
-        <!-- Верхняя панель -->
-        <div class="flex justify-between items-center mb-4 p-6">
-            <h1 class="text-2xl font-bold">Таблица команд</h1>
-        </div>
-
-        <!-- Таблица -->
-        <div class="bg-white shadow-md rounded-lg overflow-hidden m-2.5"> <!-- Добавлен внешний отступ -->
+    <div class="flex-grow p-6">
+        <h1 class="text-2xl font-semibold mb-6">Таблица команд</h1>
+        <div class="bg-white shadow rounded-lg p-6">
             <div class="p-4 flex items-center">
-                <!-- Поиск -->
-                <input type="text" placeholder="Поиск" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-1/3 mr-4">
-
-                </div>
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
                     <!-- Выпадающий список для количества строк -->
@@ -68,18 +56,20 @@
 
                     </form>
                     {% include "pagination.html" with page=teams %}
-
-                    <!-- Кнопка "Создать пользователя" -->
-                    <button id="open-modal"  class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать команду</button>
+                    <button id="open-modal"
+                            class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark" data-url="{% url 'teams:create_team' %}">
+                      Создать команду
+                    </button>
                 </div>
             </div>
-
             <table id="table-teams" class="min-w-full table-auto">
+                <thead class="bg-gray-100">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Имя</th>
                         <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Количество участников</th>
+                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium"></th>
                     </tr>
                 </thead>
                     <tbody>
@@ -108,7 +98,7 @@
 
     </div>
 
-    <script src="{% static 'script/team.js' %}"></script>
-
+    <script src="{% static 'script/teams.js' %}"></script>
+    <script src="{% static 'script/pagination.js' %}"></script>
 </body>
 </html>
