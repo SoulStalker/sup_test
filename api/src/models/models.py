@@ -38,6 +38,11 @@ class Team(models.Model):
         verbose_name="Команда",
         validators=[ModelValidator.validate_letters_space_only()],
     )
+    participants = models.ManyToManyField(
+        to="CustomUser",
+        related_name="team_participants",
+        verbose_name="Участники",
+    )
 
     class Meta:
         verbose_name = "команда"

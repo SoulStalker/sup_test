@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.teams.forms import CreateTeamForm
-from src.domain.teams.dtos import TeamDTO
+from src.domain.teams.dtos import CreateTeamDTO
 
 User = get_user_model()
 
@@ -34,20 +34,22 @@ class TeamCreateView(BaseView):
 
     def post(self, request, *args, **kwargs):
         form = CreateTeamForm(request.POST)
-
         if form.is_valid():
-
-            print(form.cleaned_data)
-
             participants = request.POST.getlist("participants")
-            project_dto = TeamDTO(
+
+            print(participants)
+            print(type(participants))
+            # participants = [int(i) for i in participants]
+            team_dto = CreateTeamDTO(
                 name=form.cleaned_data["name"],
                 participants=participants,
             )
 
             try:
                 # Создание команды
-                team = self.team_service.create(project_dto)
+                team = self.team_service.create(team_dto)
+
+                print(team)
 
                 # Возвращаем успешный ответ с данными о созданнай команде
                 return JsonResponse(
@@ -62,10 +64,12 @@ class TeamCreateView(BaseView):
                 )
 
             except Exception as e:
+
+                print(e)
+
                 return JsonResponse(
                     {"status": "error", "message": str(e)}, status=400
                 )
-        print(form.errors)
 
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
