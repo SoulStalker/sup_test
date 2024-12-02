@@ -100,7 +100,7 @@
                             <th class="border-b py-2">Ник Telegram</th>
                             <th class="border-b py-2">Имя Telegram</th>
                             {% for meet in meets %}
-                                <th data-category="{{ meet.category.pk }}" class="border-b py-2 font-semibold leading-3.5">
+                                <th data-category="{{ meet.category_id }}" class="border-b py-2 font-semibold leading-3.5">
                                     {{ meet.start_time|date:"d.m." }}<br>{{ meet.start_time|date:"Y" }}
                                 </th>
                             {% endfor %}
@@ -115,13 +115,14 @@
                                 <td class="border-b py-2 px-4">{{ user.tg_nickname }}</td>
                                 <td class="border-b py-2 px-4">{{ user.tg_name }}</td>
                                 {% for meet in meets %}
-                                    {% if user in meet.participants.all %}
-                                        <td data-category="{{ meet.category.pk }}" class="border-b py-2 px-4 text-center">
-                                            {% for user_meet in user.custom_meets.all %}
-                                                {% if user_meet.meet.id == meet.id %}
-                                                    {% if user_meet.status_color == 'red' %}
+                                      {% if user.id in meet.participant_statuses %}
+                                        <td data-category="{{ meet.category_id }}" class="border-b py-2 px-4 text-center">
+                                            {% for meet_id, status_color in user.meet_statuses.items %}
+                                                {% if meet_id == meet.id %}
+                                                    {{ user_meet }}
+                                                    {% if status_color == 'red' %}
                                                         <div class="w-6 h-6 mx-auto rounded-lg bg-red-400 border border-red-800"></div>
-                                                    {% elif user_meet.status_color == 'yellow' %}
+                                                    {% elif status_color == 'yellow' %}
                                                         <div class="w-6 h-6 mx-auto rounded-lg bg-yellow-200 border border-yellow-600"></div>
                                                     {% else %}
                                                         <div class="w-6 h-6 mx-auto rounded-lg bg-green-400 border border-gray-600"></div>
@@ -130,7 +131,7 @@
                                             {% endfor %}
                                         </td>
                                     {% else %}
-                                        <td data-category="{{ meet.category.pk }}" class="border-b py-2 px-4 text-center">
+                                        <td data-category="{{ meet.category_id }}" class="border-b py-2 px-4 text-center">
                                             <div class="w-6 h-6 mx-auto rounded-lg bg-gray-200 border border-gray-600"></div>
                                         </td>
                                     {% endif %}
@@ -153,7 +154,7 @@
                     </thead>
                     <tbody>
                     {% for meet in meets %}
-                    <tr data-category="{{ meet.category.id }}">
+                    <tr data-category="{{ meet.category_id }}">
                         <td class="border-b py-2 px-4 max-w-[50px]">{{ meet.id }}</td>
                         <td class="border-b py-2 px-4">{{ meet.title }}</td>
                         <td class="border-b py-2 px-4">{{ meet.start_time|date:"d.m.y" }}</td>

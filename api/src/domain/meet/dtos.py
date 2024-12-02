@@ -10,7 +10,7 @@ class CategoryObject:
     pk: int
     name: str
 
-    def __init__(self, pk: int, name: str):
+    def __init__(self, pk: int, name: str) -> None:
         self.pk = pk
         self.name = name
 
@@ -21,6 +21,7 @@ class MeetDTO:
     DTO: Объект мита
     """
 
+    id: int | None
     category_id: int
     title: str
     start_time: datetime
@@ -46,18 +47,18 @@ class StatusObject:
 
     _colors = {PRESENT: "green", ABSENT: "red", WARNED: "yellow"}
 
-    def __init__(self, status: str):
+    def __init__(self, status: str) -> None:
         if status not in [self.PRESENT, self.ABSENT, self.WARNED]:
             raise ValueError(f"Invalid status: {status}")
         self.status = status
 
-    def description(self):
+    def description(self) -> str:
         return self._descriptions[self.status]
 
-    def color(self):
+    def color(self) -> str:
         return self._colors[self.status]
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, StatusObject):
             return self.status == other.status
         return False

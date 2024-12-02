@@ -16,34 +16,34 @@ class IMeetRepository(abc.ABC):
 
     @abc.abstractmethod
     def create(self, dto: MeetDTO) -> MeetDTO:
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def update(self, meet_id: int, dto: MeetDTO):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def delete(self, meet_id: int):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_meet_by_id(self, meet_id: int):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_meets_list(self):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_meets_by_category(self, category_id: int):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def set_participant_statuses(self, participant_statuses: dict, meet_id: int):
-        pass
+        raise NotImplementedError
 
     def get_participants_statuses(self, meet_id):
-        pass
+        raise NotImplementedError
 
 
 class ICategoryRepository(abc.ABC):
@@ -53,20 +53,20 @@ class ICategoryRepository(abc.ABC):
 
     @abc.abstractmethod
     def create(self, category_name: str):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def update(self, category_id: int, dto: CategoryObject):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def delete(self, category_id: int):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_categories_list(self):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_category_by_id(self, category_id: int):
-        pass
+        raise NotImplementedError
