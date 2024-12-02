@@ -23,3 +23,4 @@ class CreateTeamDTO:
 class TeamDTO:
     id: int
     name: str
+    participants: list

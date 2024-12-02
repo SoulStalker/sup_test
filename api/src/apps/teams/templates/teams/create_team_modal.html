@@ -1,6 +1,6 @@
 <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
     <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
-        <h2 class="text-xl mb-4">Создать проект</h2>
+        <h2 class="text-xl mb-4">Создать команду</h2>
         <form id="create-team-form" method="POST" action="{% url 'teams:create_team' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="mb-4 flex">
@@ -12,7 +12,7 @@
             <div class="mb-4 flex">
                 <div class="w-1/2 pl-2 custom-select">
                     <label for="team-participants" class="block text-sm font-medium text-gray-700">Участники*</label>
-                    <div id="select-container" class="select-selected">Выберите участников</div>
+                    <div id="select-container" class="select-selected">Выберите участников </div>
                     <div id="select-items" class="select-items">
                         {% for user in users %}
                             <div data-value="{{ user.id }}">{{ user.name }}</div>
