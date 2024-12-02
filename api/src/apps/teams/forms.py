@@ -6,7 +6,6 @@ User = get_user_model()
 
 
 class CreateTeamForm(forms.Form):
-    id = forms.IntegerField()
     name = forms.CharField()
     participants = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(),

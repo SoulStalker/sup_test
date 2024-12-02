@@ -1,6 +1,7 @@
 import abc
+from typing import Any
 
-from .dtos import TeamDTO
+from .dtos import CreateTeamDTO, TeamDTO
 
 
 class ITeamRepository(abc.ABC):
@@ -13,7 +14,7 @@ class ITeamRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create(self, team_name: str):
+    def create(self, dto: CreateTeamDTO) -> tuple[None, Any] | TeamDTO:
         raise NotImplementedError
 
     @abc.abstractmethod

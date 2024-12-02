@@ -6,6 +6,7 @@ from src.domain.validators.validators import DataVerifier
 @dataclass
 class CreateTeamDTO:
     name: str
+    participants: list[int]
 
     def verify_data(self):
         """
@@ -23,4 +24,4 @@ class CreateTeamDTO:
 class TeamDTO:
     id: int
     name: str
-    participants: list
+    participants: list[int] | None
