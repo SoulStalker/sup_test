@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.teams.forms import CreateTeamForm
-from src.domain.teams.dtos import CreateTeamDTO
+from src.domain.teams.dtos import CreateTeamDTO, TeamDTO
 
 User = get_user_model()
 
@@ -13,7 +13,8 @@ class TeamListView(BaseView):
     def get(self, *args, **kwargs):
         teams = self.team_service.get_team_list()
         teams = self.paginate_queryset(teams)
-        users = User.objects.filter(team__isnull=True).distinct()
+        # users = User.objects.filter(team__isnull=True).distinct()
+        users = User.objects.all()
         return render(
             self.request,
             "teams/teams_list.html",
@@ -63,10 +64,33 @@ class TeamUpdateView(BaseView):
         team_id = kwargs.get("team_id")
         team = self.team_service.get_team_by_id(team_id)
         data = {
-            "team": team.name,
+            "name": team.name,
             "participants": team.participants,
         }
         return JsonResponse(data)
+
+    def post(self, *args, **kwargs):
+        team_id = kwargs.get("team_id")
+        team = self.team_service.get_team_by_id(team_id)
+        form = CreateTeamForm(self.request.POST)
+        if form.is_valid():
+            try:
+                team_dto = TeamDTO(
+                    id=team.id,
+                    name=form.cleaned_data["name"],
+                    participants=form.cleaned_data["participants"],
+                )
+                team_dto, err = self.team_service.update(team_dto)
+                if err:
+                    return JsonResponse(
+                        {"status": "error", "message": str(err)}, status=400
+                    )
+            except Exception as err:
+                print(err)
+            return JsonResponse({"status": "success"}, status=201)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class TeamDeleteView(BaseView):

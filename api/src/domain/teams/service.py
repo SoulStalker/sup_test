@@ -21,8 +21,12 @@ class TeamService:
             return None, err
         return self.__repository.create(team), err
 
-    def update(self, team_id: int, team_name: str) -> TeamDTO:
-        return self.__repository.update(team_id, team_name)
+    def update(self, dto: TeamDTO) -> [tuple[None, Any] | TeamDTO, Any]:
+        team = dto
+        err = team.verify_data()
+        if err:
+            return None, err
+        return self.__repository.update(team), err
 
     def delete(self, team_id: int):
         return self.__repository.delete(team_id)

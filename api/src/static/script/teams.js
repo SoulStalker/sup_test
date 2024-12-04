@@ -142,8 +142,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Заполняем форму полученными данными
                     document.getElementById('team-name').value = data.name || '';
 
+                    console.log(data)
+
                     // Логика для заполнения участников
-                    const participantIds = data.participants.map(participant => participant.id);
+                    const participantIds = data.participants;
+
+                    console.log(participantIds)
+
                     const participantsSelect = document.getElementById('team-participants');
 
                     Array.from(participantsSelect.options).forEach(option => {
@@ -153,31 +158,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Обновляем отображение выбранных участников
                     updateSelectedParticipants(participantIds);
 
-                    const dateCreatedInput = document.getElementById('team-date');
-                    if (dateCreatedInput) {
-                        dateCreatedInput.value = data.date_created ? data.date_created.split('T')[0] : ''; // Проверка на наличие даты
-                    }
-
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/teams/edit/${currentTeamId}/`);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
-
-                    // Проверка логики для передачи логотипа
-                    const logoInput = document.getElementById('team-logo');
-                    const currentLogoSrc = logoPreview.src; // Текущий путь к логотипу
-
-                    if (currentLogoSrc) {
-                        if (!logoInput.files.length) {
-                            // Если изображения нет в input, используем текущее изображение
-                            logoInput.value = currentLogoSrc; // Передаем текущий путь к изображению
-                        } else {
-                            // Если есть новое изображение, используем его
-                            logoInput.value = logoInput.files[0]; // Передаем новое загруженное изображение
-                        }
-                    } else {
-                        // Если логотипа нет, и файл не выбран, то можно оставить обработку по умолчанию
-                        logoInput.value = ''; // Или можно обработать это как ошибку, если логотип обязателен
-                    }
                 })
                 .catch(error => console.error('Ошибка:', error));
         });
@@ -221,17 +204,35 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Функция для обновления текста с выбранными участниками
-    function updateSelectedParticipants(participantIds) {
-        const selectedOptions = Array.from(document.querySelectorAll('#team-participants option:checked'));
-
+    function updateSelectedParticipants(participantIds = []) {
+        const participantsSelect = document.getElementById('team-participants');
         const selectContainer = document.getElementById('select-container');
+
+        // Преобразуем participantIds в числа, если они передаются как строки
+        const normalizedParticipantIds = participantIds.map(id => parseInt(id, 10));
+
+
+        // Устанавливаем выбранные опции
+        Array.from(participantsSelect.options).forEach(option => {
+            const optionValue = parseInt(option.value, 10); // Преобразуем option.value в число
+            const isSelected = normalizedParticipantIds.includes(optionValue); // Сравниваем
+            option.selected = isSelected; // Устанавливаем selected
+        });
+
+        // Обновляем текстовое представление выбранных участников
+        const selectedOptions = Array.from(participantsSelect.options)
+            .filter(option => option.selected)
+            .map(option => option.textContent);
+
         if (selectedOptions.length > 0) {
-            const selectedUsernames = selectedOptions.map(option => option.textContent).join(', ');
-            selectContainer.textContent = selectedUsernames; // Обновляем текст на контейнере
+            selectContainer.textContent = selectedOptions.join(', ');
         } else {
-            selectContainer.textContent = 'Выберите участников'; // Возвращаем текст по умолчанию
+            selectContainer.textContent = 'Выберите участников';
         }
     }
+
+
+
 
     // Очищение ошибок формы
     const clearErrors = () => {

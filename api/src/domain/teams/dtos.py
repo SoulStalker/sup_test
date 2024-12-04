@@ -21,7 +21,5 @@ class CreateTeamDTO:
 
 
 @dataclass
-class TeamDTO:
+class TeamDTO(CreateTeamDTO):
     id: int
-    name: str
-    participants: list[int] | None

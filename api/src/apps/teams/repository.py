@@ -31,17 +31,16 @@ class TeamRepository(ITeamRepository):
     def create(self, dto: CreateTeamDTO) -> tuple[None, Any] | TeamDTO:
         team = Team(name=dto.name)
         team.save()
-
         team.participants.set(dto.participants)
-
-        print(team)
 
         return self._model_team_to_dto(team)
 
-    def update(self, team_id: int, team_name: str) -> TeamDTO:
-        team = Team.objects.get(id=team_id)
-        team.name = team_name
+    def update(self, dto: TeamDTO) -> TeamDTO:
+        team = Team.objects.get(id=dto.id)
+        team.name = dto.name
+        team.participants.set(dto.participants)
         team.save()
+
         return self._model_team_to_dto(team)
 
     def delete(self, team_id: int):
