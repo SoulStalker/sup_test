@@ -18,7 +18,7 @@ class ITeamRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def update(self, team_id: int, team_name: str):
+    def update(self, dto: TeamDTO) -> [tuple[None, Any] | TeamDTO, Any]:
         raise NotImplementedError
 
     @abc.abstractmethod
