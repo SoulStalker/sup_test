@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
@@ -35,42 +36,29 @@ class TeamCreateView(BaseView):
     def post(self, request, *args, **kwargs):
         form = CreateTeamForm(request.POST)
         if form.is_valid():
-            participants = request.POST.getlist("participants")
+            # participants = request.POST.getlist("participants")
+            # print(participants)
 
-            print(participants)
-            print(type(participants))
-            # participants = [int(i) for i in participants]
             team_dto = CreateTeamDTO(
                 name=form.cleaned_data["name"],
-                participants=participants,
+                participants=form.cleaned_data["participants"],
             )
+
+            print(team_dto)
 
             try:
                 # Создание команды
-                team = self.team_service.create(team_dto)
-
-                print(team)
-
-                # Возвращаем успешный ответ с данными о созданнай команде
+                team_dto, err = self.team_service.create(team_dto)
+                if err:
+                    return JsonResponse(
+                        {"status": "error", "message": str(err)}, status=400
+                    )
+                return JsonResponse({"status": "success"}, status=201)
+            except IntegrityError:
                 return JsonResponse(
-                    {
-                        "status": "success",
-                        "project": {
-                            "name": team.name,
-                            "participants": team.participants,
-                        },
-                    },
-                    status=201,
+                    {"status": "error", "message": "Такой мит уже существует"},
+                    status=400,
                 )
-
-            except Exception as e:
-
-                print(e)
-
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
-
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -88,3 +76,24 @@ class TeamUpdateView(BaseView):
             "teams/team_update.html",
             {"team": team, "users": users},
         )
+
+    def __delete__(self, instance):
+        self.team_service.delete(instance.id)
+
+
+class TeamDeleteView(BaseView):
+    """
+    Удаление команды
+    """
+
+    def delete(self, *args, **kwargs):
+        team_id = kwargs.get("team_id")
+        try:
+            self.team_service.delete(team_id=team_id)
+            return JsonResponse(
+                {"status": "success", "message": "Team deleted"}
+            )
+        except Exception as e:
+            return JsonResponse(
+                {"status": "error", "message": str(e)}, status=404
+            )

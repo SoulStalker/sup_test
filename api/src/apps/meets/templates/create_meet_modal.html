@@ -10,17 +10,18 @@
             <div class="mb-4">
 
             </div>
-            <table class="w-full mx-auto">
-                <thead  class="bg-gray-100 text-xs">
-                    <tr>
-                        <th class="border-b py-2 px-4 text-left">ID</th>
-                        <th class="border-b py-2 px-4 text-left">Имя</th>
-                        <th class="border-b py-2 px-4 text-left">Ник telegram</th>
-                        <th class="border-b py-2 px-4 text-left">Имя telegram</th>
-                        <th class="border-b py-2 px-4 text-left">Присутствовали</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <table class="w-full mx-auto max-h-[300px] overflow-y-auto block">
+                <table class="w-full mx-auto block">
+                    <thead class="bg-gray-100 text-xs sticky top-0">
+                        <tr>
+                            <th class="border-b py-2 px-4 text-left">ID</th>
+                            <th class="border-b py-2 px-4 text-left">Имя</th>
+                            <th class="border-b py-2 px-4 text-left">Ник telegram</th>
+                            <th class="border-b py-2 px-4 text-left">Имя telegram</th>
+                            <th class="border-b py-2 px-4 text-left">Присутствовали</th>
+                        </tr>
+                    </thead>
+                    <tbody class="block overflow-y-auto" style="max-height: 300px;">
                     {% for user in users %}
                         <tr>
                             <td class="border-b py-2 px-4">{{ user.id }}</td>
