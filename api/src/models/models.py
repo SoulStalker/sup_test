@@ -37,6 +37,7 @@ class Team(models.Model):
         max_length=20,
         verbose_name="Команда",
         validators=[ModelValidator.validate_letters_space_only()],
+        unique=True,
     )
     participants = models.ManyToManyField(
         to="CustomUser",

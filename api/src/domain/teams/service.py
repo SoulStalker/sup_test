@@ -14,12 +14,12 @@ class TeamService:
     def get_team_by_id(self, team_id: int) -> TeamDTO:
         return self.__repository.get_team_by_id(team_id)
 
-    def create(self, dto: CreateTeamDTO) -> tuple[None, Any] | TeamDTO:
+    def create(self, dto: CreateTeamDTO) -> [tuple[None, Any] | TeamDTO, Any]:
         team = dto
         err = team.verify_data()
         if err:
             return None, err
-        return self.__repository.create(team)
+        return self.__repository.create(team), err
 
     def update(self, team_id: int, team_name: str) -> TeamDTO:
         return self.__repository.update(team_id, team_name)
