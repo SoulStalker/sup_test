@@ -36,16 +36,10 @@ class TeamCreateView(BaseView):
     def post(self, request, *args, **kwargs):
         form = CreateTeamForm(request.POST)
         if form.is_valid():
-            # participants = request.POST.getlist("participants")
-            # print(participants)
-
             team_dto = CreateTeamDTO(
                 name=form.cleaned_data["name"],
                 participants=form.cleaned_data["participants"],
             )
-
-            print(team_dto)
-
             try:
                 # Создание команды
                 team_dto, err = self.team_service.create(team_dto)
@@ -66,19 +60,13 @@ class TeamCreateView(BaseView):
 
 class TeamUpdateView(BaseView):
     def get(self, *args, **kwargs):
-        team_id = kwargs.get("pk")
-        team = self.team_service.get_team(team_id)
-
-        users = User.objects.order_by("id")
-
-        return render(
-            self.request,
-            "teams/team_update.html",
-            {"team": team, "users": users},
-        )
-
-    def __delete__(self, instance):
-        self.team_service.delete(instance.id)
+        team_id = kwargs.get("team_id")
+        team = self.team_service.get_team_by_id(team_id)
+        data = {
+            "team": team.name,
+            "participants": team.participants,
+        }
+        return JsonResponse(data)
 
 
 class TeamDeleteView(BaseView):

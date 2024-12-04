@@ -10,7 +10,11 @@ class TeamRepository(ITeamRepository):
     @classmethod
     def _model_team_to_dto(cls, team) -> TeamDTO:
         return TeamDTO(
-            id=team.id, name=team.name, participants=team.participants
+            id=team.id,
+            name=team.name,
+            participants=[
+                participant.id for participant in team.participants.all()
+            ],
         )
 
     def get_team_list(self) -> list[TeamDTO]:
@@ -22,11 +26,16 @@ class TeamRepository(ITeamRepository):
 
     def get_team_by_id(self, team_id: int) -> TeamDTO:
         team = Team.objects.get(id=team_id)
-        return TeamDTO(id=team.id, name=team.name)
+        return self._model_team_to_dto(team)
 
     def create(self, dto: CreateTeamDTO) -> tuple[None, Any] | TeamDTO:
         team = Team(name=dto.name)
         team.save()
+
+        team.participants.set(dto.participants)
+
+        print(team)
+
         return self._model_team_to_dto(team)
 
     def update(self, team_id: int, team_name: str) -> TeamDTO:
