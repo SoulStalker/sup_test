@@ -9,17 +9,15 @@ from src.domain.user.dtos import (
     CreateRoleDTO,
     PermissionDTO,
     RoleDTO,
-    TeamDTO,
     UserDTO,
 )
 from src.domain.user.entity import CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
-    ITeamRepository,
     IUserRepository,
 )
-from src.models.models import CustomUser, Permission, Role, Team
+from src.models.models import CustomUser, Permission, Role
 
 
 class RoleRepository(IRoleRepository, ABC):
@@ -139,6 +137,13 @@ class UserRepository(IUserRepository, ABC):
             is_admin=user.is_admin,
             is_superuser=user.is_superuser,
             date_joined=user.date_joined,
+            # meets_ids=list(user.meets.values_list("id", flat=True)),
+            meet_statuses={
+                meet.id: meet_participant.status_color
+                for meet in user.meets.all()
+                for meet_participant in meet.meetparticipant_set.all()
+                if meet_participant.custom_user == user
+            },
         )
 
     def _get_user_by_id(self, user_id: int) -> CustomUser:
@@ -210,15 +215,3 @@ class UserRepository(IUserRepository, ABC):
             model.save()
         else:
             raise ValueError("Пароли не совпадают")
-
-
-class TeamRepository(ITeamRepository, ABC):
-    model = Team
-
-    @classmethod
-    def _team_orm_to_dto(cls, team):
-        return TeamDTO(id=team.id, name=team.name)
-
-    def get_team_list(self) -> list[TeamDTO]:
-        teams = self.model.objects.all()
-        return [self._team_orm_to_dto(team) for team in teams]

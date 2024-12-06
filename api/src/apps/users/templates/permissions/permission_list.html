@@ -42,7 +42,7 @@
         <div class="bg-white shadow rounded-lg p-6">
             <!-- Поиск и элементы управления -->
             <div class="p-4 flex items-center">
-                <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
+                <<!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
                     <!-- Выпадающий список для количества строк -->
                     <form id="rows-per-page-form" method="get" class="flex items-center">
@@ -57,7 +57,8 @@
                         <input type="hidden" name="page" value="{{ page.number }}">
 
                     </form>
-                    {% include "pagination.html" with page=users %}
+                    {% include "pagination.html" with page=permissions %}
+
                     <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать права</button>
                 </div>
             </div>

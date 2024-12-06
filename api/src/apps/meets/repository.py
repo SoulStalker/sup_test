@@ -5,28 +5,32 @@
 from abc import ABC
 
 from django.shortcuts import get_object_or_404
-
-from src.domain.meet.dtos import MeetDTO, CategoryObject, ParticipantStatusDTO
-from src.models.meets import Meet, Category, MeetParticipant
-
-from src.domain.meet.repository import IMeetRepository, ICategoryRepository
+from src.domain.meet.dtos import CategoryObject, MeetDTO, ParticipantStatusDTO
+from src.domain.meet.repository import ICategoryRepository, IMeetRepository
+from src.models.meets import Category, Meet, MeetParticipant
 
 
 class MeetsRepository(IMeetRepository, ABC):
     model = Meet
 
-    def _meet_orm_to_dto(self, meet: Meet) -> MeetDTO:
+    @classmethod
+    def _meet_orm_to_dto(cls, meet: Meet) -> MeetDTO:
         return MeetDTO(
+            id=meet.id,
             category_id=meet.category.id,
             title=meet.title,
             start_time=meet.start_time,
             author_id=meet.author.id,
             responsible_id=meet.responsible.id,
-            participant_statuses=meet.participants,
+            participant_statuses={
+                participant_status.custom_user.id: participant_status.status
+                for participant_status in meet.meetparticipant_set.all()
+            },
         )
 
+    @classmethod
     def _status_orm_to_dto(
-        self, participant_status: MeetParticipant
+        cls, participant_status: MeetParticipant
     ) -> ParticipantStatusDTO:
         return ParticipantStatusDTO(
             participant_id=participant_status.custom_user.id,
@@ -68,11 +72,19 @@ class MeetsRepository(IMeetRepository, ABC):
     def get_meet_by_id(self, meet_id: int):
         return self._meet_orm_to_dto(Meet.objects.get(id=meet_id))
 
-    def get_meets_list(self) -> list[Meet]:
-        return list(Meet.objects.select_related("category").order_by("-start_time"))
+    def get_meets_list(self) -> list[MeetDTO]:
+        return [
+            self._meet_orm_to_dto(meet)
+            for meet in Meet.objects.select_related("category").order_by(
+                "-start_time"
+            )
+        ]
 
-    def get_meets_by_category(self, category_id: int) -> list[Meet]:
-        return [meet for meet in Meet.objects.filter(category_id=category_id)]
+    def get_meets_by_category(self, category_id: int) -> list[MeetDTO]:
+        return [
+            self._meet_orm_to_dto(meet)
+            for meet in Meet.objects.filter(category_id=category_id)
+        ]
 
     def set_participant_statuses(
         self, participant_statuses: dict, meet_id: int
