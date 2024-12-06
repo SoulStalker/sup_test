@@ -28,7 +28,11 @@ class RoleListView(BaseView):
         roles = self.role_service.get_role_list()
         roles = self.paginate_queryset(roles)
         for role in roles:
-            role.participants = self.role_service.get_roles_participants_count(role.id)
+            role.participants = self.role_service.get_roles_participants_count(
+                role.id
+            )
+        roles = self.paginate_queryset(roles)
+
         return render(self.request, "roles/roles_list.html", {"roles": roles})
 
 
