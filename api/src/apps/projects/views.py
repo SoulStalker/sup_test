@@ -18,9 +18,7 @@ class ProjectsView(BaseView):
     def get(self, *args, **kwargs):
         projects = self.project_service.get_projects_list()
 
-        project_status_choices = (
-            self.project_service.get_project_status_choices()
-        )
+        project_status_choices = self.project_service.get_project_status_choices()
 
         for project in projects:
             project.participants.set(project.participants.all())
@@ -42,9 +40,7 @@ class CreateProjectView(BaseView):
     def get(self, request, *args, **kwargs):
         form = ProjectForm(request.POST, request.FILES)
 
-        project_status_choices = (
-            self.project_service.get_project_status_choices()
-        )
+        project_status_choices = self.project_service.get_project_status_choices()
 
         return render(
             request,
@@ -73,9 +69,7 @@ class CreateProjectView(BaseView):
 
             try:
                 # Создание проекта
-                created_project = self.project_service.create_project(
-                    project_dto
-                )
+                created_project = self.project_service.create_project(project_dto)
 
                 # Возвращаем успешный ответ с данными о созданном проекте
                 return JsonResponse(
@@ -96,12 +90,8 @@ class CreateProjectView(BaseView):
                 )
 
             except Exception as e:
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+                return JsonResponse({"status": "error", "message": str(e)}, status=400)
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class EditProjectView(BaseView):
@@ -113,9 +103,7 @@ class EditProjectView(BaseView):
         project_id = kwargs.get("project_id")
         project = self.project_service.get_project_by_id(project_id=project_id)
 
-        project_status_choices = (
-            self.project_service.get_project_status_choices()
-        )
+        project_status_choices = self.project_service.get_project_status_choices()
 
         data = {
             "name": project.name,
@@ -135,15 +123,14 @@ class EditProjectView(BaseView):
         project_id = kwargs.get("project_id")
         form = ProjectForm(request.POST, request.FILES)
 
+        print(project_id)
+
         if form.is_valid():
-            project = self.project_service.get_project_by_id(
-                project_id=project_id
-            )
-            logo = (
-                form.cleaned_data.get("logo")
-                if "logo" in request.FILES
-                else None
-            )
+            project = self.project_service.get_project_by_id(project_id=project_id)
+            logo = form.cleaned_data.get("logo") if "logo" in request.FILES else None
+
+            print("CD: ", form.cleaned_data)
+
             self.project_service.update_project(
                 project_id=project_id,
                 dto=ProjectDTO(
@@ -157,9 +144,7 @@ class EditProjectView(BaseView):
                 ),
             )
             try:
-                project = self.project_service.get_project_by_id(
-                    project_id=project_id
-                )
+                project = self.project_service.get_project_by_id(project_id=project_id)
                 return JsonResponse(
                     {
                         "status": "success",
@@ -179,13 +164,11 @@ class EditProjectView(BaseView):
                     status=201,
                 )
             except Exception as e:
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
+                return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        print("Errors: ", form.errors)
+
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class DeleteProjectView(BaseView):
@@ -197,13 +180,9 @@ class DeleteProjectView(BaseView):
         project_id = kwargs.get("project_id")
         try:
             self.project_service.delete_project(project_id=project_id)
-            return JsonResponse(
-                {"status": "success", "message": "Project deleted"}
-            )
+            return JsonResponse({"status": "success", "message": "Project deleted"})
         except Exception as e:
-            return JsonResponse(
-                {"status": "error", "message": str(e)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(e)}, status=404)
 
 
 class SearchProjectView(BaseView):
@@ -283,9 +262,7 @@ class CreateFeatureView(BaseView):
                 project_id=form.cleaned_data["project"].id,
             )
             try:
-                created_feature = self.features_service.create_features(
-                    features_dto
-                )
+                created_feature = self.features_service.create_features(features_dto)
 
                 # Возвращаем успешный ответ с данными о созданной функции
                 return JsonResponse(
@@ -306,21 +283,15 @@ class CreateFeatureView(BaseView):
                 )
 
             except Exception as e:
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
+                return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class EditFeatureView(BaseView):
     def get(self, request, *args, **kwargs):
         feature_id = kwargs.get("feature_id")
-        feature = self.features_service.get_feature_by_id(
-            feature_id=feature_id
-        )
+        feature = self.features_service.get_feature_by_id(feature_id=feature_id)
 
         data = {
             "name": feature.name,
@@ -381,15 +352,11 @@ class EditFeatureView(BaseView):
 
             except Exception as e:
                 print(f"Ошибка при обновлении фичи: {e}")
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
+                return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
         else:
             print(f"Ошибки формы: {form.errors}")
-            return JsonResponse(
-                {"status": "error", "errors": form.errors}, status=400
-            )
+            return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class DeleteFeatureView(BaseView):
@@ -397,13 +364,9 @@ class DeleteFeatureView(BaseView):
         feature_id = kwargs.get("feature_id")
         try:
             self.features_service.delete_features(feature_id=feature_id)
-            return JsonResponse(
-                {"status": "success", "message": "Feature deleted"}
-            )
+            return JsonResponse({"status": "success", "message": "Feature deleted"})
         except Exception as e:
-            return JsonResponse(
-                {"status": "error", "message": str(e)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(e)}, status=404)
 
 
 class SearchFeatureView(BaseView):

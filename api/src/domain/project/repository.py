@@ -73,3 +73,25 @@ class IFeaturesRepository(abc.ABC):
 
     def get_search_features(self, query: str) -> list[FeaturesDTO]:
         raise NotImplementedError
+
+
+class ITaskRepository(abc.ABC):
+    @abc.abstractmethod
+    def get_tasks_list(self) -> list:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def create_task(self, dto: FeaturesDTO) -> FeaturesDTO:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_task_by_id(self, task_id: int) -> FeaturesDTO:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def update_task(self, task_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def delete_task(self, task_id: int):
+        raise NotImplementedError

@@ -79,9 +79,7 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse(
-            viewname="projects:update_project", kwargs={"slug": self.slug}
-        )
+        return reverse(viewname="projects:update_project", kwargs={"slug": self.slug})
 
 
 class Tags(models.Model):
@@ -180,7 +178,53 @@ class Features(models.Model):
 
     def get_absolute_url(self):
         return redirect(
-            reverse(
-                viewname="projects:detail_features", kwargs={"slug": self.slug}
-            )
+            reverse(viewname="projects:detail_features", kwargs={"slug": self.slug})
         )
+
+
+class Task(models.Model):
+    name = models.CharField(
+        max_length=50,
+        validators=[ModelValidator.validate_letters_space_only()],
+        verbose_name="название",
+    )
+    priority = models.IntegerField(verbose_name="приоритет")
+    tags = models.ManyToManyField(
+        to="Tags",
+        related_name="tasks_tags",
+        verbose_name="теги",
+    )
+    contributor = models.ForeignKey(
+        to="CustomUser",
+        on_delete=models.PROTECT,
+        verbose_name="автор",
+        null=True,
+        related_name="tasks_contributors",
+    )
+    responsible = models.ForeignKey(
+        to="CustomUser",
+        on_delete=models.PROTECT,
+        verbose_name="ответственный",
+        null=True,
+        related_name="tasks_responsibles",
+    )
+    status = models.IntegerField(verbose_name="статус")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="дата создания")
+    closed_at = models.DateTimeField(null=True, verbose_name="дата закрытия")
+    feature = models.ForeignKey(
+        to="Features",
+        on_delete=models.PROTECT,
+        verbose_name="фича",
+        related_name="tasks_features",
+    )
+    description = models.TextField(
+        max_length=500, null=True, blank=True, verbose_name="описание"
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Задача"
+        verbose_name_plural = "Задачи"
+        ordering = ["-created_at"]

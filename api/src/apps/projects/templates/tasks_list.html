@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица проектов</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
+    <link href="{% static 'output.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 h-screen flex">
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="w-16 bg-gray-800 text-white flex flex-col items-center p-4 h-screen transition-all duration-300">
+        <button id="sidebar-toggle" class="mb-8 focus:outline-none">
+            <span class="text-xl">&#9776;</span>
+        </button>
+        <div class="space-y-6">
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">🏠</span>
+                <span class="hidden sidebar-text">Главная</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">📊</span>
+                <span class="hidden sidebar-text">Отчеты</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">⚙️</span>
+                <span class="hidden sidebar-text">Настройки</span>
+            </a>
+            <a href="#" class="block text-center">
+                <span class="block text-2xl">🧑‍💼</span>
+                <span class="hidden sidebar-text">Пользователи</span>
+            </a>
+        </div>
+    </div>
+{% block content %}
+    <!-- Основной контент -->
+    <div class="flex-1 flex flex-col">
+
+        <!-- Верхняя панель -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden m-2.5 w-full max-w-[800px] mx-auto"> <!-- Установлена максимальная ширина для панели и таблицы -->
+            <div class="p-4 flex items-center justify-between">
+                <h1 class="text-2xl font-bold">Таблица проектов</h1>
+            </div>
+
+            <!-- Поиск и элементы управления -->
+            <div class="p-4 flex items-center">
+                <!-- Поиск -->
+                <form id="search-form" method="get" class="flex items-center space-x-2 w-1/2">
+                    <input type="text" name="q" placeholder="Поиск" id="search-input" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-1/3 mr-4">
+                </form>
+                <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
+                <div class="flex items-center ml-auto space-x-4">
+                    <!-- Выпадающий список для количества строк -->
+                    <form id="rows-per-page-form" method="get" class="flex items-center">
+                        <label for="rows-per-page" class="mr-2 text-green-custom">Строк на странице:</label>
+                        <select name="per_page" id="rows-per-page" class="p-2 border border-gray-300 rounded bg-green-custom text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="10" {% if request.GET.per_page == '10' %}selected{% endif %}>10</option>
+                            <option value="20" {% if request.GET.per_page == '20' %}selected{% endif %}>20</option>
+                            <option value="30" {% if request.GET.per_page == '30' %}selected{% endif %}>30</option>
+                            <option value="50" {% if request.GET.per_page|default:'50' == '50' %}selected{% endif %}>50</option>
+                            <option value="Все" {% if request.GET.per_page == 'Все' %}selected{% endif %}>Все</option>
+                        </select>
+                        <input type="hidden" name="page" value="{{ page.number }}">
+
+                    </form>
+                    {% include "pagination.html" with page=tasks %}
+                    <!-- Кнопка "Создать проект" -->
+                    <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать проект</button>
+                </div>
+            </div>
+            <div class="task-table">
+                <table id="task-container" class="table-fixed w-full"> <!-- Установить ширину таблицы на 100% -->
+                    <thead class="bg-gray-100 text-lg">
+                        <tr>
+                            <th class="px-4 py-3 border-b text-left w-50px">ID</th>
+                            <th class="px-4 py-3 border-b text-left w-200px">Название</th>
+                            <th class="px-4 py-3 border-b text-left w-200px">Исполнители</th>
+                            <th class="px-4 py-3 border-b text-left w-50%">Описание</th> <!-- Установить ширину на 60% -->
+                            <th class="px-4 py-3 border-b text-left w-200px">Дата</th>
+                            <th class="px-4 py-3 border-b text-center w-200px">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if query %}
+                        <div class="search_info">
+                             {% if tasks %}
+                                <h2 id="search-info">Ваш поисковый запрос: <strong>{{ query }}</strong></h2>
+                            {% else %}
+                                <p><strong>По вашему запросу ничего не найдено.</strong></p>
+                            {% endif %}
+                            <button id="clear-search">Очистить поиск</button>
+                        </div>
+                    {% endif %}
+
+                    {% for item_task in tasks %}
+                        <tr class="hover:bg-gray-50 ">
+                            <td class="px-4 py-4 border-b text-left">{{ item_task.id }}</td>
+                            <td class="px-4 py-4 border-b text-left truncate">{{ item_task.name }}</td>
+                            <td class="px-4 py-4 border-b text-left">
+                                <div class="inline-flex -space-x-2">
+                                    {% for user in item_task.participants.all %}
+                                        <img src="{% if user.avatar %}{{ user.avatar }}{% else %}{% static 'images/icon-user-task.png' %}{% endif %}" alt="" class="inline-block border border-white rounded-full w-6 h-6">
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 border-b text-left w-[60%] overflow-auto break-words whitespace-normal">{{ item_task.description }}</td>
+                            <td class="px-4 py-4 border-b text-left">{{ item_task.date_created }}</td>
+                            <td class="px-4 py-4 border-b text-center">
+                                <button class="text-red-600 hover:text-red-800 edit-task-button" data-task-id="{{ item_task.id }}">
+                                    <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12.4525 7.73527L12.448 7.74157L6.02434 14.1658L7.94954 16.0903L14.3786 9.66156L12.4525 7.73527Z" fill="#0C0C0C"/>
+                                        <path d="M2.82559 10.9668L4.75078 12.893L11.1753 6.46878L11.1816 6.46428L9.2546 4.53709L2.82559 10.9668Z" fill="#0C0C0C"/>
+                                        <path d="M1.79594 12.4826L0.0462492 17.7313C-0.0617561 18.0544 0.0228479 18.4118 0.26406 18.6521C0.435068 18.824 0.66548 18.9167 0.900391 18.9167C0.995796 18.9167 1.0921 18.9014 1.18481 18.8699L6.43297 17.1201L1.79594 12.4826Z" fill="#0C0C0C"/>
+                                        <path d="M16.9401 1.97531C15.5279 0.563895 13.2292 0.563895 11.817 1.97531L10.5282 3.2643L15.6521 8.38877L16.941 7.09978C18.3532 5.68746 18.3532 3.38762 16.9401 1.97531Z" fill="#0C0C0C"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <!-- tasks.html -->
+    {% include 'create_task_modal.html' %}
+
+    <script src="{% static 'script/task.js' %}"></script>
+    <script src="{% static 'script/pagination.js' %}"></script>
+    {% block extra_js %}
+    {% endblock %}
+
+{% endblock %}
+</body>
+</html>

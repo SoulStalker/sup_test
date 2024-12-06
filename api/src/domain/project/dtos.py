@@ -3,6 +3,19 @@ from datetime import datetime
 from django.core.files import File
 
 
+class TaskDTO:
+    name: str
+    priority: int
+    tags: list
+    contributor_id: int
+    responsible_id: int
+    status: str
+    created_at: datetime
+    closed_at: datetime | None
+    feature_id: int
+    description: str
+
+
 @dataclass
 class ProjectDTO:
     name: str

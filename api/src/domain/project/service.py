@@ -1,6 +1,7 @@
-from .repository import IProjectRepository, IFeaturesRepository
+from .repository import IProjectRepository, IFeaturesRepository, ITaskRepository
 from src.domain.project.entity import ProjectEntity, FeaturesEntity
-from .dtos import ProjectDTO, StatusObject, FeaturesDTO
+from .dtos import ProjectDTO, StatusObject, FeaturesDTO, TaskDTO
+
 
 class ProjectService:
 
@@ -24,7 +25,7 @@ class ProjectService:
             status=dto.status,
             responsible_id=dto.responsible_id,
             participants=dto.participants,
-            date_created=dto.date_created
+            date_created=dto.date_created,
         )
 
         err = project.verify_data()
@@ -44,13 +45,13 @@ class ProjectService:
         """Возвращает доступные статусы проекта."""
         return StatusObject.choices()
 
-
     def get_project_by_id(self, project_id: int) -> ProjectDTO:
         """Получение проекта по его id."""
         return self.__project_repository.get_project_by_id(project_id)
 
     def search_projects(self, query: str):
         return self.__project_repository.search_projects(query)
+
 
 class FeatureService:
     def __init__(self, features_repository: IFeaturesRepository):
@@ -77,7 +78,7 @@ class FeatureService:
             participants=dto.participants,
             responsible_id=dto.responsible_id,
             project_id=dto.project_id,
-            status=dto.status
+            status=dto.status,
         )
 
         err = feature.verify_data()
@@ -96,3 +97,23 @@ class FeatureService:
 
     def get_search_features(self, query: str):
         return self.__features_repository.get_search_features(query)
+
+
+class TaskService:
+    def __init__(self, task_repository: ITaskRepository):
+        self.__task_repository = task_repository
+
+    def get_tasks_list(self):
+        return self.__task_repository.get_tasks_list()
+
+    def get_task_by_id(self, task_id: int):
+        return self.__task_repository.get_task_by_id(task_id)
+
+    def create_task(self, dto: TaskDTO):
+        return self.__task_repository.create_task(dto)
+
+    def update_task(self, task_id: int, dto: TaskDTO):
+        return self.__task_repository.update_task(task_id, dto)
+
+    def delete_task(self, task_id: int):
+        return self.__task_repository.delete_task(task_id)
