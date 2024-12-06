@@ -7,14 +7,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-print(os.getenv("DB_ENGINE"))
+load_dotenv()
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1").split(
+    ","
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -28,6 +29,7 @@ INSTALLED_APPS = [
     "src.apps.invites",
     "src.models",
     "src.apps.users",
+    "src.apps.teams",
 ]
 
 MIDDLEWARE = [
@@ -105,8 +107,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 # Путь для хранения загружаемых файлов
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
-print(MEDIA_ROOT)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

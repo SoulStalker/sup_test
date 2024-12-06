@@ -1,18 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from src.models.models import CustomUser, Permission, Role, Team
+from src.models.models import CustomUser, Permission, Role
 
 
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
     list_display = ("name", "color")
     search_fields = ("name",)
-
-
-@admin.register(Team)
-class TeamAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    list_filter = ("name",)
 
 
 @admin.register(Permission)
