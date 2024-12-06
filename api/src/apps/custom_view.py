@@ -4,21 +4,17 @@ from django.http import HttpResponseNotAllowed
 from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.apps.projects.repository import FeaturesRepository, ProjectRepository
+from src.apps.teams.repository import TeamRepository
 from src.apps.users.repository import (
     PermissionRepository,
     RoleRepository,
-    TeamRepository,
     UserRepository,
 )
 from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.project.service import FeatureService, ProjectService
-from src.domain.user.service import (
-    PermissionService,
-    RoleService,
-    TeamService,
-    UserService,
-)
+from src.domain.teams.service import TeamService
+from src.domain.user.service import PermissionService, RoleService, UserService
 
 
 class BaseView:

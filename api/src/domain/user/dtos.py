@@ -16,12 +16,6 @@ class CreateRoleDTO:
 
 
 @dataclass
-class TeamDTO:
-    id: int
-    name: str
-
-
-@dataclass
 class PermissionDTO:
     id: int
     name: str
