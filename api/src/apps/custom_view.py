@@ -15,6 +15,8 @@ from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.project.service import FeatureService, ProjectService
 from src.domain.teams.service import TeamService
 from src.domain.user.service import PermissionService, RoleService, UserService
+from src.domain.registration.service import RegistrationService
+from src.apps.registration.repository import RegistarionRepository
 
 
 class BaseView:
@@ -38,6 +40,7 @@ class BaseView:
     role_service = RoleService(RoleRepository())
     permission_service = PermissionService(PermissionRepository())
     team_service = TeamService(TeamRepository())
+    registration_service = RegistrationService(RegistarionRepository())
 
     # Разрешенные методы
     http_method_names = ["get", "post", "put", "patch", "delete"]
