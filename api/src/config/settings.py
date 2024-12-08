@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "src.models",
     "src.apps.users",
     "src.apps.teams",
+    "src.apps.registration",
 ]
 
 MIDDLEWARE = [
