@@ -23,3 +23,7 @@ class IInviteRepository(abc.ABC):
     @abc.abstractmethod
     def update_status(self, invite_id: int, status: str):
         raise NotImplementedError
+    
+    @abc.abstractmethod
+    def create_inviteDTO(self, invitation_code: str):
+        raise NotImplementedError

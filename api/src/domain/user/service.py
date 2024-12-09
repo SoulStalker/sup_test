@@ -87,8 +87,3 @@ class UserService:
         user.set_password(password)
         user.save()
         return user
-
-    # def set_password_registration(self, user_email, password1, password2):
-    #     self.__repository.set_password_registration(
-    #         user_email, password1, password2
-    #     )

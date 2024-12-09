@@ -7,5 +7,5 @@ app_name = "apps.registration"
 
 
 urlpatterns = [
-    path("", UserRegistration.as_view(), name="registration"),
+    path("<invitation_code>/", UserRegistration.as_view(), name="registration"),
 ]
