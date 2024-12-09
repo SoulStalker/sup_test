@@ -17,10 +17,6 @@ class TasksView(BaseView):
         tasks = self.task_service.get_tasks_list()
         tasks = self.paginate_queryset(tasks)
         task_status_choices = self.task_service.get_task_status_choices()
-
-        for status in task_status_choices:
-            print(status)
-
         features = self.features_service.get_features_list()
 
         context = {
