@@ -20,15 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
             form.reset();
             clearErrors(); // Очистить ошибки при открытии окна
 
-            // Сброс выбора участников
-            const participantsSelect = document.getElementById('task-participants');
-            Array.from(participantsSelect.options).forEach(option => {
-                option.selected = false; // Убираем выделение у всех опций
-            });
-
-            // Сброс текста выбора участников
-            const selectContainer = document.getElementById('select-container');
-            selectContainer.textContent = 'Выберите участников';
         });
     }
 
@@ -38,15 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
         form.reset(); // Сбрасываем форму
         clearErrors(); // Очищение ошибок
 
-        // Сброс текста выбора участников
-        const selectContainer = document.getElementById('select-container');
-        selectContainer.textContent = 'Выберите участников';
-
-        // Сброс выбора участников
-        const participantsSelect = document.getElementById('task-participants');
-        Array.from(participantsSelect.options).forEach(option => {
-            option.selected = false; // Убираем выделение у всех опций
-        });
     }
 
     // Обработчик клика по кнопке закрытия модального окна
@@ -142,22 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Заполняем форму полученными данными
                     document.getElementById('task-name').value = data.name || '';
 
-                    console.log(data)
-
-                    // Логика для заполнения участников
-                    const participantIds = data.participants;
-
-                    console.log(participantIds)
-
-                    const participantsSelect = document.getElementById('task-participants');
-
-                    Array.from(participantsSelect.options).forEach(option => {
-                        option.selected = participantIds.includes(parseInt(option.value));
-                    });
-
-                    // Обновляем отображение выбранных участников
-                    updateSelectedParticipants(participantIds);
-
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `tasks/edit/${currentTaskId}/`);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
@@ -203,36 +169,6 @@ document.addEventListener('DOMContentLoaded', function () {
         confirmDeletePopup.classList.add('hidden'); // Скрываем попап подтверждения удаления
     });
 
-    // Функция для обновления текста с выбранными участниками
-    function updateSelectedParticipants(participantIds = []) {
-        const participantsSelect = document.getElementById('task-participants');
-        const selectContainer = document.getElementById('select-container');
-
-        // Преобразуем participantIds в числа, если они передаются как строки
-        const normalizedParticipantIds = participantIds.map(id => parseInt(id, 10));
-
-
-        // Устанавливаем выбранные опции
-        Array.from(participantsSelect.options).forEach(option => {
-            const optionValue = parseInt(option.value, 10); // Преобразуем option.value в число
-            const isSelected = normalizedParticipantIds.includes(optionValue); // Сравниваем
-            option.selected = isSelected; // Устанавливаем selected
-        });
-
-        // Обновляем текстовое представление выбранных участников
-        const selectedOptions = Array.from(participantsSelect.options)
-            .filter(option => option.selected)
-            .map(option => option.textContent);
-
-        if (selectedOptions.length > 0) {
-            selectContainer.textContent = selectedOptions.join(', ');
-        } else {
-            selectContainer.textContent = 'Выберите участников';
-        }
-    }
-
-
-
 
     // Очищение ошибок формы
     const clearErrors = () => {
@@ -250,34 +186,4 @@ document.addEventListener('DOMContentLoaded', function () {
         field.parentNode.insertBefore(errorDiv, field.nextSibling); // Вставляем ошибку после поля
     };
 
-    // Скрипт для кастомного множественного выбора
-    const selectContainer = document.getElementById('select-container');
-    const selectItems = document.getElementById('select-items');
-    const selectElement = document.getElementById('task-participants');
-
-    if (selectContainer) {
-        selectContainer.addEventListener('click', () => {
-            selectContainer.classList.toggle('active');
-            selectItems.classList.toggle('visible-menu');
-            console.log('Клик на контейнер выбора участников');
-        });
-    }
-
-    if (selectItems) {
-        selectItems.addEventListener('click', (event) => {
-            if (event.target.tagName === 'DIV') {
-                const value = event.target.getAttribute('data-value');
-                const option = Array.from(selectElement.options).find(option => option.value === value);
-                if (option) {
-                    option.selected = !option.selected;
-                    event.target.classList.toggle('selected');
-                    console.log('Выбор участника:', value);
-                }
-                selectContainer.textContent = Array.from(selectElement.options)
-                    .filter(option => option.selected)
-                    .map(option => option.text)
-                    .join(', ') || 'Выберите участников';
-            }
-        });
-    }
 });

@@ -1,10 +1,13 @@
 from django import forms
-from django.utils.functional import cached_property
 from django.contrib.auth import get_user_model
-
-from src.models.choice_classes import ProjectChoices, FeaturesChoices
+from django.utils.functional import cached_property
 from src.domain.validators.validators import DataVerifier
-from src.models.projects import Tags, Project
+from src.models.choice_classes import (
+    FeaturesChoices,
+    ProjectChoices,
+    TaskChoices,
+)
+from src.models.projects import Features, Project, Tags
 
 User = get_user_model()
 
@@ -43,7 +46,8 @@ class ProjectForm(forms.Form):
     )
 
     date_created = forms.DateField(
-        label="Дата создания", widget=forms.DateInput(attrs={"class": "form-control"})
+        label="Дата создания",
+        widget=forms.DateInput(attrs={"class": "form-control"}),
     )
 
     responsible = forms.ModelChoiceField(
@@ -92,7 +96,9 @@ class CreateFeaturesForm(forms.Form):
     )
 
     tags = forms.ModelMultipleChoiceField(
-        queryset=Tags.objects.all(), label="Теги", widget=forms.CheckboxSelectMultiple
+        queryset=Tags.objects.all(),
+        label="Теги",
+        widget=forms.CheckboxSelectMultiple,
     )
 
     participants = forms.ModelMultipleChoiceField(
@@ -102,7 +108,8 @@ class CreateFeaturesForm(forms.Form):
     )
 
     importance = forms.IntegerField(
-        label="Важность", widget=forms.NumberInput(attrs={"class": "form-control"})
+        label="Важность",
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
     )
 
     status = forms.ChoiceField(
@@ -143,27 +150,50 @@ class TaskForm(forms.Form):
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
 
-    logo = forms.ImageField(
-        label="Логотип",
-        widget=forms.FileInput(attrs={"class": "form-control"}),
-        validators=[DataVerifier.validate_file_extension],
+    priority = forms.IntegerField(
+        label="Приоритет",
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+    )
+
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tags.objects.all(),
+        label="Теги",
+        widget=forms.CheckboxSelectMultiple,
         required=False,
+    )
+
+    contributor = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="Исполнитель",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    responsible = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="Ответственный",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    status = forms.ChoiceField(
+        choices=TaskChoices.choices,
+        label="Статус",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    closed_at = forms.DateField(
+        label="Дата закрытия",
+        widget=forms.DateInput(attrs={"class": "form-control"}),
+        required=False,
+    )
+
+    feature = forms.ModelChoiceField(
+        queryset=Features.objects.all(),
+        label="Фича",
+        widget=forms.Select(attrs={"class": "form-control"}),
     )
 
     description = forms.CharField(
         max_length=10000,
         label="Описание",
         widget=forms.Textarea(attrs={"class": "form-control", "rows": 5}),
-    )
-
-    status = forms.ChoiceField(
-        choices=ProjectChoices.choices,
-        label="Статус",
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
-
-    participants = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(),
-        label="Участники",
-        widget=forms.CheckboxSelectMultiple,
     )

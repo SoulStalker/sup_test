@@ -5,7 +5,11 @@ from django.db import models
 from django.shortcuts import redirect
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from src.models.choice_classes import FeaturesChoices, ProjectChoices
+from src.models.choice_classes import (
+    FeaturesChoices,
+    ProjectChoices,
+    TaskStatusChoices,
+)
 
 from .validators import ModelValidator
 
@@ -79,7 +83,9 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse(viewname="projects:update_project", kwargs={"slug": self.slug})
+        return reverse(
+            viewname="projects:update_project", kwargs={"slug": self.slug}
+        )
 
 
 class Tags(models.Model):
@@ -178,7 +184,9 @@ class Features(models.Model):
 
     def get_absolute_url(self):
         return redirect(
-            reverse(viewname="projects:detail_features", kwargs={"slug": self.slug})
+            reverse(
+                viewname="projects:detail_features", kwargs={"slug": self.slug}
+            )
         )
 
 
@@ -208,8 +216,15 @@ class Task(models.Model):
         null=True,
         related_name="tasks_responsibles",
     )
-    status = models.IntegerField(verbose_name="статус")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="дата создания")
+    status = models.CharField(
+        max_length=20,
+        choices=TaskStatusChoices,
+        default=TaskStatusChoices.NEW,
+        verbose_name="Статус",
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name="дата создания"
+    )
     closed_at = models.DateTimeField(null=True, verbose_name="дата закрытия")
     feature = models.ForeignKey(
         to="Features",

@@ -1,20 +1,24 @@
 from abc import ABC
 
+from django.contrib.auth import get_user_model
 from django.db.models import Q
-
 from src.domain.project.dtos import (
+    CreateTaskDTO,
+    FeaturesChoicesObject,
+    FeaturesDTO,
     ProjectDTO,
     StatusObject,
-    FeaturesDTO,
-    FeaturesChoicesObject,
+    TaskChoicesObject,
+    TaskDTO,
 )
 from src.domain.project.repository import (
-    IProjectRepository,
     IFeaturesRepository,
+    IProjectRepository,
     ITaskRepository,
 )
-from src.models.projects import Project, Features, Tags, Task
-from src.domain.project.dtos import TaskDTO
+from src.models.projects import Features, Project, Tags, Task
+
+User = get_user_model()
 
 
 class ProjectRepository(IProjectRepository, ABC):
@@ -164,14 +168,20 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             name=feature.name,
             importance=feature.importance,
             description=feature.description,
-            tags=[tag.id for tag in feature.tags.all()],  # Преобразуем теги в список ID
-            participants=[participant.id for participant in feature.participants.all()],
+            tags=[
+                tag.id for tag in feature.tags.all()
+            ],  # Преобразуем теги в список ID
+            participants=[
+                participant.id for participant in feature.participants.all()
+            ],
             responsible_id=feature.responsible_id,
             project_id=feature.project_id,
             status=feature.status,
         )
 
-    def update_features(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+    def update_features(
+        self, feature_id: int, dto: FeaturesDTO
+    ) -> FeaturesDTO:
         try:
             feature = Features.objects.get(id=feature_id)
         except Features.DoesNotExist:
@@ -189,7 +199,9 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             feature.tags.set(dto.tags)  # Передаем список ID тегов
 
         if dto.participants:
-            feature.participants.set(dto.participants)  # Передаем список ID участников
+            feature.participants.set(
+                dto.participants
+            )  # Передаем список ID участников
 
         return FeaturesDTO(
             name=feature.name,
@@ -223,7 +235,8 @@ class FeaturesRepository(IFeaturesRepository, ABC):
                     tag.id for tag in feature.tags.all()
                 ],  # Преобразуем теги в список ID
                 participants=[
-                    participant.id for participant in feature.participants.all()
+                    participant.id
+                    for participant in feature.participants.all()
                 ],
                 responsible_id=feature.responsible_id,
                 project_id=feature.project_id,
@@ -243,28 +256,22 @@ class TaskRepository(ITaskRepository, ABC):
     def get_task_by_id(self, task_id: int) -> TaskDTO:
         return Task.objects.get(id=task_id)
 
-    def create_task(self, dto: TaskDTO) -> TaskDTO:
-        task = Task.objects.create(
+    def create_task(self, dto: CreateTaskDTO):
+        task = self.model(
             name=dto.name,
-            logo=dto.logo,
-            description=dto.description,
-            status=dto.status,
+            priority=dto.priority,
+            contributor_id=dto.contributor_id,
             responsible_id=dto.responsible_id,
-            date_created=dto.date_created,
+            status=dto.status,
+            feature_id=dto.feature_id,
+            description=dto.description,
         )
 
-        if dto.participants:
-            task.participants.set(dto.participants)
+        task.save()
 
-        return TaskDTO(
-            name=task.name,
-            logo=task.logo,
-            description=task.description,
-            status=task.status,
-            responsible_id=task.responsible_id,
-            participants=dto.participants,
-            date_created=task.date_created,
-        )
+        task.tags.set(dto.tags)
+
+        print(task)
 
     def update_task(self, task_id: int, dto: TaskDTO) -> TaskDTO:
         try:
@@ -283,3 +290,6 @@ class TaskRepository(ITaskRepository, ABC):
     def delete_task(self, task_id: int):
         task = Task.objects.get(id=task_id)
         task.delete()
+
+    def get_task_status_choices(self):
+        return TaskChoicesObject.choices()

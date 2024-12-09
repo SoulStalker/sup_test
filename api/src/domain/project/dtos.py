@@ -1,19 +1,26 @@
 from dataclasses import dataclass
 from datetime import datetime
+
 from django.core.files import File
 
 
-class TaskDTO:
+@dataclass
+class CreateTaskDTO:
     name: str
     priority: int
     tags: list
     contributor_id: int
     responsible_id: int
     status: str
-    created_at: datetime
     closed_at: datetime | None
     feature_id: int
     description: str
+
+
+@dataclass
+class TaskDTO(CreateTaskDTO):
+    id: int
+    created_at: datetime
 
 
 @dataclass
@@ -102,3 +109,7 @@ class FeaturesChoicesObject:
 
     def __repr__(self):
         return f"StatusObject(status='{self.status}')"
+
+
+class TaskChoicesObject(FeaturesChoicesObject):
+    pass
