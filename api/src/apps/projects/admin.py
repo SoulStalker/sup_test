@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from src.models.projects import Features, Project, Tags, Task
 
 
@@ -20,5 +19,5 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ("name", "status", "responsible", "created_at", "closed_at")
+    list_display = ("name", "responsible", "created_at", "closed_at")
     readonly_fields = ("created_at", "closed_at")
