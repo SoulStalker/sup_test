@@ -10,3 +10,6 @@ class RegistrationService:
 
     def create(self, dto: CreateRegistationEntity):
         self.__repository.create(dto)
+
+    def chek_invitation_code_or_404(self, invitation_code: str):
+        self.__repository.chek_invitation_code_or_404(invitation_code)

@@ -9,14 +9,16 @@ from src.domain.registration.dtos import (
 )
 from src.domain.user.entity import CreateUserEntity
 from src.domain.registration.repository import IRegistrationRepository
-from src.models.models import CustomUser, Permission, Role
+from src.models.models import CustomUser
+from src.models.invites import Invite
+from src.domain.invites.dtos import InviteDTO
+
 
 
 
 
 class RegistarionRepository(IRegistrationRepository, ABC):
     model = CustomUser
-
 
     def create(self, dto: CreateUserEntity) -> RegistrationDTO:
         model = CustomUser.objects.create(
@@ -33,6 +35,12 @@ class RegistarionRepository(IRegistrationRepository, ABC):
             team_id=dto.team_id,
         )
         model.save()
+
+    def chek_invitation_code_or_404(self, invitation_code):
+        link = f'{os.getenv('FRONTEND_URL')}/registration/{invitation_code}'
+        get_object_or_404(Invite, link=link, status='Активна')
+
+
 
 
     # def set_password_registration(self, user_email, password1, password2):

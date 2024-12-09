@@ -14,7 +14,8 @@ from src.domain.registration.dtos import RegistrationDTO
 class UserRegistration(BaseView):
     """Регистрация пользователя"""
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, invitation_code):
+        self.registration_service.chek_invitation_code_or_404(invitation_code)
         form = RegistrationForm()
         return render(
             request,
@@ -22,7 +23,7 @@ class UserRegistration(BaseView):
             {"form": form},
         )
 
-    def post(self, request):
+    def post(self, request, invitation_code):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             try:
@@ -44,7 +45,8 @@ class UserRegistration(BaseView):
                 )
 
                 self.registration_service.create(registration_dto)
-
+                invite_DTO = self.invite_service.create_inviteDTO(invitation_code)
+                self.invite_service.update_status(invite_DTO, status = 'USED')
                 return JsonResponse({"status": "success"}, status=201)
             except IntegrityError as err:
                 matches = re.findall(r"\((.*?)\)", str(err))
