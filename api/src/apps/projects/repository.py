@@ -1,6 +1,5 @@
 from abc import ABC
 
-from django.contrib.auth import get_user_model
 from django.db.models import Q
 from src.domain.project.dtos import (
     CreateTaskDTO,
@@ -17,8 +16,6 @@ from src.domain.project.repository import (
     ITaskRepository,
 )
 from src.models.projects import Features, Project, Tags, Task
-
-User = get_user_model()
 
 
 class ProjectRepository(IProjectRepository, ABC):

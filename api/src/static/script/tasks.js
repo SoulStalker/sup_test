@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Обработчик подтверждения удаления задачи
     confirmDeleteButton.addEventListener('click', function () {
         if (currentTaskId) {
-            fetch(`tasks/delete/${currentTaskId}/`, {
+            fetch(`delete/${currentTaskId}/`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
