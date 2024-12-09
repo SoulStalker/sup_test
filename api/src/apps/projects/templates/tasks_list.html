@@ -77,7 +77,7 @@
                         <tr>
                             <th class="px-4 py-3 border-b text-left w-50px">ID</th>
                             <th class="px-4 py-3 border-b text-left w-200px">Название</th>
-                            <th class="px-4 py-3 border-b text-left w-200px">Исполнители</th>
+                            <th class="px-4 py-3 border-b text-left w-200px">Исполнитель</th>
                             <th class="px-4 py-3 border-b text-left w-50%">Описание</th> <!-- Установить ширину на 60% -->
                             <th class="px-4 py-3 border-b text-left w-200px">Дата</th>
                             <th class="px-4 py-3 border-b text-center w-200px">Действия</th>
@@ -99,15 +99,9 @@
                         <tr class="hover:bg-gray-50 ">
                             <td class="px-4 py-4 border-b text-left">{{ item_task.id }}</td>
                             <td class="px-4 py-4 border-b text-left truncate">{{ item_task.name }}</td>
-                            <td class="px-4 py-4 border-b text-left">
-                                <div class="inline-flex -space-x-2">
-                                    {% for user in item_task.participants.all %}
-                                        <img src="{% if user.avatar %}{{ user.avatar }}{% else %}{% static 'images/icon-user-task.png' %}{% endif %}" alt="" class="inline-block border border-white rounded-full w-6 h-6">
-                                    {% endfor %}
-                                </div>
-                            </td>
+                            <td class="px-4 py-4 border-b text-left">{{ item_task.contributor.name }}</td>
                             <td class="px-4 py-4 border-b text-left w-[60%] overflow-auto break-words whitespace-normal">{{ item_task.description }}</td>
-                            <td class="px-4 py-4 border-b text-left">{{ item_task.date_created }}</td>
+                            <td class="px-4 py-4 border-b text-left">{{ item_task.created_at }}</td>
                             <td class="px-4 py-4 border-b text-center">
                                 <button class="text-red-600 hover:text-red-800 edit-task-button" data-task-id="{{ item_task.id }}">
                                     <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">

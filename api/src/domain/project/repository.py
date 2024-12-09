@@ -1,6 +1,6 @@
 import abc
 
-from .dtos import CreateTaskDTO, FeaturesDTO, ProjectDTO
+from .dtos import CreateTaskDTO, FeaturesDTO, ProjectDTO, TaskDTO
 
 
 class IProjectRepository(abc.ABC):
@@ -92,7 +92,7 @@ class ITaskRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def update_task(self, task_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+    def update_task(self, dto: TaskDTO) -> TaskDTO:
         raise NotImplementedError
 
     @abc.abstractmethod

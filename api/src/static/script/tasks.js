@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
             modal.classList.remove('hidden');
 
             // Загружаем данные задача через fetch
-            fetch(`tasks/edit/${currentTaskId}/`)
+            fetch(`update/${currentTaskId}/`)
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(errData => {
@@ -123,9 +123,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     // Заполняем форму полученными данными
                     document.getElementById('task-name').value = data.name || '';
+                    document.getElementById('task-priority').value = data.priority || '';
+                    document.getElementById('task-description').value = data.description || '';
+                    document.getElementById('task-status').value = data.status || '';
+                    document.getElementById('task-responsible').value = data.responsible || '';
+                    document.getElementById('task-feature').value = data.feature || '';
+                    // document.getElementById('task-tags').value = data.tags || '';
+                    document.getElementById('task-contributor').value = data.contributor || '';
+
 
                     // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `tasks/edit/${currentTaskId}/`);
+                    form.setAttribute('action', `update/${currentTaskId}/`);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
                 .catch(error => console.error('Ошибка:', error));

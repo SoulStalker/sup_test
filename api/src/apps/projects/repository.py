@@ -247,11 +247,29 @@ class TaskRepository(ITaskRepository, ABC):
 
     model = Task
 
+    @classmethod
+    def _task_orm_to_dto(cls, task: Task) -> TaskDTO:
+        return TaskDTO(
+            id=task.id,
+            name=task.name,
+            priority=task.priority,
+            tags=[
+                tag.id for tag in task.tags.all()
+            ],  # Преобразуем теги в список ID
+            contributor_id=task.contributor_id,
+            responsible_id=task.responsible_id,
+            status=task.status,
+            created_at=task.created_at,
+            closed_at=task.closed_at,
+            description=task.description,
+            feature_id=task.feature_id,
+        )
+
     def get_tasks_list(self) -> TaskDTO:
         return Task.objects.all().order_by("id")
 
     def get_task_by_id(self, task_id: int) -> TaskDTO:
-        return Task.objects.get(id=task_id)
+        return self._task_orm_to_dto(Task.objects.get(id=task_id))
 
     def create_task(self, dto: CreateTaskDTO):
         task = self.model(
@@ -265,23 +283,18 @@ class TaskRepository(ITaskRepository, ABC):
         )
 
         task.save()
-
         task.tags.set(dto.tags)
 
-        print(task)
-
-    def update_task(self, task_id: int, dto: TaskDTO) -> TaskDTO:
-        try:
-            task = Task.objects.get(id=task_id)
-        except Task.DoesNotExist:
-            raise ValueError(f"Task with ID {task_id} not found")
+    def update_task(self, dto: TaskDTO) -> TaskDTO:
+        task = Task.objects.get(id=dto.id)
 
         task.name = dto.name
-        task.logo = dto.logo
-        task.description = dto.description
-        task.status = dto.status
+        task.priority = dto.priority
+        task.contributor_id = dto.contributor_id
         task.responsible_id = dto.responsible_id
-        task.date_created = dto.date_created
+        task.status = dto.status
+        task.feature_id = dto.feature_id
+        task.description = dto.description
         task.save()
 
     def delete_task(self, task_id: int):

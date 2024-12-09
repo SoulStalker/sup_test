@@ -117,8 +117,8 @@ class TaskService:
     def create_task(self, dto: CreateTaskDTO):
         return self.__task_repository.create_task(dto)
 
-    def update_task(self, task_id: int, dto: TaskDTO):
-        return self.__task_repository.update_task(task_id, dto)
+    def update_task(self, dto: TaskDTO):
+        return self.__task_repository.update_task(dto)
 
     def delete_task(self, task_id: int):
         return self.__task_repository.delete_task(task_id)
