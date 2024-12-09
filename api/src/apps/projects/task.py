@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.projects.forms import TaskForm
-from src.domain.project.dtos import TaskDTO
+from src.domain.project.dtos import CreateTaskDTO, TaskDTO
 
 User = get_user_model()
 
@@ -16,10 +16,18 @@ class TasksView(BaseView):
     def get(self, *args, **kwargs):
         tasks = self.task_service.get_tasks_list()
         tasks = self.paginate_queryset(tasks)
+        task_status_choices = self.task_service.get_task_status_choices()
+
+        for status in task_status_choices:
+            print(status)
+
+        features = self.features_service.get_features_list()
 
         context = {
             "tasks": tasks,
-            "users": User.objects.order_by("id"),
+            "users": self.user_service.get_user_list(),
+            "task_status_choices": task_status_choices,
+            "features": features,
         }
         return render(self.request, "tasks_list.html", context)
 
@@ -39,7 +47,7 @@ class CreateTaskView(BaseView):
             "create_task_modal.html",
             {
                 "form": form,
-                "users": User.objects.order_by("id"),
+                "users": self.user_service.get_user_list(),
                 "task_status_choices": task_status_choices,
             },
         )
@@ -47,46 +55,41 @@ class CreateTaskView(BaseView):
     def post(self, request, *args, **kwargs):
         form = TaskForm(request.POST, request.FILES)
 
-        print("Form: ", request.POST)
+        # print("Form: ", request.POST)
 
         if form.is_valid():
-            participants = request.POST.getlist("participants")
-            task_dto = TaskDTO(
+
+            # print("CD: ", form.cleaned_data)
+
+            task_dto = CreateTaskDTO(
                 name=form.cleaned_data["name"],
-                logo=form.cleaned_data["logo"],
-                description=form.cleaned_data["description"],
-                status=form.cleaned_data["status"],
-                participants=participants,
+                priority=form.cleaned_data["priority"],
+                tags=form.cleaned_data["tags"],
+                contributor_id=form.cleaned_data["contributor"].id,
                 responsible_id=form.cleaned_data["responsible"].id,
-                date_created=form.cleaned_data["date_created"],
+                status=form.cleaned_data["status"],
+                closed_at=form.cleaned_data.get("closed_at", None),
+                description=form.cleaned_data["description"],
+                feature_id=form.cleaned_data["feature"].id,
             )
 
             try:
                 # Создание проекта
-                created_task = self.task_service.create_task(task_dto)
-
-                # Возвращаем успешный ответ с данными о созданном проекте
-                return JsonResponse(
-                    {
-                        "status": "success",
-                        "task": {
-                            "name": created_task.name,
-                            "logo": created_task.logo,
-                            "slug": created_task.slug,
-                            "description": created_task.description,
-                            "status": created_task.status,
-                            "responsible_id": created_task.responsible_id,
-                            "participants": created_task.participants,
-                            "date_created": created_task.date_created.isoformat(),
-                        },
-                    },
-                    status=201,
-                )
+                err = self.task_service.create_task(task_dto)
+                if err:
+                    return JsonResponse(
+                        {"status": "error", "message": str(err)}, status=400
+                    )
+                return JsonResponse({"status": "success"}, status=201)
 
             except Exception as e:
+                print("Error: ", e)
                 return JsonResponse(
                     {"status": "error", "message": str(e)}, status=400
                 )
+
+        print(form.errors)
+
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )

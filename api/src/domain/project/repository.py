@@ -1,5 +1,6 @@
-from .dtos import ProjectDTO, FeaturesDTO
 import abc
+
+from .dtos import CreateTaskDTO, FeaturesDTO, ProjectDTO
 
 
 class IProjectRepository(abc.ABC):
@@ -65,7 +66,9 @@ class IFeaturesRepository(abc.ABC):
     def get_feature_by_id(self, feature_id: int) -> FeaturesDTO:
         raise NotImplementedError
 
-    def update_features(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+    def update_features(
+        self, feature_id: int, dto: FeaturesDTO
+    ) -> FeaturesDTO:
         raise NotImplementedError
 
     def delete_features(self, feature_id: int):
@@ -81,7 +84,7 @@ class ITaskRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create_task(self, dto: FeaturesDTO) -> FeaturesDTO:
+    def create_task(self, dto: CreateTaskDTO):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -94,4 +97,8 @@ class ITaskRepository(abc.ABC):
 
     @abc.abstractmethod
     def delete_task(self, task_id: int):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_task_status_choices(self) -> list:
         raise NotImplementedError

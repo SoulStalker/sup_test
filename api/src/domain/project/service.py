@@ -1,6 +1,11 @@
-from .repository import IProjectRepository, IFeaturesRepository, ITaskRepository
-from src.domain.project.entity import ProjectEntity, FeaturesEntity
-from .dtos import ProjectDTO, StatusObject, FeaturesDTO, TaskDTO
+from src.domain.project.entity import FeaturesEntity, ProjectEntity
+
+from .dtos import CreateTaskDTO, FeaturesDTO, ProjectDTO, StatusObject, TaskDTO
+from .repository import (
+    IFeaturesRepository,
+    IProjectRepository,
+    ITaskRepository,
+)
 
 
 class ProjectService:
@@ -109,7 +114,7 @@ class TaskService:
     def get_task_by_id(self, task_id: int):
         return self.__task_repository.get_task_by_id(task_id)
 
-    def create_task(self, dto: TaskDTO):
+    def create_task(self, dto: CreateTaskDTO):
         return self.__task_repository.create_task(dto)
 
     def update_task(self, task_id: int, dto: TaskDTO):
@@ -117,3 +122,6 @@ class TaskService:
 
     def delete_task(self, task_id: int):
         return self.__task_repository.delete_task(task_id)
+
+    def get_task_status_choices(self):
+        return self.__task_repository.get_task_status_choices()

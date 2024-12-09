@@ -9,6 +9,10 @@
                     <label for="task-name" class="block text-sm font-medium text-gray-700">Название задачи</label>
                     <input type="text" id="task-name" name="name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
                 </div>
+                <div class="w-1/2 pr-2">
+                    <label for="task-priority" class="block text-sm font-medium text-gray-700">Приоритет</label>
+                    <input type="text" id="task-priority" name="priority" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                </div>
             </div>
             <div class="mb-4">
                 <label for="task-description" class="block text-sm font-medium text-gray-700">Описание задачи</label>
@@ -22,33 +26,32 @@
                             <option value="{{ value }}">{{ label }}</option>
                         {% endfor %}
                     </select>
+                    <label for="task-feature" class="block text-sm font-medium text-gray-700">Фича*</label>
+                    <select id="task-feature" name="feature" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        {% for feature in features %}
+                            <option value="{{ feature.id }}">{{ feature.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="w-1/2 pr-2">
-                    <label for="task-responsible" class="block text-sm font-medium text-gray-700">Ответсвенный*</label>
+                    <label for="task-contributor" class="block text-sm font-medium text-gray-700">Исполнитель*</label>
+                    <select id="task-contributor" name="contributor" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="task-responsible" class="block text-sm font-medium text-gray-700">Ответственный*</label>
                     <select id="task-responsible" name="responsible" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                         {% for user in users %}
                             <option value="{{ user.id }}">{{ user.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="w-1/2 pl-2 custom-select">
-                    <label for="task-participants" class="block text-sm font-medium text-gray-700">Участники*</label>
-                    <div id="select-container" class="select-selected">Выберите участников</div>
-                    <div id="select-items" class="select-items">
-                        {% for user in users %}
-                            <div data-value="{{ user.id }}">{{ user.name }}</div>
-                        {% endfor %}
-                    </div>
-                    <select id="task-participants" name="participants" multiple class="hidden">
-                        {% for user in users %}
-                            <option value="{{ user.id }}">{{ user.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+
             </div>
             <div class="mb-4">
-                <label for="task-date" class="block text-sm font-medium text-gray-700">Дата</label>
-                <input type="date" id="task-date" name="date_created" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                <label for="task-close-date" class="block text-sm font-medium text-gray-700">Дата закрытия</label>
+                <input type="date" id="task-close-date" name="closed_at" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
             </div>
             <div class="flex justify-end space-x-2">
                 <button id="delete-task-button" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" data-task-id="{{ task.id }}">Удалить</button>
