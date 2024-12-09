@@ -20,7 +20,7 @@ class CreateTaskDTO:
 @dataclass
 class TaskDTO(CreateTaskDTO):
     id: int
-    created_at: datetime
+    created_at: datetime | None
 
 
 @dataclass

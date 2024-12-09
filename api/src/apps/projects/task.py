@@ -50,13 +50,7 @@ class CreateTaskView(BaseView):
 
     def post(self, request, *args, **kwargs):
         form = TaskForm(request.POST, request.FILES)
-
-        # print("Form: ", request.POST)
-
         if form.is_valid():
-
-            # print("CD: ", form.cleaned_data)
-
             task_dto = CreateTaskDTO(
                 name=form.cleaned_data["name"],
                 priority=form.cleaned_data["priority"],
@@ -84,8 +78,6 @@ class CreateTaskView(BaseView):
                     {"status": "error", "message": str(e)}, status=400
                 )
 
-        print(form.errors)
-
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -97,6 +89,7 @@ class UpdateTaskView(BaseView):
     """
 
     def get(self, request, *args, **kwargs):
+
         task_id = kwargs.get("task_id")
         task = self.task_service.get_task_by_id(task_id=task_id)
 
@@ -104,13 +97,15 @@ class UpdateTaskView(BaseView):
 
         data = {
             "name": task.name,
-            "logo": task.logo.url if task.logo else None,
-            "slug": task.slug,
-            "description": task.description,
-            "status": task.status,
+            "priority": task.priority,
+            "tags": task.tags,
+            "contributor": task.contributor_id,
             "responsible": task.responsible_id,
-            "participants": list(task.participants.values("id", "name")),
-            "date_created": task.date_created.isoformat(),
+            "status": task.status,
+            "created_at": task.created_at,
+            "closed_at": task.closed_at,
+            "description": task.description,
+            "feature": task.feature_id,
             "task_status_choices": task_status_choices,
         }
 
@@ -123,48 +118,27 @@ class UpdateTaskView(BaseView):
         print("Form: ", request.POST)
 
         if form.is_valid():
-            task = self.task_service.get_task_by_id(task_id=task_id)
-
-            print("CD: ", form.cleaned_data)
-
-            self.task_service.update_task(
-                task_id=task_id,
-                dto=TaskDTO(
+            err = self.task_service.update_task(
+                TaskDTO(
+                    id=task_id,
                     name=form.cleaned_data["name"],
-                    description=form.cleaned_data["description"],
-                    status=form.cleaned_data["status"],
+                    priority=form.cleaned_data["priority"],
+                    tags=form.cleaned_data["tags"],
+                    contributor_id=form.cleaned_data["contributor"].id,
                     responsible_id=form.cleaned_data["responsible"].id,
-                    date_created=form.cleaned_data["date_created"],
-                    participants=form.cleaned_data["participants"],
+                    status=form.cleaned_data["status"],
+                    created_at=form.cleaned_data.get("created_at", None),
+                    closed_at=form.cleaned_data.get("closed_at", None),
+                    description=form.cleaned_data["description"],
+                    feature_id=form.cleaned_data["feature"].id,
                 ),
             )
-            try:
-                task = self.task_service.get_task_by_id(task_id=task_id)
-                return JsonResponse(
-                    {
-                        "status": "success",
-                        "task": {
-                            "name": task.name,
-                            "logo": task.logo.url if task.logo else None,
-                            "slug": task.slug,
-                            "description": task.description,
-                            "status": task.status,
-                            "responsible_id": task.responsible_id,
-                            "participants": list(
-                                task.participants.values("id", "name")
-                            ),
-                            "date_created": task.date_created.isoformat(),
-                        },
-                    },
-                    status=201,
-                )
-            except Exception as e:
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
 
-        print("Errors: ", form.errors)
-
+            if err:
+                return JsonResponse(
+                    {"status": "error", "message": str(err)}, status=400
+                )
+            return JsonResponse({"status": "success"}, status=201)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
