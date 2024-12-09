@@ -47,6 +47,8 @@ class CreateTaskView(BaseView):
     def post(self, request, *args, **kwargs):
         form = TaskForm(request.POST, request.FILES)
 
+        print("Form: ", request.POST)
+
         if form.is_valid():
             participants = request.POST.getlist("participants")
             task_dto = TaskDTO(
@@ -82,8 +84,12 @@ class CreateTaskView(BaseView):
                 )
 
             except Exception as e:
-                return JsonResponse({"status": "error", "message": str(e)}, status=400)
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+                return JsonResponse(
+                    {"status": "error", "message": str(e)}, status=400
+                )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class UpdateTaskView(BaseView):
@@ -113,13 +119,12 @@ class UpdateTaskView(BaseView):
 
     def post(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
-        form = TaskForm(request.POST, request.FILES)
+        form = TaskForm(request.POST)
 
-        print(task_id)
+        print("Form: ", request.POST)
 
         if form.is_valid():
             task = self.task_service.get_task_by_id(task_id=task_id)
-            logo = form.cleaned_data.get("logo") if "logo" in request.FILES else None
 
             print("CD: ", form.cleaned_data)
 
@@ -127,7 +132,6 @@ class UpdateTaskView(BaseView):
                 task_id=task_id,
                 dto=TaskDTO(
                     name=form.cleaned_data["name"],
-                    logo=logo if logo else task.logo,
                     description=form.cleaned_data["description"],
                     status=form.cleaned_data["status"],
                     responsible_id=form.cleaned_data["responsible"].id,
@@ -156,11 +160,15 @@ class UpdateTaskView(BaseView):
                     status=201,
                 )
             except Exception as e:
-                return JsonResponse({"status": "error", "message": str(e)}, status=400)
+                return JsonResponse(
+                    {"status": "error", "message": str(e)}, status=400
+                )
 
         print("Errors: ", form.errors)
 
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class DeleteTaskView(BaseView):
@@ -172,6 +180,10 @@ class DeleteTaskView(BaseView):
         task_id = kwargs.get("task_id")
         try:
             self.task_service.delete_task(task_id=task_id)
-            return JsonResponse({"status": "success", "message": "Task deleted"})
+            return JsonResponse(
+                {"status": "success", "message": "Task deleted"}
+            )
         except Exception as e:
-            return JsonResponse({"status": "error", "message": str(e)}, status=404)
+            return JsonResponse(
+                {"status": "error", "message": str(e)}, status=404
+            )

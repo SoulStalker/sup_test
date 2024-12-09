@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таблица проектов</title>
+    <title>Таблица задача</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
     <link href="{% static 'output.css' %}" rel="stylesheet">
@@ -42,7 +42,7 @@
         <!-- Верхняя панель -->
         <div class="bg-white shadow-md rounded-lg overflow-hidden m-2.5 w-full max-w-[800px] mx-auto"> <!-- Установлена максимальная ширина для панели и таблицы -->
             <div class="p-4 flex items-center justify-between">
-                <h1 class="text-2xl font-bold">Таблица проектов</h1>
+                <h1 class="text-2xl font-bold">Таблица задач</h1>
             </div>
 
             <!-- Поиск и элементы управления -->
@@ -68,7 +68,7 @@
                     </form>
                     {% include "pagination.html" with page=tasks %}
                     <!-- Кнопка "Создать проект" -->
-                    <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать проект</button>
+                    <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать задачу</button>
                 </div>
             </div>
             <div class="task-table">
@@ -129,7 +129,7 @@
     <!-- tasks.html -->
     {% include 'create_task_modal.html' %}
 
-    <script src="{% static 'script/task.js' %}"></script>
+    <script src="{% static 'script/tasks.js' %}"></script>
     <script src="{% static 'script/pagination.js' %}"></script>
     {% block extra_js %}
     {% endblock %}
