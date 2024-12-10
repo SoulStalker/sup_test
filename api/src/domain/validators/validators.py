@@ -104,3 +104,17 @@ class DataVerifier:
         if password1 != password2:
             return "Пароли не совпадают"
         return None
+    
+    @staticmethod
+    def clean_password(password):
+        if len(password) < 8:
+            return"Пароль должен содержать не менее 8 символов."
+        elif not re.search(r'[A-Z]', password):
+            return "Пароль должен содержать хотя бы одну заглавную букву."
+        elif not re.search(r'[a-z]', password):
+            return "Пароль должен содержать хотя бы одну строчную букву."
+        elif not re.search(r'[0-9]', password):
+            return "Пароль должен содержать хотя бы одну цифру."   
+        elif not re.search(r'[\W_]', password):
+            return "Пароль должен содержать хотя бы один специальный символ."
+        return None
