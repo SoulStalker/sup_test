@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "src.apps.users",
     "src.apps.teams",
     "src.apps.registration",
+    "src.apps.authorization",
 ]
 
 MIDDLEWARE = [

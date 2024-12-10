@@ -14,8 +14,6 @@ from src.models.invites import Invite
 
 
 
-
-
 class RegistarionRepository(IRegistrationRepository, ABC):
     model = CustomUser
 
@@ -38,14 +36,3 @@ class RegistarionRepository(IRegistrationRepository, ABC):
     def chek_invitation_code_or_404(self, invitation_code):
         link = f'{os.getenv('FRONTEND_URL')}/registration/{invitation_code}'
         get_object_or_404(Invite, link=link, status='Активна')
-
-
-
-
-    # def set_password_registration(self, user_email, password1, password2):
-    #     model = self.model.objects.get(email=user_email)
-    #     if password1 == password2:
-    #         model.password = make_password(password2)
-    #         model.save()
-    #     else:
-    #         raise ValueError("Пароли не совпадают")

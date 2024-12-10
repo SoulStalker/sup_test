@@ -1,7 +1,5 @@
 from src.apps.custom_view import BaseView
-from src.apps.registration.forms import (
-    RegistrationForm,
-)
+from src.apps.registration.forms import RegistrationForm
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.utils import IntegrityError
