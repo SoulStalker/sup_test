@@ -95,3 +95,12 @@ class DataVerifier:
         max_size = 2 * 1024 * 1024  # 2 MB
         if value.size > max_size:
             raise ValidationError("Размер файла не должен превышать 2MB.")
+    
+    @staticmethod
+    def verify_password_eq(password1, password2):
+        """
+        Проверяет одинаковы ли пароли.
+        """
+        if password1 != password2:
+            return "Пароли не совпадают"
+        return None
