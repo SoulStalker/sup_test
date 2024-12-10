@@ -11,6 +11,7 @@ urlpatterns = [
     path("users/", include("src.apps.users.urls", namespace="users")),
     path("teams/", include("src.apps.teams.urls", namespace="teams")),
     path("registration/", include("src.apps.registration.urls", namespace="registration")),
+    path("authorization/", include("src.apps.authorization.urls", namespace="authorization")),
 ]
 if settings.DEBUG:
     urlpatterns += static(

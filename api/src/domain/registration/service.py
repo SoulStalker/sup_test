@@ -3,8 +3,6 @@ from src.domain.registration.repository import IRegistrationRepository
 from src.domain.registration.entity import RegistationEntity
 
 
-
-
 class RegistrationService:
     def __init__(self, repository: IRegistrationRepository):
         self.__repository = repository
