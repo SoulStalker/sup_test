@@ -11,7 +11,6 @@ from src.domain.user.entity import CreateUserEntity
 from src.domain.registration.repository import IRegistrationRepository
 from src.models.models import CustomUser
 from src.models.invites import Invite
-from src.domain.invites.dtos import InviteDTO
 
 
 
@@ -25,7 +24,7 @@ class RegistarionRepository(IRegistrationRepository, ABC):
             name=dto.name,
             surname=dto.surname,
             email=dto.email,
-            password=dto.password1,
+            password=make_password(dto.password1),
             tg_name=dto.tg_name,
             tg_nickname=dto.tg_nickname,
             google_meet_nickname=dto.google_meet_nickname,

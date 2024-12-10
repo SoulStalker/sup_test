@@ -24,6 +24,9 @@ class RegistationEntity:
         Проверка валидности
         """
         password_eq_error = DataVerifier.verify_password_eq(self.password1, self.password2)
+        clean_password = DataVerifier.clean_password(self.password1) 
         if password_eq_error:
             return password_eq_error
+        if clean_password:
+            return clean_password
         return None
