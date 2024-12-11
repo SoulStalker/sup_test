@@ -30,6 +30,20 @@ class TasksView(BaseView):
         return render(self.request, "tasks_list.html", context)
 
 
+class TaskDetailView(BaseView):
+    """
+    Просмотр проекта
+    """
+
+    def get(self, request, *args, **kwargs):
+        task_id = kwargs.get("task_id")
+        task = self.task_service.get_task_by_id(task_id=task_id)
+
+        print(task)
+
+        return render(request, "task_detail.html", {"task": task})
+
+
 class CreateTaskView(BaseView):
     """
     Создание проекта
