@@ -18,12 +18,14 @@ class TasksView(BaseView):
         tasks = self.paginate_queryset(tasks)
         task_status_choices = self.task_service.get_task_status_choices()
         features = self.features_service.get_features_list()
+        tags = self.features_service.get_features_tags_list()
 
         context = {
             "tasks": tasks,
             "users": self.user_service.get_user_list(),
             "task_status_choices": task_status_choices,
             "features": features,
+            "tags": tags,
         }
         return render(self.request, "tasks_list.html", context)
 
@@ -49,7 +51,12 @@ class CreateTaskView(BaseView):
         )
 
     def post(self, request, *args, **kwargs):
-        form = TaskForm(request.POST, request.FILES)
+        data = request.POST.copy()
+        # Преобразуем строку с тегами в список
+        tags = data.get("tags", "")
+        data.setlist("tags", tags.split(","))
+
+        form = TaskForm(data)
         if form.is_valid():
             task_dto = CreateTaskDTO(
                 name=form.cleaned_data["name"],
@@ -77,7 +84,7 @@ class CreateTaskView(BaseView):
                 return JsonResponse(
                     {"status": "error", "message": str(e)}, status=400
                 )
-
+        print("Errors: ", form.errors)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -113,10 +120,12 @@ class UpdateTaskView(BaseView):
 
     def post(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
-        form = TaskForm(request.POST)
+        data = request.POST.copy()
+        # Преобразуем строку с тегами в список
+        tags = data.get("tags", "")
+        data.setlist("tags", tags.split(","))
 
-        print("Form: ", request.POST)
-
+        form = TaskForm(data)
         if form.is_valid():
             err = self.task_service.update_task(
                 TaskDTO(

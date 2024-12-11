@@ -15,6 +15,21 @@
                 </div>
             </div>
             <div class="mb-4">
+            <label for="task-tags" class="block text-sm font-medium text-gray-700">Теги</label>
+                <div id="tags-container" class="flex flex-wrap gap-2 mt-2">
+                    {% for tag in tags %}
+                    <div
+                        class="tag cursor-pointer px-3 py-1 rounded-lg text-white"
+                        style="background-color: #{{ tag.color }};"
+                        data-tag-id="{{ tag.id }}">
+                        {{ tag.name }}
+                    </div>
+                    {% endfor %}
+                </div>
+                <input type="hidden" id="task-tags" name="tags" value=""> <!-- Скрытое поле для отправки выбранных тегов -->
+            </div>
+
+            <div class="mb-4">
                 <label for="task-description" class="block text-sm font-medium text-gray-700">Описание задачи</label>
                 <textarea id="task-description" name="description" class="editor mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"></textarea>
             </div>
