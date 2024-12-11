@@ -296,6 +296,7 @@ class TaskRepository(ITaskRepository, ABC):
         task.feature_id = dto.feature_id
         task.description = dto.description
         task.save()
+        task.tags.set(dto.tags)
 
     def delete_task(self, task_id: int):
         task = Task.objects.get(id=task_id)

@@ -100,45 +100,59 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Редактирование задачы
+    // Редактирование задачи
     const editTaskButtons = document.querySelectorAll('.edit-task-button');
+        editTaskButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
+                // const modal = document.getElementById('modal');
+                // const form = document.getElementById('edit-task-form');
+                // const submitButton = form.querySelector('button[type="submit"]');
 
-    editTaskButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задача
-            // Открываем модальное окно
-            modal.classList.remove('hidden');
+                // Открываем модальное окно
+                modal.classList.remove('hidden');
 
-            // Загружаем данные задача через fetch
-            fetch(`update/${currentTaskId}/`)
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errData => {
-                            throw new Error(`Ошибка ${response.status}: ${errData.message || 'Неизвестная ошибка'}`);
+                // Загружаем данные задачи через fetch
+                fetch(`update/${currentTaskId}/`)
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => {
+                                throw new Error(`Ошибка ${response.status}: ${errData.message || 'Неизвестная ошибка'}`);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Заполняем форму полученными данными
+                        document.getElementById('task-name').value = data.name || '';
+                        document.getElementById('task-priority').value = data.priority || '';
+                        document.getElementById('task-description').value = data.description || '';
+                        document.getElementById('task-status').value = data.status || '';
+                        document.getElementById('task-responsible').value = data.responsible || '';
+                        document.getElementById('task-feature').value = data.feature || '';
+                        document.getElementById('task-contributor').value = data.contributor || '';
+
+                        // Логика выделения тегов
+                        const tagsContainer = document.querySelectorAll('.tag'); // Все элементы тегов
+                        const selectedTags = data.tags || []; // ID выбранных тегов
+
+                        tagsContainer.forEach(tag => {
+                            const tagId = parseInt(tag.getAttribute('data-tag-id'), 10);
+                            if (selectedTags.includes(tagId)) {
+                                tag.classList.add('selected'); // Добавляем класс "selected"
+                            } else {
+                                tag.classList.remove('selected'); // Убираем класс, если он есть
+                            }
                         });
-                    }
-                    return response.json();
-                })
 
-                .then(data => {
-                    // Заполняем форму полученными данными
-                    document.getElementById('task-name').value = data.name || '';
-                    document.getElementById('task-priority').value = data.priority || '';
-                    document.getElementById('task-description').value = data.description || '';
-                    document.getElementById('task-status').value = data.status || '';
-                    document.getElementById('task-responsible').value = data.responsible || '';
-                    document.getElementById('task-feature').value = data.feature || '';
-                    // document.getElementById('task-tags').value = data.tags || '';
-                    document.getElementById('task-contributor').value = data.contributor || '';
-
-
-                    // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `update/${currentTaskId}/`);
-                    submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
-                })
-                .catch(error => console.error('Ошибка:', error));
+                        // Меняем action формы для отправки на обновление
+                        form.setAttribute('action', `update/${currentTaskId}/`);
+                        submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
+                    })
+                    .catch(error => console.error('Ошибка:', error));
+            });
         });
-    });
+
 
     // Обработчик для открытия попапа подтверждения удаления
     deleteButton.addEventListener('click', function () {
@@ -194,4 +208,32 @@ document.addEventListener('DOMContentLoaded', function () {
         field.parentNode.insertBefore(errorDiv, field.nextSibling); // Вставляем ошибку после поля
     };
 
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const tagsContainer = document.getElementById('tags-container');
+    const tagsInput = document.getElementById('task-tags');
+
+    let selectedTags = []; // Массив для хранения ID выбранных тегов
+
+    // Обработка кликов по тегам
+    tagsContainer.addEventListener('click', function (event) {
+        const tagElement = event.target.closest('.tag');
+        if (!tagElement) return; // Если клик не на теге, выходим
+
+        const tagId = tagElement.getAttribute('data-tag-id');
+
+        if (tagElement.classList.contains('selected')) {
+            // Убираем тег из выбранных
+            tagElement.classList.remove('selected');
+            selectedTags = selectedTags.filter(id => id !== tagId);
+        } else {
+            // Добавляем тег в выбранные
+            tagElement.classList.add('selected');
+            selectedTags.push(tagId);
+        }
+
+        // Обновляем значение скрытого поля
+        tagsInput.value = selectedTags.join(',');
+    });
 });
