@@ -113,3 +113,10 @@ class FeaturesChoicesObject:
 
 class TaskChoicesObject(FeaturesChoicesObject):
     pass
+
+
+@dataclass
+class TagDTO:
+    id: int
+    name: str
+    color: str

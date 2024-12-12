@@ -1,6 +1,6 @@
 import abc
 
-from .dtos import CreateTaskDTO, FeaturesDTO, ProjectDTO, TaskDTO
+from .dtos import CreateTaskDTO, FeaturesDTO, ProjectDTO, TagDTO, TaskDTO
 
 
 class IProjectRepository(abc.ABC):
@@ -101,4 +101,8 @@ class ITaskRepository(abc.ABC):
 
     @abc.abstractmethod
     def get_task_status_choices(self) -> list:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_tags_list(self, task_id: int) -> list[TagDTO]:
         raise NotImplementedError
