@@ -2,17 +2,16 @@
 from src.apps.custom_view import BaseView
 from src.apps.authorization.forms import AuthorizationForm
 from django.shortcuts import render
-# from django.http import JsonResponse
-# from django.db.utils import IntegrityError
-# import re
-# from src.domain.registration.dtos import RegistrationDTO
-
+from django.http import JsonResponse
+from django.contrib.auth import authenticate, login, logout
 
 
 
 class Userauthorization(BaseView):
 #     """Авторизация пользователя"""
 
+    login_required = False
+    
     def get(self, request):
         form = AuthorizationForm()
         return render(
@@ -20,50 +19,16 @@ class Userauthorization(BaseView):
             "auth.html",
             {"form": form},
         )
-
-#     def post(self, request, invitation_code):
-#         form = RegistrationForm(request.POST)
-#         if form.is_valid():
-#             try:
-#                 err = self.registration_service.create(
-#                     RegistrationDTO(
-#                         name=form.cleaned_data["name"],
-#                         surname=form.cleaned_data["surname"],
-#                         email=form.cleaned_data["email"],
-#                         password1=form.cleaned_data["password1"],
-#                         password2=form.cleaned_data["password2"],
-#                         tg_name=form.cleaned_data["tg_name"],
-#                         tg_nickname=form.cleaned_data["tg_nickname"],
-#                         google_meet_nickname=form.cleaned_data[
-#                             "google_meet_nickname"
-#                             ],
-#                         gitlab_nickname=form.cleaned_data["gitlab_nickname"],
-#                         github_nickname=form.cleaned_data["github_nickname"],
-#                         role_id=None,
-#                         permissions_ids=[],
-#                         team_id=None,
-#                         date_joined=None,
-#                 )
-#                     )
-#                 if err:
-#                     return JsonResponse(
-#                         {"status": "error", "message": str(err)}, status=400
-#                     )
-#                 invite_DTO = self.invite_service.create_inviteDTO(
-#                     invitation_code
-#                     )
-#                 self.invite_service.update_status(invite_DTO, status = 'USED')
-#                 return JsonResponse({"status": "success"}, status=201)
-            
-#             except IntegrityError as err:
-#                 matches = re.findall(r"\((.*?)\)", str(err))
-#                 return JsonResponse(
-#                     {
-#                         "status": "error",
-#                         "message": f"Такой {matches[0]} уже существует",
-#                     },
-#                     status=400,
-#                 )
-#         return JsonResponse(
-#             {"status": "error", "errors": form.errors}, status=400
-#             )
+    
+    def post(self, request):
+        form = AuthorizationForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = authenticate(
+                request, username=cd['email'], password=cd['password']
+                )
+            if user and user.is_active:
+                login(request, user)
+                return JsonResponse(
+                        {"status": "error", "message": 'Добро пожаловать'}, status=200
+                    )
