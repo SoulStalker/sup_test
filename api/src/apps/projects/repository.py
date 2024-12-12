@@ -7,6 +7,7 @@ from src.domain.project.dtos import (
     FeaturesDTO,
     ProjectDTO,
     StatusObject,
+    TagDTO,
     TaskChoicesObject,
     TaskDTO,
 )
@@ -304,3 +305,10 @@ class TaskRepository(ITaskRepository, ABC):
 
     def get_task_status_choices(self):
         return TaskChoicesObject.choices()
+
+    def get_tags_list(self, task_id: int) -> list[TagDTO]:
+        task = Task.objects.get(id=task_id)
+        tags = task.tags.all()
+        return [
+            TagDTO(id=tag.id, name=tag.name, color=tag.color) for tag in tags
+        ]

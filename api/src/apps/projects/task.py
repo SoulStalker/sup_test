@@ -38,10 +38,18 @@ class TaskDetailView(BaseView):
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
         task = self.task_service.get_task_by_id(task_id=task_id)
+        tags = self.task_service.get_tags_list(task_id=task_id)
+        feature = self.features_service.get_feature_by_id(task.feature_id)
 
-        print(task)
-
-        return render(request, "task_detail.html", {"task": task})
+        return render(
+            request,
+            "task_detail.html",
+            {
+                "task": task,
+                "tags": tags,
+                "feature": feature,
+            },
+        )
 
 
 class CreateTaskView(BaseView):

@@ -125,3 +125,6 @@ class TaskService:
 
     def get_task_status_choices(self):
         return self.__task_repository.get_task_status_choices()
+
+    def get_tags_list(self, task_id: int):
+        return self.__task_repository.get_tags_list(task_id)
