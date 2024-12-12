@@ -12,6 +12,8 @@ from src.domain.registration.dtos import RegistrationDTO
 class UserRegistration(BaseView):
     """Регистрация пользователя"""
 
+    login_required = False
+
     def get(self, request, invitation_code):
         self.registration_service.chek_invitation_code_or_404(invitation_code)
         form = RegistrationForm()
