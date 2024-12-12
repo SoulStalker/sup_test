@@ -53,6 +53,7 @@ class UserRegistration(BaseView):
                     invitation_code
                     )
                 self.invite_service.update_status(invite_DTO, status = 'USED')
+                self.verifyemail_service.create(email=form.cleaned_data["email"])
                 return JsonResponse({"status": "success"}, status=201)
             
             except IntegrityError as err:
