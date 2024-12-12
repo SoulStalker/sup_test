@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "src.apps.teams",
     "src.apps.registration",
     "src.apps.authorization",
+    "src.apps.verifyemail",
 ]
 
 MIDDLEWARE = [

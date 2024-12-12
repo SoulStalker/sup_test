@@ -10,13 +10,15 @@ from src.apps.users.repository import (
     RoleRepository,
     UserRepository,
 )
+from src.apps.registration.repository import RegistarionRepository
+from src.apps.verifyemail.repository import VerifyemailRepository
 from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.project.service import FeatureService, ProjectService
 from src.domain.teams.service import TeamService
 from src.domain.user.service import PermissionService, RoleService, UserService
 from src.domain.registration.service import RegistrationService
-from src.apps.registration.repository import RegistarionRepository
+from src.domain.verifyemail.service import VerifyemailService
 
 
 class BaseView:
@@ -41,6 +43,7 @@ class BaseView:
     permission_service = PermissionService(PermissionRepository())
     team_service = TeamService(TeamRepository())
     registration_service = RegistrationService(RegistarionRepository())
+    verifyemail_service = VerifyemailService(VerifyemailRepository())
 
     # Разрешенные методы
     http_method_names = ["get", "post", "put", "patch", "delete"]

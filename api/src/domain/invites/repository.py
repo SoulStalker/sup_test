@@ -13,7 +13,8 @@ class IInviteRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create(self) -> InviteDTO:
+    def create(self, email) -> InviteDTO:
+        print('create repos')
         raise NotImplementedError
 
     @abc.abstractmethod
