@@ -87,7 +87,7 @@ class BaseView:
     def dispatch(self):
         if self.login_required and not self.request.user.is_authenticated:
             # Перенаправление на страницу авторизации
-            return redirect_to_login(self.request, login_url="/admin/")
+            return redirect_to_login(self.request, login_url="/authorization/")
 
         method = getattr(self, self.request.method.lower(), None)
         if not method or not callable(method):
