@@ -8,6 +8,7 @@ from src.domain.verifyemail.repository import IVerifyemailRepository
 from src.domain.verifyemail.dtos import VerifyEmailDTO
 from src.models.verifyemail import VerifyEmail
 from src.models.models import CustomUser
+from django.core.mail import send_mail
 
 
 class VerifyemailRepository(IVerifyemailRepository, ABC):
@@ -23,17 +24,23 @@ class VerifyemailRepository(IVerifyemailRepository, ABC):
         )
 
     def create(self, email) -> VerifyEmailDTO:
-        invite_link = f"{os.getenv('FRONTEND_URL')}/verifyemail/{random.randint(0000, 9999)}"
+        link = f"{os.getenv('FRONTEND_URL')}/verifyemail/{random.randint(0000, 9999)}"
         email = email
         created_at = timezone.now()
         expires_at = created_at + timedelta(minutes=60)
 
         model = self.model(
-            link=invite_link,
+            link=link,
             email=email,
             created_at=created_at,
             expires_at=expires_at,
         )
+        send_mail(
+            'Перейдите по ссылке для подтверждения электронной почты',
+            link,
+            os.getenv('EMAIL_HOST_USER'),
+            [email]
+                )
         model.save()
         return self._invite_orm_to_dto(model)
 

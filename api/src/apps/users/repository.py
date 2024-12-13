@@ -207,11 +207,3 @@ class UserRepository(IUserRepository, ABC):
     def get_user_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
-
-    def set_password_registration(self, user_email, password1, password2):
-        model = self.model.objects.get(email=user_email)
-        if password1 == password2:
-            model.password = make_password(password2)
-            model.save()
-        else:
-            raise ValueError("Пароли не совпадают")
