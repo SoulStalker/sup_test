@@ -58,12 +58,11 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="flex-grow p-6">
-<!--                <a href="{% url 'projects:edit_features' task.id %}" class="text-teal-600 hover:underline">фича</a>-->
-                Фича: {{ feature.name }}
-            </div>
+        <div class="flex items-center ml-auto space-x-4">
+                    <p class="mr-2 text-green-custom">Фича: {{ feature.name }}</p>
+                </div>
             <h5 class="text-2xl font-semibold mb-6">Описание</h5>
-            <div class="p-4">
+            <div class="flex-1 flex flex-col">
                 <p>{{ task.description }}</p>
             </div>
 
