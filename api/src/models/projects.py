@@ -83,9 +83,7 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse(
-            viewname="projects:update_project", kwargs={"slug": self.slug}
-        )
+        return reverse(viewname="projects:update_project", kwargs={"slug": self.slug})
 
 
 class Tags(models.Model):
@@ -185,9 +183,7 @@ class Features(models.Model):
 
     def get_absolute_url(self):
         return redirect(
-            reverse(
-                viewname="projects:detail_features", kwargs={"slug": self.slug}
-            )
+            reverse(viewname="projects:detail_features", kwargs={"slug": self.slug})
         )
 
 
@@ -223,9 +219,7 @@ class Task(models.Model):
         default=TaskStatusChoices.NEW,
         verbose_name="Статус",
     )
-    created_at = models.DateTimeField(
-        auto_now_add=True, verbose_name="дата создания"
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="дата создания")
     closed_at = models.DateTimeField(null=True, verbose_name="дата закрытия")
     feature = models.ForeignKey(
         to="Features",
@@ -234,7 +228,7 @@ class Task(models.Model):
         related_name="tasks_features",
     )
     description = models.TextField(
-        max_length=500, null=True, blank=True, verbose_name="описание"
+        max_length=10000, blank=True, verbose_name="описание"
     )
 
     def __str__(self):

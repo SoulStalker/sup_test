@@ -103,13 +103,9 @@ class CreateTaskView(BaseView):
 
             except Exception as e:
                 print("Error: ", e)
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
+                return JsonResponse({"status": "error", "message": str(e)}, status=400)
         print("Errors: ", form.errors)
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class UpdateTaskView(BaseView):
@@ -170,9 +166,8 @@ class UpdateTaskView(BaseView):
                     {"status": "error", "message": str(err)}, status=400
                 )
             return JsonResponse({"status": "success"}, status=201)
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        print("Errors: ", form.errors)
+        return JsonResponse({"status": "error", "error": form.errors}, status=400)
 
 
 class DeleteTaskView(BaseView):
@@ -184,10 +179,6 @@ class DeleteTaskView(BaseView):
         task_id = kwargs.get("task_id")
         try:
             self.task_service.delete_task(task_id=task_id)
-            return JsonResponse(
-                {"status": "success", "message": "Task deleted"}
-            )
+            return JsonResponse({"status": "success", "message": "Task deleted"})
         except Exception as e:
-            return JsonResponse(
-                {"status": "error", "message": str(e)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(e)}, status=404)
