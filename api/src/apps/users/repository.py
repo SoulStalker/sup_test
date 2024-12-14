@@ -3,6 +3,7 @@ from abc import ABC
 
 from django.conf import settings
 from django.contrib.auth.models import make_password
+from django.core.mail import send_mail
 from django.shortcuts import get_list_or_404, get_object_or_404
 from src.domain.user.dtos import (
     CreatePermissionDTO,
@@ -130,9 +131,7 @@ class UserRepository(IUserRepository, ABC):
             avatar=user.avatar,
             role_id=user.role,
             team_id=user.team,
-            permissions_ids=list(
-                user.permissions.values_list("id", flat=True)
-            ),
+            permissions_ids=list(user.permissions.values_list("id", flat=True)),
             is_active=user.is_active,
             is_admin=user.is_admin,
             is_superuser=user.is_superuser,
@@ -207,3 +206,10 @@ class UserRepository(IUserRepository, ABC):
     def get_user_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
+
+    def send_welcome_email(self, user_dto):
+        subject = "Добро пожаловать!"
+        message = f"Здравствуйте, {user_dto.name}!\n\nВаш аккаунт успешно создан."
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [user_dto.email]
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)

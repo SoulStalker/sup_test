@@ -17,6 +17,7 @@ isort = "^5.13.2"
 python-dotenv = "^1.0.1"
 pre-commit = "^3.8.0"
 ruff = "^0.7.2"
+environ = "^1.0"
 
 
 [build-system]
