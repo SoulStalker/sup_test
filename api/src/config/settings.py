@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-from environs import Env
 
+from environs import Env
 
 env = Env()
 env.read_env()
@@ -130,6 +130,7 @@ REDIS_DB = env.str("REDIS_DB")
 # celery
 CELERY_BROKER_URL = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
 CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
