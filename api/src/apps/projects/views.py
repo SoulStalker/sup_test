@@ -134,7 +134,6 @@ class EditProjectView(BaseView):
     def post(self, request, *args, **kwargs):
         project_id = kwargs.get("project_id")
         form = ProjectForm(request.POST, request.FILES)
-
         if form.is_valid():
             project = self.project_service.get_project_by_id(
                 project_id=project_id
@@ -182,6 +181,8 @@ class EditProjectView(BaseView):
                 return JsonResponse(
                     {"status": "error", "message": str(e)}, status=400
                 )
+
+        print("Errors: ", form.errors)
 
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
