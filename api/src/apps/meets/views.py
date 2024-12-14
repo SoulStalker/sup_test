@@ -1,13 +1,9 @@
-from pprint import pprint
-
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
-from src.domain.meet.dtos import MeetDTO
-
 from src.domain.meet.entity import MeetEntity
 
 User = get_user_model()
@@ -38,9 +34,13 @@ class MeetsView(BaseView):
         meet_id = kwargs.get("meet_id")
         try:
             self.meet_service.delete(pk=meet_id)
-            return JsonResponse({"status": "success", "message": "Meet deleted"})
+            return JsonResponse(
+                {"status": "success", "message": "Meet deleted"}
+            )
         except Exception as e:
-            return JsonResponse({"status": "error", "message": str(e)}, status=404)
+            return JsonResponse(
+                {"status": "error", "message": str(e)}, status=404
+            )
 
 
 class CreateMeetView(BaseView):
@@ -68,7 +68,9 @@ class CreateMeetView(BaseView):
                         start_time=form.cleaned_data["start_time"],
                         author_id=request.user.id,
                         responsible_id=form.cleaned_data["responsible"].id,
-                        participant_statuses=form.cleaned_data["participant_statuses"],
+                        participant_statuses=form.cleaned_data[
+                            "participant_statuses"
+                        ],
                     )
                 )
                 if err:
@@ -81,7 +83,9 @@ class CreateMeetView(BaseView):
                     {"status": "error", "message": "Такой мит уже существует"},
                     status=400,
                 )
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class EditMeetView(BaseView):
@@ -118,7 +122,9 @@ class EditMeetView(BaseView):
                         start_time=form.cleaned_data["start_time"],
                         author_id=request.user.id,
                         responsible_id=form.cleaned_data["responsible"].id,
-                        participant_statuses=form.cleaned_data["participant_statuses"],
+                        participant_statuses=form.cleaned_data[
+                            "participant_statuses"
+                        ],
                     ),
                 )
                 if err:
@@ -127,7 +133,9 @@ class EditMeetView(BaseView):
                     )
                 return JsonResponse({"status": "success"}, status=201)
 
-            return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+            return JsonResponse(
+                {"status": "error", "errors": form.errors}, status=400
+            )
         except IntegrityError:
             return JsonResponse(
                 {"status": "error", "message": "Такой мит уже существует"},
