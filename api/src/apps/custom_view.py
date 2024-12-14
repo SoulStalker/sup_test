@@ -14,11 +14,15 @@ from src.apps.users.repository import (
     RoleRepository,
     UserRepository,
 )
+from src.apps.registration.repository import RegistarionRepository
+from src.apps.verifyemail.repository import VerifyemailRepository
 from src.domain.invites.service import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
 from src.domain.project.service import FeatureService, ProjectService, TaskService
 from src.domain.teams.service import TeamService
 from src.domain.user.service import PermissionService, RoleService, UserService
+from src.domain.registration.service import RegistrationService
+from src.domain.verifyemail.service import VerifyemailService
 
 
 class BaseView:
@@ -42,6 +46,8 @@ class BaseView:
     role_service = RoleService(RoleRepository())
     permission_service = PermissionService(PermissionRepository())
     team_service = TeamService(TeamRepository())
+    registration_service = RegistrationService(RegistarionRepository())
+    verifyemail_service = VerifyemailService(VerifyemailRepository())
     task_service = TaskService(TaskRepository())
 
     # Разрешенные методы
@@ -86,7 +92,7 @@ class BaseView:
     def dispatch(self):
         if self.login_required and not self.request.user.is_authenticated:
             # Перенаправление на страницу авторизации
-            return redirect_to_login(self.request, login_url="/admin/")
+            return redirect_to_login(self.request, login_url="/authorization/")
 
         method = getattr(self, self.request.method.lower(), None)
         if not method or not callable(method):

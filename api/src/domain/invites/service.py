@@ -19,6 +19,9 @@ class InviteService:
     def delete(self, pk):
         self.__repository.delete(pk)
 
+    def create_inviteDTO(self, invitation_code):
+        return self.__repository.create_inviteDTO(invitation_code)
+
     def update_status(self, dto: InviteDTO, status: str = "EXPIRED"):
         invite = InviteEntity(
             pk=dto.pk,
