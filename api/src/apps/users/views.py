@@ -210,6 +210,7 @@ class UserCreateView(BaseView):
     """Создание пользователя."""
 
     def post(self, request, *args, **kwargs):
+        send_email = request.POST.get("send_email", False)
 
         form = CreateUserForm(request.POST)
         if form.is_valid():
@@ -243,8 +244,18 @@ class UserCreateView(BaseView):
                 )
             )
 
+            if send_email:
+                try:
+                    self.user_service.send_welcome_email(user_dto)
+                except Exception as e:
+                    print(f"Email не отправлен: {str(e)}")
+                    return JsonResponse(
+                        {"status": "error", "message": f"Email не отправлен: {str(e)}"},
+                        status=400,
+                    )
+
             return JsonResponse(
-                {"status": "success", "user": user_dto},
+                {"status": "success", "message": "email sent"},
                 status=201,
             )
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
@@ -333,4 +344,3 @@ class UserPasswordChangeView(BaseView):
                 return JsonResponse({"status": "success"}, status=200)
         except Exception as err:
             return JsonResponse({"status": "error", "message": str(err)}, status=404)
-

@@ -178,7 +178,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 [[package]]
 name = "click-didyoumean"
 version = "0.3.1"
-description = "Enables git-like *did-you-mean* features in click"
+description = "Enables git-like *did-you-mean* feature in click"
 optional = false
 python-versions = ">=3.6.2"
 files = [
@@ -265,6 +265,16 @@ tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 [package.extras]
 argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
+
+[[package]]
+name = "environ"
+version = "1.0"
+description = "Stack Based Globals Management"
+optional = false
+python-versions = "*"
+files = [
+    {file = "environ-1.0.tar.gz", hash = "sha256:4df7f1dfeb7d1c988d2e19a8bd5d547a526e0400aeb35adf732032472f35dcb0"},
+]
 
 [[package]]
 name = "filelock"
@@ -825,4 +835,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6eb218643b667a5030e51374e90c3d593c64751ace7eed27d54d428efd7f9ca0"
+content-hash = "c9b2dba5a146345a2efcdff1e1b0a6c4b1c748c50519b60389b37f85ed24c7c2"
