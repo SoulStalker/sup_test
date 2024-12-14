@@ -1,17 +1,13 @@
 import os
 from abc import ABC
 
-from django.conf import settings
 from django.contrib.auth.models import make_password
-from django.shortcuts import get_list_or_404, get_object_or_404
-from src.domain.registration.dtos import (
-    RegistrationDTO,
-)
-from src.domain.user.entity import CreateUserEntity
+from django.shortcuts import get_object_or_404
+from src.domain.registration.dtos import RegistrationDTO
 from src.domain.registration.repository import IRegistrationRepository
-from src.models.models import CustomUser
+from src.domain.user.entity import CreateUserEntity
 from src.models.invites import Invite
-
+from src.models.models import CustomUser
 
 
 class RegistarionRepository(IRegistrationRepository, ABC):
@@ -34,5 +30,5 @@ class RegistarionRepository(IRegistrationRepository, ABC):
         model.save()
 
     def chek_invitation_code_or_404(self, invitation_code):
-        link = f'{os.getenv('FRONTEND_URL')}/registration/{invitation_code}'
-        get_object_or_404(Invite, link=link, status='Активна')
+        link = f"{os.getenv('FRONTEND_URL')}/registration/{invitation_code}"
+        get_object_or_404(Invite, link=link, status="Активна")
