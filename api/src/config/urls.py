@@ -10,6 +10,9 @@ urlpatterns = [
     path("projects/", include("src.apps.projects.urls", namespace="projects")),
     path("users/", include("src.apps.users.urls", namespace="users")),
     path("teams/", include("src.apps.teams.urls", namespace="teams")),
+    path("registration/", include("src.apps.registration.urls", namespace="registration")),
+    path("authorization/", include("src.apps.authorization.urls", namespace="authorization")),
+    path("verifyemail/", include("src.apps.verifyemail.urls", namespace="verifyemail")),
 ]
 if settings.DEBUG:
     urlpatterns += static(
