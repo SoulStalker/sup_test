@@ -9,7 +9,7 @@ user_repository = UserRepository()
 
 @app.task
 def send_email_to_user(**kwargs):
-    subject = kwargs.get("subject", "Добро пожаловать!")
+    subject = kwargs.get("subject", f"Добро пожаловать, {kwargs.get('name')}!")
     message = kwargs.get(
         "message",
         f"Здравствуйте, {kwargs.get("name")}!\n\nВаш аккаунт успешно создан.",
