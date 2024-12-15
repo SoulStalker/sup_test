@@ -1,18 +1,24 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
 RUN apt-get update
 
-COPY ../pyproject.toml ../poetry.lock ./
+COPY pyproject.toml poetry.lock ./
 
+RUN #pip install --upgrade pip
 RUN pip install poetry
-
 # Устанавливаем зависимости
-RUN poetry install --no-dev
+RUN poetry install
 
 # Копируем папку api в контейнер
-COPY ../api ./api
+RUN mkdir api
+COPY /api ./api
+
+# Указываем путь к локально установленным пакетам (если это нужно)
+ENV PATH="/root/.local/bin:$PATH"
+
+CMD ["celery", "--app=api.src.services.celery", "worker", "--loglevel=info"]
 
 # Указываем рабочую директорию для Django
 WORKDIR /app/api
