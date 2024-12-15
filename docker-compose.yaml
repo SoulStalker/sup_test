@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   web:
     build:
@@ -16,6 +15,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
+    command:
+      - poetry run python manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
       - redis
@@ -41,16 +42,16 @@ services:
     image: redis:alpine
 
   celery:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE}
-    command: poetry run celery --app=src.services.celery worker --loglevel=info
+    command: poetry run celery -A src.services.celery worker --loglevel=info
     depends_on:
       - redis
     volumes:
-      - .:/app
+      - ./api:/app/api
 
 volumes:
   postgres_data:
-
-
