@@ -1,27 +1,28 @@
 FROM python:3.12-slim
 
+# Устанавливаем необходимые системные зависимости
+RUN apt-get update && apt-get install -y \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-RUN apt-get update
+# Копируем файлы зависимостей
+COPY pyproject.toml poetry.lock* ./
 
-COPY pyproject.toml poetry.lock ./
-
-RUN #pip install --upgrade pip
+# Устанавливаем Poetry
 RUN pip install poetry
-# Устанавливаем зависимости
-RUN poetry install
 
-# Копируем папку api в контейнер
-RUN mkdir api
+# Отключаем создание виртуального окружения в Poetry
+RUN poetry config virtualenvs.create false
+
+# Устанавливаем зависимости проекта, включая Celery
+RUN poetry install --no-interaction --no-ansi
+
+# Копируем код проекта
 COPY /api ./api
 
-# Указываем путь к локально установленным пакетам (если это нужно)
+# Устанавливаем путь для Django
 ENV PATH="/root/.local/bin:$PATH"
 
-CMD ["poetry", "run", "celery", "--app=api.src.services.celery", "worker", "--loglevel=info"]
-
-# Указываем рабочую директорию для Django
+# Устанавливаем рабочую директорию
 WORKDIR /app/api
-
-# Команда для запуска сервера
-CMD ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
