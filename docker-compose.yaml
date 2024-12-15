@@ -3,12 +3,12 @@ version: '3.8'
 services:
   web:
     build:
-      context: ..
-      dockerfile: infrasructure/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     volumes:
-      - ../api:/app/api
+      - ./api:/app/api
     env_file:
-      - .env
+      - api/.env
     environment:
       DB_ENGINE: ${DB_ENGINE}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -18,8 +18,10 @@ services:
       DB_PORT: ${DB_PORT}
     depends_on:
       - db
+      - redis
+      - celery
     ports:
-      - 8000:8000
+      - "8000:8000"
 
   db:
     image: postgres:16-alpine
@@ -35,5 +37,20 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:alpine
+
+  celery:
+    build: .
+    environment:
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE}
+    command: poetry run celery --app=src.services.celery worker --loglevel=info
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+
 volumes:
   postgres_data:
+
+
