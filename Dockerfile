@@ -18,7 +18,7 @@ COPY /api ./api
 # Указываем путь к локально установленным пакетам (если это нужно)
 ENV PATH="/root/.local/bin:$PATH"
 
-CMD ["celery", "--app=api.src.services.celery", "worker", "--loglevel=info"]
+CMD ["poetry", "run", "celery", "--app=api.src.services.celery", "worker", "--loglevel=info"]
 
 # Указываем рабочую директорию для Django
 WORKDIR /app/api
