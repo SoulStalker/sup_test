@@ -59,32 +59,17 @@ class CreateMeetView(BaseView):
 
     def post(self, request):
         form = CreateMeetForm(request.POST)
-        if form.is_valid():
-            try:
-                err = self.meet_service.create(
-                    MeetEntity(
-                        category_id=form.cleaned_data["category"].id,
-                        title=form.cleaned_data["title"],
-                        start_time=form.cleaned_data["start_time"],
-                        author_id=request.user.id,
-                        responsible_id=form.cleaned_data["responsible"].id,
-                        participant_statuses=form.cleaned_data[
-                            "participant_statuses"
-                        ],
-                    )
-                )
-                if err:
-                    return JsonResponse(
-                        {"status": "error", "message": str(err)}, status=400
-                    )
-                return JsonResponse({"status": "success"}, status=201)
-            except IntegrityError:
-                return JsonResponse(
-                    {"status": "error", "message": "Такой мит уже существует"},
-                    status=400,
-                )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
+        return self.handle_form(
+            form,
+            self.meet_service.create,
+            MeetEntity(
+                category_id=form.cleaned_data["category"].id,
+                title=form.cleaned_data["title"],
+                start_time=form.cleaned_data["start_time"],
+                author_id=request.user.id,
+                responsible_id=form.cleaned_data["responsible"].id,
+                participant_statuses=form.cleaned_data["participant_statuses"],
+            ),
         )
 
 
@@ -109,38 +94,21 @@ class EditMeetView(BaseView):
         return JsonResponse(data)
 
     def post(self, request, *args, **kwargs):
-        try:
-            meet_id = kwargs.get("meet_id")
-            form = CreateMeetForm(request.POST)
-
-            if form.is_valid():
-                err = self.meet_service.update(
-                    meet_id=meet_id,
-                    dto=MeetEntity(
-                        category_id=form.cleaned_data["category"].id,
-                        title=form.cleaned_data["title"],
-                        start_time=form.cleaned_data["start_time"],
-                        author_id=request.user.id,
-                        responsible_id=form.cleaned_data["responsible"].id,
-                        participant_statuses=form.cleaned_data[
-                            "participant_statuses"
-                        ],
-                    ),
-                )
-                if err:
-                    return JsonResponse(
-                        {"status": "error", "message": str(err)}, status=400
-                    )
-                return JsonResponse({"status": "success"}, status=201)
-
-            return JsonResponse(
-                {"status": "error", "errors": form.errors}, status=400
-            )
-        except IntegrityError:
-            return JsonResponse(
-                {"status": "error", "message": "Такой мит уже существует"},
-                status=400,
-            )
+        meet_id = kwargs.get("meet_id")
+        form = CreateMeetForm(request.POST)
+        return self.handle_form(
+            form,
+            self.meet_service.update,
+            meet_id,
+            MeetEntity(
+                category_id=form.cleaned_data["category"].id,
+                title=form.cleaned_data["title"],
+                start_time=form.cleaned_data["start_time"],
+                author_id=request.user.id,
+                responsible_id=form.cleaned_data["responsible"].id,
+                participant_statuses=form.cleaned_data["participant_statuses"],
+            ),
+        )
 
 
 class CategoryView(BaseView):
