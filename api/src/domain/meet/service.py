@@ -43,17 +43,19 @@ class MeetService:
     def delete(self, pk):
         self.__repository.delete(pk)
 
-    def get_meets_list(self) -> list[MeetDTO]:
-        return self.__repository.get_meets_list()
+    def get_list(self) -> list[MeetDTO]:
+        return self.__repository.get_list()
 
-    def get_meet(self, pk) -> MeetDTO:
-        return self.__repository.get_meet_by_id(pk)
+    def get_by_id(self, pk) -> MeetDTO:
+        return self.__repository.get_by_id(pk)
 
     def get_meets_by_category(self, dto) -> list[MeetDTO]:
         return self.__repository.get_meets_by_category(dto)
 
     def set_participants_statuses(self, participant_statuses, meet_id: int):
-        return self.__repository.set_participant_statuses(participant_statuses, meet_id)
+        return self.__repository.set_participant_statuses(
+            participant_statuses, meet_id
+        )
 
     def get_participants_statuses(self, meet_id: int):
         return self.__repository.get_participants_statuses(meet_id)
@@ -77,8 +79,8 @@ class MeetCategoryService:
     def delete(self, pk):
         self.__repository.delete(pk)
 
-    def get_categories_list(self) -> list[CategoryObject]:
-        return self.__repository.get_categories_list()
+    def get_list(self) -> list[CategoryObject]:
+        return self.__repository.get_list()
 
-    def get_category(self, pk) -> CategoryObject:
-        return self.__repository.get_category(pk)
+    def get_by_id(self, pk) -> CategoryObject:
+        return self.__repository.get_by_id(pk)

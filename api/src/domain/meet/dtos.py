@@ -36,14 +36,9 @@ class StatusObject(Enum):
     ValueObject: Статусы участников мита
     """
 
-    PRESENT = "green", "PRESENT"
-    ABSENT = "red", "ABSENT"
-    WARNED = "yellow", "WARNED"
-
-    def __init__(self, status: str) -> None:
-        if status not in [self.PRESENT, self.ABSENT, self.WARNED]:
-            raise ValueError(f"Invalid status: {status}")
-        self.status = status
+    PRESENT = ["green", "PRESENT"]
+    ABSENT = ["red", "ABSENT"]
+    WARNED = ["yellow", "WARNED"]
 
     def description(self) -> str:
         return self.value[1]
