@@ -1,9 +1,9 @@
-from src.domain.meet.dtos import CategoryObject, MeetDTO
+from src.domain.meet.dtos import MeetDTO
 from src.domain.meet.entity import CategoryEntity, MeetEntity
 from src.domain.meet.repository import ICategoryRepository, IMeetRepository
 
 
-class MeetService:
+class BaseService:
     def __init__(
         self,
         repository: IMeetRepository,
@@ -11,6 +11,18 @@ class MeetService:
     ):
         self.__repository = repository
         self.__category_repository = category_repository
+
+    def get_list(self) -> list:
+        return self.__repository.get_list()
+
+    def get_by_id(self, pk):
+        return self.__repository.get_by_id(pk)
+
+    def delete(self, pk) -> None:
+        self.__repository.delete(pk)
+
+
+class MeetService(BaseService):
 
     def create(self, dto: MeetDTO):
         meet = MeetEntity(
@@ -40,31 +52,19 @@ class MeetService:
             return err
         self.__repository.update(meet_id, dto)
 
-    def delete(self, pk):
-        self.__repository.delete(pk)
-
-    def get_list(self) -> list[MeetDTO]:
-        return self.__repository.get_list()
-
-    def get_by_id(self, pk) -> MeetDTO:
-        return self.__repository.get_by_id(pk)
-
     def get_meets_by_category(self, dto) -> list[MeetDTO]:
         return self.__repository.get_meets_by_category(dto)
+
+    def get_participants_statuses(self, meet_id: int):
+        return self.__repository.get_participants_statuses(meet_id)
 
     def set_participants_statuses(self, participant_statuses, meet_id: int):
         return self.__repository.set_participant_statuses(
             participant_statuses, meet_id
         )
 
-    def get_participants_statuses(self, meet_id: int):
-        return self.__repository.get_participants_statuses(meet_id)
 
-
-class MeetCategoryService:
-    def __init__(self, repository):
-        self.__repository = repository
-
+class MeetCategoryService(BaseService):
     def create(self, category_name):
         category = CategoryEntity(name=category_name)
         err = category.verify_data()
@@ -75,12 +75,3 @@ class MeetCategoryService:
 
     def update(self, pk):
         self.__repository.update(pk)
-
-    def delete(self, pk):
-        self.__repository.delete(pk)
-
-    def get_list(self) -> list[CategoryObject]:
-        return self.__repository.get_list()
-
-    def get_by_id(self, pk) -> CategoryObject:
-        return self.__repository.get_by_id(pk)
