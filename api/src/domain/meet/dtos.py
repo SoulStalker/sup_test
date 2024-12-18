@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 
 
 class CategoryObject:
@@ -30,22 +31,14 @@ class MeetDTO:
     participant_statuses: dict
 
 
-class StatusObject:
+class StatusObject(Enum):
     """
     ValueObject: Статусы участников мита
     """
 
-    PRESENT = "PRESENT"
-    ABSENT = "ABSENT"
-    WARNED = "WARNED"
-
-    _descriptions = {
-        PRESENT: "Присутствует",
-        ABSENT: "Отсутствует",
-        WARNED: "Предупредил",
-    }
-
-    _colors = {PRESENT: "green", ABSENT: "red", WARNED: "yellow"}
+    PRESENT = "green", "PRESENT"
+    ABSENT = "red", "ABSENT"
+    WARNED = "yellow", "WARNED"
 
     def __init__(self, status: str) -> None:
         if status not in [self.PRESENT, self.ABSENT, self.WARNED]:
@@ -53,10 +46,10 @@ class StatusObject:
         self.status = status
 
     def description(self) -> str:
-        return self._descriptions[self.status]
+        return self.value[1]
 
     def color(self) -> str:
-        return self._colors[self.status]
+        return self.value[0]
 
     def __eq__(self, other) -> bool:
         if isinstance(other, StatusObject):
