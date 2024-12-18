@@ -1,6 +1,7 @@
 from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import HttpResponseNotAllowed
+from django.db import IntegrityError
+from django.http import HttpResponseNotAllowed, JsonResponse
 from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.apps.projects.repository import FeaturesRepository, ProjectRepository
@@ -29,8 +30,10 @@ class BaseView:
         self.kwargs = kwargs
 
     # Сервисы приложений
-    category_service = MeetCategoryService(CategoryRepository())
-    meet_service = MeetService(MeetsRepository(), CategoryRepository())
+    category_service = MeetCategoryService(repository=CategoryRepository())
+    meet_service = MeetService(
+        repository=MeetsRepository(), category_repository=CategoryRepository()
+    )
     invite_service = InviteService(InviteRepository())
     project_service = ProjectService(ProjectRepository())
     features_service = FeatureService(FeaturesRepository())
@@ -91,3 +94,33 @@ class BaseView:
 
     def _get_allowed_methods(self):
         return [m.upper() for m in self.http_method_names if hasattr(self, m)]
+
+    @classmethod
+    def handle_form(cls, form, save_method, *args, **kwargs):
+        """
+        Универсальная обработка форм.
+        - form: объект формы.
+        - save_method: метод для сохранения данных (например, self.meet_service.create).
+        - *args, **kwargs: аргументы для save_method.
+        """
+        if form.is_valid():
+            try:
+                result, err = save_method(*args, **kwargs)
+
+                print(result, err)
+
+                if isinstance(result, dict) and result.get(
+                    "error"
+                ):  # Допустим, сервис может вернуть ошибку
+                    return JsonResponse(
+                        {"status": "error", "message": result["error"]},
+                        status=400,
+                    )
+                return JsonResponse({"status": "success"}, status=201)
+            except IntegrityError as e:
+                return JsonResponse(
+                    {"status": "error", "message": str(e)}, status=400
+                )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
