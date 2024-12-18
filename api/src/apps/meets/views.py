@@ -1,13 +1,9 @@
-from pprint import pprint
-
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
-from src.domain.meet.dtos import MeetDTO
-
 from src.domain.meet.entity import MeetEntity
 
 User = get_user_model()
@@ -19,9 +15,9 @@ class MeetsView(BaseView):
     """
 
     def get(self, *args, **kwargs):
-        categories = self.category_service.get_categories_list()
+        categories = self.category_service.get_list()
         users = self.user_service.get_user_list()
-        meets = self.meet_service.get_meets_list()
+        meets = self.meet_service.get_list()
         meets = self.paginate_queryset(meets)
 
         return render(
@@ -38,9 +34,13 @@ class MeetsView(BaseView):
         meet_id = kwargs.get("meet_id")
         try:
             self.meet_service.delete(pk=meet_id)
-            return JsonResponse({"status": "success", "message": "Meet deleted"})
+            return JsonResponse(
+                {"status": "success", "message": "Meet deleted"}
+            )
         except Exception as e:
-            return JsonResponse({"status": "error", "message": str(e)}, status=404)
+            return JsonResponse(
+                {"status": "error", "message": str(e)}, status=404
+            )
 
 
 class CreateMeetView(BaseView):
@@ -50,7 +50,7 @@ class CreateMeetView(BaseView):
 
     def get(self, request, *args, **kwargs):
         form = CreateMeetForm(request.POST)
-        categories = self.category_service.get_categories_list()
+        categories = self.category_service.get_list()
         return render(
             request,
             "create_meet_modal.html",
@@ -68,7 +68,9 @@ class CreateMeetView(BaseView):
                         start_time=form.cleaned_data["start_time"],
                         author_id=request.user.id,
                         responsible_id=form.cleaned_data["responsible"].id,
-                        participant_statuses=form.cleaned_data["participant_statuses"],
+                        participant_statuses=form.cleaned_data[
+                            "participant_statuses"
+                        ],
                     )
                 )
                 if err:
@@ -81,7 +83,9 @@ class CreateMeetView(BaseView):
                     {"status": "error", "message": "Такой мит уже существует"},
                     status=400,
                 )
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class EditMeetView(BaseView):
@@ -92,7 +96,7 @@ class EditMeetView(BaseView):
     def get(self, request, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
         statuses = self.meet_service.get_participants_statuses(meet_id)
-        meet = self.meet_service.get_meet(meet_id)
+        meet = self.meet_service.get_by_id(meet_id)
 
         data = {
             "title": meet.title,
@@ -118,7 +122,9 @@ class EditMeetView(BaseView):
                         start_time=form.cleaned_data["start_time"],
                         author_id=request.user.id,
                         responsible_id=form.cleaned_data["responsible"].id,
-                        participant_statuses=form.cleaned_data["participant_statuses"],
+                        participant_statuses=form.cleaned_data[
+                            "participant_statuses"
+                        ],
                     ),
                 )
                 if err:
@@ -127,7 +133,9 @@ class EditMeetView(BaseView):
                     )
                 return JsonResponse({"status": "success"}, status=201)
 
-            return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+            return JsonResponse(
+                {"status": "error", "errors": form.errors}, status=400
+            )
         except IntegrityError:
             return JsonResponse(
                 {"status": "error", "message": "Такой мит уже существует"},
@@ -137,7 +145,7 @@ class EditMeetView(BaseView):
 
 class CategoryView(BaseView):
     def get(self, request, *args, **kwargs):
-        categories = self.category_service.get_categories_list()
+        categories = self.category_service.get_list()
         return JsonResponse({"categories": categories})
 
     def post(self, request, *args, **kwargs):
