@@ -121,8 +121,9 @@ class MeetCategoryService(BaseService):
         """
         Создание категории
         """
+
         entity = CategoryEntity(name=category_name)
-        dto = CategoryObject(name=category_name)
+        dto = CategoryEntity(name=category_name)
 
         return self.validate_and_save(entity, self._repository, dto)
 

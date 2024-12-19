@@ -158,3 +158,7 @@ class CategoryView(BaseView):
                 {"status": "error", "error": "Такая категория уже существует"},
                 status=400,
             )
+        except Exception as err:
+            return JsonResponse(
+                {"status": "error", "error": str(err)}, status=400
+            )
