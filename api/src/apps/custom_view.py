@@ -1,6 +1,7 @@
 from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import HttpResponseNotAllowed
+from django.db import IntegrityError
+from django.http import HttpResponseNotAllowed, JsonResponse
 from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.apps.projects.repository import FeaturesRepository, ProjectRepository
@@ -29,8 +30,10 @@ class BaseView:
         self.kwargs = kwargs
 
     # Сервисы приложений
-    category_service = MeetCategoryService(CategoryRepository())
-    meet_service = MeetService(MeetsRepository(), CategoryRepository())
+    category_service = MeetCategoryService(repository=CategoryRepository())
+    meet_service = MeetService(
+        repository=MeetsRepository(), category_repository=CategoryRepository()
+    )
     invite_service = InviteService(InviteRepository())
     project_service = ProjectService(ProjectRepository())
     features_service = FeatureService(FeaturesRepository())
@@ -91,3 +94,62 @@ class BaseView:
 
     def _get_allowed_methods(self):
         return [m.upper() for m in self.http_method_names if hasattr(self, m)]
+
+    @classmethod
+    def handle_form(cls, form, save_method, *args, **kwargs):
+        """
+        Универсальная обработка форм.
+        - form: объект формы.
+        - save_method: метод для сохранения данных
+        - *args, **kwargs: аргументы для save_method.
+        """
+        try:
+            if not form.is_valid():
+                return JsonResponse(
+                    {"status": "error", "errors": form.errors}, status=400
+                )
+
+            result, err = save_method(*args, **kwargs)
+
+            if err:
+                return JsonResponse(
+                    {"status": "error", "message": str(err)}, status=400
+                )
+
+            return JsonResponse({"status": "success"}, status=201)
+
+        except IntegrityError as e:
+            error_message = str(e)
+            # Обработка дубликата заголовка
+            if "meets_title_key" in error_message:
+                return JsonResponse(
+                    {
+                        "status": "error",
+                        "errors": {
+                            "title": [
+                                "Объект с таким названием уже существует"
+                            ]
+                        },
+                    },
+                    status=400,
+                )
+            # Здесь можно добавить обработку других уникальных ограничений
+
+            # Для необработанных случаев возвращаем общее сообщение
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Ошибка сохранения: нарушение уникальности данных",
+                },
+                status=400,
+            )
+
+        except Exception as e:
+            print(f"Unexpected error in handle_form: {str(e)}")
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Произошла внутренняя ошибка сервера",
+                },
+                status=500,
+            )
