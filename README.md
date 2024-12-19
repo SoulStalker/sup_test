@@ -60,7 +60,7 @@ FRONTEND_URL=https://junov.net
 4. **Запуск Docker-контейнеров**: Проект включает Docker Compose файл для запуска контейнеров с PostgreSQL, Redis и Django. Запустите контейнеры:
     
     ```bash
-   docker-compose up -d
+    env $(cat api/.env | xargs) docker-compose up -d --build
 	```
         
 5. **Применение миграций и создание суперпользователя**: После первого запуска, выполните миграции и создайте суперпользователя:

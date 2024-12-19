@@ -1,0 +1,27 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Системные зависимости
+RUN apt-get update && apt-get install -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем Poetry
+RUN pip install poetry
+
+# Копируем файлы зависимостей
+COPY pyproject.toml poetry.lock* ./
+
+# Настройка Poetry
+RUN poetry config virtualenvs.create false
+
+# Устанавливаем зависимости
+RUN poetry install --no-interaction --no-ansi
+
+# Копируем код проекта
+COPY /api ./api
+
+WORKDIR /app/api
+
+# Команда по умолчанию
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
