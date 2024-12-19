@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (form) {
         form.addEventListener('submit', function(event) {
             event.preventDefault();
+            clearErrors(); // Очищаем предыдущие ошибки
             let formData = new FormData(form);
 
             fetch(form.action, {

@@ -51,14 +51,17 @@ class BaseService:
             entity, repository, dto, lambda d: repository.update(pk, d)
         )
 
+    def exists(self, pk):
+        return self._repository.exists(pk)
+
     def get_list(self) -> list:
-        return self.__repository.get_list()
+        return self._repository.get_list()
 
     def get_by_id(self, pk):
-        return self.__repository.get_by_id(pk)
+        return self._repository.get_by_id(pk)
 
     def delete(self, pk) -> None:
-        self.__repository.delete(pk)
+        self._repository.delete(pk)
 
 
 class MeetService(BaseService):
@@ -67,7 +70,7 @@ class MeetService(BaseService):
         repository: IMeetRepository,
         category_repository: ICategoryRepository,
     ):
-        self.__repository = repository
+        self._repository = repository
         self.__category_repository = category_repository
 
     def create(self, dto):
@@ -82,7 +85,7 @@ class MeetService(BaseService):
             dto.responsible_id,
             dto.participant_statuses,
         )
-        return self.validate_and_save(entity, self.__repository, dto)
+        return self.validate_and_save(entity, self._repository, dto)
 
     def update(self, pk, dto):
         entity = MeetEntity(
@@ -93,16 +96,16 @@ class MeetService(BaseService):
             responsible_id=dto.responsible_id,
             participant_statuses=dto.participant_statuses,
         )
-        return self.validate_and_update(entity, self.__repository, dto, pk)
+        return self.validate_and_update(entity, self._repository, dto, pk)
 
     def get_meets_by_category(self, dto) -> list[MeetDTO]:
-        return self.__repository.get_meets_by_category(dto)
+        return self._repository.get_meets_by_category(dto)
 
     def get_participants_statuses(self, meet_id: int):
-        return self.__repository.get_participants_statuses(meet_id)
+        return self._repository.get_participants_statuses(meet_id)
 
     def set_participants_statuses(self, participant_statuses, meet_id: int):
-        return self.__repository.set_participant_statuses(
+        return self._repository.set_participant_statuses(
             participant_statuses, meet_id
         )
 
@@ -112,7 +115,7 @@ class MeetCategoryService(BaseService):
         self,
         repository: ICategoryRepository,
     ):
-        self.__repository = repository
+        self._repository = repository
 
     def create(self, category_name):
         """
@@ -121,7 +124,7 @@ class MeetCategoryService(BaseService):
         entity = CategoryEntity(name=category_name)
         dto = CategoryObject(name=category_name)
 
-        return self.validate_and_save(entity, self.__repository, dto)
+        return self.validate_and_save(entity, self._repository, dto)
 
     def update(self, pk, category_name):
         """
@@ -129,4 +132,4 @@ class MeetCategoryService(BaseService):
         """
         entity = CategoryEntity(name=category_name)
         dto = CategoryObject(name=category_name)
-        return self.validate_and_update(entity, self.__repository, dto, pk)
+        return self.validate_and_update(entity, self._repository, dto, pk)
