@@ -1,15 +1,30 @@
 from abc import ABC
-from src.domain.project.dtos import ProjectDTO, StatusObject, FeaturesDTO, FeaturesChoicesObject
-from src.domain.project.repository import IProjectRepository, IFeaturesRepository
-from src.models.projects import Project, Features, Tags
+
 from django.db.models import Q
+from src.domain.project.dtos import (
+    CreateTaskDTO,
+    FeaturesChoicesObject,
+    FeaturesDTO,
+    ProjectDTO,
+    StatusObject,
+    TagDTO,
+    TaskChoicesObject,
+    TaskDTO,
+)
+from src.domain.project.repository import (
+    IFeaturesRepository,
+    IProjectRepository,
+    ITaskRepository,
+)
+from src.models.projects import Features, Project, Tags, Task
+
 
 class ProjectRepository(IProjectRepository, ABC):
 
     model = Project
 
     def get_project_list(self) -> list[ProjectDTO]:
-        return list(Project.objects.all().order_by('id'))
+        return list(Project.objects.all().order_by("id"))
 
     def get_project_by_slug(self, slug: str) -> ProjectDTO:
         return Project.objects.get(slug=slug)
@@ -37,7 +52,7 @@ class ProjectRepository(IProjectRepository, ABC):
             status=project.status,
             responsible_id=project.responsible_id,
             participants=dto.participants,
-            date_created=project.date_created
+            date_created=project.date_created,
         )
 
     def create_project(self, dto: ProjectDTO) -> ProjectDTO:
@@ -47,7 +62,7 @@ class ProjectRepository(IProjectRepository, ABC):
             description=dto.description,
             status=dto.status,
             responsible_id=dto.responsible_id,
-            date_created=dto.date_created
+            date_created=dto.date_created,
         )
 
         # Устанавливаем участников сразу при создании проекта
@@ -63,13 +78,12 @@ class ProjectRepository(IProjectRepository, ABC):
             status=project.status,
             responsible_id=project.responsible_id,
             participants=dto.participants,
-            date_created=project.date_created
+            date_created=project.date_created,
         )
 
     def delete_project(self, project_id: int):
         project = Project.objects.get(id=project_id)
         project.delete()
-
 
     def get_valid_statuses(self):
         """Возвращает все допустимые статусы."""
@@ -85,17 +99,20 @@ class ProjectRepository(IProjectRepository, ABC):
         # Поиск проектов по имени или описанию
         projects = Project.objects.filter(
             Q(name__icontains=query) | Q(description__icontains=query)
-        ).order_by('id')
+        ).order_by("id")
 
-        return [ProjectDTO(
-            name=project.name,
-            slug=project.slug,
-            description=project.description,
-            status=project.status,
-            responsible_id=project.responsible_id,
-            participants=project.participants.all(),
-            date_created=project.date_created
-        ) for project in projects]
+        return [
+            ProjectDTO(
+                name=project.name,
+                slug=project.slug,
+                description=project.description,
+                status=project.status,
+                responsible_id=project.responsible_id,
+                participants=project.participants.all(),
+                date_created=project.date_created,
+            )
+            for project in projects
+        ]
 
 
 class FeaturesRepository(IFeaturesRepository, ABC):
@@ -103,16 +120,16 @@ class FeaturesRepository(IFeaturesRepository, ABC):
     model = Features
 
     def get_features_list(self) -> FeaturesDTO:
-        return Features.objects.all().order_by('id')
+        return Features.objects.all().order_by("id")
 
     def get_features_tags_list(self) -> list:
-        return Tags.objects.all().order_by('id')
+        return Tags.objects.all().order_by("id")
 
     def get_features_status_list(self):
         return FeaturesChoicesObject.get_valid_statuses()
 
     def get_feature_project_list(self) -> list:
-        return Project.objects.all().order_by('id')
+        return Project.objects.all().order_by("id")
 
     def create_feature(self, dto: FeaturesDTO) -> FeaturesDTO:
         # Создаем объект Features без тегов
@@ -122,7 +139,7 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             description=dto.description,
             responsible_id=dto.responsible_id,
             project_id=dto.project_id,
-            status=dto.status
+            status=dto.status,
         )
 
         if dto.tags:
@@ -140,7 +157,7 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             participants=dto.participants,
             responsible_id=feature.responsible_id,
             project_id=feature.project_id,
-            status=feature.status
+            status=feature.status,
         )
 
     def get_feature_by_id(self, feature_id: int) -> FeaturesDTO:
@@ -149,14 +166,20 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             name=feature.name,
             importance=feature.importance,
             description=feature.description,
-            tags=[tag.id for tag in feature.tags.all()],  # Преобразуем теги в список ID
-            participants=[participant.id for participant in feature.participants.all()],
+            tags=[
+                tag.id for tag in feature.tags.all()
+            ],  # Преобразуем теги в список ID
+            participants=[
+                participant.id for participant in feature.participants.all()
+            ],
             responsible_id=feature.responsible_id,
             project_id=feature.project_id,
-            status=feature.status
+            status=feature.status,
         )
 
-    def update_features(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+    def update_features(
+        self, feature_id: int, dto: FeaturesDTO
+    ) -> FeaturesDTO:
         try:
             feature = Features.objects.get(id=feature_id)
         except Features.DoesNotExist:
@@ -174,7 +197,9 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             feature.tags.set(dto.tags)  # Передаем список ID тегов
 
         if dto.participants:
-            feature.participants.set(dto.participants)  # Передаем список ID участников
+            feature.participants.set(
+                dto.participants
+            )  # Передаем список ID участников
 
         return FeaturesDTO(
             name=feature.name,
@@ -184,7 +209,7 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             participants=dto.participants,
             responsible_id=feature.responsible_id,
             project_id=feature.project_id,
-            status=feature.status
+            status=feature.status,
         )
 
     def delete_features(self, feature_id: int):
@@ -197,15 +222,93 @@ class FeaturesRepository(IFeaturesRepository, ABC):
         # Поиск фичей по имени или описанию
         features = Features.objects.filter(
             Q(name__icontains=query) | Q(description__icontains=query)
-        ).order_by('id')
+        ).order_by("id")
 
-        return [FeaturesDTO(
-            name=feature.name,
-            importance=feature.importance,
-            description=feature.description,
-            tags=[tag.id for tag in feature.tags.all()],  # Преобразуем теги в список ID
-            participants=[participant.id for participant in feature.participants.all()],
-            responsible_id=feature.responsible_id,
-            project_id=feature.project_id,
-            status=feature.status
-        ) for feature in features]
+        return [
+            FeaturesDTO(
+                name=feature.name,
+                importance=feature.importance,
+                description=feature.description,
+                tags=[
+                    tag.id for tag in feature.tags.all()
+                ],  # Преобразуем теги в список ID
+                participants=[
+                    participant.id
+                    for participant in feature.participants.all()
+                ],
+                responsible_id=feature.responsible_id,
+                project_id=feature.project_id,
+                status=feature.status,
+            )
+            for feature in features
+        ]
+
+
+class TaskRepository(ITaskRepository, ABC):
+
+    model = Task
+
+    @classmethod
+    def _task_orm_to_dto(cls, task: Task) -> TaskDTO:
+        return TaskDTO(
+            id=task.id,
+            name=task.name,
+            priority=task.priority,
+            tags=[
+                tag.id for tag in task.tags.all()
+            ],  # Преобразуем теги в список ID
+            contributor_id=task.contributor_id,
+            responsible_id=task.responsible_id,
+            status=task.status,
+            created_at=task.created_at,
+            closed_at=task.closed_at,
+            description=task.description,
+            feature_id=task.feature_id,
+        )
+
+    def get_tasks_list(self) -> TaskDTO:
+        return Task.objects.all().order_by("id")
+
+    def get_task_by_id(self, task_id: int) -> TaskDTO:
+        return self._task_orm_to_dto(Task.objects.get(id=task_id))
+
+    def create_task(self, dto: CreateTaskDTO):
+        task = self.model(
+            name=dto.name,
+            priority=dto.priority,
+            contributor_id=dto.contributor_id,
+            responsible_id=dto.responsible_id,
+            status=dto.status,
+            feature_id=dto.feature_id,
+            description=dto.description,
+        )
+
+        task.save()
+        task.tags.set(dto.tags)
+
+    def update_task(self, dto: TaskDTO) -> TaskDTO:
+        task = Task.objects.get(id=dto.id)
+
+        task.name = dto.name
+        task.priority = dto.priority
+        task.contributor_id = dto.contributor_id
+        task.responsible_id = dto.responsible_id
+        task.status = dto.status
+        task.feature_id = dto.feature_id
+        task.description = dto.description
+        task.save()
+        task.tags.set(dto.tags)
+
+    def delete_task(self, task_id: int):
+        task = Task.objects.get(id=task_id)
+        task.delete()
+
+    def get_task_status_choices(self):
+        return TaskChoicesObject.choices()
+
+    def get_tags_list(self, task_id: int) -> list[TagDTO]:
+        task = Task.objects.get(id=task_id)
+        tags = task.tags.all()
+        return [
+            TagDTO(id=tag.id, name=tag.name, color=tag.color) for tag in tags
+        ]

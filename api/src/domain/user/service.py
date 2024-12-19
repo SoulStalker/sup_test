@@ -67,8 +67,8 @@ class UserService:
         return self.__repository.get_user_list()
 
     def create(self, dto: CreateUserEntity):
-        dto.password = dto.generate_password()
-        self.__repository.create(dto)
+        # dto.password = dto.generate_password()
+        return self.__repository.create(dto)
 
     def update(self, user_id: int, dto: UserDTO):
         self.__repository.update(user_id, dto)
@@ -88,7 +88,5 @@ class UserService:
         user.save()
         return user
 
-    def set_password_registration(self, user_email, password1, password2):
-        self.__repository.set_password_registration(
-            user_email, password1, password2
-        )
+    def send_welcome_email(self, user_dto):
+        self.__repository.send_welcome_email(user_dto)
