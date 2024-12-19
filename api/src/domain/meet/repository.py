@@ -6,10 +6,34 @@
 """
 
 import abc
-from .dtos import MeetDTO, CategoryObject
+
+from .dtos import CategoryObject, MeetDTO
+from .entity import CategoryEntity
 
 
-class IMeetRepository(abc.ABC):
+class BaseRepository(abc.ABC):
+    """
+    Базовый репозиторий
+    """
+
+    @abc.abstractmethod
+    def get_by_id(self, pk: int):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_list(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def delete(self, pk: int) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def exists(self, pk: int) -> bool:
+        raise NotImplementedError
+
+
+class IMeetRepository(BaseRepository):
     """
     Интерфейс репозитория митов
     """
@@ -23,23 +47,13 @@ class IMeetRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def delete(self, meet_id: int):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_meet_by_id(self, meet_id: int):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_meets_list(self):
-        raise NotImplementedError
-
-    @abc.abstractmethod
     def get_meets_by_category(self, category_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def set_participant_statuses(self, participant_statuses: dict, meet_id: int):
+    def set_participant_statuses(
+        self, participant_statuses: dict, meet_id: int
+    ):
         raise NotImplementedError
 
     def get_participants_statuses(self, meet_id):
@@ -52,21 +66,9 @@ class ICategoryRepository(abc.ABC):
     """
 
     @abc.abstractmethod
-    def create(self, category_name: str):
+    def create(self, category: CategoryEntity):
         raise NotImplementedError
 
     @abc.abstractmethod
     def update(self, category_id: int, dto: CategoryObject):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def delete(self, category_id: int):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_categories_list(self):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_category_by_id(self, category_id: int):
         raise NotImplementedError

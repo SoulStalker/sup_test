@@ -6,12 +6,17 @@ from abc import ABC
 
 from django.shortcuts import get_object_or_404
 from src.domain.meet.dtos import CategoryObject, MeetDTO, ParticipantStatusDTO
+from src.domain.meet.entity import CategoryEntity
 from src.domain.meet.repository import ICategoryRepository, IMeetRepository
 from src.models.meets import Category, Meet, MeetParticipant
 
 
 class MeetsRepository(IMeetRepository, ABC):
     model = Meet
+
+    @classmethod
+    def exists(cls, pk: int) -> bool:
+        return cls.model.objects.filter(id=pk).exists()
 
     @classmethod
     def _meet_orm_to_dto(cls, meet: Meet) -> MeetDTO:
@@ -65,14 +70,14 @@ class MeetsRepository(IMeetRepository, ABC):
         meet = Meet.objects.get(id=meet_id)
         return self._meet_orm_to_dto(meet)
 
-    def delete(self, meet_id: int) -> None:
-        meet = get_object_or_404(Meet, id=meet_id)
+    def delete(self, pk: int) -> None:
+        meet = get_object_or_404(Meet, id=pk)
         meet.delete()
 
-    def get_meet_by_id(self, meet_id: int):
+    def get_by_id(self, meet_id: int):
         return self._meet_orm_to_dto(Meet.objects.get(id=meet_id))
 
-    def get_meets_list(self) -> list[MeetDTO]:
+    def get_list(self) -> list[MeetDTO]:
         return [
             self._meet_orm_to_dto(meet)
             for meet in Meet.objects.select_related("category").order_by(
@@ -116,22 +121,24 @@ class CategoryRepository(ICategoryRepository, ABC):
     def _orm_to_dto(self, category: Category) -> CategoryObject:
         return CategoryObject(pk=category.id, name=category.name)
 
-    def create(self, category_name: str) -> CategoryObject:
-        category = Category.objects.create(name=category_name)
+    def create(self, category: CategoryEntity) -> CategoryObject:
+        category = Category.objects.create(name=category.name)
         return self._orm_to_dto(category)
 
     def update(self, category_id: int, dto: CategoryObject) -> CategoryObject:
-        category = CategoryRepository.get_category_by_id(category_id)
+        category = self.model.objects.filter(pk=category_id)
         category.name = dto.name
+        category.save()
         return category
 
-    def delete(self, category_id: int) -> None:
-        CategoryRepository.get_category_by_id(category_id)
+    def delete(self, pk: int) -> None:
+        category = self.model.objects.filter(pk=pk)
+        category.delete()
 
-    def get_categories_list(self) -> list[CategoryObject]:
+    def get_list(self) -> list[CategoryObject]:
         query = self.model.objects.all()
         return [self._orm_to_dto(category) for category in query]
 
-    def get_category_by_id(self, category_id: int) -> CategoryObject:
-        query = self.model.objects.get(id=category_id)
+    def get_by_id(self, pk: int) -> CategoryObject:
+        query = self.model.objects.get(id=pk)
         return self._orm_to_dto(query)
