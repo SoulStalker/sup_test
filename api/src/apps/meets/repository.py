@@ -6,6 +6,7 @@ from abc import ABC
 
 from django.shortcuts import get_object_or_404
 from src.domain.meet.dtos import CategoryObject, MeetDTO, ParticipantStatusDTO
+from src.domain.meet.entity import CategoryEntity
 from src.domain.meet.repository import ICategoryRepository, IMeetRepository
 from src.models.meets import Category, Meet, MeetParticipant
 
@@ -120,8 +121,8 @@ class CategoryRepository(ICategoryRepository, ABC):
     def _orm_to_dto(self, category: Category) -> CategoryObject:
         return CategoryObject(pk=category.id, name=category.name)
 
-    def create(self, category_name: str) -> CategoryObject:
-        category = Category.objects.create(name=category_name)
+    def create(self, category: CategoryEntity) -> CategoryObject:
+        category = Category.objects.create(name=category.name)
         return self._orm_to_dto(category)
 
     def update(self, category_id: int, dto: CategoryObject) -> CategoryObject:

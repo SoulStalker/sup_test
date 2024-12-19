@@ -8,6 +8,7 @@
 import abc
 
 from .dtos import CategoryObject, MeetDTO
+from .entity import CategoryEntity
 
 
 class BaseRepository(abc.ABC):
@@ -65,7 +66,7 @@ class ICategoryRepository(abc.ABC):
     """
 
     @abc.abstractmethod
-    def create(self, category_name: str):
+    def create(self, category: CategoryEntity):
         raise NotImplementedError
 
     @abc.abstractmethod
