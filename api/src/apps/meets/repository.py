@@ -14,6 +14,10 @@ class MeetsRepository(IMeetRepository, ABC):
     model = Meet
 
     @classmethod
+    def exists(cls, pk: int) -> bool:
+        return cls.model.objects.filter(id=pk).exists()
+
+    @classmethod
     def _meet_orm_to_dto(cls, meet: Meet) -> MeetDTO:
         return MeetDTO(
             id=meet.id,

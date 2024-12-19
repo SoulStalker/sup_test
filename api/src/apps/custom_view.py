@@ -100,27 +100,54 @@ class BaseView:
         """
         Универсальная обработка форм.
         - form: объект формы.
-        - save_method: метод для сохранения данных (например, self.meet_service.create).
+        - save_method: метод для сохранения данных
         - *args, **kwargs: аргументы для save_method.
         """
-        if form.is_valid():
-            try:
-                result, err = save_method(*args, **kwargs)
-
-                print(result, err)
-
-                if isinstance(result, dict) and result.get(
-                    "error"
-                ):  # Допустим, сервис может вернуть ошибку
-                    return JsonResponse(
-                        {"status": "error", "message": result["error"]},
-                        status=400,
-                    )
-                return JsonResponse({"status": "success"}, status=201)
-            except IntegrityError as e:
+        try:
+            if not form.is_valid():
                 return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
+                    {"status": "error", "errors": form.errors}, status=400
                 )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+
+            result, err = save_method(*args, **kwargs)
+
+            if err:
+                return JsonResponse(
+                    {"status": "error", "message": str(err)}, status=400
+                )
+
+            return JsonResponse({"status": "success"}, status=201)
+
+        except IntegrityError as e:
+            error_message = str(e)
+            # Обработка дубликата заголовка
+            if "meets_title_key" in error_message:
+                return JsonResponse(
+                    {
+                        "status": "error",
+                        "errors": {
+                            "title": ["Мит с таким названием уже существует"]
+                        },
+                    },
+                    status=400,
+                )
+            # Здесь можно добавить обработку других уникальных ограничений
+
+            # Для необработанных случаев возвращаем общее сообщение
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Ошибка сохранения: нарушение уникальности данных",
+                },
+                status=400,
+            )
+
+        except Exception as e:
+            print(f"Unexpected error in handle_form: {str(e)}")
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Произошла внутренняя ошибка сервера",
+                },
+                status=500,
+            )

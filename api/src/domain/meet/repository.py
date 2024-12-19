@@ -27,6 +27,10 @@ class BaseRepository(abc.ABC):
     def delete(self, pk: int) -> None:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def exists(self, pk: int) -> bool:
+        raise NotImplementedError
+
 
 class IMeetRepository(BaseRepository):
     """

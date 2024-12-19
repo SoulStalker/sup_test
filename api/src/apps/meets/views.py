@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.meets.forms import CreateMeetForm
+from src.domain.meet.dtos import MeetDTO
 from src.domain.meet.entity import MeetEntity
 
 User = get_user_model()
@@ -59,17 +60,23 @@ class CreateMeetView(BaseView):
 
     def post(self, request):
         form = CreateMeetForm(request.POST)
-        return self.handle_form(
-            form,
-            self.meet_service.create,
-            MeetEntity(
-                category_id=form.cleaned_data["category"].id,
-                title=form.cleaned_data["title"],
-                start_time=form.cleaned_data["start_time"],
-                author_id=request.user.id,
-                responsible_id=form.cleaned_data["responsible"].id,
-                participant_statuses=form.cleaned_data["participant_statuses"],
-            ),
+        if form.is_valid():
+            return self.handle_form(
+                form,
+                self.meet_service.create,
+                MeetEntity(
+                    category_id=form.cleaned_data["category"].id,
+                    title=form.cleaned_data["title"],
+                    start_time=form.cleaned_data["start_time"],
+                    author_id=request.user.id,
+                    responsible_id=form.cleaned_data["responsible"].id,
+                    participant_statuses=form.cleaned_data[
+                        "participant_statuses"
+                    ],
+                ),
+            )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
         )
 
 
@@ -82,7 +89,6 @@ class EditMeetView(BaseView):
         meet_id = kwargs.get("meet_id")
         statuses = self.meet_service.get_participants_statuses(meet_id)
         meet = self.meet_service.get_by_id(meet_id)
-
         data = {
             "title": meet.title,
             "start_time": meet.start_time.strftime("%Y-%m-%dT%H:%M"),
@@ -96,18 +102,25 @@ class EditMeetView(BaseView):
     def post(self, request, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
         form = CreateMeetForm(request.POST)
-        return self.handle_form(
-            form,
-            self.meet_service.update,
-            meet_id,
-            MeetEntity(
-                category_id=form.cleaned_data["category"].id,
-                title=form.cleaned_data["title"],
-                start_time=form.cleaned_data["start_time"],
-                author_id=request.user.id,
-                responsible_id=form.cleaned_data["responsible"].id,
-                participant_statuses=form.cleaned_data["participant_statuses"],
-            ),
+        if form.is_valid():
+            return self.handle_form(
+                form,
+                self.meet_service.update,
+                meet_id,
+                MeetDTO(
+                    id=meet_id,
+                    category_id=form.cleaned_data["category"].id,
+                    title=form.cleaned_data["title"],
+                    start_time=form.cleaned_data["start_time"],
+                    author_id=request.user.id,
+                    responsible_id=form.cleaned_data["responsible"].id,
+                    participant_statuses=form.cleaned_data[
+                        "participant_statuses"
+                    ],
+                ),
+            )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
         )
 
 
