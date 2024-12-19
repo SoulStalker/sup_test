@@ -1,5 +1,3 @@
-import re
-
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -8,7 +6,6 @@ from src.apps.users.forms import (
     CreateUserForm,
     PasswordChangeForm,
     PermissionsForm,
-    RegistrationForm,
     RoleForm,
 )
 from src.domain.user.dtos import (
@@ -19,6 +16,7 @@ from src.domain.user.dtos import (
     UserDTO,
 )
 from src.domain.user.entity import CreateUserEntity
+from src.services.tasks import send_email_to_user
 
 
 class RoleListView(BaseView):
@@ -28,7 +26,9 @@ class RoleListView(BaseView):
         roles = self.role_service.get_role_list()
         roles = self.paginate_queryset(roles)
         for role in roles:
-            role.participants = self.role_service.get_roles_participants_count(role.id)
+            role.participants = self.role_service.get_roles_participants_count(
+                role.id
+            )
         return render(self.request, "roles/roles_list.html", {"roles": roles})
 
 
@@ -54,7 +54,9 @@ class RoleCreateView(BaseView):
                     },
                     status=400,
                 )
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class RoleEditView(BaseView):
@@ -103,7 +105,9 @@ class RoleEditView(BaseView):
                 {"status": "success", "message": "Role deleted"}, status=200
             )
         except Exception as err:
-            return JsonResponse({"status": "error", "message": str(err)}, status=404)
+            return JsonResponse(
+                {"status": "error", "message": str(err)}, status=404
+            )
 
 
 class PermissionListView(BaseView):
@@ -137,7 +141,9 @@ class PermissionCreateView(BaseView):
             except Exception as err:
                 print(err)
             return JsonResponse({"status": "success"}, status=201)
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class PermissionUpdateView(BaseView):
@@ -172,7 +178,9 @@ class PermissionUpdateView(BaseView):
             except Exception as err:
                 print(err)
             return JsonResponse({"status": "success"}, status=200)
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
     def delete(self, *args, **kwargs):
         permission_id = kwargs.get("pk")
@@ -183,7 +191,9 @@ class PermissionUpdateView(BaseView):
                 status=200,
             )
         except Exception as err:
-            return JsonResponse({"status": "error", "message": str(err)}, status=404)
+            return JsonResponse(
+                {"status": "error", "message": str(err)}, status=404
+            )
 
 
 class UserListView(BaseView):
@@ -213,6 +223,7 @@ class UserCreateView(BaseView):
     """Создание пользователя."""
 
     def post(self, request, *args, **kwargs):
+        send_email = request.POST.get("send_email", False)
 
         form = CreateUserForm(request.POST)
         if form.is_valid():
@@ -224,11 +235,15 @@ class UserCreateView(BaseView):
                     password=form.cleaned_data["password"],
                     tg_name=form.cleaned_data["tg_name"],
                     tg_nickname=form.cleaned_data["tg_nickname"],
-                    google_meet_nickname=form.cleaned_data["google_meet_nickname"],
+                    google_meet_nickname=form.cleaned_data[
+                        "google_meet_nickname"
+                    ],
                     gitlab_nickname=form.cleaned_data["gitlab_nickname"],
                     github_nickname=form.cleaned_data["github_nickname"],
                     avatar=(
-                        request.FILES["avatar"] if "avatar" in request.FILES else None
+                        request.FILES["avatar"]
+                        if "avatar" in request.FILES
+                        else None
                     ),
                     role_id=form.cleaned_data["role"].id,
                     team_id=(
@@ -246,11 +261,28 @@ class UserCreateView(BaseView):
                 )
             )
 
+            if send_email:
+                try:
+                    send_email_to_user.delay(
+                        name=user_dto.name, email=user_dto.email
+                    )
+                except Exception as e:
+                    print(f"Email не отправлен: {str(e)}")
+                    return JsonResponse(
+                        {
+                            "status": "error",
+                            "message": f"Email не отправлен: {str(e)}",
+                        },
+                        status=400,
+                    )
+
             return JsonResponse(
-                {"status": "success", "user": user_dto},
+                {"status": "success", "message": "email sent"},
                 status=201,
             )
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class UserUpdateView(BaseView):
@@ -292,7 +324,9 @@ class UserUpdateView(BaseView):
                         email=form.cleaned_data["email"],
                         tg_name=form.cleaned_data["tg_name"],
                         tg_nickname=form.cleaned_data["tg_nickname"],
-                        google_meet_nickname=form.cleaned_data["google_meet_nickname"],
+                        google_meet_nickname=form.cleaned_data[
+                            "google_meet_nickname"
+                        ],
                         gitlab_nickname=form.cleaned_data["gitlab_nickname"],
                         github_nickname=form.cleaned_data["github_nickname"],
                         avatar=(
@@ -308,7 +342,9 @@ class UserUpdateView(BaseView):
                         ],
                         is_active=form.cleaned_data.get("is_active", False),
                         is_admin=form.cleaned_data.get("is_admin", False),
-                        is_superuser=form.cleaned_data.get("is_superuser", False),
+                        is_superuser=form.cleaned_data.get(
+                            "is_superuser", False
+                        ),
                         date_joined=form.cleaned_data.get("date_joined", None),
                         meet_statuses=None,
                     ),
@@ -316,7 +352,9 @@ class UserUpdateView(BaseView):
 
                 return JsonResponse({"status": "success"}, status=200)
         except Exception as err:
-            return JsonResponse({"status": "error", "message": str(err)}, status=404)
+            return JsonResponse(
+                {"status": "error", "message": str(err)}, status=404
+            )
 
 
 class UserPasswordChangeView(BaseView):
@@ -335,55 +373,6 @@ class UserPasswordChangeView(BaseView):
                 )
                 return JsonResponse({"status": "success"}, status=200)
         except Exception as err:
-            return JsonResponse({"status": "error", "message": str(err)}, status=404)
-
-
-class UserRegistration(BaseView):
-    """Регистрация пользователя"""
-
-    def get(self, request, *args, **kwargs):
-        form = RegistrationForm()
-        return render(
-            request,
-            "reg.html",
-            {"form": form},
-        )
-
-    def post(self, request):
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            try:
-                user_dto = UserDTO(
-                    name=form.cleaned_data["name"],
-                    surname=form.cleaned_data["surname"],
-                    email=form.cleaned_data["email"],
-                    tg_name=form.cleaned_data["tg_name"],
-                    tg_nickname=form.cleaned_data["tg_nickname"],
-                    google_meet_nickname=form.cleaned_data["google_meet_nickname"],
-                    gitlab_nickname=form.cleaned_data["gitlab_nickname"],
-                    github_nickname=form.cleaned_data["github_nickname"],
-                    role_id=None,
-                    permission_id=None,
-                    is_active=None,
-                    is_admin=False,
-                    is_superuser=False,
-                    is_staff=False,
-                    avatar=None,
-                )
-                self.user_service.create(user_dto)
-                self.user_service.set_password_registration(
-                    form.cleaned_data["email"],
-                    form.cleaned_data["password1"],
-                    form.cleaned_data["password2"],
-                )
-                return JsonResponse({"status": "success"}, status=201)
-            except IntegrityError as err:
-                matches = re.findall(r"\((.*?)\)", str(err))
-                return JsonResponse(
-                    {
-                        "status": "error",
-                        "message": f"Такой {matches[0]} уже существует",
-                    },
-                    status=400,
-                )
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+            return JsonResponse(
+                {"status": "error", "message": str(err)}, status=404
+            )

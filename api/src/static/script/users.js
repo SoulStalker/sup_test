@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     let submitButton = form.querySelector('button[type="submit"]');
 
-    // Открытие модального окна для создания мита
+    // Открытие модального окна для создания юзера
     if (openModalButton) {
         clearErrors();
         openModalButton.addEventListener('click', function () {
@@ -20,14 +20,12 @@ document.addEventListener('DOMContentLoaded', function () {
             form.reset();
         });
     }
-
     // Закрытие модального окна
     if (closeModalButton) {
         closeModalButton.addEventListener('click', function () {
             modal.classList.add('hidden');
         });
     }
-
     // Обработка отправки формы
     if (form) {
         form.addEventListener('submit', function(event) {
@@ -109,15 +107,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Открываем модальное окно
         modal.classList.remove('hidden');
-
-
-
         // Загружаем данные пользователя через fetch
         fetch(`/users/update/${userId}/`)
             .then(response => response.json())
             .then(data => {
-
-
                 // Заполняем форму полученными данными
                 document.getElementById('name').value = data.name;
                 document.getElementById('surname').value = data.surname;
@@ -261,4 +254,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const fileName = fileInput.files[0]?.name || 'Файл не выбран';
         dropzone.querySelector('span').textContent = fileName;
     });
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const sendEmailButton = document.getElementById('submit-user-email');
+    const sendEmailInput = document.getElementById('send-email');
+    const submitButton = document.getElementById('submit-user');
+
+    // Обработка нажатия кнопки "Создать и отправить Email"
+    if (sendEmailButton) {
+        sendEmailButton.addEventListener('click', function () {
+            sendEmailInput.value = "true"; // Устанавливаем значение true для отправки email
+            submitButton.click(); // Триггерим отправку формы
+        });
+    }
+
+    // Обработка нажатия кнопки "Создать"
+    if (submitButton) {
+        submitButton.addEventListener('click', function () {
+            sendEmailInput.value = "false"; // Сбрасываем значение на false
+        });
+    }
 });

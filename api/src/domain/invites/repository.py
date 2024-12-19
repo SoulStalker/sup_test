@@ -13,7 +13,8 @@ class IInviteRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create(self) -> InviteDTO:
+    def create(self, email) -> InviteDTO:
+        print('create repos')
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -22,4 +23,8 @@ class IInviteRepository(abc.ABC):
 
     @abc.abstractmethod
     def update_status(self, invite_id: int, status: str):
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def create_inviteDTO(self, invitation_code: str):
         raise NotImplementedError
