@@ -2,13 +2,14 @@ import os
 import random
 from abc import ABC
 from datetime import timedelta
+
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from src.domain.verifyemail.repository import IVerifyemailRepository
 from src.domain.verifyemail.dtos import VerifyEmailDTO
-from src.models.verifyemail import VerifyEmail
+from src.domain.verifyemail.repository import IVerifyemailRepository
 from src.models.models import CustomUser
-from django.core.mail import send_mail
+from src.models.verifyemail import VerifyEmail
 
 
 class VerifyemailRepository(IVerifyemailRepository, ABC):
@@ -24,8 +25,8 @@ class VerifyemailRepository(IVerifyemailRepository, ABC):
         )
 
     def create(self, email) -> VerifyEmailDTO:
-        link = f"{os.getenv('FRONTEND_URL')}/verifyemail/{random.randint(0000, 9999)}"
-        email = email
+        random_int = random.randint(0000, 9999)
+        link = f"{os.getenv('FRONTEND_URL')}/verifyemail/{random_int}"
         created_at = timezone.now()
         expires_at = created_at + timedelta(minutes=60)
 
