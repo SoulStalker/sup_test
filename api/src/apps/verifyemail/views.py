@@ -1,5 +1,5 @@
-from src.apps.custom_view import BaseView
 from django.shortcuts import render
+from src.apps.custom_view import BaseView
 
 
 class VerifyEmailUser(BaseView):
