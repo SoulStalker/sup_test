@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
-from src.domain.invites.dtos import InviteDTO
+from src.domain.invites import InviteDTO
 
 
 class InvitesView(BaseView):
