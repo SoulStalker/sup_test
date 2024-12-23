@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from src.domain.validators.validators import DataVerifier
+from src.domain.base import Entity
 
 
 @dataclass
-class CategoryEntity:
+class CategoryEntity(Entity):
     """
     Категория
     """
@@ -13,19 +13,11 @@ class CategoryEntity:
     name: str
 
     def verify_data(self):
-        """
-        Проверка валидности
-        """
-        letters_error = DataVerifier.verify_letters_space_only(self.name)
-        len_error = DataVerifier.verify_max_value(self.name, 20)
-        if letters_error:
-            return letters_error
-        elif len_error:
-            return len_error
+        return super().verify_data(self.name)
 
 
 @dataclass
-class MeetEntity:
+class MeetEntity(Entity):
     """
     Мит
     """
@@ -38,12 +30,4 @@ class MeetEntity:
     participant_statuses: dict
 
     def verify_data(self):
-        """
-        Проверка валидности
-        """
-        letters_error = DataVerifier.verify_letters_space_only(self.title)
-        len_error = DataVerifier.verify_max_value(self.title, 20)
-        if letters_error:
-            return letters_error
-        elif len_error:
-            return len_error
+        return super().verify_data(self.title)
