@@ -2,7 +2,7 @@ import os
 from abc import ABC
 
 from django.conf import settings
-from django.contrib.auth.models import make_password
+from django.core.mail import send_mail
 from django.shortcuts import get_list_or_404, get_object_or_404
 from src.domain.user.dtos import (
     CreatePermissionDTO,
@@ -208,10 +208,13 @@ class UserRepository(IUserRepository, ABC):
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
 
-    def set_password_registration(self, user_email, password1, password2):
-        model = self.model.objects.get(email=user_email)
-        if password1 == password2:
-            model.password = make_password(password2)
-            model.save()
-        else:
-            raise ValueError("Пароли не совпадают")
+    def send_welcome_email(self, user_dto):
+        subject = "Добро пожаловать!"
+        message = (
+            f"Здравствуйте, {user_dto.name}!\n\nВаш аккаунт успешно создан."
+        )
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [user_dto.email]
+        send_mail(
+            subject, message, from_email, recipient_list, fail_silently=False
+        )

@@ -1,25 +1,19 @@
-import abc
+from abc import abstractmethod
 
-from src.domain.invites.dtos import InviteDTO
+from src.domain.base import BaseRepository
+
+from .dtos import InviteDTO
 
 
-class IInviteRepository(abc.ABC):
-    @abc.abstractmethod
-    def get_invite_by_id(self, invite_id: int):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_invites_list(self) -> list[InviteDTO]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
+class IInviteRepository(BaseRepository):
+    @abstractmethod
     def create(self) -> InviteDTO:
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def delete(self, invite_id: int):
+    @abstractmethod
+    def update_status(self, invite_id: int, status: str):
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def update_status(self, invite_id: int, status: str):
+    @abstractmethod
+    def create_inviteDTO(self, invitation_code: str):
         raise NotImplementedError

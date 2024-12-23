@@ -345,3 +345,20 @@ a {
     border: none; /* Убираем рамку */
     cursor: pointer; /* Указатель для интерактивности */
 }
+
+.tag {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: inline-block;
+}
+
+.tag.selected {
+    border-color: #000; /* Цвет рамки для выбранного тега */
+    background-color: #f7f7f7; /* Цвет фона при выборе */
+    color: #333; /* Цвет текста при выборе */
+}
+
+.tag:hover {
+    background-color: #f7f7f7; /* Цвет фона при наведении */
+    color: #333; /* Цвет текста при наведении */
+}

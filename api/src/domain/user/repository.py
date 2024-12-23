@@ -78,3 +78,7 @@ class IUserRepository(abc.ABC):
     @abc.abstractmethod
     def delete(self, user_id: int):
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def send_welcome_email(self, user_dto):
+        raise NotImplementedError
