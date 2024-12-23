@@ -17,6 +17,7 @@ class InviteRepository(IInviteRepository, ABC):
         return cls.model.objects.filter(id=pk).exists()
 
     def _invite_orm_to_dto(self, model) -> InviteDTO:
+        # преобразует модель в dto
         return InviteDTO(
             pk=model.id,
             link=model.link,
@@ -26,16 +27,19 @@ class InviteRepository(IInviteRepository, ABC):
         )
 
     def get_by_id(self, invite_id: int):
+        # получение инвайта по id
         invite = get_object_or_404(Invite, pk=invite_id)
         return self._invite_orm_to_dto(invite)
 
     def get_list(self):
+        # получение списка инвайтов
         return [
             self._invite_orm_to_dto(invite)
             for invite in Invite.objects.all().order_by("-created_at")
         ]
 
     def create(self) -> InviteDTO:
+        # создание инвайта
         invite_link = f"{os.getenv('FRONTEND_URL')}/registration/{secrets.token_urlsafe(16)}"
         created_at = timezone.now()
         expires_at = created_at + timedelta(days=7)
@@ -50,10 +54,12 @@ class InviteRepository(IInviteRepository, ABC):
         return self._invite_orm_to_dto(model)
 
     def delete(self, invite_id: int):
+        # удаление инвайта
         invite = get_object_or_404(Invite, pk=invite_id)
         invite.delete()
 
     def update_status(self, invite_id: int, status: str):
+        # обновление статуса инвайта
         invite = get_object_or_404(Invite, pk=invite_id)
         invite.status = status
         invite.save()
