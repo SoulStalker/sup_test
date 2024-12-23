@@ -9,20 +9,24 @@ from src.apps.projects.repository import (
     ProjectRepository,
     TaskRepository,
 )
+from src.apps.registration.repository import RegistarionRepository
 from src.apps.teams.repository import TeamRepository
 from src.apps.users.repository import (
     PermissionRepository,
     RoleRepository,
     UserRepository,
 )
-from src.apps.registration.repository import RegistarionRepository
 from src.apps.verifyemail.repository import VerifyemailRepository
-from src.domain.invites.service import InviteService
+from src.domain.invites import InviteService
 from src.domain.meet.service import MeetCategoryService, MeetService
-from src.domain.project.service import FeatureService, ProjectService, TaskService
-from src.domain.teams.service import TeamService
-from src.domain.user.service import PermissionService, RoleService, UserService
+from src.domain.project.service import (
+    FeatureService,
+    ProjectService,
+    TaskService,
+)
 from src.domain.registration.service import RegistrationService
+from src.domain.teams import TeamService
+from src.domain.user.service import PermissionService, RoleService, UserService
 from src.domain.verifyemail.service import VerifyemailService
 
 
