@@ -1,32 +1,23 @@
 from typing import Any
 
+from src.domain.base import BaseService
+
 from .dtos import CreateTeamDTO, TeamDTO
 from .repository import ITeamRepository
 
 
-class TeamService:
+class TeamService(BaseService):
     def __init__(self, repository: ITeamRepository):
-        self.__repository = repository
-
-    def get_team_list(self) -> list[TeamDTO]:
-        return self.__repository.get_team_list()
-
-    def get_team_by_id(self, team_id: int) -> TeamDTO:
-        return self.__repository.get_team_by_id(team_id)
+        self._repository = repository
 
     def create(self, dto: CreateTeamDTO) -> [tuple[None, Any] | TeamDTO, Any]:
-        team = dto
-        err = team.verify_data()
-        if err:
-            return None, err
-        return self.__repository.create(team), err
+        entity = CreateTeamDTO(name=dto.name, participants=dto.participants)
+        return self.validate_and_save(entity, self._repository, dto)
 
-    def update(self, dto: TeamDTO) -> [tuple[None, Any] | TeamDTO, Any]:
-        team = dto
-        err = team.verify_data()
-        if err:
-            return None, err
-        return self.__repository.update(team), err
-
-    def delete(self, team_id: int):
-        return self.__repository.delete(team_id)
+    def update(
+        self, pk: int, dto: TeamDTO
+    ) -> [tuple[None, Any] | TeamDTO, Any]:
+        entity = TeamDTO(
+            id=dto.id, name=dto.name, participants=dto.participants
+        )
+        return self.validate_and_update(entity, self._repository, dto, pk)
