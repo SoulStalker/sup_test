@@ -1,26 +1,19 @@
-import abc
+from abc import abstractmethod
 from typing import Any
+
+from src.domain.base import BaseRepository
 
 from .dtos import CreateTeamDTO, TeamDTO
 
 
-class ITeamRepository(abc.ABC):
-    @abc.abstractmethod
-    def get_team_list(self) -> list[TeamDTO]:
-        raise NotImplementedError
+class ITeamRepository(BaseRepository):
 
-    @abc.abstractmethod
-    def get_team_by_id(self, team_id: int) -> TeamDTO:
-        raise NotImplementedError
-
-    @abc.abstractmethod
+    @abstractmethod
     def create(self, dto: CreateTeamDTO) -> tuple[None, Any] | TeamDTO:
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def update(self, dto: TeamDTO) -> [tuple[None, Any] | TeamDTO, Any]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def delete(self, team_id: int):
+    @abstractmethod
+    def update(
+        self, pk: int, dto: TeamDTO
+    ) -> [tuple[None, Any] | TeamDTO, Any]:
         raise NotImplementedError
