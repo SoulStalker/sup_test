@@ -5,32 +5,12 @@
 пишет в базу и читает из базы
 """
 
-import abc
+from abc import ABC, abstractmethod
+
+from src.domain.base import BaseRepository
 
 from .dtos import CategoryObject, MeetDTO
 from .entity import CategoryEntity
-
-
-class BaseRepository(abc.ABC):
-    """
-    Базовый репозиторий
-    """
-
-    @abc.abstractmethod
-    def get_by_id(self, pk: int):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_list(self):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def delete(self, pk: int) -> None:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def exists(self, pk: int) -> bool:
-        raise NotImplementedError
 
 
 class IMeetRepository(BaseRepository):
@@ -38,19 +18,19 @@ class IMeetRepository(BaseRepository):
     Интерфейс репозитория митов
     """
 
-    @abc.abstractmethod
+    @abstractmethod
     def create(self, dto: MeetDTO) -> MeetDTO:
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     def update(self, meet_id: int, dto: MeetDTO):
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_meets_by_category(self, category_id: int):
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     def set_participant_statuses(
         self, participant_statuses: dict, meet_id: int
     ):
@@ -60,15 +40,15 @@ class IMeetRepository(BaseRepository):
         raise NotImplementedError
 
 
-class ICategoryRepository(abc.ABC):
+class ICategoryRepository(ABC):
     """
     Интерфейс репозитория категорий
     """
 
-    @abc.abstractmethod
+    @abstractmethod
     def create(self, category: CategoryEntity):
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     def update(self, category_id: int, dto: CategoryObject):
         raise NotImplementedError
