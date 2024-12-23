@@ -25,7 +25,7 @@ from src.domain.project.service import (
     TaskService,
 )
 from src.domain.registration.service import RegistrationService
-from src.domain.teams.service import TeamService
+from src.domain.teams import TeamService
 from src.domain.user.service import PermissionService, RoleService, UserService
 from src.domain.verifyemail.service import VerifyemailService
 
