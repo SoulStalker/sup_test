@@ -5,8 +5,7 @@ from datetime import timedelta
 
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from src.domain.invites.dtos import InviteDTO
-from src.domain.invites.repository import IInviteRepository
+from src.domain.invites import IInviteRepository, InviteDTO
 from src.models.invites import Invite
 
 

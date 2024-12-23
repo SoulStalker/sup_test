@@ -1,7 +1,8 @@
 from src.domain.base import BaseService
-from src.domain.invites.dtos import InviteDTO
-from src.domain.invites.entity import InviteEntity
-from src.domain.invites.repository import IInviteRepository
+
+from .dtos import InviteDTO
+from .entity import InviteEntity
+from .repository import IInviteRepository
 
 
 class InviteService(BaseService):

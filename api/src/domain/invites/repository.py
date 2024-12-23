@@ -1,7 +1,8 @@
 from abc import abstractmethod
 
 from src.domain.base import BaseRepository
-from src.domain.invites.dtos import InviteDTO
+
+from .dtos import InviteDTO
 
 
 class IInviteRepository(BaseRepository):
