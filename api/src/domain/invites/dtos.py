@@ -9,6 +9,3 @@ class InviteDTO:
     status: str
     created_at: datetime
     expires_at: datetime
-
-    def verify_data(self):
-        pass
