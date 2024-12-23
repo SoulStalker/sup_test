@@ -13,6 +13,10 @@ from src.models.invites import Invite
 class InviteRepository(IInviteRepository, ABC):
     model = Invite
 
+    @classmethod
+    def exists(cls, pk: int) -> bool:
+        return cls.model.objects.filter(id=pk).exists()
+
     def _invite_orm_to_dto(self, model) -> InviteDTO:
         return InviteDTO(
             pk=model.id,
@@ -22,11 +26,11 @@ class InviteRepository(IInviteRepository, ABC):
             expires_at=model.expires_at,
         )
 
-    def get_invite_by_id(self, invite_id: int):
+    def get_by_id(self, invite_id: int):
         invite = get_object_or_404(Invite, pk=invite_id)
         return self._invite_orm_to_dto(invite)
 
-    def get_invites_list(self):
+    def get_list(self):
         return [
             self._invite_orm_to_dto(invite)
             for invite in Invite.objects.all().order_by("-created_at")
@@ -56,6 +60,6 @@ class InviteRepository(IInviteRepository, ABC):
         invite.save()
 
     def create_inviteDTO(self, invitation_code):
-        link = f'{os.getenv('FRONTEND_URL')}/registration/{invitation_code}'
+        link = f"{os.getenv('FRONTEND_URL')}/registration/{invitation_code}"
         objects_invite = self.model.objects.get(link=link)
         return self._invite_orm_to_dto(objects_invite)
