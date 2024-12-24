@@ -37,7 +37,7 @@ class VerifyemailRepository(IVerifyemailRepository, ABC):
             created_at=created_at,
             expires_at=expires_at,
         )
-        send_email_to_user(name=name, email=email, link=link)
+        send_email_to_user.delay(name=name, email=email, link=link)
         model.save()
         return self._invite_orm_to_dto(model)
 
