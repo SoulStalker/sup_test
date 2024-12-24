@@ -10,6 +10,7 @@ from src.domain.verifyemail.dtos import VerifyEmailDTO
 from src.domain.verifyemail.repository import IVerifyemailRepository
 from src.models.models import CustomUser
 from src.models.verifyemail import VerifyEmail
+from src.services.tasks import send_email_to_user
 
 
 class VerifyemailRepository(IVerifyemailRepository, ABC):
@@ -24,7 +25,7 @@ class VerifyemailRepository(IVerifyemailRepository, ABC):
             expires_at=model.expires_at,
         )
 
-    def create(self, email) -> VerifyEmailDTO:
+    def create(self, email, name) -> VerifyEmailDTO:
         random_int = random.randint(0000, 9999)
         link = f"{os.getenv('FRONTEND_URL')}/verifyemail/{random_int}"
         created_at = timezone.now()
@@ -36,12 +37,7 @@ class VerifyemailRepository(IVerifyemailRepository, ABC):
             created_at=created_at,
             expires_at=expires_at,
         )
-        send_mail(
-            'Перейдите по ссылке для подтверждения электронной почты',
-            link,
-            os.getenv('EMAIL_HOST_USER'),
-            [email]
-                )
+        send_email_to_user(name=name, email=email, link=link)
         model.save()
         return self._invite_orm_to_dto(model)
 
