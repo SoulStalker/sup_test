@@ -42,9 +42,15 @@ class VerifyemailRepository(IVerifyemailRepository, ABC):
         return self._invite_orm_to_dto(model)
 
     def chek_verify_code_or_404(self, code):
-        """Проверяем существует ли ссылка в БД и меняем статус юзера на активный"""
+        """
+        Проверяем существует ли ссылка в БД,
+        меняем статус юзера на активный,
+        удаляем ссылку подтверждения почты из БД
+        """
         link = f'{os.getenv('FRONTEND_URL')}/verifyemail/{code}'
-        email_user = get_object_or_404(self.model, link=link).email
-        user = get_object_or_404(CustomUser, email=email_user)
+        email_user = get_object_or_404(self.model, link=link)
+        user = get_object_or_404(CustomUser, email=email_user.email)
+
         user.is_active = True
         user.save()
+        email_user.delete()
