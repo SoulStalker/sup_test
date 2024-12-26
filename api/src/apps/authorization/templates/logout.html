@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="./css/add-style.css" rel="stylesheet">
+    <link href="./output.css" rel="stylesheet">
+</head>
+<body class="bg-white-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+        <h2 class="text-2xl font-semibold mb-6">Вы авторизованы, хотите выйти?</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="text-right">
+                <button id="logoutButton">Выйти</button>
+                {% comment %} <button type="submit">Войти</button> {% endcomment %}
+            </div>
+        </form>
+    </div>
+</body>
+</html>
