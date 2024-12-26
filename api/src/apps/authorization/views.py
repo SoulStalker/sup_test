@@ -1,5 +1,9 @@
-from django.contrib.auth import authenticate, login, REDIRECT_FIELD_NAME
-from django.contrib.auth import logout
+from django.contrib.auth import (
+    REDIRECT_FIELD_NAME,
+    authenticate,
+    login,
+    logout,
+)
 from django.db.utils import IntegrityError
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
@@ -15,13 +19,13 @@ class UserAuthorization(BaseView):
 
     def get(self, request):
         if self.request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('authorization:logout'))
+            return HttpResponseRedirect(reverse("authorization:logout"))
         form = AuthorizationForm()
         return render(request, "auth.html", {"form": form})
 
     def post(self, request):
         form = AuthorizationForm(request.POST)
-        next_url = request.GET.get(REDIRECT_FIELD_NAME, '/default-url/')
+        next_url = request.GET.get(REDIRECT_FIELD_NAME, "/default-url/")
         if form.is_valid():
             cd = form.cleaned_data
             try:
@@ -30,8 +34,8 @@ class UserAuthorization(BaseView):
                 )
                 if user and user.is_active:
                     login(request, user)
-                    if next_url == '/default-url/':
-                        return redirect('/meets/')
+                    if next_url == "/default-url/":
+                        return redirect("/meets/")
                     else:
                         return redirect(next_url)
                 else:
@@ -56,7 +60,7 @@ class UserLogout(BaseView):
 
     def get(self, request):
         return render(request, "logout.html")
-    
+
     def post(self, request):
         logout(request)
-        return HttpResponseRedirect(reverse('authorization:logout'))
+        return HttpResponseRedirect(reverse("authorization:logout"))
