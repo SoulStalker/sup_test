@@ -3,11 +3,8 @@ from src.apps.custom_view import BaseView
 
 
 class VerifyEmailUser(BaseView):
-    """Регистрация пользователя"""
+    """Проверка ссылки подтверждения почты"""
 
     def get(self, request, code):
         self.verifyemail_service.chek_verify_code_or_404(code)
-        return render(
-            request,
-            "welkome.html",
-        )
+        return render(request, "welkome.html")
