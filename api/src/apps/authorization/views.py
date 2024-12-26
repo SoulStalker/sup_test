@@ -25,7 +25,7 @@ class UserAuthorization(BaseView):
 
     def post(self, request):
         form = AuthorizationForm(request.POST)
-        next_url = request.GET.get(REDIRECT_FIELD_NAME, "/default-url/")
+        next_url = request.GET.get(REDIRECT_FIELD_NAME, "/meets/")
         if form.is_valid():
             cd = form.cleaned_data
             try:
@@ -34,10 +34,7 @@ class UserAuthorization(BaseView):
                 )
                 if user and user.is_active:
                     login(request, user)
-                    if next_url == "/default-url/":
-                        return redirect("/meets/")
-                    else:
-                        return redirect(next_url)
+                    return redirect(next_url)
                 else:
                     return JsonResponse(
                         {
