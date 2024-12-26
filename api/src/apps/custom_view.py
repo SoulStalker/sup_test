@@ -1,7 +1,9 @@
 from django.contrib.auth.views import redirect_to_login
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
 from django.http import HttpResponseNotAllowed, JsonResponse
+from django.shortcuts import redirect
 from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.apps.projects.repository import (
@@ -99,7 +101,9 @@ class BaseView:
     def dispatch(self):
         if self.login_required and not self.request.user.is_authenticated:
             # Перенаправление на страницу авторизации
-            return redirect_to_login(self.request, login_url="/authorization/")
+            next_url = self.request.get_full_path()
+            login_url = f"/authorization/?{REDIRECT_FIELD_NAME}={next_url}"
+            return redirect(login_url)
 
         method = getattr(self, self.request.method.lower(), None)
         if not method or not callable(method):
