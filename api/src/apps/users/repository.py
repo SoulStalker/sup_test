@@ -207,6 +207,10 @@ class UserRepository(IUserRepository, ABC):
     def get_user_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
+    
+    def get_user_id_list(self, user_id: int) -> list[UserDTO]:
+        user = self.model.objects.filter(id__in=user_id)
+        return user
 
     def send_welcome_email(self, user_dto):
         subject = "Добро пожаловать!"

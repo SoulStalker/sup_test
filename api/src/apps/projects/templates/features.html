@@ -101,7 +101,8 @@
                         <tr class="hover:bg-gray-50" data-project-id="{{ item_features.project.id }}" data-status="{{ item_features.status }}">
                             <td class="px-4 py-4 border-b">{{ item_features.id }}</td>
                             <td class="px-4 py-4 border-b items-center">
-                                <span class="tag font-medium text-sm">{{ item_features.name }}</span><br>
+                                <a href="{% url 'projects:features_detail' item_features.id %}">
+                                    {{ item_features.name }}</a></td>
                                 {{ item_features.description|truncatechars:50 }}
                             </td>
                             <td class="px-4 py-4 border-b text-center">
