@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 from src.apps.custom_view import BaseView
 from src.apps.projects.forms import CreateFeaturesForm, ProjectForm
 from src.domain.project.dtos import FeaturesDTO, ProjectDTO
@@ -25,11 +26,13 @@ class ProjectsView(BaseView):
         for project in projects:
             project.participants.set(project.participants.all())
         projects = self.paginate_queryset(projects)
+        features_url = reverse('projects:features')
 
         context = {
             "projects": projects,
             "users": User.objects.order_by("id"),
             "project_status_choices": project_status_choices,
+            "features_url": features_url,
         }
         return render(self.request, "projects_list.html", context)
 
@@ -245,6 +248,25 @@ class FeaturesView(BaseView):
                 "tags": tags,
                 "statuses": [str(status) for status in statuses],
                 "project": projectes,
+            },
+        )
+    
+
+class FeaturesDetailView(BaseView):
+    def get(self, request, *args, **kwargs):
+        feature_id = kwargs.get("features_id")
+        feature = self.features_service.get_feature_by_id(feature_id=feature_id)
+        project = self.project_service.get_project_by_id(project_id=feature.project_id)
+        users = self.user_service.get_user_id_list(user_id=feature.participants)
+        
+
+        return render(
+            request,
+            "features_detail.html",
+            {
+                "feature": feature,
+                "users": users,
+                "project": project,
             },
         )
 
