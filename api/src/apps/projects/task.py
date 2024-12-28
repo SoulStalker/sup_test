@@ -10,7 +10,7 @@ User = get_user_model()
 
 class TasksView(BaseView):
     """
-    Список проектов
+    Список задач
     """
 
     def get(self, *args, **kwargs):
@@ -57,7 +57,7 @@ class TaskDetailView(BaseView):
 
 class CreateTaskView(BaseView):
     """
-    Создание проекта
+    Создание задачи
     """
 
     def get(self, request, *args, **kwargs):
@@ -113,7 +113,7 @@ class CreateTaskView(BaseView):
 
 class UpdateTaskView(BaseView):
     """
-    Редактирование проекта
+    Редактирование задачи
     """
 
     def get(self, request, *args, **kwargs):
