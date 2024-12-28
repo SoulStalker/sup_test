@@ -39,10 +39,9 @@ class TaskDetailView(BaseView):
         task_id = kwargs.get("task_id")
         task = self.task_service.get_task_by_id(task_id=task_id)
         tags = self.task_service.get_tags_list(task_id=task_id)
-        feature = self.features_service.get_feature_by_id(task.feature_id)
+        feature = self.features_service.get_feature_id(task.feature_id)
         contributor = self.user_service.get_user_by_id(user_id=task.contributor_id)
         responsible = self.user_service.get_user_by_id(user_id=task.responsible_id)
-
         return render(
             request,
             "task_detail.html",
