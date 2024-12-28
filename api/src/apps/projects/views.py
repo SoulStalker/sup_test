@@ -260,6 +260,7 @@ class FeaturesDetailView(BaseView):
         project = self.project_service.get_project_by_id(project_id=feature.project_id)
         users = self.user_service.get_user_id_list(user_id=feature.participants)
         tags = self.task_service.get_tags_id_list(tags_id=feature.tags)
+        task = self.task_service.get_task_id_list(feature=feature)
         print(tags)
         return render(
             request,
@@ -269,6 +270,7 @@ class FeaturesDetailView(BaseView):
                 "users": users,
                 "project": project,
                 "tags": tags,
+                "task": task
             },
         )
 
