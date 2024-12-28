@@ -176,6 +176,11 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             project_id=feature.project_id,
             status=feature.status,
         )
+    
+    def get_feature_id(self, feature_id: int) -> Features:
+        feature = Features.objects.get(id=feature_id)  # может быть исключение
+        print(feature)
+        return feature
 
     def update_features(
         self, feature_id: int, dto: FeaturesDTO

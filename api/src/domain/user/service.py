@@ -68,6 +68,9 @@ class UserService:
     
     def get_user_id_list(self, user_id) -> list[UserDTO]:
         return self.__repository.get_user_id_list(user_id)
+    
+    def get_user_by_id(self, user_id):
+        return self.__repository.get_user_by_id(user_id)
 
     def create(self, dto: CreateUserEntity):
         # dto.password = dto.generate_password()
