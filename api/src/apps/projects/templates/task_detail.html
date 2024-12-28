@@ -37,18 +37,23 @@
     </div>
 {% block content %}
     <!-- Основной контент -->
-    <div class="flex-1 flex flex-col">
-
-        <!-- Верхняя панель -->
-        <div class="bg-white shadow-md rounded-lg overflow-hidden m-2.5 w-full max-w-[800px] mx-auto"> <!-- Установлена максимальная ширина для панели и таблицы -->
-            <div class="p-4 flex items-center justify-between">
-                <h1 class="text-2xl font-bold">{{ task.name }}</h1>
+    <div class="flex-col">
+        
+            <h5 class="text-2xl font-semibold">Задача</h5>
+            <div class="flex-1">
+            <p>{{ task.name }}</p>
             </div>
-                <div class="flex items-center ml-auto space-x-4">
-                    <p class="mr-2 text-green-custom">{{ task.created_at }}</p>
-                </div>
-                <div id="tags-container" class="flex flex-wrap gap-2 mt-2">
-                    {% for tag in tags %}
+
+            <h5 class="text-2xl font-semibold">Важность</h5>
+            <div class="flex-1">
+            <p>{{ task.priority }}</p>
+            </div>
+
+            <h5 class="text-2xl font-semibold">Дата и время создания</h5>
+            <p class="mr-2 text-green-custom">{{ task.created_at }}</p>
+
+            <h5 class="text-2xl font-semibold">Теги</h5>
+                {% for tag in tags %}
                     <div
                         class="tag cursor-pointer px-3 py-1 rounded-lg text-white"
                         style="background-color: #{{ tag.color }};"
@@ -56,15 +61,29 @@
                         {{ tag.name }}
                     </div>
                     {% endfor %}
-                </div>
-            </div>
-        <div class="flex items-center ml-auto space-x-4">
-                    <p class="mr-2 text-green-custom">Фича: {{ feature.name }}</p>
-                </div>
-            <h5 class="text-2xl font-semibold mb-6">Описание</h5>
-            <div class="flex-1 flex flex-col">
-                <p>{{ task.description }}</p>
-            </div>
+
+            <h5 class="text-2xl font-semibold">Исполнитель</h5>
+            <p class="mr-2 text-green-custom">{{ contributor.email }}</p>
+
+            <h5 class="text-2xl font-semibold">Ответственный</h5>
+            <p class="mr-2 text-green-custom">{{ responsible.email }}</p>
+
+            <h5 class="text-2xl font-semibold">Статус</h5>
+            <p class="mr-2 text-green-custom">{{ task.status }}</p>
+
+            <h5 class="text-2xl font-semibold">Дата закрытия</h5>
+            <p class="mr-2 text-green-custom">{{ task.closed_at }}</p>
+
+            <h5 class="text-2xl font-semibold">Фича</h5>
+            <a href="{% url 'projects:features_detail' feature.project_id %}">
+                {{ featur }}</a></td>
+
+
+
+
+       
+            
+            
 
         </div>
     <script src="{% static 'script/tasks.js' %}"></script>

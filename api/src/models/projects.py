@@ -188,6 +188,7 @@ class Features(models.Model):
 
 
 class Task(models.Model):
+    """Модель задачи"""
     name = models.CharField(
         max_length=50,
         validators=[ModelValidator.validate_letters_space_only()],
