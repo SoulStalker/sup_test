@@ -312,3 +312,7 @@ class TaskRepository(ITaskRepository, ABC):
         return [
             TagDTO(id=tag.id, name=tag.name, color=tag.color) for tag in tags
         ]
+    
+    def get_tags_id_list(self, tags_id: int):
+        tags = Tags.objects.filter(id__in=tags_id)
+        return tags
