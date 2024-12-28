@@ -75,16 +75,10 @@
             <p class="mr-2 text-green-custom">{{ task.closed_at }}</p>
 
             <h5 class="text-2xl font-semibold">Фича</h5>
-            <a href="{% url 'projects:features_detail' feature.id %}">
-                {{ feature.name }}</a></td>
+            <a href="{% url 'projects:features_detail' feature.id %}">{{ feature.name }}</a></td>
 
-
-
-
-       
-            
-            
-
+            <h5 class="text-2xl font-semibold">Описание</h5>
+            <a href="{% url 'projects:features_detail' feature.id %}">{{ task.description }}</a></td>
         </div>
     <script src="{% static 'script/tasks.js' %}"></script>
 
