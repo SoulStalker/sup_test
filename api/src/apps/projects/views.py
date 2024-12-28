@@ -238,6 +238,7 @@ class FeaturesView(BaseView):
         tags = self.features_service.get_features_tags_list()
         statuses = self.features_service.get_features_status_list()
         projectes = self.features_service.get_feature_project_list()
+        task_url = reverse('projects:tasks')
 
         return render(
             request,
@@ -248,6 +249,7 @@ class FeaturesView(BaseView):
                 "tags": tags,
                 "statuses": [str(status) for status in statuses],
                 "project": projectes,
+                "task_url": task_url,
             },
         )
     
