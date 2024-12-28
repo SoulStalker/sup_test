@@ -316,3 +316,8 @@ class TaskRepository(ITaskRepository, ABC):
     def get_tags_id_list(self, tags_id: int):
         tags = Tags.objects.filter(id__in=tags_id)
         return tags
+    
+    def get_task_id_list(self, feature: int):
+        feature_instance = Features.objects.get(name=feature.name)
+        task = feature_instance.tasks_features.all()
+        return task
