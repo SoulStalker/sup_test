@@ -128,3 +128,6 @@ class TaskService:
 
     def get_tags_list(self, task_id: int):
         return self.__task_repository.get_tags_list(task_id)
+    
+    def get_tags_id_list(self, tags_id: int):
+        return self.__task_repository.get_tags_id_list(tags_id)
