@@ -197,3 +197,11 @@ class TaskForm(forms.Form):
         label="Описание",
         widget=forms.Textarea(attrs={"class": "form-control", "rows": 5}),
     )
+
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(
+        max_length=1000,
+        label="Коментарий",
+        widget=forms.Textarea(attrs={"class": "form-control", "rows": 5}),
+    )
