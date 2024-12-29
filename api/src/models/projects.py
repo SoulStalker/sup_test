@@ -239,3 +239,21 @@ class Task(models.Model):
         verbose_name = "Задача"
         verbose_name_plural = "Задачи"
         ordering = ["-created_at"]
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(
+        to="CustomUser",
+        on_delete=models.CASCADE,
+        verbose_name="автор",
+        related_name="comment_user",
+    )
+    сomment = models.TextField(
+        max_length=1000, blank=True, verbose_name="Коментарий"
+    )
+    task = models.ForeignKey(
+        to="Task",
+        on_delete=models.CASCADE,
+        verbose_name="задача",
+        related_name="comment_task",
+    )
