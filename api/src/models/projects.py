@@ -83,7 +83,10 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse(viewname="projects:update_project", kwargs={"slug": self.slug})
+        return reverse(
+            viewname="projects:update_project",
+            kwargs={"slug": self.slug}
+            )
 
 
 class Tags(models.Model):
@@ -183,7 +186,10 @@ class Features(models.Model):
 
     def get_absolute_url(self):
         return redirect(
-            reverse(viewname="projects:detail_features", kwargs={"slug": self.slug})
+            reverse(
+                viewname="projects:detail_features",
+                kwargs={"slug": self.slug}
+                )
         )
 
 
@@ -220,7 +226,10 @@ class Task(models.Model):
         default=TaskStatusChoices.NEW,
         verbose_name="Статус",
     )
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="дата создания")
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="дата создания"
+        )
     closed_at = models.DateTimeField(null=True, verbose_name="дата закрытия")
     feature = models.ForeignKey(
         to="Features",
@@ -248,7 +257,7 @@ class Comment(models.Model):
         verbose_name="автор",
         related_name="comment_user",
     )
-    сomment = models.TextField(
+    comment = models.TextField(
         max_length=1000, blank=True, verbose_name="Коментарий"
     )
     task = models.ForeignKey(
@@ -257,3 +266,11 @@ class Comment(models.Model):
         verbose_name="задача",
         related_name="comment_task",
     )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="дата создания"
+        )
+
+    class Meta:
+        verbose_name = "Коментиарий"
+        verbose_name_plural = "Коментиарии"

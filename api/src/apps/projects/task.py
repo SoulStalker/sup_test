@@ -1,9 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.http import JsonResponse
-from django.shortcuts import render
+from django.http import JsonResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from src.apps.custom_view import BaseView
-from src.apps.projects.forms import TaskForm
-from src.domain.project.dtos import CreateTaskDTO, TaskDTO
+from src.apps.projects.forms import TaskForm, CommentForm
+from src.domain.project.dtos import CreateTaskDTO, TaskDTO, CommentDTO
 
 User = get_user_model()
 
@@ -34,11 +35,11 @@ class TaskDetailView(BaseView):
     """
     Просмотр задачи
     """
-
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
         task = self.task_service.get_task_by_id(task_id=task_id)
         tags = self.task_service.get_tags_list(task_id=task_id)
+        comments = self.task_service.get_comments_list(task_id=task_id)
         feature = self.features_service.get_feature_id(task.feature_id)
         contributor = self.user_service.get_user_by_id(user_id=task.contributor_id)
         responsible = self.user_service.get_user_by_id(user_id=task.responsible_id)
@@ -51,8 +52,26 @@ class TaskDetailView(BaseView):
                 "feature": feature,
                 "contributor": contributor,
                 "responsible": responsible,
+                "comments": comments,
             },
         )
+
+    def post(self, request, *args, **kwargs):
+        form = CommentForm(request.POST)
+        task_id = kwargs.get("task_id")
+        if form.is_valid():
+            comment_dto = CommentDTO(
+                user_id=request.user.id,
+                task_id=self.task_service.get_task_by_id(task_id=kwargs.get("task_id")).id,
+                comment=form.cleaned_data["comment"],
+                )
+            try:
+                self.task_service.create_comment(comment_dto)
+                return HttpResponseRedirect(reverse("projects:task_detail", kwargs={'task_id': task_id}))
+            except Exception as e:
+                print("Error: ", e)
+                return JsonResponse({"status": "error", "message": str(e)}, status=400)
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class CreateTaskView(BaseView):
