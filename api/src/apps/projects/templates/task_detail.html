@@ -21,6 +21,8 @@
                 <span class="block text-2xl">🏠</span>
                 <span class="hidden sidebar-text">Главная</span>
             </a>
+            <form method="post">
+                {% csrf_token %}
             <a href="#" class="block text-center">
                 <span class="block text-2xl">📊</span>
                 <span class="hidden sidebar-text">Отчеты</span>
@@ -76,9 +78,19 @@
 
             <h5 class="text-2xl font-semibold">Фича</h5>
             <a href="{% url 'projects:features_detail' feature.id %}">{{ feature.name }}</a></td>
-
             <h5 class="text-2xl font-semibold">Описание</h5>
             <a href="{% url 'projects:features_detail' feature.id %}">{{ task.description }}</a></td>
+
+            <h5 class="text-2xl font-semibold">Коментарии</h5>
+                {% for comment in comments %}
+                    <p>{{ comment.user.email }}</p>
+                    <p>{{ comment.comment }}</p>
+                    <p>{{ comment.created_at }}</p>
+                {% endfor %}
+
+                <h5 class="text-2xl font-semibold">Добавить коментарий</h5>
+            <input placeholder="Email*" name="comment" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+            <button type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
         </div>
     <script src="{% static 'script/tasks.js' %}"></script>
 

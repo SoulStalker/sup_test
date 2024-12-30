@@ -1,6 +1,13 @@
 from src.domain.project.entity import FeaturesEntity, ProjectEntity
 
-from .dtos import CreateTaskDTO, FeaturesDTO, ProjectDTO, StatusObject, TaskDTO
+from .dtos import (
+    CreateTaskDTO,
+    FeaturesDTO,
+    ProjectDTO,
+    StatusObject,
+    TaskDTO,
+    CommentDTO,
+)
 from .repository import (
     IFeaturesRepository,
     IProjectRepository,
@@ -137,3 +144,9 @@ class TaskService:
     
     def get_task_id_list(self, feature: int):
         return self.__task_repository.get_task_id_list(feature)
+    
+    def create_comment(self, dto: CommentDTO):
+        return self.__task_repository.create_comment(dto)
+    
+    def get_comments_list(self, task_id: int):
+        return self.__task_repository.get_comments_list(task_id)

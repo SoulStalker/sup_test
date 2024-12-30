@@ -10,13 +10,21 @@ from src.domain.project.dtos import (
     TagDTO,
     TaskChoicesObject,
     TaskDTO,
+    CommentDTO,
 )
 from src.domain.project.repository import (
     IFeaturesRepository,
     IProjectRepository,
     ITaskRepository,
 )
-from src.models.projects import Features, Project, Tags, Task
+from src.models.projects import (
+    Features,
+    Project,
+    Tags,
+    Task,
+    Comment
+)
+from src.models.models import CustomUser
 
 
 class ProjectRepository(IProjectRepository, ABC):
@@ -325,3 +333,16 @@ class TaskRepository(ITaskRepository, ABC):
         feature_instance = Features.objects.get(name=feature.name)
         task = feature_instance.tasks_features.all()
         return task
+    
+    def create_comment(self, dto: CommentDTO):
+        comment = Comment(
+            user=CustomUser.objects.get(id=dto.user_id),
+            comment=dto.comment,
+            task=Task.objects.get(id=dto.task_id),
+        )
+        comment.save()
+
+    def get_comments_list(self, task_id):
+        task = Task.objects.get(id=task_id)
+        comments = Comment.objects.filter(task=task)
+        return comments
