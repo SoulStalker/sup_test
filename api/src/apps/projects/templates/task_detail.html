@@ -38,8 +38,14 @@
         </div>
     </div>
 {% block content %}
+
+
     <!-- Основной контент -->
     <div class="flex flex-col space-y-4"> <!-- Используем flex-col для вертикального расположения -->
+        <div class="flex justify-between items-center mb-4 p-6">
+            <a href="{{ task_url }}" class="bg-green-custom text-white px-2 py-1 rounded hover:bg-green-dark">Посмотреть все задачи</a>
+        </div>
+        
         <div class="flex-1">
             <h1 class="text-2xl font-semibold mb-1">Задача: {{ task.name }}</h1>
         </div>
