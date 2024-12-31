@@ -43,6 +43,7 @@ class TaskDetailView(BaseView):
         feature = self.features_service.get_feature_id(task.feature_id)
         contributor = self.user_service.get_user_by_id(user_id=task.contributor_id)
         responsible = self.user_service.get_user_by_id(user_id=task.responsible_id)
+        task_url = reverse('projects:tasks')
         return render(
             request,
             "task_detail.html",
@@ -53,6 +54,7 @@ class TaskDetailView(BaseView):
                 "contributor": contributor,
                 "responsible": responsible,
                 "comments": comments,
+                "task_url": task_url,
             },
         )
 
