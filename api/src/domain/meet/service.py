@@ -1,7 +1,8 @@
 from src.domain.base import BaseService
-from src.domain.meet.dtos import CategoryObject, MeetDTO
-from src.domain.meet.entity import CategoryEntity, MeetEntity
-from src.domain.meet.repository import ICategoryRepository, IMeetRepository
+
+from .dtos import CategoryObject, MeetDTO
+from .entity import CategoryEntity, MeetEntity
+from .repository import ICategoryRepository, IMeetRepository
 
 
 class MeetService(BaseService):
