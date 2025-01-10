@@ -1,7 +1,7 @@
 <!-- Модальное окно для создания проекта -->
 <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
     <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
-        <h2 class="text-xl mb-4">Создать задачу</h2>
+        <h2 class="text-xl mb-4">Редактировать задачу</h2>
         <form id="create-task-form" method="POST" action="{% url 'projects:create_task' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="mb-4 flex">

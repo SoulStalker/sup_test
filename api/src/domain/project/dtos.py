@@ -120,3 +120,10 @@ class TagDTO:
     id: int
     name: str
     color: str
+
+
+@dataclass
+class CommentDTO:
+    user_id: int
+    comment: str
+    task_id: int
