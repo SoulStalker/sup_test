@@ -3,24 +3,14 @@ from datetime import datetime
 
 
 @dataclass
-class RoleDTO:
-    id: int
-    name: str
-    color: str
-
-
-@dataclass
 class CreateRoleDTO:
     name: str
     color: str
 
 
 @dataclass
-class PermissionDTO:
+class RoleDTO(CreateRoleDTO):
     id: int
-    name: str
-    code: int
-    description: str
 
 
 @dataclass
@@ -28,6 +18,11 @@ class CreatePermissionDTO:
     name: str
     code: int
     description: str
+
+
+@dataclass
+class PermissionDTO(CreatePermissionDTO):
+    id: int
 
 
 @dataclass
