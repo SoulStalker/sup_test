@@ -70,6 +70,9 @@ class RoleEditView(BaseView):
             "name": role.name,
             "color": role.color,
         }
+
+        print(data)
+
         return JsonResponse(data)
 
     def post(self, request, *args, **kwargs):

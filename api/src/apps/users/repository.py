@@ -34,7 +34,8 @@ class RoleRepository(IRoleRepository, ABC):
         return self.model.objects.filter(id=pk).exists()
 
     def get_by_id(self, role_id: int) -> Role:
-        return get_object_or_404(self.model, role_id)
+        role = get_object_or_404(self.model, id=role_id)
+        return role
 
     def create(self, dto: CreateRoleDTO) -> RoleDTO:
         model = self.model(
