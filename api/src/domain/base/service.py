@@ -1,4 +1,5 @@
 class BaseService:
+
     @classmethod
     def validate_and_process(cls, entity, repository, dto, save_method):
         """

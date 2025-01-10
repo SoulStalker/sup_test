@@ -30,8 +30,11 @@ class RoleRepository(IRoleRepository, ABC):
             color=role.color,
         )
 
-    def _get_role_by_id(self, role_id: int) -> Role:
-        return get_object_or_404(self.model, id=role_id)
+    def exists(self, pk: int) -> bool:
+        return self.model.objects.filter(id=pk).exists()
+
+    def get_by_id(self, role_id: int) -> Role:
+        return get_object_or_404(self.model, role_id)
 
     def create(self, dto: CreateRoleDTO) -> RoleDTO:
         model = self.model(
@@ -43,7 +46,7 @@ class RoleRepository(IRoleRepository, ABC):
         return self._role_orm_to_dto(model)
 
     def update(self, role_id: int, dto: RoleDTO) -> RoleDTO:
-        model = self._get_role_by_id(role_id)
+        model = get_object_or_404(self.model, role_id)
         model.name = dto.name
         model.color = dto.color
 
@@ -51,14 +54,10 @@ class RoleRepository(IRoleRepository, ABC):
         return self._role_orm_to_dto(model)
 
     def delete(self, role_id: int):
-        model = self._get_role_by_id(role_id)
+        model = self.get_by_id(role_id)
         model.delete()
 
-    def get_role_by_id(self, role_id: int) -> RoleDTO:
-        model = self._get_role_by_id(role_id)
-        return self._role_orm_to_dto(model)
-
-    def get_role_list(self) -> list[RoleDTO]:
+    def get_list(self) -> list[RoleDTO]:
         models = get_list_or_404(self.model)
         return [self._role_orm_to_dto(model) for model in models]
 
@@ -78,8 +77,12 @@ class PermissionRepository(IPermissionRepository, ABC):
             description=permission.description,
         )
 
-    def _get_permission_by_id(self, permission_id: int) -> Permission:
-        return get_object_or_404(self.model, id=permission_id)
+    def exists(self, pk: int) -> bool:
+        return self.model.objects.filter(id=pk).exists()
+
+    def get_by_id(self, permission_id: int) -> PermissionDTO:
+        model = get_object_or_404(self.model, id=permission_id)
+        return self._permission_orm_to_dto(model)
 
     def create(self, dto: CreatePermissionDTO) -> PermissionDTO:
         model = self.model(
@@ -91,7 +94,7 @@ class PermissionRepository(IPermissionRepository, ABC):
         return self._permission_orm_to_dto(model)
 
     def update(self, permission_id: int, dto: PermissionDTO) -> PermissionDTO:
-        model = self._get_permission_by_id(permission_id)
+        model = get_object_or_404(self.model, id=permission_id)
         model.name = dto.name
         model.code = dto.code
         model.description = dto.description
@@ -100,14 +103,10 @@ class PermissionRepository(IPermissionRepository, ABC):
         return self._permission_orm_to_dto(model)
 
     def delete(self, permission_id: int):
-        model = self._get_permission_by_id(permission_id)
+        model = get_object_or_404(self.model, id=permission_id)
         model.delete()
 
-    def get_permission_by_id(self, permission_id: int) -> PermissionDTO:
-        model = self._get_permission_by_id(permission_id)
-        return self._permission_orm_to_dto(model)
-
-    def get_permission_list(self) -> list[PermissionDTO]:
+    def get_list(self) -> list[PermissionDTO]:
         models = get_list_or_404(self.model)
         return [self._permission_orm_to_dto(model) for model in models]
 
@@ -146,8 +145,8 @@ class UserRepository(IUserRepository, ABC):
             },
         )
 
-    def _get_user_by_id(self, user_id: int) -> CustomUser:
-        return get_object_or_404(self.model, id=user_id)
+    def exists(self, pk: int) -> bool:
+        return self.model.objects.filter(id=pk).exists()
 
     def create(self, dto: CreateUserEntity) -> UserDTO:
         model = CustomUser.objects.create(
@@ -175,7 +174,7 @@ class UserRepository(IUserRepository, ABC):
         return self._user_orm_to_dto(model)
 
     def update(self, user_id: int, dto: UserDTO) -> UserDTO:
-        model = self._get_user_by_id(user_id)
+        model = get_object_or_404(self.model, id=user_id)
         model.name = dto.name
         model.surname = dto.surname
         model.email = dto.email
@@ -197,14 +196,14 @@ class UserRepository(IUserRepository, ABC):
         return self._user_orm_to_dto(model)
 
     def delete(self, user_id: int):
-        model = self._get_user_by_id(user_id)
+        model = get_object_or_404(self.model, id=user_id)
         model.delete()
 
-    def get_user_by_id(self, user_id: int) -> UserDTO:
-        model = self._get_user_by_id(user_id)
+    def get_by_id(self, user_id: int) -> UserDTO:
+        model = get_object_or_404(self.model, id=user_id)
         return self._user_orm_to_dto(model)
 
-    def get_user_list(self) -> list[UserDTO]:
+    def get_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
 
