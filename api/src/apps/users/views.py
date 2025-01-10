@@ -23,7 +23,7 @@ class RoleListView(BaseView):
     """Список ролей."""
 
     def get(self, *args, **kwargs):
-        roles = self.role_service.get_role_list()
+        roles = self.role_service.get_list()
         roles = self.paginate_queryset(roles)
         for role in roles:
             role.participants = self.role_service.get_roles_participants_count(
@@ -64,7 +64,7 @@ class RoleEditView(BaseView):
 
     def get(self, request, *args, **kwargs):
         role_id = kwargs.get("pk")
-        role = self.role_service.get_role(role_id)
+        role = self.role_service.get_by_id(role_id)
 
         data = {
             "name": role.name,
@@ -114,7 +114,7 @@ class PermissionListView(BaseView):
     """Список разрешений."""
 
     def get(self, *args, **kwargs):
-        permissions = self.permission_service.get_permission_list()
+        permissions = self.permission_service.get_list()
         permissions = self.paginate_queryset(permissions)
         return render(
             self.request,
@@ -151,7 +151,7 @@ class PermissionUpdateView(BaseView):
 
     def get(self, request, *args, **kwargs):
         permission_id = kwargs.get("pk")
-        permission = self.permission_service.get_permission(permission_id)
+        permission = self.permission_service.get_by_id(permission_id)
 
         data = {
             "id": permission.id,
@@ -200,11 +200,11 @@ class UserListView(BaseView):
     """Список пользователей."""
 
     def get(self, *args, **kwargs):
-        roles = self.role_service.get_role_list()
-        permissions = self.permission_service.get_permission_list()
+        roles = self.role_service.get_list()
+        permissions = self.permission_service.get_list()
         teams = self.team_service.get_list()
 
-        users = self.user_service.get_user_list()
+        users = self.user_service.get_list()
         users = self.paginate_queryset(users)
 
         return render(
@@ -290,7 +290,7 @@ class UserUpdateView(BaseView):
 
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get("pk")
-        user = self.user_service.get_user(user_id)
+        user = self.user_service.get_by_id(user_id)
         data = {
             "id": user.id,
             "name": user.name,
