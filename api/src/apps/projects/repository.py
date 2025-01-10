@@ -10,13 +10,21 @@ from src.domain.project.dtos import (
     TagDTO,
     TaskChoicesObject,
     TaskDTO,
+    CommentDTO,
 )
 from src.domain.project.repository import (
     IFeaturesRepository,
     IProjectRepository,
     ITaskRepository,
 )
-from src.models.projects import Features, Project, Tags, Task
+from src.models.projects import (
+    Features,
+    Project,
+    Tags,
+    Task,
+    Comment
+)
+from src.models.models import CustomUser
 
 
 class ProjectRepository(IProjectRepository, ABC):
@@ -176,6 +184,10 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             project_id=feature.project_id,
             status=feature.status,
         )
+    
+    def get_feature_id(self, feature_id: int) -> Features:
+        feature = Features.objects.get(id=feature_id)  # может быть исключение
+        return feature
 
     def update_features(
         self, feature_id: int, dto: FeaturesDTO
@@ -312,3 +324,25 @@ class TaskRepository(ITaskRepository, ABC):
         return [
             TagDTO(id=tag.id, name=tag.name, color=tag.color) for tag in tags
         ]
+    
+    def get_tags_id_list(self, tags_id: int):
+        tags = Tags.objects.filter(id__in=tags_id)
+        return tags
+    
+    def get_task_id_list(self, feature: int):
+        feature_instance = Features.objects.get(name=feature.name)
+        task = feature_instance.tasks_features.all()
+        return task
+    
+    def create_comment(self, dto: CommentDTO):
+        comment = Comment(
+            user=CustomUser.objects.get(id=dto.user_id),
+            comment=dto.comment,
+            task=Task.objects.get(id=dto.task_id),
+        )
+        comment.save()
+
+    def get_comments_list(self, task_id):
+        task = Task.objects.get(id=task_id)
+        comments = Comment.objects.filter(task=task)
+        return comments

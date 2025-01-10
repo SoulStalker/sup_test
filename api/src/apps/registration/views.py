@@ -1,12 +1,11 @@
+import re
+
+from django.db.utils import IntegrityError
+from django.http import JsonResponse
+from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.registration.forms import RegistrationForm
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.db.utils import IntegrityError
-import re
 from src.domain.registration.dtos import RegistrationDTO
-
-
 
 
 class UserRegistration(BaseView):
@@ -55,7 +54,10 @@ class UserRegistration(BaseView):
                     invitation_code
                     )
                 self.invite_service.update_status(invite_DTO, status = 'USED')
-                self.verifyemail_service.create(email=form.cleaned_data["email"])
+                self.verifyemail_service.create(
+                    email=form.cleaned_data["email"],
+                    name=form.cleaned_data["name"]
+                    )
                 return JsonResponse({"status": "success"}, status=201)
             
             except IntegrityError as err:

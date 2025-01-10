@@ -1,5 +1,5 @@
 from django.contrib import admin
-from src.models.projects import Features, Project, Tags, Task
+from src.models.projects import Features, Project, Tags, Task, Comment
 
 
 @admin.register(Tags)
@@ -15,6 +15,11 @@ class featuresAdmin(admin.ModelAdmin):
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ("user", "comment", "task", "created_at")
 
 
 @admin.register(Task)

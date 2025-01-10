@@ -42,6 +42,7 @@
         <!-- Верхняя панель -->
         <div class="flex justify-between items-center mb-4 p-6">
             <h1 class="text-2xl font-bold">Таблица фичи</h1>
+            <a href="{{ task_url }}" class="bg-green-custom text-white px-2 py-1 rounded hover:bg-green-dark">Посмотреть все задачи</a>
         </div>
 
         <!-- Таблица -->
@@ -101,8 +102,8 @@
                         <tr class="hover:bg-gray-50" data-project-id="{{ item_features.project.id }}" data-status="{{ item_features.status }}">
                             <td class="px-4 py-4 border-b">{{ item_features.id }}</td>
                             <td class="px-4 py-4 border-b items-center">
-                                <span class="tag font-medium text-sm">{{ item_features.name }}</span><br>
-                                {{ item_features.description|truncatechars:50 }}
+                                <a href="{% url 'projects:features_detail' item_features.id %}">
+                                    {{ item_features.name }}</a></td>
                             </td>
                             <td class="px-4 py-4 border-b text-center">
                                 <div class="inline-flex -space-x-2">
