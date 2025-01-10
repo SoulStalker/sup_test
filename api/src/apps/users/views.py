@@ -302,7 +302,7 @@ class UserUpdateView(BaseView):
             "gitlab_nickname": user.gitlab_nickname,
             "github_nickname": user.github_nickname,
             "avatar": user.avatar.url if user.avatar else None,
-            "role_id": user.role_id.id,
+            "role_id": user.role_id.id if user.role_id else None,
             "team_id": user.team_id.id if user.team_id else None,
             "permissions_ids": user.permissions_ids,
             "is_active": user.is_active,
