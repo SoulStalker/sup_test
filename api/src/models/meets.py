@@ -93,7 +93,7 @@ class MeetParticipant(models.Model):
     )
     custom_user = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="custom_meets",
         verbose_name="Участник",
     )
