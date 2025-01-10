@@ -8,14 +8,14 @@ from src.apps.users.forms import (
     PermissionsForm,
     RoleForm,
 )
-from src.domain.user.dtos import (
+from src.domain.user import (
     CreatePermissionDTO,
     CreateRoleDTO,
+    CreateUserEntity,
     PermissionDTO,
     RoleDTO,
     UserDTO,
 )
-from src.domain.user.entity import CreateUserEntity
 from src.services.tasks import send_email_to_user
 
 
@@ -70,9 +70,6 @@ class RoleEditView(BaseView):
             "name": role.name,
             "color": role.color,
         }
-
-        print(data)
-
         return JsonResponse(data)
 
     def post(self, request, *args, **kwargs):
@@ -102,6 +99,8 @@ class RoleEditView(BaseView):
 
     def delete(self, *args, **kwargs):
         role_id = kwargs.get("pk")
+
+        print(role_id)
         try:
             self.role_service.delete(role_id)
             return JsonResponse(

@@ -4,18 +4,16 @@ from abc import ABC
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import get_list_or_404, get_object_or_404
-from src.domain.user.dtos import (
+from src.domain.user import (
     CreatePermissionDTO,
     CreateRoleDTO,
-    PermissionDTO,
-    RoleDTO,
-    UserDTO,
-)
-from src.domain.user.entity import CreateUserEntity
-from src.domain.user.repository import (
+    CreateUserEntity,
     IPermissionRepository,
     IRoleRepository,
     IUserRepository,
+    PermissionDTO,
+    RoleDTO,
+    UserDTO,
 )
 from src.models.models import CustomUser, Permission, Role
 
@@ -38,29 +36,29 @@ class RoleRepository(IRoleRepository, ABC):
         return role
 
     def create(self, dto: CreateRoleDTO) -> RoleDTO:
-        model = self.model(
+        role = self.model(
             name=dto.name,
             color=dto.color,
         )
 
-        model.save()
-        return self._role_orm_to_dto(model)
+        role.save()
+        return self._role_orm_to_dto(role)
 
     def update(self, role_id: int, dto: RoleDTO) -> RoleDTO:
-        model = get_object_or_404(self.model, role_id)
-        model.name = dto.name
-        model.color = dto.color
+        role = get_object_or_404(self.model, id=role_id)
+        role.name = dto.name
+        role.color = dto.color
 
-        model.save()
-        return self._role_orm_to_dto(model)
+        role.save()
+        return self._role_orm_to_dto(role)
 
     def delete(self, role_id: int):
-        model = self.get_by_id(role_id)
-        model.delete()
+        role = get_object_or_404(self.model, id=role_id)
+        role.delete()
 
     def get_list(self) -> list[RoleDTO]:
-        models = get_list_or_404(self.model)
-        return [self._role_orm_to_dto(model) for model in models]
+        roles = get_list_or_404(self.model)
+        return [self._role_orm_to_dto(role) for role in roles]
 
     def get_roles_participants_count(self, role_id: int) -> int:
         participants = CustomUser.objects.filter(role_id=role_id).count()
