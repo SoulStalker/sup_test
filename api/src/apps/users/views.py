@@ -202,7 +202,7 @@ class UserListView(BaseView):
     def get(self, *args, **kwargs):
         roles = self.role_service.get_role_list()
         permissions = self.permission_service.get_permission_list()
-        teams = self.team_service.get_team_list()
+        teams = self.team_service.get_list()
 
         users = self.user_service.get_user_list()
         users = self.paginate_queryset(users)
