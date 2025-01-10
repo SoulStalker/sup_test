@@ -20,7 +20,7 @@ from src.apps.users.repository import (
 )
 from src.apps.verifyemail.repository import VerifyemailRepository
 from src.domain.invites import InviteService
-from src.domain.meet.service import MeetCategoryService, MeetService
+from src.domain.meet import MeetCategoryService, MeetService
 from src.domain.project.service import (
     FeatureService,
     ProjectService,
@@ -28,7 +28,7 @@ from src.domain.project.service import (
 )
 from src.domain.registration.service import RegistrationService
 from src.domain.teams import TeamService
-from src.domain.user.service import PermissionService, RoleService, UserService
+from src.domain.user import PermissionService, RoleService, UserService
 from src.domain.verifyemail.service import VerifyemailService
 
 
