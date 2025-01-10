@@ -21,3 +21,7 @@ class BaseRepository(ABC):
     @abstractmethod
     def exists(self, pk: int) -> bool:
         raise NotImplementedError
+
+    @abstractmethod
+    def orm_to_dto(self, dto):
+        raise NotImplementedError

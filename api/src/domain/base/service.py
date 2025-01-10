@@ -57,3 +57,36 @@ class BaseService:
 
     def delete(self, pk) -> None:
         self._repository.delete(pk)
+
+    def orm_to_dto(
+        orm_instance, dto_class, field_mapping=None, custom_handlers=None
+    ):
+        """
+        Преобразует ORM-модель в DTO-объект.
+
+        :param orm_instance: экземпляр модели ORM.
+        :param dto_class: класс DTO.
+        :param field_mapping: словарь, где ключи — поля ORM, значения — атрибуты DTO.
+        :param custom_handlers: словарь, где ключи — атрибуты DTO, значения — функции для их вычисления.
+        :return: экземпляр DTO.
+        """
+        field_mapping = field_mapping or {}
+        custom_handlers = custom_handlers or {}
+
+        # Получаем атрибуты DTO
+        dto_data = {}
+
+        for field in dto_class.__annotations__:  # Аннотации из dataclass
+            if field in custom_handlers:
+                # Если есть кастомный обработчик
+                dto_data[field] = custom_handlers[field](orm_instance)
+            elif field in field_mapping:
+                # Если поле указано в field_mapping
+                dto_data[field] = getattr(
+                    orm_instance, field_mapping[field], None
+                )
+            else:
+                # По умолчанию ищем атрибут с тем же названием
+                dto_data[field] = getattr(orm_instance, field, None)
+
+        return dto_class(**dto_data)
