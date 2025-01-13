@@ -1,4 +1,3 @@
-from django.contrib.auth.views import redirect_to_login
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
@@ -21,11 +20,7 @@ from src.apps.users.repository import (
 from src.apps.verifyemail.repository import VerifyemailRepository
 from src.domain.invites import InviteService
 from src.domain.meet import MeetCategoryService, MeetService
-from src.domain.project.service import (
-    FeatureService,
-    ProjectService,
-    TaskService,
-)
+from src.domain.project import FeatureService, ProjectService, TaskService
 from src.domain.registration.service import RegistrationService
 from src.domain.teams import TeamService
 from src.domain.user import PermissionService, RoleService, UserService

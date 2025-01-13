@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from src.apps.custom_view import BaseView
 from src.apps.projects.forms import CreateFeaturesForm, ProjectForm
-from src.domain.project.dtos import FeaturesDTO, ProjectDTO
+from src.domain.project import FeaturesDTO, ProjectDTO
 
 User = get_user_model()
 

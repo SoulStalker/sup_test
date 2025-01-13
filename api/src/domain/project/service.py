@@ -1,5 +1,5 @@
 from src.domain.base import BaseService
-from src.domain.project.entity import FeaturesEntity, ProjectEntity
+from src.domain.project import FeaturesEntity, ProjectEntity
 
 from .dtos import (
     CommentDTO,

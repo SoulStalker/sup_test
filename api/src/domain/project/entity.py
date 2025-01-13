@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from django.core.files import File
-from src.domain.validators.validators import DataVerifier
+from src.domain.validators import DataVerifier
 
 
 @dataclass
