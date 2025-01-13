@@ -17,7 +17,7 @@ class ProjectsView(BaseView):
     items_per_page = 16
 
     def get(self, *args, **kwargs):
-        projects = self.project_service.get_projects_list()
+        projects = self.project_service.get_list()
 
         project_status_choices = (
             self.project_service.get_project_status_choices()
@@ -26,7 +26,7 @@ class ProjectsView(BaseView):
         for project in projects:
             project.participants.set(project.participants.all())
         projects = self.paginate_queryset(projects)
-        features_url = reverse('projects:features')
+        features_url = reverse("projects:features")
 
         context = {
             "projects": projects,
@@ -114,7 +114,7 @@ class EditProjectView(BaseView):
 
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get("project_id")
-        project = self.project_service.get_project_by_id(project_id=project_id)
+        project = self.project_service.get_by_id(pk=project_id)
 
         project_status_choices = (
             self.project_service.get_project_status_choices()
@@ -138,9 +138,7 @@ class EditProjectView(BaseView):
         project_id = kwargs.get("project_id")
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
-            project = self.project_service.get_project_by_id(
-                project_id=project_id
-            )
+            project = self.project_service.get_by_id(pk=project_id)
             logo = (
                 form.cleaned_data.get("logo")
                 if "logo" in request.FILES
@@ -159,9 +157,7 @@ class EditProjectView(BaseView):
                 ),
             )
             try:
-                project = self.project_service.get_project_by_id(
-                    project_id=project_id
-                )
+                project = self.project_service.get_by_id(pk=project_id)
                 return JsonResponse(
                     {
                         "status": "success",
@@ -200,7 +196,7 @@ class DeleteProjectView(BaseView):
     def delete(self, *args, **kwargs):
         project_id = kwargs.get("project_id")
         try:
-            self.project_service.delete_project(project_id=project_id)
+            self.project_service.delete(pk=project_id)
             return JsonResponse(
                 {"status": "success", "message": "Project deleted"}
             )
@@ -234,11 +230,11 @@ class FeaturesView(BaseView):
     items_per_page = 16
 
     def get(self, request, *args, **kwargs):
-        features = self.features_service.get_features_list()
+        features = self.features_service.get_list()
         tags = self.features_service.get_features_tags_list()
         statuses = self.features_service.get_features_status_list()
         projectes = self.features_service.get_feature_project_list()
-        task_url = reverse('projects:tasks')
+        task_url = reverse("projects:tasks")
 
         return render(
             request,
@@ -252,15 +248,18 @@ class FeaturesView(BaseView):
                 "task_url": task_url,
             },
         )
-    
+
 
 class FeaturesDetailView(BaseView):
-    '''Просмотр фичи'''
+    """Просмотр фичи"""
+
     def get(self, request, *args, **kwargs):
         feature_id = kwargs.get("features_id")
-        feature = self.features_service.get_feature_by_id(feature_id=feature_id)
-        project = self.project_service.get_project_by_id(project_id=feature.project_id)
-        users = self.user_service.get_user_id_list(user_id=feature.participants)
+        feature = self.features_service.get_by_id(pk=feature_id)
+        project = self.project_service.get_by_id(pk=feature.project_id)
+        users = self.user_service.get_user_id_list(
+            user_id=feature.participants
+        )
         tags = self.task_service.get_tags_id_list(tags_id=feature.tags)
         task = self.task_service.get_task_id_list(feature=feature)
         return render(
@@ -346,9 +345,7 @@ class CreateFeatureView(BaseView):
 class EditFeatureView(BaseView):
     def get(self, request, *args, **kwargs):
         feature_id = kwargs.get("feature_id")
-        feature = self.features_service.get_feature_by_id(
-            feature_id=feature_id
-        )
+        feature = self.features_service.get_by_id(pk=feature_id)
 
         data = {
             "name": feature.name,
@@ -424,7 +421,7 @@ class DeleteFeatureView(BaseView):
     def delete(self, *args, **kwargs):
         feature_id = kwargs.get("feature_id")
         try:
-            self.features_service.delete_features(feature_id=feature_id)
+            self.features_service.delete_features(pk=feature_id)
             return JsonResponse(
                 {"status": "success", "message": "Feature deleted"}
             )
