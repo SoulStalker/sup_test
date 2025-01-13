@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
-from src.domain.validators.validators import DataVerifier
-from django.core.files import File
 from typing import Optional
+
+from django.core.files import File
+from src.domain.validators.validators import DataVerifier
+
 
 @dataclass
 class ProjectEntity:
