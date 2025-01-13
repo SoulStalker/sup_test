@@ -1,8 +1,6 @@
 from django.urls import path
 from src.apps.registration.views import UserRegistration
 
-
-
 app_name = "apps.registration"
 
 

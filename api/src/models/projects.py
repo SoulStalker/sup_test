@@ -83,7 +83,10 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse(viewname="projects:update_project", kwargs={"slug": self.slug})
+        return reverse(
+            viewname="projects:update_project",
+            kwargs={"slug": self.slug}
+            )
 
 
 class Tags(models.Model):
@@ -183,11 +186,15 @@ class Features(models.Model):
 
     def get_absolute_url(self):
         return redirect(
-            reverse(viewname="projects:detail_features", kwargs={"slug": self.slug})
+            reverse(
+                viewname="projects:detail_features",
+                kwargs={"slug": self.slug}
+                )
         )
 
 
 class Task(models.Model):
+    """Модель задачи"""
     name = models.CharField(
         max_length=50,
         validators=[ModelValidator.validate_letters_space_only()],
@@ -219,7 +226,10 @@ class Task(models.Model):
         default=TaskStatusChoices.NEW,
         verbose_name="Статус",
     )
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="дата создания")
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="дата создания"
+        )
     closed_at = models.DateTimeField(null=True, verbose_name="дата закрытия")
     feature = models.ForeignKey(
         to="Features",
@@ -238,3 +248,29 @@ class Task(models.Model):
         verbose_name = "Задача"
         verbose_name_plural = "Задачи"
         ordering = ["-created_at"]
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(
+        to="CustomUser",
+        on_delete=models.CASCADE,
+        verbose_name="автор",
+        related_name="comment_user",
+    )
+    comment = models.TextField(
+        max_length=1000, blank=True, verbose_name="Коментарий"
+    )
+    task = models.ForeignKey(
+        to="Task",
+        on_delete=models.CASCADE,
+        verbose_name="задача",
+        related_name="comment_task",
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="дата создания"
+        )
+
+    class Meta:
+        verbose_name = "Коментиарий"
+        verbose_name_plural = "Коментиарии"

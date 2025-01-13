@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.functional import cached_property
-from src.domain.validators.validators import DataVerifier
+from src.domain.validators import DataVerifier
 from src.models.choice_classes import (
     FeaturesChoices,
     ProjectChoices,
@@ -195,5 +195,13 @@ class TaskForm(forms.Form):
     description = forms.CharField(
         max_length=10000,
         label="Описание",
+        widget=forms.Textarea(attrs={"class": "form-control", "rows": 5}),
+    )
+
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(
+        max_length=1000,
+        label="Коментарий",
         widget=forms.Textarea(attrs={"class": "form-control", "rows": 5}),
     )

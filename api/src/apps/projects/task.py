@@ -1,28 +1,29 @@
 from django.contrib.auth import get_user_model
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 from src.apps.custom_view import BaseView
-from src.apps.projects.forms import TaskForm
-from src.domain.project.dtos import CreateTaskDTO, TaskDTO
+from src.apps.projects.forms import CommentForm, TaskForm
+from src.domain.project import CommentDTO, CreateTaskDTO, TaskDTO
 
 User = get_user_model()
 
 
 class TasksView(BaseView):
     """
-    Список проектов
+    Список задач
     """
 
     def get(self, *args, **kwargs):
-        tasks = self.task_service.get_tasks_list()
+        tasks = self.task_service.get_list()
         tasks = self.paginate_queryset(tasks)
         task_status_choices = self.task_service.get_task_status_choices()
-        features = self.features_service.get_features_list()
+        features = self.features_service.get_list()
         tags = self.features_service.get_features_tags_list()
 
         context = {
             "tasks": tasks,
-            "users": self.user_service.get_user_list(),
+            "users": self.user_service.get_list(),
             "task_status_choices": task_status_choices,
             "features": features,
             "tags": tags,
@@ -32,15 +33,18 @@ class TasksView(BaseView):
 
 class TaskDetailView(BaseView):
     """
-    Просмотр проекта
+    Просмотр задачи
     """
 
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
-        task = self.task_service.get_task_by_id(task_id=task_id)
+        task = self.task_service.get_by_id(pk=task_id)
         tags = self.task_service.get_tags_list(task_id=task_id)
-        feature = self.features_service.get_feature_by_id(task.feature_id)
-
+        comments = self.task_service.get_comments_list(task_id=task_id)
+        feature = self.features_service.get_feature_id(task.feature_id)
+        contributor = self.user_service.get_by_id(pk=task.contributor_id)
+        responsible = self.user_service.get_by_id(pk=task.responsible_id)
+        task_url = reverse("projects:tasks")
         return render(
             request,
             "task_detail.html",
@@ -48,13 +52,44 @@ class TaskDetailView(BaseView):
                 "task": task,
                 "tags": tags,
                 "feature": feature,
+                "contributor": contributor,
+                "responsible": responsible,
+                "comments": comments,
+                "task_url": task_url,
             },
+        )
+
+    def post(self, request, *args, **kwargs):
+        form = CommentForm(request.POST)
+        task_id = kwargs.get("task_id")
+        if form.is_valid():
+            comment_dto = CommentDTO(
+                user_id=request.user.id,
+                task_id=self.task_service.get_by_id(
+                    pk=kwargs.get("task_id")
+                ).id,
+                comment=form.cleaned_data["comment"],
+            )
+            try:
+                self.task_service.create_comment(comment_dto)
+                return HttpResponseRedirect(
+                    reverse(
+                        "projects:task_detail", kwargs={"task_id": task_id}
+                    )
+                )
+            except Exception as e:
+                print("Error: ", e)
+                return JsonResponse(
+                    {"status": "error", "message": str(e)}, status=400
+                )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
         )
 
 
 class CreateTaskView(BaseView):
     """
-    Создание проекта
+    Создание задачи
     """
 
     def get(self, request, *args, **kwargs):
@@ -67,7 +102,7 @@ class CreateTaskView(BaseView):
             "create_task_modal.html",
             {
                 "form": form,
-                "users": self.user_service.get_user_list(),
+                "users": self.user_service.get_list(),
                 "task_status_choices": task_status_choices,
             },
         )
@@ -103,20 +138,24 @@ class CreateTaskView(BaseView):
 
             except Exception as e:
                 print("Error: ", e)
-                return JsonResponse({"status": "error", "message": str(e)}, status=400)
+                return JsonResponse(
+                    {"status": "error", "message": str(e)}, status=400
+                )
         print("Errors: ", form.errors)
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class UpdateTaskView(BaseView):
     """
-    Редактирование проекта
+    Редактирование задачи
     """
 
     def get(self, request, *args, **kwargs):
 
         task_id = kwargs.get("task_id")
-        task = self.task_service.get_task_by_id(task_id=task_id)
+        task = self.task_service.get_by_id(pk=task_id)
 
         task_status_choices = self.task_service.get_task_status_choices()
 
@@ -167,7 +206,9 @@ class UpdateTaskView(BaseView):
                 )
             return JsonResponse({"status": "success"}, status=201)
         print("Errors: ", form.errors)
-        return JsonResponse({"status": "error", "error": form.errors}, status=400)
+        return JsonResponse(
+            {"status": "error", "error": form.errors}, status=400
+        )
 
 
 class DeleteTaskView(BaseView):
@@ -178,7 +219,11 @@ class DeleteTaskView(BaseView):
     def delete(self, *args, **kwargs):
         task_id = kwargs.get("task_id")
         try:
-            self.task_service.delete_task(task_id=task_id)
-            return JsonResponse({"status": "success", "message": "Task deleted"})
+            self.task_service.delete(pk=task_id)
+            return JsonResponse(
+                {"status": "success", "message": "Task deleted"}
+            )
         except Exception as e:
-            return JsonResponse({"status": "error", "message": str(e)}, status=404)
+            return JsonResponse(
+                {"status": "error", "message": str(e)}, status=404
+            )
