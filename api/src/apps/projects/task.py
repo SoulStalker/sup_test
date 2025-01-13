@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from src.apps.custom_view import BaseView
 from src.apps.projects.forms import CommentForm, TaskForm
-from src.domain.project.dtos import CommentDTO, CreateTaskDTO, TaskDTO
+from src.domain.project import CommentDTO, CreateTaskDTO, TaskDTO
 
 User = get_user_model()
 

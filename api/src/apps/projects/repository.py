@@ -1,21 +1,19 @@
 from abc import ABC
 
 from django.db.models import Q
-from src.domain.project.dtos import (
+from src.domain.project import (
     CommentDTO,
     CreateTaskDTO,
     FeaturesChoicesObject,
     FeaturesDTO,
+    IFeaturesRepository,
+    IProjectRepository,
+    ITaskRepository,
     ProjectDTO,
     StatusObject,
     TagDTO,
     TaskChoicesObject,
     TaskDTO,
-)
-from src.domain.project.repository import (
-    IFeaturesRepository,
-    IProjectRepository,
-    ITaskRepository,
 )
 from src.models.models import CustomUser
 from src.models.projects import Comment, Features, Project, Tags, Task
