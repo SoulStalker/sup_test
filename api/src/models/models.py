@@ -62,7 +62,7 @@ class Permission(models.Model):
         validators=[ModelValidator.validate_letters_space_only()],
         verbose_name="название",
     )
-    code = models.IntegerField(verbose_name="код")
+    code = models.IntegerField(verbose_name="код", unique=True)
     description = models.TextField(
         max_length=500, null=True, blank=True, verbose_name="описание"
     )

@@ -36,6 +36,10 @@ class IPermissionRepository(BaseRepository):
     def update(self, permission_id: int, dto: PermissionDTO):
         raise NotImplementedError
 
+    @abstractmethod
+    def get_permission_by_code(self, code):
+        raise NotImplementedError
+
 
 class IUserRepository(BaseRepository):
     @abstractmethod

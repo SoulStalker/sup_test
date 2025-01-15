@@ -1,3 +1,4 @@
+from src.domain.authorization import AuthorizationService
 from src.domain.base import BaseService
 
 from .dtos import CategoryObject, MeetDTO
@@ -10,14 +11,21 @@ class MeetService(BaseService):
         self,
         repository: IMeetRepository,
         category_repository: ICategoryRepository,
+        authorization_service: AuthorizationService = AuthorizationService,
     ):
         self._repository = repository
         self.__category_repository = category_repository
+        self._authorization_service = authorization_service
 
-    def create(self, dto):
+    def create(self, dto, user_id):
         """
-        Создание мита
+        Создание мита с проверкой прав пользователя.
         """
+        if not self._authorization_service.can_create_meet(user_id):
+            raise PermissionError(
+                "User does not have permission to create meets"
+            )
+
         entity = MeetEntity(
             dto.category_id,
             dto.title,
@@ -39,7 +47,15 @@ class MeetService(BaseService):
         )
         return self.validate_and_update(entity, self._repository, dto, pk)
 
-    def get_meets_by_category(self, dto) -> list[MeetDTO]:
+    def get_meets_by_category(self, dto, user_id) -> list[MeetDTO]:
+        """
+        Получение митов по категории с проверкой прав пользователя.
+        """
+        if not self._authorization_service.can_view_meet(user_id):
+            raise PermissionError(
+                "User does not have permission to view meets"
+            )
+
         return self._repository.get_meets_by_category(dto)
 
     def get_participants_statuses(self, meet_id: int):

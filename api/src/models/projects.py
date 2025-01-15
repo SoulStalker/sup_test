@@ -84,9 +84,8 @@ class Project(models.Model):
 
     def get_absolute_url(self):
         return reverse(
-            viewname="projects:update_project",
-            kwargs={"slug": self.slug}
-            )
+            viewname="projects:update_project", kwargs={"slug": self.slug}
+        )
 
 
 class Tags(models.Model):
@@ -187,14 +186,14 @@ class Features(models.Model):
     def get_absolute_url(self):
         return redirect(
             reverse(
-                viewname="projects:detail_features",
-                kwargs={"slug": self.slug}
-                )
+                viewname="projects:detail_features", kwargs={"slug": self.slug}
+            )
         )
 
 
 class Task(models.Model):
     """Модель задачи"""
+
     name = models.CharField(
         max_length=50,
         validators=[ModelValidator.validate_letters_space_only()],
@@ -227,9 +226,8 @@ class Task(models.Model):
         verbose_name="Статус",
     )
     created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="дата создания"
-        )
+        auto_now_add=True, verbose_name="дата создания"
+    )
     closed_at = models.DateTimeField(null=True, verbose_name="дата закрытия")
     feature = models.ForeignKey(
         to="Features",
@@ -267,10 +265,20 @@ class Comment(models.Model):
         related_name="comment_task",
     )
     created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="дата создания"
-        )
+        auto_now_add=True, verbose_name="дата создания"
+    )
 
     class Meta:
         verbose_name = "Коментиарий"
         verbose_name_plural = "Коментиарии"
+
+
+class ProjectAccess(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    access_level = models.CharField(
+        max_length=20, choices=[("READ", "Read"), ("EDIT", "Edit")]
+    )
+
+    class Meta:
+        unique_together = ("user", "project")
