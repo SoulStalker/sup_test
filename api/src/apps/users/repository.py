@@ -83,6 +83,10 @@ class PermissionRepository(IPermissionRepository, ABC):
         model = get_object_or_404(self.model, id=permission_id)
         return self._permission_orm_to_dto(model)
 
+    def get_permission_by_code(self, code):
+        model = get_object_or_404(self.model, code=code)
+        return self._permission_orm_to_dto(model)
+
     def create(self, dto: CreatePermissionDTO) -> PermissionDTO:
         model = self.model(
             name=dto.name,
@@ -205,7 +209,7 @@ class UserRepository(IUserRepository, ABC):
     def get_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
-    
+
     def get_user_id_list(self, user_id: int) -> list[UserDTO]:
         user = self.model.objects.filter(id__in=user_id)
         return user
