@@ -271,14 +271,3 @@ class Comment(models.Model):
     class Meta:
         verbose_name = "Коментиарий"
         verbose_name_plural = "Коментиарии"
-
-
-class ProjectAccess(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    access_level = models.CharField(
-        max_length=20, choices=[("READ", "Read"), ("EDIT", "Edit")]
-    )
-
-    class Meta:
-        unique_together = ("user", "project")

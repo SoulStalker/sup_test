@@ -72,6 +72,9 @@ class Meet(models.Model):
         related_name="meets",
         verbose_name="Участники",
     )
+    permissions = models.ManyToManyField(
+        "Permission", related_name="meets", blank=True, verbose_name="Права"
+    )
 
     class Meta:
         db_table = "meets"
@@ -119,14 +122,3 @@ class MeetParticipant(models.Model):
             f"{self.custom_user.name} - "
             f"{self.status_color} на {self.meet.title}"
         )
-
-
-class MeetAccess(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    meet = models.ForeignKey(Meet, on_delete=models.CASCADE)
-    access_level = models.CharField(
-        max_length=20, choices=[("READ", "Read"), ("EDIT", "Edit")]
-    )
-
-    class Meta:
-        unique_together = ("user", "meet")
