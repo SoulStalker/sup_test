@@ -36,7 +36,15 @@ class MeetService(BaseService):
         )
         return self.validate_and_save(entity, self._repository, dto)
 
-    def update(self, pk, dto):
+    def update(self, pk, dto, user_id):
+        """
+        Обновление мита с проверкой прав пользователя.
+        """
+        if not self._authorization_service.can_create_meet(self, user_id):
+            print("User does not have permission to update meets")
+            raise PermissionError(
+                "User does not have permission to update meets"
+            )
         entity = MeetEntity(
             category_id=dto.category_id,
             title=dto.title,
