@@ -16,8 +16,10 @@ class RoleDTO(CreateRoleDTO):
 @dataclass
 class CreatePermissionDTO:
     name: str
-    code: int
+    code: str
     description: str
+    content_type: str
+    object_id: int | None
 
 
 @dataclass

@@ -1,14 +1,8 @@
 from abc import abstractmethod
 
 from src.domain.base import BaseRepository
-from src.domain.user.dtos import (
-    CreatePermissionDTO,
-    CreateRoleDTO,
-    PermissionDTO,
-    RoleDTO,
-    UserDTO,
-)
-from src.domain.user.entity import CreateUserEntity
+from src.domain.user.dtos import CreateRoleDTO, PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.entity import CreatePermissionEntity, CreateUserEntity
 
 
 class IRoleRepository(BaseRepository):
@@ -29,7 +23,7 @@ class IRoleRepository(BaseRepository):
 class IPermissionRepository(BaseRepository):
 
     @abstractmethod
-    def create(self, dto: CreatePermissionDTO):
+    def create(self, dto: CreatePermissionEntity):
         raise NotImplementedError
 
     @abstractmethod
