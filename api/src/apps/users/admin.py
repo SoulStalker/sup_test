@@ -11,7 +11,7 @@ class RoleAdmin(admin.ModelAdmin):
 
 @admin.register(Permission)
 class PermissionAdmin(admin.ModelAdmin):
-    list_display = ("name", "code", "description")
+    list_display = ("name", "code", "description", "content_type")
     search_fields = ("name", "code")
 
 

@@ -6,7 +6,7 @@ from src.domain.user.dtos import (
     RoleDTO,
     UserDTO,
 )
-from src.domain.user.entity import CreateUserEntity
+from src.domain.user.entity import CreatePermissionEntity, CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
@@ -33,7 +33,14 @@ class PermissionService(BaseService):
         self._repository = repository
 
     def create(self, dto: CreatePermissionDTO):
-        self._repository.create(dto)
+        entity = CreatePermissionEntity(
+            name=dto.name,
+            code=dto.code,
+            description=dto.description,
+            content_type=dto.content_type,
+            object_id=dto.object_id,
+        )
+        return self.validate_and_save(entity, self._repository, dto)
 
     def update(self, permission_id: int, dto: PermissionDTO):
         self._repository.update(permission_id, dto)

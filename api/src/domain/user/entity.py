@@ -3,6 +3,8 @@ import string
 from dataclasses import dataclass
 from typing import Optional
 
+from src.domain.base import Entity
+
 
 @dataclass
 class CreateUserEntity:
@@ -49,3 +51,15 @@ class CreateUserEntity:
         )
 
         return shuffled_password
+
+
+@dataclass
+class CreatePermissionEntity(Entity):
+    name: str
+    code: str
+    description: str
+    content_type: str
+    object_id: int | None
+
+    def verify_data(self):
+        return super().verify_data(self.name)
