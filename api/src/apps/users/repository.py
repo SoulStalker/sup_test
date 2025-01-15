@@ -74,6 +74,8 @@ class PermissionRepository(IPermissionRepository, ABC):
             code=permission.code,
             name=permission.name,
             description=permission.description,
+            content_type=permission.content_type,
+            object_id=permission.object_id,
         )
 
     def exists(self, pk: int) -> bool:
@@ -92,6 +94,8 @@ class PermissionRepository(IPermissionRepository, ABC):
             name=dto.name,
             code=dto.code,
             description=dto.description,
+            content_type=dto.content_type,
+            object_id=dto.object_id,
         )
         model.save()
         return self._permission_orm_to_dto(model)
