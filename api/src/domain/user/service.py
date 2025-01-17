@@ -64,3 +64,6 @@ class UserService(BaseService):
 
     def send_welcome_email(self, user_dto):
         self._repository.send_welcome_email(user_dto)
+
+    def get_user_id_list(self, user_list_id: list):
+        self._repository.get_user_id_list(user_list_id)
