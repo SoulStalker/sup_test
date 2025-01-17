@@ -170,7 +170,7 @@ class FeaturesRepository(IFeaturesRepository, ABC):
 
     def get_by_id(self, feature_id: int) -> FeaturesDTO:
         feature = Features.objects.get(id=feature_id)  # может быть исключение
-        return FeaturesDTO(
+        features_dto = FeaturesDTO(
             name=feature.name,
             importance=feature.importance,
             description=feature.description,
@@ -184,10 +184,8 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             project_id=feature.project_id,
             status=feature.status,
         )
-
-    # def get_feature_id(self, feature_id: int) -> Features:
-    #     feature = Features.objects.get(id=feature_id)  # может быть исключение
-    #     return feature
+        features_dto.id = feature_id
+        return features_dto
 
     def update_features(
         self, feature_id: int, dto: FeaturesDTO
