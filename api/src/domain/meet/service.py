@@ -1,5 +1,4 @@
 # from src.domain.authorization import AuthorizationService
-from django.core.exceptions import PermissionDenied
 from src.domain.base import BaseService
 
 from .dtos import CategoryObject, MeetDTO
@@ -12,11 +11,9 @@ class MeetService(BaseService):
         self,
         repository: IMeetRepository,
         category_repository: ICategoryRepository,
-        # authorization_service: AuthorizationService = AuthorizationService,
     ):
         self._repository = repository
         self.__category_repository = category_repository
-        # self._authorization_service = authorization_service
 
     def create(self, dto, user_id):
         """
@@ -30,17 +27,12 @@ class MeetService(BaseService):
             dto.responsible_id,
             dto.participant_statuses,
         )
-        return self.validate_and_save(entity, self._repository, dto)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
     def update(self, pk, dto, user_id):
         """
         Обновление мита с проверкой прав пользователя.
         """
-        meet = self._repository.get_by_id(pk)
-        if not self._repository.has_permission(user_id, "EDIT", meet):
-            raise PermissionDenied(
-                "У вас нет прав на редактирование этого мита"
-            )
 
         entity = MeetEntity(
             category_id=dto.category_id,
@@ -50,7 +42,9 @@ class MeetService(BaseService):
             responsible_id=dto.responsible_id,
             participant_statuses=dto.participant_statuses,
         )
-        return self.validate_and_update(entity, self._repository, dto, pk)
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_meets_by_category(self, dto, user_id) -> list[MeetDTO]:
         """
