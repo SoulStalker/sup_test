@@ -1,4 +1,5 @@
-from src.domain.authorization import AuthorizationService
+# from src.domain.authorization import AuthorizationService
+from django.core.exceptions import PermissionDenied
 from src.domain.base import BaseService
 
 from .dtos import CategoryObject, MeetDTO
@@ -11,21 +12,16 @@ class MeetService(BaseService):
         self,
         repository: IMeetRepository,
         category_repository: ICategoryRepository,
-        authorization_service: AuthorizationService = AuthorizationService,
+        # authorization_service: AuthorizationService = AuthorizationService,
     ):
         self._repository = repository
         self.__category_repository = category_repository
-        self._authorization_service = authorization_service
+        # self._authorization_service = authorization_service
 
     def create(self, dto, user_id):
         """
         Создание мита с проверкой прав пользователя.
         """
-        if not self._authorization_service.can_create_meet(user_id):
-            raise PermissionError(
-                "User does not have permission to create meets"
-            )
-
         entity = MeetEntity(
             dto.category_id,
             dto.title,
@@ -40,11 +36,12 @@ class MeetService(BaseService):
         """
         Обновление мита с проверкой прав пользователя.
         """
-        if not self._authorization_service.can_create_meet(self, user_id):
-            print("User does not have permission to update meets")
-            raise PermissionError(
-                "User does not have permission to update meets"
+        meet = self._repository.get_by_id(pk)
+        if not self._repository.has_permission(user_id, "EDIT", meet):
+            raise PermissionDenied(
+                "У вас нет прав на редактирование этого мита"
             )
+
         entity = MeetEntity(
             category_id=dto.category_id,
             title=dto.title,
@@ -59,11 +56,6 @@ class MeetService(BaseService):
         """
         Получение митов по категории с проверкой прав пользователя.
         """
-        if not self._authorization_service.can_view_meet(user_id):
-            raise PermissionError(
-                "User does not have permission to view meets"
-            )
-
         return self._repository.get_meets_by_category(dto)
 
     def get_participants_statuses(self, meet_id: int):
@@ -73,6 +65,14 @@ class MeetService(BaseService):
         return self._repository.set_participant_statuses(
             participant_statuses, meet_id
         )
+
+    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+        """
+        Проверка наличия разрешения у пользователя.
+        - action: код действия, например, "EDIT_TASK".
+        - obj: объект, для которого проверяется разрешение. Если None, проверяется глобальное разрешение.
+        """
+        return self.has_permission(user_id, action, obj)
 
 
 class MeetCategoryService(BaseService):
