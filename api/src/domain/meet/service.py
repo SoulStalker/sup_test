@@ -68,6 +68,13 @@ class MeetService(BaseService):
         """
         return self.has_permission(user_id, action, obj)
 
+    # def get_by_id(self, pk, user_id):
+    #     # Проверяем наличие прав
+    #     model = self._repository.get_by_id(pk, user_id)
+    #     if not self._repository.has_permission(user_id, "EDIT", model):
+    #         return None, "У вас нет прав на просмотр данного объекта"
+    #     return self._repository.get_by_id(pk, user_id)
+
 
 class MeetCategoryService(BaseService):
     def __init__(

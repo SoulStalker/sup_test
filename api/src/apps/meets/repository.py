@@ -42,7 +42,6 @@ class MeetsRepository(IMeetRepository, ABC):
             content_type=content_type,
             object_id=object_id,
         ).exists()
-
         return permission
 
     @classmethod
@@ -101,7 +100,7 @@ class MeetsRepository(IMeetRepository, ABC):
         meet = get_object_or_404(Meet, id=pk)
         meet.delete()
 
-    def get_by_id(self, meet_id: int):
+    def get_by_id(self, meet_id: int) -> MeetDTO:
         return self._meet_orm_to_dto(Meet.objects.get(id=meet_id))
 
     def get_list(self) -> list[MeetDTO]:
