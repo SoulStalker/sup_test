@@ -61,7 +61,7 @@ class InviteRepository(IInviteRepository, ABC):
             for invite in Invite.objects.all().order_by("-created_at")
         ]
 
-    def create(self) -> InviteDTO:
+    def create(self, user_id: int) -> (InviteDTO, str):
         invite_link = f"{os.getenv('FRONTEND_URL')}/registration/{secrets.token_urlsafe(16)}"
         created_at = timezone.now()
         expires_at = created_at + timedelta(days=7)
@@ -73,7 +73,7 @@ class InviteRepository(IInviteRepository, ABC):
         )
         model.save()
 
-        return self._invite_orm_to_dto(model)
+        return self._invite_orm_to_dto(model), None
 
     def delete(self, invite_id: int):
         invite = get_object_or_404(Invite, pk=invite_id)
