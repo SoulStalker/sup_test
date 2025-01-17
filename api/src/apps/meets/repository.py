@@ -22,19 +22,19 @@ class MeetsRepository(IMeetRepository, ABC):
     def exists(cls, pk: int) -> bool:
         return cls.model.objects.filter(id=pk).exists()
 
-    from django.contrib.contenttypes.models import ContentType
-    from django.shortcuts import get_object_or_404
-
     def has_permission(self, user_id: int, action: str, obj=None) -> bool:
         """
         Проверка наличия прав у пользователя на выполнение действия.
         :param user_id: ID пользователя
-        :param action: код действия (например, "EDIT", "DELETE")
+        :param action: код действия (например, "EDIT", "READ", "COMMENT")
         :param obj: объект, для которого проверяются права (например, Meet)
         :return: bool
         """
         content_type = ContentType.objects.get_for_model(self.model)
-        object_id = obj.id if obj else None
+        # для митов будем считать то нам не надо распределять права по митам
+        # поэтому object_id = None
+        # object_id = obj.id if obj else None
+        object_id = None
 
         current_user = get_object_or_404(user, pk=user_id)
         permission = current_user.permissions.filter(

@@ -59,6 +59,7 @@ class CreateMeetView(BaseView):
         )
 
     def post(self, request):
+        user_id = request.user.id
         form = CreateMeetForm(request.POST)
         if form.is_valid():
             return self.handle_form(
@@ -74,6 +75,7 @@ class CreateMeetView(BaseView):
                         "participant_statuses"
                     ],
                 ),
+                user_id,
             )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
