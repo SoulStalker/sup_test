@@ -96,20 +96,26 @@ document.addEventListener('DOMContentLoaded', function() {
             },
         })
         .then(response => {
-            console.log(`Response status: ${response.status}`);
-            if (response.ok) {
+            if (!response.ok) {
+                // Если ответ не OK, пытаемся прочитать JSON с ошибкой
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'Ошибка при удалении инвайта');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
                 console.log(`Invite with ID: ${inviteId} deleted successfully.`);
                 buttonElement.closest('tr').remove();
             } else {
-                return response.text().then(text => {
-                    console.error(`Error response text: ${text}`);
-                    throw new Error('Ошибка при удалении инвайта');
-                });
+                // Обработка случая, когда статус не "success"
+                throw new Error(data.message || 'Ошибка при удалении инвайта');
             }
         })
         .catch(error => {
             console.error('Ошибка:', error);
-            alert('Произошла ошибка при удалении инвайта');
+            alert(error.message); // Показываем пользователю сообщение об ошибке
         });
     }
 });

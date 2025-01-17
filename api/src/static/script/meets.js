@@ -270,15 +270,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                 })
                 .then(response => {
-                    if (response.ok) {
+            if (!response.ok) {
+                        // Если ответ не OK, пытаемся прочитать JSON с ошибкой
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Ошибка при удалении инвайта');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === "success") {
+                        console.log(`Meet with ID: ${meetId} deleted successfully.`);
                         buttonElement.closest('tr').remove();
                     } else {
-                        throw new Error('Ошибка при удалении встречи');
+                        // Обработка случая, когда статус не "success"
+                        throw new Error(data.message || 'Ошибка при удалении мита');
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
-                    alert('Произошла ошибка при удалении встречи');
+                    alert(error.message); // Показываем пользователю сообщение об ошибке
                 });
             }
         });
