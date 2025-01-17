@@ -62,7 +62,14 @@ class BaseService:
         return self._repository.get_list()
 
     def get_by_id(self, pk):
+        # Проверяем наличие прав
+        # model = self._repository.get_by_id(pk, user_id)
+        # if not self._repository.has_permission(user_id, "EDIT", model):
+        #     return None, "У вас нет прав на просмотр данного объекта"
         return self._repository.get_by_id(pk)
 
-    def delete(self, pk) -> None:
+    def delete(self, pk, user_id):
+        model = self._repository.get_by_id(pk)
+        if not self._repository.has_permission(user_id, "EDIT", model):
+            return "У вас нет прав на удаление данного объекта"
         self._repository.delete(pk)

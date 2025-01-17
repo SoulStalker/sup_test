@@ -33,8 +33,13 @@ class MeetsView(BaseView):
 
     def delete(self, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
+        user_id = self.request.user.id
         try:
-            self.meet_service.delete(pk=meet_id)
+            error = self.meet_service.delete(pk=meet_id, user_id=user_id)
+            if error:
+                return JsonResponse(
+                    {"status": "error", "message": error}, status=403
+                )
             return JsonResponse(
                 {"status": "success", "message": "Meet deleted"}
             )
