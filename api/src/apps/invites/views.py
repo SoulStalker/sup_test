@@ -23,9 +23,12 @@ class InvitesView(BaseView):
         return render(self.request, "invites_list.html", context)
 
     def post(self, *args, **kwargs):
-        invite = self.invite_service.create()
+        user_id = self.request.user.id
+        invite, error = self.invite_service.create(user_id=user_id)
         if invite:
             return JsonResponse({"message": "success"})
+        else:
+            return JsonResponse({"message": error})
 
     def delete(self, *args, **kwargs):
         user_id = self.request.user.id

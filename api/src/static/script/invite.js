@@ -17,15 +17,26 @@ openModalButton.addEventListener('click', () => {
     if (response.ok) {
       return response.json();
     } else {
-      throw new Error("Ошибка при создании приглашения");
+      // Если ответ не OK, пытаемся прочитать JSON с ошибкой
+      return response.json().then(errorData => {
+        throw new Error(errorData.message || 'Ошибка при создании приглашения');
+      });
     }
   })
   .then(data => {
-    console.log("Перед перезагрузкой", data);
-    location.reload();
-    console.log("После перезагрузки"); // Этот лог мы не увидим, если перезагрузка сработает
-    })
-  .catch(error => console.error(error));
+    if (data.message === "success") {
+      console.log("Перед перезагрузкой", data);
+      location.reload();
+      console.log("После перезагрузки"); // Этот лог мы не увидим, если перезагрузка сработает
+    } else {
+      // Если сообщение не "success", значит, сервер вернул ошибку
+      throw new Error(data.message || 'Ошибка при создании приглашения');
+    }
+  })
+  .catch(error => {
+    console.error(error);
+    alert(error.message); // Показываем пользователю сообщение об ошибке
+  });
 });
 
 // Функция для получения CSRF-токена
