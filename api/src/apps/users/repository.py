@@ -196,8 +196,7 @@ class UserRepository(IUserRepository, ABC):
         model.permissions.set(dto.permissions_ids)
         model.is_active = dto.is_active
         model.is_admin = dto.is_admin
-        model.is_superuser = dto.is_superuser
-
+        # model.is_superuser = dto.is_superuser это поле нельзя менять оно затирает суперпользователя
         model.save()
 
         return self._user_orm_to_dto(model)
