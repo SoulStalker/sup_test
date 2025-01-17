@@ -74,7 +74,7 @@ class PermissionRepository(IPermissionRepository, ABC):
             code=permission.code,
             name=permission.name,
             description=permission.description,
-            content_type=permission.content_type,
+            content_type=str(permission.content_type).split("|")[-1],
             object_id=permission.object_id,
         )
 

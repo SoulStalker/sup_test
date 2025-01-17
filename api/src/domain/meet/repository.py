@@ -39,6 +39,10 @@ class IMeetRepository(BaseRepository):
     def get_participants_statuses(self, meet_id):
         raise NotImplementedError
 
+    @abstractmethod
+    def has_permission(self, user_id: int, actin: str, obj=None) -> bool:
+        raise NotImplementedError
+
 
 class ICategoryRepository(ABC):
     """
