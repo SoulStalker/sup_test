@@ -20,10 +20,11 @@ class TasksView(BaseView):
         task_status_choices = self.task_service.get_task_status_choices()
         features = self.features_service.get_list()
         tags = self.features_service.get_features_tags_list()
+        users = self.user_service.get_list()
 
         context = {
             "tasks": tasks,
-            "users": self.user_service.get_list(),
+            "users": users,
             "task_status_choices": task_status_choices,
             "features": features,
             "tags": tags,
@@ -42,22 +43,29 @@ class TaskDetailView(BaseView):
         tags = self.task_service.get_tags_list(task_id=task_id)
         comments = self.task_service.get_comments_list(task_id=task_id)
         feature = self.features_service.get_by_id(pk=task.feature_id)
+        features = self.features_service.get_list()
+        users = self.user_service.get_list()
         contributor = self.user_service.get_by_id(pk=task.contributor_id)
         responsible = self.user_service.get_by_id(pk=task.responsible_id)
         task_url = reverse("projects:tasks")
-        return render(
-            request,
-            "task_detail.html",
-            {
+        edit_tasks = reverse("projects:edit_tasks", kwargs={"task_id": task_id})
+        task_status_choices = self.task_service.get_task_status_choices()
+
+        context = {
                 "task": task,
                 "tags": tags,
+                "users": users,
                 "feature": feature,
+                "features": features,
                 "contributor": contributor,
                 "responsible": responsible,
                 "comments": comments,
                 "task_url": task_url,
-            },
-        )
+                "edit_tasks": edit_tasks,
+                "task_status_choices": task_status_choices,
+            }
+  
+        return render(self.request, "task_detail.html", context)
 
     def post(self, request, *args, **kwargs):
         form = CommentForm(request.POST)
