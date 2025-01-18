@@ -104,16 +104,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const editTaskButtons = document.querySelectorAll('.edit-task-button');
         editTaskButtons.forEach(button => {
             button.addEventListener('click', function () {
-                const currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
+                // const currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
                 // const modal = document.getElementById('modal');
                 // const form = document.getElementById('edit-task-form');
                 // const submitButton = form.querySelector('button[type="submit"]');
-
+                const editUrl = this.getAttribute('data-url');
                 // Открываем модальное окно
                 modal.classList.remove('hidden');
 
                 // Загружаем данные задачи через fetch
-                fetch(`update/${currentTaskId}/`)
+                fetch(editUrl)
                     .then(response => {
                         if (!response.ok) {
                             return response.json().then(errData => {
