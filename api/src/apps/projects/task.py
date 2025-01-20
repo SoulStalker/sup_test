@@ -164,7 +164,6 @@ class UpdateTaskView(BaseView):
 
         task_id = kwargs.get("task_id")
         task = self.task_service.get_by_id(pk=task_id)
-
         task_status_choices = self.task_service.get_task_status_choices()
 
         data = {
