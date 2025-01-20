@@ -58,14 +58,14 @@ class BaseService:
     def exists(self, pk):
         return self._repository.exists(pk)
 
-    def get_list(self, user_id):
+    def get_list(self):
         """
         Получение списка объектов с проверкой прав доступа.
 
         :param user_id: Идентификатор пользователя
         :return: Список объектов, к которым у пользователя есть доступ
         """
-        all_objects = self._repository.get_list()
+        # all_objects = self._repository.get_list()
 
         # Фильтруем объекты, оставляя только те, к которым у пользователя есть доступ
         # accessible_objects = []
@@ -74,7 +74,8 @@ class BaseService:
         #         accessible_objects.append(obj)
 
         # return accessible_objects, None
-        return all_objects
+        # решили что список можно видеть всем авторизованным
+        return self._repository.get_list()
 
     def get_by_id(self, pk, user_id):
         """
@@ -100,3 +101,11 @@ class BaseService:
         if not self._repository.has_permission(user_id, "EDIT", model):
             return "У вас нет прав на удаление данного объекта"
         self._repository.delete(pk)
+
+    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+        """
+        Проверка наличия разрешения у пользователя.
+        - action: код действия, например, "EDIT_TASK".
+        - obj: объект, для которого проверяется разрешение. Если None, проверяется глобальное разрешение.
+        """
+        return self.has_permission(user_id, action, obj)

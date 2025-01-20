@@ -1,6 +1,9 @@
 from abc import ABC
 
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from src.domain.project import (
     CommentDTO,
     CreateTaskDTO,
@@ -17,6 +20,8 @@ from src.domain.project import (
 )
 from src.models.models import CustomUser
 from src.models.projects import Comment, Features, Project, Tags, Task
+
+user = get_user_model()
 
 
 class ProjectRepository(IProjectRepository, ABC):
@@ -118,6 +123,28 @@ class ProjectRepository(IProjectRepository, ABC):
             for project in projects
         ]
 
+    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+        """
+        Проверка наличия прав у пользователя на выполнение действия.
+        :param user_id: ID пользователя
+        :param action: код действия (например, "EDIT", "READ", "COMMENT")
+        :param obj: объект, для которого проверяются права (например, Meet)
+        :return: bool
+        """
+        content_type = ContentType.objects.get_for_model(self.model)
+        # для митов будем считать то нам не надо распределять права по митам
+        # поэтому object_id = None
+        # object_id = obj.id if obj else None
+        object_id = None
+
+        current_user = get_object_or_404(user, pk=user_id)
+        permission = current_user.permissions.filter(
+            code=action,
+            content_type=content_type,
+            object_id=object_id,
+        ).exists()
+        return permission
+
 
 class FeaturesRepository(IFeaturesRepository, ABC):
 
@@ -185,9 +212,27 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             status=feature.status,
         )
 
-    # def get_feature_id(self, feature_id: int) -> Features:
-    #     feature = Features.objects.get(id=feature_id)  # может быть исключение
-    #     return feature
+    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+        """
+        Проверка наличия прав у пользователя на выполнение действия.
+        :param user_id: ID пользователя
+        :param action: код действия (например, "EDIT", "READ", "COMMENT")
+        :param obj: объект, для которого проверяются права (например, Meet)
+        :return: bool
+        """
+        content_type = ContentType.objects.get_for_model(self.model)
+        # для митов будем считать то нам не надо распределять права по митам
+        # поэтому object_id = None
+        # object_id = obj.id if obj else None
+        object_id = None
+
+        current_user = get_object_or_404(user, pk=user_id)
+        permission = current_user.permissions.filter(
+            code=action,
+            content_type=content_type,
+            object_id=object_id,
+        ).exists()
+        return permission
 
     def update_features(
         self, feature_id: int, dto: FeaturesDTO
@@ -350,3 +395,25 @@ class TaskRepository(ITaskRepository, ABC):
         task = Task.objects.get(id=task_id)
         comments = Comment.objects.filter(task=task)
         return comments
+
+    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+        """
+        Проверка наличия прав у пользователя на выполнение действия.
+        :param user_id: ID пользователя
+        :param action: код действия (например, "EDIT", "READ", "COMMENT")
+        :param obj: объект, для которого проверяются права (например, Meet)
+        :return: bool
+        """
+        content_type = ContentType.objects.get_for_model(self.model)
+        # для митов будем считать то нам не надо распределять права по митам
+        # поэтому object_id = None
+        # object_id = obj.id if obj else None
+        object_id = None
+
+        current_user = get_object_or_404(user, pk=user_id)
+        permission = current_user.permissions.filter(
+            code=action,
+            content_type=content_type,
+            object_id=object_id,
+        ).exists()
+        return permission
