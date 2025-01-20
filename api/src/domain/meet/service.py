@@ -60,21 +60,6 @@ class MeetService(BaseService):
             participant_statuses, meet_id
         )
 
-    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
-        """
-        Проверка наличия разрешения у пользователя.
-        - action: код действия, например, "EDIT_TASK".
-        - obj: объект, для которого проверяется разрешение. Если None, проверяется глобальное разрешение.
-        """
-        return self.has_permission(user_id, action, obj)
-
-    # def get_by_id(self, pk, user_id):
-    #     # Проверяем наличие прав
-    #     model = self._repository.get_by_id(pk, user_id)
-    #     if not self._repository.has_permission(user_id, "EDIT", model):
-    #         return None, "У вас нет прав на просмотр данного объекта"
-    #     return self._repository.get_by_id(pk, user_id)
-
 
 class MeetCategoryService(BaseService):
     def __init__(
@@ -98,5 +83,5 @@ class MeetCategoryService(BaseService):
         Обновление категории
         """
         entity = CategoryEntity(name=category_name)
-        dto = CategoryObject(name=category_name)
+        dto = CategoryObject(pk=pk, name=category_name)
         return self.validate_and_update(entity, self._repository, dto, pk)

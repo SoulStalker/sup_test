@@ -21,3 +21,7 @@ class BaseRepository(ABC):
     @abstractmethod
     def exists(self, pk: int) -> bool:
         raise NotImplementedError
+
+    @abstractmethod
+    def has_permission(self, user_id: int, actin: str, obj=None) -> bool:
+        raise NotImplementedError
