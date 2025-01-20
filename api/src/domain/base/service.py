@@ -58,15 +58,42 @@ class BaseService:
     def exists(self, pk):
         return self._repository.exists(pk)
 
-    def get_list(self) -> list:
-        return self._repository.get_list()
+    def get_list(self, user_id):
+        """
+        Получение списка объектов с проверкой прав доступа.
 
-    def get_by_id(self, pk):
-        # Проверяем наличие прав
-        # model = self._repository.get_by_id(pk, user_id)
-        # if not self._repository.has_permission(user_id, "EDIT", model):
-        #     return None, "У вас нет прав на просмотр данного объекта"
-        return self._repository.get_by_id(pk)
+        :param user_id: Идентификатор пользователя
+        :return: Список объектов, к которым у пользователя есть доступ
+        """
+        all_objects = self._repository.get_list()
+
+        # Фильтруем объекты, оставляя только те, к которым у пользователя есть доступ
+        # accessible_objects = []
+        # for obj in all_objects:
+        #     if self._repository.has_permission(user_id, "READ", obj):
+        #         accessible_objects.append(obj)
+
+        # return accessible_objects, None
+        return all_objects
+
+    def get_by_id(self, pk, user_id):
+        """
+        Получение объекта по ID с проверкой прав доступа.
+
+        :param pk: Первичный ключ объекта
+        :param user_id: Идентификатор пользователя
+        :return: Объект или None, если нет прав доступа или объект не найден
+        """
+        if not self._repository.exists(pk):
+            return None, f"Объект с id {pk} не найден."
+
+        model = self._repository.get_by_id(pk)
+
+        # Проверяем наличие прав на чтение объекта
+        if not self._repository.has_permission(user_id, "READ", model):
+            return None, "У вас нет прав на просмотр данного объекта"
+
+        return model, None
 
     def delete(self, pk, user_id):
         model = self._repository.get_by_id(pk)

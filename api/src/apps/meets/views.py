@@ -15,10 +15,10 @@ class MeetsView(BaseView):
     """
 
     def get(self, *args, **kwargs):
-
-        categories = self.category_service.get_list()
-        users = self.user_service.get_list()
-        meets = self.meet_service.get_list()
+        user_id = self.request.user.id
+        categories = self.category_service.get_list(user_id)
+        users = self.user_service.get_list(user_id)
+        meets = self.meet_service.get_list(user_id)
         meets = self.paginate_queryset(meets)
 
         return render(
@@ -64,7 +64,6 @@ class CreateMeetView(BaseView):
         )
 
     def post(self, request):
-        user_id = request.user.id
         form = CreateMeetForm(request.POST)
         if form.is_valid():
             return self.handle_form(
@@ -80,7 +79,7 @@ class CreateMeetView(BaseView):
                         "participant_statuses"
                     ],
                 ),
-                user_id,
+                self.user_id,
             )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
@@ -95,7 +94,11 @@ class EditMeetView(BaseView):
     def get(self, request, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
         statuses = self.meet_service.get_participants_statuses(meet_id)
-        meet = self.meet_service.get_by_id(meet_id)
+        meet, error = self.meet_service.get_by_id(meet_id, self.user_id)
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )
         data = {
             "title": meet.title,
             "start_time": meet.start_time.strftime("%Y-%m-%dT%H:%M"),
@@ -107,7 +110,6 @@ class EditMeetView(BaseView):
         return JsonResponse(data)
 
     def post(self, request, *args, **kwargs):
-        user_id = request.user.id
         meet_id = kwargs.get("meet_id")
         form = CreateMeetForm(request.POST)
         if form.is_valid():
@@ -126,7 +128,7 @@ class EditMeetView(BaseView):
                         "participant_statuses"
                     ],
                 ),
-                user_id,
+                self.user_id,
             )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
