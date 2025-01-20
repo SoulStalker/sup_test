@@ -13,7 +13,7 @@ class TeamListView(BaseView):
         teams = self.team_service.get_list()
         teams = self.paginate_queryset(teams)
         # users = User.objects.filter(team__isnull=True).distinct()
-        users = self.user_service.get_user_list()
+        users = self.user_service.get_list()
         return render(
             self.request,
             "teams/teams_list.html",
@@ -52,7 +52,11 @@ class TeamCreateView(BaseView):
 class TeamUpdateView(BaseView):
     def get(self, *args, **kwargs):
         team_id = kwargs.get("team_id")
-        team = self.team_service.get_by_id(team_id)
+        team, error = self.team_service.get_by_id(team_id, self.user_id)
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )
         data = {
             "name": team.name,
             "participants": team.participants,

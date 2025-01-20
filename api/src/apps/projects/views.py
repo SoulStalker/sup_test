@@ -77,7 +77,7 @@ class CreateProjectView(BaseView):
             try:
                 # Создание проекта
                 created_project = self.project_service.create_project(
-                    project_dto
+                    project_dto, self.user_id
                 )
 
                 # Возвращаем успешный ответ с данными о созданном проекте
@@ -114,8 +114,13 @@ class EditProjectView(BaseView):
 
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get("project_id")
-        project = self.project_service.get_by_id(pk=project_id)
-
+        project, error = self.project_service.get_by_id(
+            pk=project_id, user_id=self.user_id
+        )
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )
         project_status_choices = (
             self.project_service.get_project_status_choices()
         )
@@ -138,7 +143,9 @@ class EditProjectView(BaseView):
         project_id = kwargs.get("project_id")
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
-            project = self.project_service.get_by_id(pk=project_id)
+            project = self.project_service.get_by_id(
+                pk=project_id, user_id=self.user_id
+            )
             logo = (
                 form.cleaned_data.get("logo")
                 if "logo" in request.FILES
@@ -255,8 +262,12 @@ class FeaturesDetailView(BaseView):
 
     def get(self, request, *args, **kwargs):
         feature_id = kwargs.get("features_id")
-        feature = self.features_service.get_by_id(pk=feature_id)
-        project = self.project_service.get_by_id(pk=feature.project_id)
+        feature = self.features_service.get_by_id(
+            pk=feature_id, user_id=self.user_id
+        )
+        project = self.project_service.get_by_id(
+            pk=feature.project_id, user_id=self.user_id
+        )
         users = self.user_service.get_user_id_list(
             user_id=feature.participants
         )
@@ -345,8 +356,13 @@ class CreateFeatureView(BaseView):
 class EditFeatureView(BaseView):
     def get(self, request, *args, **kwargs):
         feature_id = kwargs.get("feature_id")
-        feature = self.features_service.get_by_id(pk=feature_id)
-
+        feature, error = self.features_service.get_by_id(
+            pk=feature_id, user_id=self.user_id
+        )
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )
         data = {
             "name": feature.name,
             "description": feature.description,

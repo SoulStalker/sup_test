@@ -38,12 +38,16 @@ class TaskDetailView(BaseView):
 
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
-        task = self.task_service.get_by_id(pk=task_id)
+        task = self.task_service.get_by_id(pk=task_id, user_id=self.user_id)
         tags = self.task_service.get_tags_list(task_id=task_id)
         comments = self.task_service.get_comments_list(task_id=task_id)
         feature = self.features_service.get_feature_id(task.feature_id)
-        contributor = self.user_service.get_by_id(pk=task.contributor_id)
-        responsible = self.user_service.get_by_id(pk=task.responsible_id)
+        contributor = self.user_service.get_by_id(
+            pk=task.contributor_id, user_id=self.user_id
+        )
+        responsible = self.user_service.get_by_id(
+            pk=task.responsible_id, user_id=self.user_id
+        )
         task_url = reverse("projects:tasks")
         return render(
             request,
@@ -155,8 +159,13 @@ class UpdateTaskView(BaseView):
     def get(self, request, *args, **kwargs):
 
         task_id = kwargs.get("task_id")
-        task = self.task_service.get_by_id(pk=task_id)
-
+        task, error = self.task_service.get_by_id(
+            pk=task_id, user_id=self.user_id
+        )
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )
         task_status_choices = self.task_service.get_task_status_choices()
 
         data = {

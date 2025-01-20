@@ -11,6 +11,7 @@ user = get_user_model()
 
 
 class TeamRepository(ITeamRepository):
+    model = Team
 
     @classmethod
     def _model_team_to_dto(cls, team) -> TeamDTO:
