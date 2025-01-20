@@ -168,3 +168,25 @@ class CategoryRepository(ICategoryRepository, ABC):
     def get_by_id(self, pk: int) -> CategoryObject:
         query = self.model.objects.get(id=pk)
         return self._orm_to_dto(query)
+
+    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+        """
+        Проверка наличия прав у пользователя на выполнение действия.
+        :param user_id: ID пользователя
+        :param action: код действия (например, "EDIT", "READ", "COMMENT")
+        :param obj: объект, для которого проверяются права (например, Meet)
+        :return: bool
+        """
+        content_type = ContentType.objects.get_for_model(self.model)
+        # для митов будем считать то нам не надо распределять права по митам
+        # поэтому object_id = None
+        # object_id = obj.id if obj else None
+        object_id = None
+
+        current_user = get_object_or_404(user, pk=user_id)
+        permission = current_user.permissions.filter(
+            code=action,
+            content_type=content_type,
+            object_id=object_id,
+        ).exists()
+        return permission

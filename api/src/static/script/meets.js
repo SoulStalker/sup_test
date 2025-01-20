@@ -176,11 +176,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// Редактирование мита
+// редактирование мита
 document.addEventListener('DOMContentLoaded', function () {
     const editMeetButtons = document.querySelectorAll('.edit-meet-button');
     const modal = document.getElementById('modal-create-meet');
     const form = document.getElementById('create-meet-form');
+    const errorMessageContainer = document.getElementById('error-message'); // Контейнер для отображения ошибок
+    const formFields = form.querySelectorAll('input, select, button:not(#cancel-meet)'); // Все поля формы, кроме кнопки "Отмена"
 
     let submitButton = form.querySelector('button[type="submit"]');
 
@@ -188,20 +190,44 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             const meetId = this.getAttribute('data-meet-id');
 
-            // Открываем модальное окно
-            modal.classList.remove('hidden');
+            // Очищаем предыдущие ошибки
+            if (errorMessageContainer) {
+                errorMessageContainer.textContent = '';
+                errorMessageContainer.classList.add('hidden');
+            }
+
+            // Скрываем все поля формы
+            formFields.forEach(field => field.classList.add('hidden'));
 
             // Загружаем данные мита через fetch
             fetch(`/meets/edit/${meetId}/`)
-                .then(response => response.json())
+                .then(response => {
+                    if (response.status === 403) {
+                        // Если доступ запрещён (403), выбрасываем ошибку
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Доступ запрещён');
+                        });
+                    }
+                    if (!response.ok) {
+                        // Если статус ответа не 200, выбрасываем ошибку
+                        throw new Error('Ошибка при загрузке данных мита');
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    // Открываем модальное окно только если данные успешно получены
+                    modal.classList.remove('hidden');
+
+                    // Показываем все поля формы
+                    formFields.forEach(field => field.classList.remove('hidden'));
+
                     // Заполняем форму полученными данными
                     document.getElementById('title').value = data.title;
                     document.getElementById('start_time').value = data.start_time;
                     document.getElementById('category').value = data.category;
                     document.getElementById('responsible').value = data.responsible;
 
-                   // Заполняем статусы участников
+                    // Заполняем статусы участников
                     data.participants.forEach(participant => {
                         const participantCheckbox = document.getElementById(`participant_${participant.participant_id}`);
                         const participantStatusInput = document.getElementById(`participant_status_${participant.participant_id}`);
@@ -224,10 +250,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     form.setAttribute('action', `/meets/edit/${meetId}/`);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
-                .catch(error => console.error('Ошибка:', error));
+                .catch(error => {
+                    console.error('Ошибка:', error);
+
+                    // Отображаем ошибку пользователю в модальном окне
+                    if (errorMessageContainer) {
+                        errorMessageContainer.textContent = error.message;
+                        errorMessageContainer.classList.remove('hidden');
+                    }
+
+                    // Открываем модальное окно пустым при любой ошибке
+                    modal.classList.remove('hidden');
+                    form.reset(); // Очищаем форму
+
+                    // Скрываем все поля формы, кроме кнопки "Отмена"
+                    formFields.forEach(field => field.classList.add('hidden'));
+                });
         });
     });
 });
+
+
 
 // Удаление мита
 document.addEventListener('DOMContentLoaded', function() {

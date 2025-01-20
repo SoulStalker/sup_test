@@ -204,11 +204,12 @@ class UserListView(BaseView):
     """Список пользователей."""
 
     def get(self, *args, **kwargs):
-        roles = self.role_service.get_list()
-        permissions = self.permission_service.get_list()
-        teams = self.team_service.get_list()
+        user_id = self.request.user.id
+        roles = self.role_service.get_list(user_id)
+        permissions = self.permission_service.get_list(user_id)
+        teams = self.team_service.get_list(user_id)
 
-        users = self.user_service.get_list()
+        users = self.user_service.get_list(user_id)
         users = self.paginate_queryset(users)
 
         return render(
@@ -294,7 +295,7 @@ class UserUpdateView(BaseView):
 
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get("pk")
-        user = self.user_service.get_by_id(user_id)
+        user, error = self.user_service.get_by_id(user_id, user_id)
         data = {
             "id": user.id,
             "name": user.name,
