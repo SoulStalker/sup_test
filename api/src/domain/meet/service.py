@@ -68,7 +68,7 @@ class MeetCategoryService(BaseService):
     ):
         self._repository = repository
 
-    def create(self, category_name):
+    def create(self, category_name, user_id):
         """
         Создание категории
         """
@@ -76,7 +76,7 @@ class MeetCategoryService(BaseService):
         entity = CategoryEntity(name=category_name)
         dto = CategoryEntity(name=category_name)
 
-        return self.validate_and_save(entity, self._repository, dto)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
     def update(self, pk, category_name):
         """
