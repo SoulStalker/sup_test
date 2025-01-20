@@ -15,10 +15,9 @@ class MeetsView(BaseView):
     """
 
     def get(self, *args, **kwargs):
-        user_id = self.request.user.id
-        categories = self.category_service.get_list(user_id)
-        users = self.user_service.get_list(user_id)
-        meets = self.meet_service.get_list(user_id)
+        categories = self.category_service.get_list()
+        users = self.user_service.get_list()
+        meets = self.meet_service.get_list()
         meets = self.paginate_queryset(meets)
 
         return render(
@@ -33,9 +32,8 @@ class MeetsView(BaseView):
 
     def delete(self, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
-        user_id = self.request.user.id
         try:
-            error = self.meet_service.delete(pk=meet_id, user_id=user_id)
+            error = self.meet_service.delete(pk=meet_id, user_id=self.user_id)
             if error:
                 return JsonResponse(
                     {"status": "error", "message": error}, status=403
@@ -145,7 +143,9 @@ class CategoryView(BaseView):
             category_name = request.POST.get("category_name")
             if category_name:
                 # Создаем новую категорию
-                category, err = self.category_service.create(category_name)
+                category, err = self.category_service.create(
+                    category_name, self.user_id
+                )
                 if err:
                     return JsonResponse(
                         {"status": "error", "error": str(err)}, status=400
