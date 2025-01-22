@@ -4,7 +4,9 @@ from abc import ABC
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
+from django.db.models import Count
 from django.shortcuts import get_list_or_404, get_object_or_404
 from src.domain.user import (
     CreatePermissionDTO,
@@ -100,7 +102,7 @@ class PermissionRepository(IPermissionRepository, ABC):
             code=permission.code,
             name=permission.name,
             description=permission.description,
-            content_type=str(permission.content_type).split("|")[-1],
+            content_type=permission.content_type,
             object_id=permission.object_id,
         )
 
@@ -164,6 +166,58 @@ class PermissionRepository(IPermissionRepository, ABC):
             object_id=object_id,
         ).exists()
         return permission
+
+    def get_content_types(
+        self,
+    ):
+        unique_content_types = (
+            Permission.objects.values("content_type")
+            .annotate(count=Count("content_type"))
+            .filter(count__gt=0)
+        )
+
+        # Преобразуем QuerySet в список ContentType объектов
+        content_types = [
+            ContentType.objects.get(id=ct["content_type"])
+            for ct in unique_content_types
+        ]
+        return content_types
+
+    def get_content_object(self, permission_id: int):
+        permission = Permission.objects.get(id=permission_id)
+        content_type = permission.content_type
+        object_id = permission.object_id
+
+        content_object = ContentType.objects.get_for_id(
+            content_type.id
+        ).get_object_for_this_type(id=object_id)
+        return {
+            "id": content_object.id,
+            "name": content_object.name,
+        }
+
+    def get_content_objects(self):
+        permissions = Permission.objects.all()
+        content_objects = []
+        for permission in permissions:
+            content_type = permission.content_type
+            object_id = permission.object_id
+
+            try:
+                content_object = ContentType.objects.get_for_id(
+                    content_type.id
+                ).get_object_for_this_type(id=object_id)
+                content_objects.append(content_object)
+            except ObjectDoesNotExist:
+                # Обработка случая, когда объект не найден
+                print(
+                    f"Object with content_type={content_type} and object_id={object_id} does not exist."
+                )
+            except Exception as e:
+                # Обработка других возможных исключений
+                print(f"An error occurred: {e}")
+
+        return content_objects
 
 
 class UserRepository(IUserRepository, ABC):

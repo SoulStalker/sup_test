@@ -45,6 +45,15 @@ class PermissionService(BaseService):
     def update(self, permission_id: int, dto: PermissionDTO):
         self._repository.update(permission_id, dto)
 
+    def get_content_types(self):
+        return self._repository.get_content_types()
+
+    def get_content_object(self, permission_id: int):
+        return self._repository.get_content_object(permission_id)
+
+    def get_content_objects(self):
+        return self._repository.get_content_objects()
+
 
 class UserService(BaseService):
     def __init__(self, repository: IUserRepository):

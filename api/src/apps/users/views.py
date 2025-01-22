@@ -118,10 +118,18 @@ class PermissionListView(BaseView):
     def get(self, *args, **kwargs):
         permissions = self.permission_service.get_list()
         permissions = self.paginate_queryset(permissions)
+
+        content_types = self.permission_service.get_content_types()
+        objects = self.permission_service.get_content_objects()
+
         return render(
             self.request,
             "permissions/permission_list.html",
-            {"permissions": permissions},
+            {
+                "permissions": permissions,
+                "content_types": content_types,
+                "objects": objects,
+            },
         )
 
 
@@ -168,8 +176,12 @@ class PermissionUpdateView(BaseView):
             "name": permission.name,
             "code": permission.code,
             "description": permission.description,
-            "content_type": permission.content_type,
-            "object_id": permission.object_id,
+            "content_type": permission.content_type.id,
+            "object": (
+                self.permission_service.get_content_object(permission.id)
+                if permission.object_id
+                else None
+            ),
         }
         return JsonResponse(data)
 
@@ -185,6 +197,12 @@ class PermissionUpdateView(BaseView):
                         name=form.cleaned_data["name"],
                         description=form.cleaned_data["description"],
                         code=form.cleaned_data["code"],
+                        content_type=form.cleaned_data["content_type"],
+                        object_id=(
+                            form.cleaned_data["object_id"]
+                            if form.cleaned_data["object_id"]
+                            else None
+                        ),
                     ),
                 )
             except Exception as err:
