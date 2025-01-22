@@ -121,6 +121,10 @@ class PermissionListView(BaseView):
 
         content_types = self.permission_service.get_content_types()
         objects = self.permission_service.get_content_objects()
+        codes = set(self.permission_service.get_codes())
+
+        for code in codes:
+            print(code)
 
         return render(
             self.request,
@@ -129,6 +133,7 @@ class PermissionListView(BaseView):
                 "permissions": permissions,
                 "content_types": content_types,
                 "objects": objects,
+                "codes": codes,
             },
         )
 

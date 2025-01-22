@@ -43,6 +43,9 @@ class IPermissionRepository(BaseRepository):
     def get_content_objects(self):
         raise NotImplementedError
 
+    def get_codes(self):
+        raise NotImplementedError
+
 
 class IUserRepository(BaseRepository):
     @abstractmethod
