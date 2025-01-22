@@ -216,7 +216,7 @@ class PermissionUpdateView(BaseView):
     def delete(self, *args, **kwargs):
         permission_id = kwargs.get("pk")
         try:
-            self.permission_service.delete(permission_id)
+            self.permission_service.delete(permission_id, self.user_id)
             return JsonResponse(
                 {"status": "success", "message": "Permission deleted"},
                 status=200,
