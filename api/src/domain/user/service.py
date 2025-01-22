@@ -32,7 +32,7 @@ class PermissionService(BaseService):
     def __init__(self, repository: IPermissionRepository):
         self._repository = repository
 
-    def create(self, dto: CreatePermissionDTO):
+    def create(self, dto: CreatePermissionDTO, user_id: int):
         entity = CreatePermissionEntity(
             name=dto.name,
             code=dto.code,
@@ -40,7 +40,7 @@ class PermissionService(BaseService):
             content_type=dto.content_type,
             object_id=dto.object_id,
         )
-        return self.validate_and_save(entity, self._repository, dto)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
     def update(self, permission_id: int, dto: PermissionDTO):
         self._repository.update(permission_id, dto)

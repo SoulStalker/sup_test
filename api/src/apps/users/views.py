@@ -148,8 +148,9 @@ class PermissionCreateView(BaseView):
                         code=form.cleaned_data["code"],
                         content_type=form.cleaned_data["content_type"],
                         object_id=form.cleaned_data["object_id"],
-                    )
-                )
+                    ),
+                    self.user_id,
+                ),
             except Exception as err:
                 print(err)
             return JsonResponse({"status": "success"}, status=201)
