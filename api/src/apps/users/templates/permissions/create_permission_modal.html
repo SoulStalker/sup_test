@@ -22,16 +22,24 @@
                     placeholder="Введите описание (не более 500 символов)"></textarea>
             </div>
             <div class="mb-4">
-                <label for="content_type" class="block text-sm font-medium text-gray-700">Тип контента</label>
-                <textarea id="content_type" name="content_type" maxlength="50"
-                    class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
-                    placeholder="Введите тип контента"></textarea>
+                 <label for="content_type" class="block text-sm font-medium text-gray-700">Тип объекта*</label>
+                    <select id="content_type" name="content_type"
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                        <option value="">Выбрать</option>
+                        {% for ct in content_types %}
+                            <option value="{{ ct.id }}">{{ ct.name }}</option>
+                        {% endfor %}
+                    </select>
             </div>
             <div class="mb-4">
-                <label for="object_id" class="block text-sm font-medium text-gray-700">ID объекта</label>
-                <textarea id="object_id" name="object_id" maxlength="1"
-                    class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
-                    placeholder="Введите ID объекта"></textarea>
+                <label for="object" class="block text-sm font-medium text-gray-700">Объект</label>
+                    <select id="object" name="object"
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <option value="">Все</option>
+                        {% for object in objects %}
+                            <option value="{{ object.id }}">{{ object.name }}</option>
+                        {% endfor %}
+                    </select>
             </div>
             <div class="flex justify-end space-x-2">
                 <button id="delete-permission" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 delete-btn">Удалить</button>

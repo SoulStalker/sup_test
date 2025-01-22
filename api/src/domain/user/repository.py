@@ -34,6 +34,15 @@ class IPermissionRepository(BaseRepository):
     def get_permission_by_code(self, code):
         raise NotImplementedError
 
+    def get_content_types(self):
+        raise NotImplementedError
+
+    def get_content_object(self, permission_id):
+        raise NotImplementedError
+
+    def get_content_objects(self):
+        raise NotImplementedError
+
 
 class IUserRepository(BaseRepository):
     @abstractmethod
