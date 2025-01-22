@@ -209,10 +209,7 @@ class PermissionRepository(IPermissionRepository, ABC):
                 ).get_object_for_this_type(id=object_id)
                 content_objects.append(content_object)
             except ObjectDoesNotExist:
-                # Обработка случая, когда объект не найден
-                print(
-                    f"Object with content_type={content_type} and object_id={object_id} does not exist."
-                )
+                ...
             except Exception as e:
                 # Обработка других возможных исключений
                 print(f"An error occurred: {e}")
