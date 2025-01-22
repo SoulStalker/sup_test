@@ -40,7 +40,7 @@
                         class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                         <option value="">Все</option>
                         {% for object in objects %}
-                            <option value="{{ object.id }}">{{ object.name }}</option>
+                            <option value="{{ object.id }}">{{ object }}</option>
                         {% endfor %}
                     </select>
             </div>

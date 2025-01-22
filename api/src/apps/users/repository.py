@@ -4,9 +4,7 @@ from abc import ABC
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from django.db.models import Count
 from django.shortcuts import get_list_or_404, get_object_or_404
 from src.domain.user import (
     CreatePermissionDTO,
@@ -170,17 +168,11 @@ class PermissionRepository(IPermissionRepository, ABC):
     def get_content_types(
         self,
     ):
-        unique_content_types = (
-            Permission.objects.values("content_type")
-            .annotate(count=Count("content_type"))
-            .filter(count__gt=0)
+        content_types = ContentType.objects.filter(
+            app_label__in=[
+                "models",
+            ]
         )
-
-        # Преобразуем QuerySet в список ContentType объектов
-        content_types = [
-            ContentType.objects.get(id=ct["content_type"])
-            for ct in unique_content_types
-        ]
         return content_types
 
     def get_content_object(self, permission_id: int):
@@ -197,23 +189,23 @@ class PermissionRepository(IPermissionRepository, ABC):
         }
 
     def get_content_objects(self):
-        permissions = Permission.objects.all()
         content_objects = []
-        for permission in permissions:
-            content_type = permission.content_type
-            object_id = permission.object_id
+        content_types = self.get_content_types()
 
-            try:
-                content_object = ContentType.objects.get_for_id(
-                    content_type.id
-                ).get_object_for_this_type(id=object_id)
-                content_objects.append(content_object)
-            except ObjectDoesNotExist:
-                ...
-            except Exception as e:
-                # Обработка других возможных исключений
-                print(f"An error occurred: {e}")
-
+        for content_type in content_types:
+            # Получаем модель по типу контента
+            model_class = content_type.model_class()
+            if model_class:
+                try:
+                    # Получаем все объекты этой модели
+                    objects = model_class.objects.all()
+                    # content_objects.extend(objects)
+                    content_objects.append({content_type: objects})
+                except Exception as e:
+                    # Обработка исключений (например, если модель не поддерживает objects.all())
+                    print(
+                        f"An error occurred while fetching objects for {content_type}: {e}"
+                    )
         return content_objects
 
     def get_codes(self):

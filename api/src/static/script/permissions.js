@@ -195,3 +195,33 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const contentTypeSelect = document.getElementById('content_type');
+    const objectSelect = document.getElementById('object');
+
+    if (contentTypeSelect) {
+        contentTypeSelect.addEventListener('change', function () {
+            const contentTypeId = this.value;
+            if (contentTypeId) {
+                fetch(`/users/permissions/get_objects/?content_type_id=${contentTypeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Очищаем список объектов
+                        objectSelect.innerHTML = '<option value="">Все</option>';
+                        // Заполняем список объектов новыми данными
+                        data.forEach(obj => {
+                            const option = document.createElement('option');
+                            option.value = obj.id;
+                            option.textContent = obj.name;
+                            objectSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Ошибка при загрузке объектов:', error));
+            } else {
+                // Если ContentType не выбран, очищаем список объектов
+                objectSelect.innerHTML = '<option value="">Все</option>';
+            }
+        });
+    }
+});
