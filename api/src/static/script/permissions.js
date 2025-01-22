@@ -123,7 +123,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('name').value = data.name;
                     document.getElementById('code').value = data.code;
                     document.getElementById('description').value = data.description;
+                    document.getElementById('content_type').value = data.content_type;
+                    document.getElementById('object_id').value = data.object_id;
 
+                    console.log(data)
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/users/permissions/update/${permissionId}/`);
                     form.querySelector('button[type="submit"]').textContent = 'Сохранить';
