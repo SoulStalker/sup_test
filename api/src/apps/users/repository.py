@@ -216,6 +216,11 @@ class PermissionRepository(IPermissionRepository, ABC):
 
         return content_objects
 
+    def get_codes(self):
+        permissions = Permission.objects.all()
+        codes = [permission.code for permission in permissions]
+        return codes
+
 
 class UserRepository(IUserRepository, ABC):
     model = CustomUser
