@@ -155,13 +155,21 @@ class PermissionUpdateView(BaseView):
 
     def get(self, request, *args, **kwargs):
         permission_id = kwargs.get("pk")
-        permission = self.permission_service.get_by_id(permission_id)
+        permission, error = self.permission_service.get_by_id(
+            permission_id, self.user_id
+        )
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": str(error)}, status=403
+            )
 
         data = {
             "id": permission.id,
             "name": permission.name,
             "code": permission.code,
             "description": permission.description,
+            "content_type": permission.content_type,
+            "object_id": permission.object_id,
         }
         return JsonResponse(data)
 
