@@ -1,0 +1,17 @@
+<div id="comment-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
+        <h2 class="text-xl mb-4">Добавить комментарий</h2>
+        <form id="comment-form" method="POST" action="{% url 'projects:create_comment' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" id="comment-task-id" name="task_id" value="">
+            <div class="mb-4">
+                <label for="comment-text" class="block text-sm font-medium text-gray-700">Комментарий</label>
+                <textarea id="comment-text" name="comment" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required></textarea>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button id="close-comment-modal" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+                <button id="submit-comment-button" type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Добавить комментарий</button>
+            </div>
+        </form>
+    </div>
+</div>

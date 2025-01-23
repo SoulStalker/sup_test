@@ -212,7 +212,6 @@ class UpdateTaskView(BaseView):
                     {"status": "error", "message": str(err)}, status=400
                 )
             return JsonResponse({"status": "success"}, status=201)
-        print("Errors: ", form.errors)
         return JsonResponse(
             {"status": "error", "error": form.errors}, status=400
         )
@@ -220,7 +219,7 @@ class UpdateTaskView(BaseView):
 
 class DeleteTaskView(BaseView):
     """
-    Удаление проекта
+    Удаление задачи
     """
 
     def delete(self, *args, **kwargs):
@@ -234,3 +233,47 @@ class DeleteTaskView(BaseView):
             return JsonResponse(
                 {"status": "error", "message": str(e)}, status=404
             )
+        
+
+class UpdateCommentView(BaseView):
+    """
+    Добавление коментария в задачи
+    """
+
+    def get(self, request, *args, **kwargs):
+        task_id = kwargs.get("task_id")
+        print(kwargs, args)
+        form = CommentForm(request.POST, request.FILES)
+        return render(
+            request,
+            "create_comment_modal.html",
+            {
+                "form": form,
+            },
+        )
+    def post(self, request, *args, **kwargs):
+        form = CommentForm(request.POST)
+        task_id = request.POST.get('task_id')
+
+        if form.is_valid():
+            comment_dto = CommentDTO(
+                user_id=request.user.id,
+                task_id=self.task_service.get_by_id(pk=task_id).id,
+                comment=form.cleaned_data["comment"],
+            )
+            print(comment_dto)
+            try:
+                self.task_service.create_comment(comment_dto)
+                return HttpResponseRedirect(
+                    reverse(
+                        "projects:task_detail", kwargs={"task_id": task_id}
+                    )
+                )
+            except Exception as e:
+                print("Error: ", e)
+                return JsonResponse(
+                    {"status": "error", "message": str(e)}, status=400
+                )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
