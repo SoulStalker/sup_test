@@ -48,7 +48,9 @@
             <h1 class="text-2xl font-semibold mb-1">Задача: {{ task.name }}</h1>
         </div>
 
-        <button class="edit-task-button" data-task-id="{{ task.id }}" data-url="{{ edit_tasks }}">Редактировать задачу</button>
+        <button class="flex justify-between items-center mb-4 p-6" data-task-id="{{ task.id }}" data-url="{{ edit_tasks }}">Редактировать задачу</button>
+        <button class="open-comment-modal" data-task-id="{{ task.id }}">Добавить комментарий</button>
+ы
         <div class="flex-1">
             <h5 class="text-xl font-semibold">Важность</h5>
             <p>{{ task.priority }}</p>
@@ -105,16 +107,15 @@
             {% endfor %}
         </div>
 
-        <h5 class="text-2xl font-semibold">Добавить коментарий</h5>
-        <input placeholder="Напиши коментарий*" name="comment" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-        <button type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
-        </div>
+
 
 
 
         {% include 'create_task_modal.html' %}
+        {% include 'create_comment_modal.html' %}
 
         <script src="{% static 'script/tasks.js' %}"></script>
+        <script src="{% static 'script/comment.js' %}"></script>
         <script src="{% static 'script/pagination.js' %}"></script>
 
 {% endblock %}
