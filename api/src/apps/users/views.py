@@ -1,7 +1,6 @@
-from django.contrib.contenttypes.models import ContentType
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from src.apps.custom_view import BaseView
 from src.apps.users.forms import (
     CreateUserForm,
@@ -117,18 +116,19 @@ class PermissionListView(BaseView):
     """Список разрешений."""
 
     def get(self, *args, **kwargs):
+        # получение данных по типам объектов и объектам прав
+        # срабатывает только при выборке типа объекта
+        # поэтому сверху чтобы не отрабатывать весь код
         content_type_id = self.request.GET.get("content_type_id")
         if content_type_id:
-            # TODO: вынести в сервис
-            content_type = get_object_or_404(ContentType, id=content_type_id)
-            objects = content_type.model_class().objects.all()
-            objects_data = [
-                {"id": obj.id, "name": str(obj)} for obj in objects
-            ]
+            objects_data = self.permission_service.get_objects_data(
+                content_type_id
+            )
             return JsonResponse(objects_data, safe=False)
+
+        # получение списка разрешений
         permissions = self.permission_service.get_list()
         permissions = self.paginate_queryset(permissions)
-
         content_types = self.permission_service.get_content_types()
         objects = self.permission_service.get_content_objects()
         codes = set(self.permission_service.get_codes())
