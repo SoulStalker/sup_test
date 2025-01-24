@@ -70,7 +70,7 @@ class UserService(BaseService):
         return self._repository.create(dto)
 
     def update(self, user_id: int, dto: UserDTO):
-        self._repository.update(user_id, dto)
+        return self._repository.update(user_id, dto)
 
     def change_password(self, user_id: int, new_password: str):
         user = self._repository.get_by_id(user_id)

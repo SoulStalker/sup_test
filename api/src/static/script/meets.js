@@ -181,35 +181,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const editMeetButtons = document.querySelectorAll('.edit-meet-button');
     const modal = document.getElementById('modal-create-meet');
     const form = document.getElementById('create-meet-form');
-    const errorMessageContainer = document.getElementById('error-message'); // Контейнер для отображения ошибок
-    const formFields = form.querySelectorAll('input, select, button:not(#cancel-meet)'); // Все поля формы, кроме кнопки "Отмена"
-
-    let submitButton = form.querySelector('button[type="submit"]');
+    const accessDeniedPopup = document.getElementById('access-denied-popup');
+    const accessDeniedMessage = document.getElementById('access-denied-message');
+    const closeAccessDeniedPopup = document.getElementById('close-access-denied-popup');
 
     editMeetButtons.forEach(button => {
         button.addEventListener('click', function () {
             const meetId = this.getAttribute('data-meet-id');
 
-            // Очищаем предыдущие ошибки
-            if (errorMessageContainer) {
-                errorMessageContainer.textContent = '';
-                errorMessageContainer.classList.add('hidden');
-            }
-
-            // Скрываем все поля формы
-            formFields.forEach(field => field.classList.add('hidden'));
-
             // Загружаем данные мита через fetch
             fetch(`/meets/edit/${meetId}/`)
                 .then(response => {
                     if (response.status === 403) {
-                        // Если доступ запрещён (403), выбрасываем ошибку
+                        // Если доступ запрещён (403), показываем попап с ошибкой
                         return response.json().then(errorData => {
+                            accessDeniedMessage.textContent = errorData.message || 'Доступ запрещён';
+                            accessDeniedPopup.classList.remove('hidden');
                             throw new Error(errorData.message || 'Доступ запрещён');
                         });
                     }
                     if (!response.ok) {
-                        // Если статус ответа не 200, выбрасываем ошибку
                         throw new Error('Ошибка при загрузке данных мита');
                     }
                     return response.json();
@@ -218,10 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Открываем модальное окно только если данные успешно получены
                     modal.classList.remove('hidden');
 
-                    // Показываем все поля формы
-                    formFields.forEach(field => field.classList.remove('hidden'));
-
-                    // Заполняем форму полученными данными
+                    // Заполняем форму данными мита
                     document.getElementById('title').value = data.title;
                     document.getElementById('start_time').value = data.start_time;
                     document.getElementById('category').value = data.category;
@@ -234,39 +222,32 @@ document.addEventListener('DOMContentLoaded', function () {
                         const container = document.getElementById(`container_${participant.participant_id}`);
 
                         if (participantCheckbox) {
-                            participantCheckbox.checked = true;  // Отмечаем участника
+                            participantCheckbox.checked = true;
                         }
 
                         if (participantStatusInput) {
-                            participantStatusInput.value = participant.status;  // Проставляем статус
+                            participantStatusInput.value = participant.status;
                         }
 
                         if (container) {
-                            setStatus(participant.participant_id, participant.status);  // Устанавливаем статус
+                            setStatus(participant.participant_id, participant.status);
                         }
                     });
 
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/meets/edit/${meetId}/`);
-                    submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
+                    submitButton.textContent = 'Сохранить';
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
-
-                    // Отображаем ошибку пользователю в модальном окне
-                    if (errorMessageContainer) {
-                        errorMessageContainer.textContent = error.message;
-                        errorMessageContainer.classList.remove('hidden');
-                    }
-
-                    // Открываем модальное окно пустым при любой ошибке
-                    modal.classList.remove('hidden');
-                    form.reset(); // Очищаем форму
-
-                    // Скрываем все поля формы, кроме кнопки "Отмена"
-                    formFields.forEach(field => field.classList.add('hidden'));
+                    // Модальное окно не открывается, если доступ запрещен
                 });
         });
+    });
+
+    // Закрытие попапа с ошибкой доступа
+    closeAccessDeniedPopup.addEventListener('click', function () {
+        accessDeniedPopup.classList.add('hidden');
     });
 });
 

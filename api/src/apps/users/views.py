@@ -270,7 +270,7 @@ class UserCreateView(BaseView):
 
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            user_dto = self.user_service.create(
+            user_dto, error = self.user_service.create(
                 CreateUserEntity(
                     name=form.cleaned_data["name"],
                     surname=form.cleaned_data["surname"],
@@ -301,8 +301,13 @@ class UserCreateView(BaseView):
                     is_active=form.cleaned_data.get("is_active", False),
                     is_admin=form.cleaned_data.get("is_admin", False),
                     is_superuser=form.cleaned_data.get("is_superuser", False),
-                )
+                ),
+                self.user_id,
             )
+            if error:
+                return JsonResponse(
+                    {"status": "error", "message": str(error)}, status=400
+                )
 
             if send_email:
                 try:
@@ -333,7 +338,11 @@ class UserUpdateView(BaseView):
 
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get("pk")
-        user, error = self.user_service.get_by_id(user_id, user_id)
+        user, error = self.user_service.get_by_id(user_id, self.user_id)
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": str(error)}, status=403
+            )
         data = {
             "id": user.id,
             "name": user.name,
