@@ -14,7 +14,7 @@ class PermissionMixin:
         """
         Проверка наличия прав у пользователя на выполнение действия.
         :param user_id: ID пользователя
-        :param action: код действия (например, "EDIT", "READ", "COMMENT")
+        :param action: код действия (например, 1, 2, 3)
         :param obj: объект, для которого проверяются права (например, Meet)
         :return: bool
         """

@@ -24,7 +24,7 @@ class BaseService:
         Упрощённая обёртка для создания объектов.
         """
         # Проверяем наличие прав
-        if not repository.has_permission(user_id, "EDIT"):
+        if not repository.has_permission(user_id, 3):
             return None, "У вас нет прав на создание данного объекта"
         return cls.validate_and_process(
             entity, repository, dto, repository.create
@@ -48,7 +48,7 @@ class BaseService:
 
         # Проверяем наличие прав
         model = repository.get_by_id(pk)
-        if not repository.has_permission(user_id, "EDIT", model):
+        if not repository.has_permission(user_id, 3, model):
             return None, "У вас нет прав на редактирование данного объекта"
 
         return cls.validate_and_process(
