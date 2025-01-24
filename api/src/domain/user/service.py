@@ -57,6 +57,9 @@ class PermissionService(BaseService):
     def get_codes(self):
         return self._repository.get_codes()
 
+    def get_objects_data(self, content_type_id: int):
+        return self._repository.get_objects_data(content_type_id)
+
 
 class UserService(BaseService):
     def __init__(self, repository: IUserRepository):

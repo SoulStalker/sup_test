@@ -213,6 +213,12 @@ class PermissionRepository(IPermissionRepository, ABC):
         codes = [permission.code for permission in permissions]
         return codes
 
+    def get_objects_data(self, content_type_id):
+        content_type = ContentType.objects.get(id=content_type_id)
+        objects = content_type.model_class().objects.all()
+        objects_data = [{"id": obj.id, "name": str(obj)} for obj in objects]
+        return objects_data
+
 
 class UserRepository(IUserRepository, ABC):
     model = CustomUser
