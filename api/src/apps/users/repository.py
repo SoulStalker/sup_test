@@ -151,13 +151,15 @@ class PermissionRepository(IPermissionRepository, ABC):
         :param obj: объект, для которого проверяются права (например, Meet)
         :return: bool
         """
+        current_user = get_object_or_404(user, pk=user_id)
+        if current_user.is_superuser:
+            return True
         content_type = ContentType.objects.get_for_model(self.model)
         # для митов будем считать то нам не надо распределять права по митам
         # поэтому object_id = None
         # object_id = obj.id if obj else None
         object_id = None
 
-        current_user = get_object_or_404(user, pk=user_id)
         permission = current_user.permissions.filter(
             code=action,
             content_type=content_type,
@@ -168,6 +170,7 @@ class PermissionRepository(IPermissionRepository, ABC):
     def get_content_types(
         self,
     ):
+        # Получаем все модели приложений для выдачи прав пользователю
         content_types = ContentType.objects.filter(
             app_label__in=[
                 "models",
@@ -209,11 +212,13 @@ class PermissionRepository(IPermissionRepository, ABC):
         return content_objects
 
     def get_codes(self):
+        # Получаем все коды прав
         permissions = Permission.objects.all()
         codes = [permission.code for permission in permissions]
         return codes
 
     def get_objects_data(self, content_type_id):
+        # Получаем модель по типу объекта
         content_type = ContentType.objects.get(id=content_type_id)
         objects = content_type.model_class().objects.all()
         objects_data = [{"id": obj.id, "name": str(obj)} for obj in objects]
@@ -338,13 +343,14 @@ class UserRepository(IUserRepository, ABC):
         :param obj: объект, для которого проверяются права (например, Meet)
         :return: bool
         """
+        current_user = get_object_or_404(user, pk=user_id)
+        if current_user.is_superuser:
+            return True
         content_type = ContentType.objects.get_for_model(self.model)
         # для митов будем считать то нам не надо распределять права по митам
         # поэтому object_id = None
         # object_id = obj.id if obj else None
         object_id = None
-
-        current_user = get_object_or_404(user, pk=user_id)
         permission = current_user.permissions.filter(
             code=action,
             content_type=content_type,
