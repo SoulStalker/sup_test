@@ -22,7 +22,7 @@ class MeetsRepository(IMeetRepository, ABC):
     def exists(cls, pk: int) -> bool:
         return cls.model.objects.filter(id=pk).exists()
 
-    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+    def has_permission(self, user_id: int, action, obj=None) -> bool:
         """
         Проверка наличия прав у пользователя на выполнение действия.
         :param user_id: ID пользователя
@@ -38,11 +38,11 @@ class MeetsRepository(IMeetRepository, ABC):
 
         current_user = get_object_or_404(user, pk=user_id)
         permission = current_user.permissions.filter(
-            code=action,
             content_type=content_type,
             object_id=object_id,
-        ).exists()
-        return permission
+        ).values_list("code", flat=True)
+        # Если право больше или равно текущему действию, то возвращаем True
+        return max(permission) >= action
 
     @classmethod
     def _meet_orm_to_dto(cls, meet: Meet) -> MeetDTO:
@@ -169,7 +169,7 @@ class CategoryRepository(ICategoryRepository, ABC):
         query = self.model.objects.get(id=pk)
         return self._orm_to_dto(query)
 
-    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+    def has_permission(self, user_id: int, action, obj=None) -> bool:
         """
         Проверка наличия прав у пользователя на выполнение действия.
         :param user_id: ID пользователя
@@ -185,8 +185,8 @@ class CategoryRepository(ICategoryRepository, ABC):
 
         current_user = get_object_or_404(user, pk=user_id)
         permission = current_user.permissions.filter(
-            code=action,
             content_type=content_type,
             object_id=object_id,
-        ).exists()
-        return permission
+        ).values_list("code", flat=True)
+        # Если право больше или равно текущему действию, то возвращаем True
+        return max(permission) >= action

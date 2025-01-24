@@ -56,23 +56,22 @@ class Team(models.Model):
         return self.name
 
 
+class PermissionCodes(models.IntegerChoices):
+    """Класс для определения кодов прав."""
+
+    READ = 1, "Чтение"
+    COMMENT = 2, "Комментирование"
+    EDIT = 3, "Редактирование"
+
+
 class Permission(models.Model):
     """Модель прав пользователя."""
-
-    READ = "READ"
-    COMMENT = "COMMENT"
-    EDIT = "EDIT"
-    PERMISSION_CODES = [
-        (READ, "Чтение"),
-        (COMMENT, "Комментарий"),
-        (EDIT, "Редактирование"),
-    ]
 
     name = models.CharField(
         max_length=50, unique=True, verbose_name="Название"
     )
-    code = models.CharField(
-        max_length=10, choices=PERMISSION_CODES, verbose_name="Код"
+    code = models.IntegerField(
+        choices=PermissionCodes.choices, verbose_name="Код доступа"
     )
     description = models.TextField(
         null=True, blank=True, verbose_name="Описание"

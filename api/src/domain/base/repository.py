@@ -23,5 +23,5 @@ class BaseRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def has_permission(self, user_id: int, actin: str, obj=None) -> bool:
+    def has_permission(self, user_id: int, action: int, obj=None) -> bool:
         raise NotImplementedError

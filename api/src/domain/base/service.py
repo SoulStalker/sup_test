@@ -91,18 +91,18 @@ class BaseService:
         model = self._repository.get_by_id(pk)
 
         # Проверяем наличие прав на чтение объекта
-        if not self._repository.has_permission(user_id, "READ", model):
+        if not self._repository.has_permission(user_id, 1, model):
             return None, "У вас нет прав на просмотр данного объекта"
 
         return model, None
 
     def delete(self, pk, user_id):
         model = self._repository.get_by_id(pk)
-        if not self._repository.has_permission(user_id, "EDIT", model):
+        if not self._repository.has_permission(user_id, 3, model):
             return "У вас нет прав на удаление данного объекта"
         self._repository.delete(pk)
 
-    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+    def has_permission(self, user_id: int, action: int, obj=None) -> bool:
         """
         Проверка наличия разрешения у пользователя.
         - action: код действия, например, "EDIT_TASK".
