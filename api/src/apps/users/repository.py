@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.shortcuts import get_list_or_404, get_object_or_404
+from src.apps.base import PermissionMixin
 from src.domain.user import (
     CreatePermissionDTO,
     CreateRoleDTO,
@@ -22,7 +23,7 @@ from src.models.models import CustomUser, Permission, Role
 user = get_user_model()
 
 
-class RoleRepository(IRoleRepository, ABC):
+class RoleRepository(PermissionMixin, IRoleRepository, ABC):
     model = Role
 
     def _role_orm_to_dto(self, role: Role) -> RoleDTO:
@@ -68,30 +69,8 @@ class RoleRepository(IRoleRepository, ABC):
         participants = CustomUser.objects.filter(role_id=role_id).count()
         return participants
 
-    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
-        """
-        Проверка наличия прав у пользователя на выполнение действия.
-        :param user_id: ID пользователя
-        :param action: код действия (например, "EDIT", "READ", "COMMENT")
-        :param obj: объект, для которого проверяются права (например, Meet)
-        :return: bool
-        """
-        content_type = ContentType.objects.get_for_model(self.model)
-        # для митов будем считать то нам не надо распределять права по митам
-        # поэтому object_id = None
-        # object_id = obj.id if obj else None
-        object_id = None
 
-        current_user = get_object_or_404(user, pk=user_id)
-        permission = current_user.permissions.filter(
-            code=action,
-            content_type=content_type,
-            object_id=object_id,
-        ).exists()
-        return permission
-
-
-class PermissionRepository(IPermissionRepository, ABC):
+class PermissionRepository(PermissionMixin, IPermissionRepository, ABC):
     model = Permission
 
     def _permission_orm_to_dto(self, permission: Permission) -> PermissionDTO:
@@ -142,30 +121,6 @@ class PermissionRepository(IPermissionRepository, ABC):
     def get_list(self) -> list[PermissionDTO]:
         models = get_list_or_404(self.model)
         return [self._permission_orm_to_dto(model) for model in models]
-
-    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
-        """
-        Проверка наличия прав у пользователя на выполнение действия.
-        :param user_id: ID пользователя
-        :param action: код действия (например, "EDIT", "READ", "COMMENT")
-        :param obj: объект, для которого проверяются права (например, Meet)
-        :return: bool
-        """
-        current_user = get_object_or_404(user, pk=user_id)
-        if current_user.is_superuser:
-            return True
-        content_type = ContentType.objects.get_for_model(self.model)
-        # для митов будем считать то нам не надо распределять права по митам
-        # поэтому object_id = None
-        # object_id = obj.id if obj else None
-        object_id = None
-
-        permission = current_user.permissions.filter(
-            code=action,
-            content_type=content_type,
-            object_id=object_id,
-        ).exists()
-        return permission
 
     def get_content_types(
         self,
@@ -225,7 +180,7 @@ class PermissionRepository(IPermissionRepository, ABC):
         return objects_data
 
 
-class UserRepository(IUserRepository, ABC):
+class UserRepository(PermissionMixin, IUserRepository, ABC):
     model = CustomUser
     avatar_path = os.path.join(settings.MEDIA_ROOT, "images", "avatars")
 
@@ -334,26 +289,3 @@ class UserRepository(IUserRepository, ABC):
         send_mail(
             subject, message, from_email, recipient_list, fail_silently=False
         )
-
-    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
-        """
-        Проверка наличия прав у пользователя на выполнение действия.
-        :param user_id: ID пользователя
-        :param action: код действия (например, "EDIT", "READ", "COMMENT")
-        :param obj: объект, для которого проверяются права (например, Meet)
-        :return: bool
-        """
-        current_user = get_object_or_404(user, pk=user_id)
-        if current_user.is_superuser:
-            return True
-        content_type = ContentType.objects.get_for_model(self.model)
-        # для митов будем считать то нам не надо распределять права по митам
-        # поэтому object_id = None
-        # object_id = obj.id if obj else None
-        object_id = None
-        permission = current_user.permissions.filter(
-            code=action,
-            content_type=content_type,
-            object_id=object_id,
-        ).exists()
-        return permission
