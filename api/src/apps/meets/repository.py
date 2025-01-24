@@ -5,8 +5,8 @@
 from abc import ABC
 
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
+from src.apps.base import PermissionMixin
 from src.domain.meet.dtos import CategoryObject, MeetDTO, ParticipantStatusDTO
 from src.domain.meet.entity import CategoryEntity
 from src.domain.meet.repository import ICategoryRepository, IMeetRepository
@@ -15,34 +15,12 @@ from src.models.meets import Category, Meet, MeetParticipant
 user = get_user_model()
 
 
-class MeetsRepository(IMeetRepository, ABC):
+class MeetsRepository(PermissionMixin, IMeetRepository, ABC):
     model = Meet
 
     @classmethod
     def exists(cls, pk: int) -> bool:
         return cls.model.objects.filter(id=pk).exists()
-
-    def has_permission(self, user_id: int, action, obj=None) -> bool:
-        """
-        Проверка наличия прав у пользователя на выполнение действия.
-        :param user_id: ID пользователя
-        :param action: код действия (например, "EDIT", "READ", "COMMENT")
-        :param obj: объект, для которого проверяются права (например, Meet)
-        :return: bool
-        """
-        content_type = ContentType.objects.get_for_model(self.model)
-        # для митов будем считать то нам не надо распределять права по митам
-        # поэтому object_id = None
-        # object_id = obj.id if obj else None
-        object_id = None
-
-        current_user = get_object_or_404(user, pk=user_id)
-        permission = current_user.permissions.filter(
-            content_type=content_type,
-            object_id=object_id,
-        ).values_list("code", flat=True)
-        # Если право больше или равно текущему действию, то возвращаем True
-        return max(permission) >= action
 
     @classmethod
     def _meet_orm_to_dto(cls, meet: Meet) -> MeetDTO:
@@ -141,7 +119,7 @@ class MeetsRepository(IMeetRepository, ABC):
         return [self._status_orm_to_dto(status) for status in statuses]
 
 
-class CategoryRepository(ICategoryRepository, ABC):
+class CategoryRepository(PermissionMixin, ICategoryRepository, ABC):
     model = Category
 
     def _orm_to_dto(self, category: Category) -> CategoryObject:
@@ -168,25 +146,3 @@ class CategoryRepository(ICategoryRepository, ABC):
     def get_by_id(self, pk: int) -> CategoryObject:
         query = self.model.objects.get(id=pk)
         return self._orm_to_dto(query)
-
-    def has_permission(self, user_id: int, action, obj=None) -> bool:
-        """
-        Проверка наличия прав у пользователя на выполнение действия.
-        :param user_id: ID пользователя
-        :param action: код действия (например, "EDIT", "READ", "COMMENT")
-        :param obj: объект, для которого проверяются права (например, Meet)
-        :return: bool
-        """
-        content_type = ContentType.objects.get_for_model(self.model)
-        # для митов будем считать то нам не надо распределять права по митам
-        # поэтому object_id = None
-        # object_id = obj.id if obj else None
-        object_id = None
-
-        current_user = get_object_or_404(user, pk=user_id)
-        permission = current_user.permissions.filter(
-            content_type=content_type,
-            object_id=object_id,
-        ).values_list("code", flat=True)
-        # Если право больше или равно текущему действию, то возвращаем True
-        return max(permission) >= action
