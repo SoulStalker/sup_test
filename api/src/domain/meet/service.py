@@ -1,4 +1,3 @@
-# from src.domain.authorization import AuthorizationService
 from src.domain.base import BaseService
 
 from .dtos import CategoryObject, MeetDTO
@@ -46,7 +45,7 @@ class MeetService(BaseService):
             entity, self._repository, dto, pk, user_id
         )
 
-    def get_meets_by_category(self, dto, user_id) -> list[MeetDTO]:
+    def get_meets_by_category(self, dto) -> list[MeetDTO]:
         """
         Получение митов по категории с проверкой прав пользователя.
         """
@@ -72,16 +71,17 @@ class MeetCategoryService(BaseService):
         """
         Создание категории
         """
-
         entity = CategoryEntity(name=category_name)
         dto = CategoryEntity(name=category_name)
 
         return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update(self, pk, category_name):
+    def update(self, pk, category_name, user_id):
         """
         Обновление категории
         """
         entity = CategoryEntity(name=category_name)
         dto = CategoryObject(pk=pk, name=category_name)
-        return self.validate_and_update(entity, self._repository, dto, pk)
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
