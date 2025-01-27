@@ -40,7 +40,7 @@ class ProjectRepository(PermissionMixin, IProjectRepository, ABC):
     def get_by_id(self, project_id: int) -> ProjectDTO:
         return Project.objects.get(id=project_id)
 
-    def update_project(self, project_id: int, dto: ProjectDTO) -> ProjectDTO:
+    def update(self, project_id: int, dto: ProjectDTO) -> ProjectDTO:
         project = Project.objects.get(id=project_id)
         project.name = dto.name
         project.logo = dto.logo
@@ -89,8 +89,8 @@ class ProjectRepository(PermissionMixin, IProjectRepository, ABC):
             date_created=project.date_created,
         )
 
-    def delete(self, project_id: int):
-        project = Project.objects.get(id=project_id)
+    def delete(self, pk: int):
+        project = Project.objects.get(id=pk)
         project.delete()
 
     def get_valid_statuses(self):
