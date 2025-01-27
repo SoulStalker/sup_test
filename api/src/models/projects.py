@@ -231,7 +231,7 @@ class Task(models.Model):
     closed_at = models.DateTimeField(null=True, verbose_name="дата закрытия")
     feature = models.ForeignKey(
         to="Features",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="фича",
         related_name="tasks_features",
     )
@@ -256,7 +256,7 @@ class Comment(models.Model):
         related_name="comment_user",
     )
     comment = models.TextField(
-        max_length=1000, blank=True, verbose_name="Коментарий"
+        max_length=1000, blank=True, verbose_name="Комментарий"
     )
     task = models.ForeignKey(
         to="Task",

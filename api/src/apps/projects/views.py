@@ -81,6 +81,35 @@ class CreateProjectView(BaseView):
         )
 
 
+class FeaturesDetailView(BaseView):
+    """Просмотр фичи"""
+
+    def get(self, request, *args, **kwargs):
+        feature_id = kwargs.get("features_id")
+        feature = self.features_service.get_by_id(
+            pk=feature_id, user_id=self.user_id
+        )
+        project = self.project_service.get_by_id(
+            pk=feature.project_id, user_id=self.user_id
+        )
+        users = self.user_service.get_user_id_list(
+            user_id=feature.participants
+        )
+        tags = self.task_service.get_tags_id_list(tags_id=feature.tags)
+        task = self.task_service.get_task_id_list(feature=feature)
+        return render(
+            request,
+            "features_detail.html",
+            {
+                "feature": feature,
+                "users": users,
+                "project": project,
+                "tags": tags,
+                "task": task,
+            },
+        )
+
+
 class EditProjectView(BaseView):
     """
     Редактирование проекта
@@ -120,6 +149,10 @@ class EditProjectView(BaseView):
             project, error = self.project_service.get_by_id(
                 pk=project_id, user_id=self.user_id
             )
+            if error:
+                return JsonResponse(
+                    {"status": "error", "message": error}, status=403
+                )
             logo = (
                 form.cleaned_data.get("logo")
                 if "logo" in request.FILES
@@ -208,41 +241,12 @@ class FeaturesView(BaseView):
         )
 
 
-class FeaturesDetailView(BaseView):
-    """Просмотр фичи"""
-
-    def get(self, request, *args, **kwargs):
-        feature_id = kwargs.get("features_id")
-        feature = self.features_service.get_by_id(
-            pk=feature_id, user_id=self.user_id
-        )
-        project = self.project_service.get_by_id(
-            pk=feature.project_id, user_id=self.user_id
-        )
-        users = self.user_service.get_user_id_list(
-            user_id=feature.participants
-        )
-        tags = self.task_service.get_tags_id_list(tags_id=feature.tags)
-        task = self.task_service.get_task_id_list(feature=feature)
-        return render(
-            request,
-            "features_detail.html",
-            {
-                "feature": feature,
-                "users": users,
-                "project": project,
-                "tags": tags,
-                "task": task,
-            },
-        )
-
-
 class CreateFeatureView(BaseView):
     def get(self, request, *args, **kwargs):
         form = CreateFeaturesForm(request.POST)
         tags = self.features_service.get_features_tags_list()
         statuses = self.features_service.get_features_status_list()
-        projectes = self.features_service.get_feature_project_list()
+        projects = self.features_service.get_feature_project_list()
 
         return render(
             request,
@@ -252,7 +256,7 @@ class CreateFeatureView(BaseView):
                 "users": User.objects.order_by("id"),
                 "tags": tags,
                 "statuses": [str(status) for status in statuses],
-                "project": projectes,
+                "project": projects,
             },
         )
 
@@ -271,33 +275,12 @@ class CreateFeatureView(BaseView):
                 tags=list(tags),  # Передаем список ID тегов
                 project_id=form.cleaned_data["project"].id,
             )
-            try:
-                created_feature = self.features_service.create_features(
-                    features_dto
-                )
-
-                # Возвращаем успешный ответ с данными о созданной функции
-                return JsonResponse(
-                    {
-                        "status": "success",
-                        "feature": {
-                            "name": created_feature.name,
-                            "description": created_feature.description,
-                            "status": created_feature.status,
-                            "responsible_id": created_feature.responsible_id,
-                            "importance": created_feature.importance,
-                            "participants": list(participants),
-                            "tags": list(tags),
-                            "project_id": created_feature.project_id,
-                        },
-                    },
-                    status=201,
-                )
-
-            except Exception as e:
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
+            return self.handle_form(
+                form,
+                self.features_service.create,
+                features_dto,
+                self.user_id,
+            )
 
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
@@ -350,45 +333,25 @@ class EditFeatureView(BaseView):
                 project_id=form.cleaned_data["project"].id,
             )
 
-            try:
-                updated_feature = self.features_service.update_features(
-                    feature_id=feature_id, dto=features_dto
-                )
-                return JsonResponse(
-                    {
-                        "status": "success",
-                        "feature": {
-                            "name": updated_feature.name,
-                            "description": updated_feature.description,
-                            "status": updated_feature.status,
-                            "responsible_id": updated_feature.responsible_id,
-                            "importance": updated_feature.importance,
-                            "participants": updated_feature.participants,
-                            "tags": updated_feature.tags,
-                            "project_id": updated_feature.project_id,
-                        },
-                    },
-                    status=200,
-                )  # Статус 200 для успешного обновления
+            print(features_dto)
 
-            except Exception as e:
-                print(f"Ошибка при обновлении фичи: {e}")
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
-
-        else:
-            print(f"Ошибки формы: {form.errors}")
-            return JsonResponse(
-                {"status": "error", "errors": form.errors}, status=400
+            return self.handle_form(
+                form,
+                self.features_service.update,
+                feature_id,
+                features_dto,
+                self.user_id,
             )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
 
 class DeleteFeatureView(BaseView):
     def delete(self, *args, **kwargs):
         feature_id = kwargs.get("feature_id")
         try:
-            self.features_service.delete_features(pk=feature_id)
+            self.features_service.delete(pk=feature_id, user_id=self.user_id)
             return JsonResponse(
                 {"status": "success", "message": "Feature deleted"}
             )
