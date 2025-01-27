@@ -91,7 +91,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Основная функция загрузки данных фичи
     function loadFeatureData(featureId) {
         fetch(`/projects/features/edit/${featureId}/`)
-            .then(response => response.json())
+            .then(response => {
+                    if (response.status === 403) {
+                        // Если доступ запрещён (403), показываем попап с ошибкой
+                        return response.json().then(errorData => {
+                            accessDeniedMessage.textContent = errorData.message || 'Доступ запрещён';
+                            accessDeniedPopup.classList.remove('hidden');
+                            throw new Error(errorData.message || 'Доступ запрещён');
+                        });
+                    }
+                    if (!response.ok) {
+                        throw new Error('Ошибка при загрузке данных мита');
+                    }
+                    return response.json();
+                })
             .then(data => {
                 console.log("Полученные данные фичи:", data); // Отладка: выводим полученные данные
 
@@ -490,7 +503,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Изначальная загрузка всех фич
     loadAllFeatures();
 });
-
-
-
-

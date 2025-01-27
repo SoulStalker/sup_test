@@ -25,9 +25,9 @@ class ProjectService(BaseService):
         """Получение проекта по его slug."""
         return self._repository.get_project_by_slug(slug)
 
-    def create_project(self, dto: ProjectDTO):
+    def create(self, dto: ProjectDTO, user_id: int):
         """Создание нового проекта."""
-        project = ProjectEntity(
+        entity = ProjectEntity(
             name=dto.name,
             logo=dto.logo,
             description=dto.description,
@@ -36,11 +36,7 @@ class ProjectService(BaseService):
             participants=dto.participants,
             date_created=dto.date_created,
         )
-
-        err = project.verify_data()
-        if err:
-            return err
-        return self._repository.create_project(project)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
     def update_project(self, project_id, dto):
         """Обновление существующего проекта."""

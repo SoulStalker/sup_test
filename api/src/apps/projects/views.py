@@ -44,11 +44,9 @@ class CreateProjectView(BaseView):
 
     def get(self, request, *args, **kwargs):
         form = ProjectForm(request.POST, request.FILES)
-
         project_status_choices = (
             self.project_service.get_project_status_choices()
         )
-
         return render(
             request,
             "create_project_modal.html",
@@ -61,10 +59,13 @@ class CreateProjectView(BaseView):
 
     def post(self, request, *args, **kwargs):
         form = ProjectForm(request.POST, request.FILES)
-
+        print(self.user_id)
         if form.is_valid():
             participants = request.POST.getlist("participants")
-            project_dto = ProjectDTO(
+            project_status_choices = (
+                self.project_service.get_project_status_choices()
+            )
+            dto = ProjectDTO(
                 name=form.cleaned_data["name"],
                 logo=form.cleaned_data["logo"],
                 description=form.cleaned_data["description"],
@@ -73,35 +74,35 @@ class CreateProjectView(BaseView):
                 responsible_id=form.cleaned_data["responsible"].id,
                 date_created=form.cleaned_data["date_created"],
             )
-
+            user_id = self.user_id
             try:
-                # Создание проекта
-                created_project = self.project_service.create_project(
-                    project_dto, self.user_id
+                project, error = self.project_service.create(
+                    dto=dto, user_id=user_id
                 )
 
-                # Возвращаем успешный ответ с данными о созданном проекте
+                if error:
+                    return JsonResponse(
+                        {"status": "error", "message": error}, status=403
+                    )
+
                 return JsonResponse(
                     {
                         "status": "success",
                         "project": {
-                            "name": created_project.name,
-                            "logo": created_project.logo,
-                            "slug": created_project.slug,
-                            "description": created_project.description,
-                            "status": created_project.status,
-                            "responsible_id": created_project.responsible_id,
-                            "participants": created_project.participants,
-                            "date_created": created_project.date_created.isoformat(),
+                            "name": project.name,
+                            "logo": project.logo.url if project.logo else None,
+                            "slug": project.slug,
+                            "description": project.description,
+                            "status": project.status,
+                            "responsible_id": project.responsible_id,
+                            "participants": list(participants),
+                            "date_created": project.date_created.isoformat(),
+                            "project_status_choices": project_status_choices,
                         },
-                    },
-                    status=201,
+                    }
                 )
-
             except Exception as e:
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
+                print(e)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
