@@ -164,6 +164,7 @@ class UpdateTaskView(BaseView):
         task_status_choices = self.task_service.get_task_status_choices()
 
         data = {
+            "id": task.id,
             "name": task.name,
             "priority": task.priority,
             "tags": task.tags,
@@ -222,7 +223,7 @@ class DeleteTaskView(BaseView):
     def delete(self, *args, **kwargs):
         task_id = kwargs.get("task_id")
         try:
-            self.task_service.delete(pk=task_id)
+            self.task_service.delete(pk=task_id, user_id=self.user_id)
             return JsonResponse(
                 {"status": "success", "message": "Task deleted"}
             )
