@@ -59,50 +59,23 @@ class CreateProjectView(BaseView):
 
     def post(self, request, *args, **kwargs):
         form = ProjectForm(request.POST, request.FILES)
-        print(self.user_id)
         if form.is_valid():
             participants = request.POST.getlist("participants")
-            project_status_choices = (
-                self.project_service.get_project_status_choices()
+            return self.handle_form(
+                form,
+                self.project_service.create,
+                ProjectDTO(
+                    name=form.cleaned_data["name"],
+                    logo=form.cleaned_data["logo"],
+                    description=form.cleaned_data["description"],
+                    status=form.cleaned_data["status"],
+                    participants=participants,
+                    responsible_id=form.cleaned_data["responsible"].id,
+                    date_created=form.cleaned_data["date_created"],
+                ),
+                self.user_id,
             )
-            dto = ProjectDTO(
-                name=form.cleaned_data["name"],
-                logo=form.cleaned_data["logo"],
-                description=form.cleaned_data["description"],
-                status=form.cleaned_data["status"],
-                participants=participants,
-                responsible_id=form.cleaned_data["responsible"].id,
-                date_created=form.cleaned_data["date_created"],
-            )
-            user_id = self.user_id
-            try:
-                project, error = self.project_service.create(
-                    dto=dto, user_id=user_id
-                )
 
-                if error:
-                    return JsonResponse(
-                        {"status": "error", "message": error}, status=403
-                    )
-
-                return JsonResponse(
-                    {
-                        "status": "success",
-                        "project": {
-                            "name": project.name,
-                            "logo": project.logo.url if project.logo else None,
-                            "slug": project.slug,
-                            "description": project.description,
-                            "status": project.status,
-                            "responsible_id": project.responsible_id,
-                            "participants": list(participants),
-                            "date_created": project.date_created.isoformat(),
-                            "project_status_choices": project_status_choices,
-                        },
-                    }
-                )
-            except Exception as e:
-                print(e)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -144,7 +117,7 @@ class EditProjectView(BaseView):
         project_id = kwargs.get("project_id")
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
-            project = self.project_service.get_by_id(
+            project, error = self.project_service.get_by_id(
                 pk=project_id, user_id=self.user_id
             )
             logo = (
@@ -152,45 +125,22 @@ class EditProjectView(BaseView):
                 if "logo" in request.FILES
                 else None
             )
-            self.project_service.update_project(
-                project_id=project_id,
-                dto=ProjectDTO(
-                    name=form.cleaned_data["name"],
-                    logo=logo if logo else project.logo,
-                    description=form.cleaned_data["description"],
-                    status=form.cleaned_data["status"],
-                    responsible_id=form.cleaned_data["responsible"].id,
-                    date_created=form.cleaned_data["date_created"],
-                    participants=form.cleaned_data["participants"],
-                ),
+            project_dto = ProjectDTO(
+                name=form.cleaned_data["name"],
+                logo=logo if logo else project.logo,
+                description=form.cleaned_data["description"],
+                status=form.cleaned_data["status"],
+                responsible_id=form.cleaned_data["responsible"].id,
+                date_created=form.cleaned_data["date_created"],
+                participants=form.cleaned_data["participants"],
             )
-            try:
-                project = self.project_service.get_by_id(pk=project_id)
-                return JsonResponse(
-                    {
-                        "status": "success",
-                        "project": {
-                            "name": project.name,
-                            "logo": project.logo.url if project.logo else None,
-                            "slug": project.slug,
-                            "description": project.description,
-                            "status": project.status,
-                            "responsible_id": project.responsible_id,
-                            "participants": list(
-                                project.participants.values("id", "name")
-                            ),
-                            "date_created": project.date_created.isoformat(),
-                        },
-                    },
-                    status=201,
-                )
-            except Exception as e:
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
-
-        print("Errors: ", form.errors)
-
+            return self.handle_form(
+                form,
+                self.project_service.update,
+                project_id,
+                project_dto,
+                self.user_id,
+            )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -204,7 +154,7 @@ class DeleteProjectView(BaseView):
     def delete(self, *args, **kwargs):
         project_id = kwargs.get("project_id")
         try:
-            self.project_service.delete(pk=project_id)
+            self.project_service.delete(pk=project_id, user_id=self.user_id)
             return JsonResponse(
                 {"status": "success", "message": "Project deleted"}
             )

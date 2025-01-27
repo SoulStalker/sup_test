@@ -38,9 +38,20 @@ class ProjectService(BaseService):
         )
         return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update_project(self, project_id, dto):
+    def update(self, pk, dto, user_id):
         """Обновление существующего проекта."""
-        return self._repository.update_project(project_id, dto)
+        entity = ProjectEntity(
+            name=dto.name,
+            logo=dto.logo,
+            description=dto.description,
+            status=dto.status,
+            responsible_id=dto.responsible_id,
+            participants=dto.participants,
+            date_created=dto.date_created,
+        )
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_project_status_choices(self):
         """Возвращает доступные статусы проекта."""

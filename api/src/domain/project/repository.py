@@ -11,7 +11,7 @@ class IProjectRepository(BaseRepository):
         raise NotImplementedError
 
     @abstractmethod
-    def update_project(self, project_id: int, dto: ProjectDTO) -> ProjectDTO:
+    def update(self, project_id: int, dto: ProjectDTO) -> ProjectDTO:
         raise NotImplementedError
 
     @abstractmethod
