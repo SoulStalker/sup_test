@@ -53,8 +53,8 @@ class InviteRepository(PermissionMixin, IInviteRepository, ABC):
 
         return self._invite_orm_to_dto(model), None
 
-    def delete(self, invite_id: int):
-        invite = get_object_or_404(Invite, pk=invite_id)
+    def delete(self, pk: int):
+        invite = get_object_or_404(Invite, pk=pk)
         invite.delete()
 
     def update_status(self, invite_id: int, status: str):

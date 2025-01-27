@@ -18,10 +18,13 @@ class PermissionMixin:
         :param obj: объект, для которого проверяются права (например, Meet)
         :return: bool
         """
+        current_user = get_object_or_404(user, pk=user_id)
+        # Если пользователь является суперпользователем, возвращаем True
+        if current_user.is_superuser:
+            return True
+
         content_type = ContentType.objects.get_for_model(self.model)
         object_id = obj.id if obj else None
-
-        current_user = get_object_or_404(user, pk=user_id)
 
         # Проверяем права на конкретный объект (если object_id указан)
         if object_id is not None:

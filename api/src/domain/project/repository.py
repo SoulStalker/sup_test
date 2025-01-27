@@ -7,7 +7,7 @@ from .dtos import CreateTaskDTO, FeaturesDTO, ProjectDTO, TagDTO, TaskDTO
 
 class IProjectRepository(BaseRepository):
     @abstractmethod
-    def create_project(self, dto: ProjectDTO) -> ProjectDTO:
+    def create(self, dto: ProjectDTO) -> ProjectDTO:
         raise NotImplementedError
 
     @abstractmethod

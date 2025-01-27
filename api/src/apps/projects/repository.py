@@ -63,7 +63,7 @@ class ProjectRepository(PermissionMixin, IProjectRepository, ABC):
             date_created=project.date_created,
         )
 
-    def create_project(self, dto: ProjectDTO) -> ProjectDTO:
+    def create(self, dto: ProjectDTO) -> ProjectDTO:
         project = Project.objects.create(
             name=dto.name,
             logo=dto.logo,
