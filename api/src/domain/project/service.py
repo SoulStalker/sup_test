@@ -3,8 +3,8 @@ from src.domain.project import FeaturesEntity, ProjectEntity
 
 from .dtos import (
     CommentDTO,
+    CreateFeaturesDTO,
     CreateTaskDTO,
-    FeaturesDTO,
     ProjectDTO,
     StatusObject,
     TaskDTO,
@@ -74,7 +74,7 @@ class FeatureService(BaseService):
     def get_feature_project_list(self) -> list:
         return self._repository.get_feature_project_list()
 
-    def create(self, dto: FeaturesDTO, user_id: int):
+    def create(self, dto: CreateFeaturesDTO, user_id: int):
         entity = FeaturesEntity(
             name=dto.name,
             importance=dto.importance,
@@ -87,9 +87,6 @@ class FeatureService(BaseService):
         )
 
         return self.validate_and_save(entity, self._repository, dto, user_id)
-
-    def get_feature_id(self, feature_id: int):
-        return self._repository.get_feature_id(feature_id)
 
     def update(self, pk: int, dto, user_id):
         entity = FeaturesEntity(
@@ -137,3 +134,6 @@ class TaskService(BaseService):
 
     def get_comments_list(self, task_id: int):
         return self._repository.get_comments_list(task_id)
+
+    def get_feature_id(self, feature_id: int):
+        return self._repository.get_feature_id(feature_id)

@@ -38,10 +38,15 @@ class TaskDetailView(BaseView):
 
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
-        task = self.task_service.get_by_id(pk=task_id, user_id=self.user_id)
+        task, error = self.task_service.get_by_id(
+            pk=task_id, user_id=self.user_id
+        )
         tags = self.task_service.get_tags_list(task_id=task_id)
         comments = self.task_service.get_comments_list(task_id=task_id)
-        feature = self.features_service.get_feature_id(task.feature_id)
+        feature, error = self.features_service.get_by_id(
+            task.feature_id, user_id=self.user_id
+        )
+        print(feature.id, error)
         contributor = self.user_service.get_by_id(
             pk=task.contributor_id, user_id=self.user_id
         )

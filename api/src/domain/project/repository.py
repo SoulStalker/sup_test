@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from src.domain.base import BaseRepository
 
-from .dtos import CreateTaskDTO, FeaturesDTO, ProjectDTO, TagDTO, TaskDTO
+from .dtos import CreateFeaturesDTO, CreateTaskDTO, ProjectDTO, TagDTO, TaskDTO
 
 
 class IProjectRepository(BaseRepository):
@@ -47,10 +47,12 @@ class IFeaturesRepository(BaseRepository):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self, dto: FeaturesDTO) -> FeaturesDTO:
+    def create(self, dto: CreateFeaturesDTO) -> CreateFeaturesDTO:
         raise NotImplementedError
 
-    def update(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+    def update(
+        self, feature_id: int, dto: CreateFeaturesDTO
+    ) -> CreateFeaturesDTO:
         raise NotImplementedError
 
 

@@ -5,9 +5,9 @@ from django.db.models import Q
 from src.apps.base import PermissionMixin
 from src.domain.project import (
     CommentDTO,
+    CreateFeaturesDTO,
     CreateTaskDTO,
     FeaturesChoicesObject,
-    FeaturesDTO,
     IFeaturesRepository,
     IProjectRepository,
     ITaskRepository,
@@ -17,6 +17,7 @@ from src.domain.project import (
     TaskChoicesObject,
     TaskDTO,
 )
+from src.domain.project.dtos import FeaturesDTO
 from src.models.models import CustomUser
 from src.models.projects import Comment, Features, Project, Tags, Task
 
@@ -131,7 +132,7 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
     def exists(cls, pk: int) -> bool:
         return cls.model.objects.filter(id=pk).exists()
 
-    def get_list(self) -> FeaturesDTO:
+    def get_list(self) -> CreateFeaturesDTO:
         return Features.objects.all().order_by("id")
 
     def get_features_tags_list(self) -> list:
@@ -143,7 +144,7 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
     def get_feature_project_list(self) -> list:
         return Project.objects.all().order_by("id")
 
-    def create(self, dto: FeaturesDTO) -> FeaturesDTO:
+    def create(self, dto: CreateFeaturesDTO) -> CreateFeaturesDTO:
         # Создаем объект Features без тегов
         feature = Features.objects.create(
             name=dto.name,
@@ -161,7 +162,7 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
             feature.participants.set(dto.participants)
 
         # Возвращаем созданный объект в виде FeaturesDTO без тегов
-        return FeaturesDTO(
+        return CreateFeaturesDTO(
             name=feature.name,
             importance=feature.importance,
             description=feature.description,
@@ -172,9 +173,10 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
             status=feature.status,
         )
 
-    def get_by_id(self, feature_id: int) -> FeaturesDTO:
+    def get_by_id(self, feature_id: int) -> CreateFeaturesDTO:
         feature = Features.objects.get(id=feature_id)  # может быть исключение
         return FeaturesDTO(
+            id=feature.id,
             name=feature.name,
             importance=feature.importance,
             description=feature.description,
@@ -189,7 +191,9 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
             status=feature.status,
         )
 
-    def update(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
+    def update(
+        self, feature_id: int, dto: CreateFeaturesDTO
+    ) -> CreateFeaturesDTO:
         try:
             feature = Features.objects.get(id=feature_id)
         except Features.DoesNotExist:
@@ -211,7 +215,7 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
                 dto.participants
             )  # Передаем список ID участников
 
-        return FeaturesDTO(
+        return CreateFeaturesDTO(
             name=feature.name,
             importance=feature.importance,
             description=feature.description,
@@ -226,7 +230,7 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
         feature = Features.objects.get(id=feature_id)
         feature.delete()
 
-    def get_search_features(self, query: str) -> list[FeaturesDTO]:
+    def get_search_features(self, query: str) -> list[CreateFeaturesDTO]:
         if not query:
             return []
         # Поиск фичей по имени или описанию
@@ -235,7 +239,7 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
         ).order_by("id")
 
         return [
-            FeaturesDTO(
+            CreateFeaturesDTO(
                 name=feature.name,
                 importance=feature.importance,
                 description=feature.description,
