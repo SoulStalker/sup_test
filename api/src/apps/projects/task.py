@@ -135,22 +135,12 @@ class CreateTaskView(BaseView):
                 description=form.cleaned_data["description"],
                 feature_id=form.cleaned_data["feature"].id,
             )
-
-            try:
-                # Создание проекта
-                err = self.task_service.create_task(task_dto)
-                if err:
-                    return JsonResponse(
-                        {"status": "error", "message": str(err)}, status=400
-                    )
-                return JsonResponse({"status": "success"}, status=201)
-
-            except Exception as e:
-                print("Error: ", e)
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
-        print("Errors: ", form.errors)
+            return self.handle_form(
+                form,
+                self.task_service.create,
+                task_dto,
+                self.user_id,
+            )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -198,7 +188,7 @@ class UpdateTaskView(BaseView):
 
         form = TaskForm(data)
         if form.is_valid():
-            err = self.task_service.update_task(
+            err = self.task_service.update(
                 TaskDTO(
                     id=task_id,
                     name=form.cleaned_data["name"],

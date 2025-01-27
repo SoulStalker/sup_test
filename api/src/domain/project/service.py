@@ -9,6 +9,7 @@ from .dtos import (
     StatusObject,
     TaskDTO,
 )
+from .entity import TaskEntity
 from .repository import (
     IFeaturesRepository,
     IProjectRepository,
@@ -111,8 +112,19 @@ class TaskService(BaseService):
     def __init__(self, task_repository: ITaskRepository):
         self._repository = task_repository
 
-    def create(self, dto: CreateTaskDTO):
-        return self._repository.create_task(dto)
+    def create(self, dto: CreateTaskDTO, user_id: int):
+        entity = TaskEntity(
+            name=dto.name,
+            priority=dto.priority,
+            contributor_id=dto.contributor_id,
+            responsible_id=dto.responsible_id,
+            status=dto.status,
+            closed_at=dto.closed_at,
+            feature_id=dto.feature_id,
+            description=dto.description,
+            tags=dto.tags,
+        )
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
     def update(self, dto: TaskDTO):
         return self._repository.update_task(dto)
