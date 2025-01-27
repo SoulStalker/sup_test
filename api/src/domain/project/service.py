@@ -74,8 +74,8 @@ class FeatureService(BaseService):
     def get_feature_project_list(self) -> list:
         return self._repository.get_feature_project_list()
 
-    def create_features(self, dto: FeaturesDTO):
-        feature = FeaturesEntity(
+    def create(self, dto: FeaturesDTO, user_id: int):
+        entity = FeaturesEntity(
             name=dto.name,
             importance=dto.importance,
             description=dto.description,
@@ -86,16 +86,25 @@ class FeatureService(BaseService):
             status=dto.status,
         )
 
-        err = feature.verify_data()
-        if err:
-            return err
-        return self._repository.create_feature(feature)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
     def get_feature_id(self, feature_id: int):
         return self._repository.get_feature_id(feature_id)
 
-    def update_features(self, feature_id: int, dto):
-        return self._repository.update_features(feature_id, dto)
+    def update(self, pk: int, dto, user_id):
+        entity = FeaturesEntity(
+            name=dto.name,
+            importance=dto.importance,
+            description=dto.description,
+            tags=dto.tags,
+            participants=dto.participants,
+            responsible_id=dto.responsible_id,
+            project_id=dto.project_id,
+            status=dto.status,
+        )
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_search_features(self, query: str):
         return self._repository.get_search_features(query)
@@ -105,10 +114,10 @@ class TaskService(BaseService):
     def __init__(self, task_repository: ITaskRepository):
         self._repository = task_repository
 
-    def create_task(self, dto: CreateTaskDTO):
+    def create(self, dto: CreateTaskDTO):
         return self._repository.create_task(dto)
 
-    def update_task(self, dto: TaskDTO):
+    def update(self, dto: TaskDTO):
         return self._repository.update_task(dto)
 
     def get_task_status_choices(self):

@@ -143,7 +143,7 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
     def get_feature_project_list(self) -> list:
         return Project.objects.all().order_by("id")
 
-    def create_feature(self, dto: FeaturesDTO) -> FeaturesDTO:
+    def create(self, dto: FeaturesDTO) -> FeaturesDTO:
         # Создаем объект Features без тегов
         feature = Features.objects.create(
             name=dto.name,
@@ -189,9 +189,7 @@ class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
             status=feature.status,
         )
 
-    def update_features(
-        self, feature_id: int, dto: FeaturesDTO
-    ) -> FeaturesDTO:
+    def update(self, feature_id: int, dto: FeaturesDTO) -> FeaturesDTO:
         try:
             feature = Features.objects.get(id=feature_id)
         except Features.DoesNotExist:
@@ -288,7 +286,7 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
     def get_by_id(self, task_id: int) -> TaskDTO:
         return self._task_orm_to_dto(Task.objects.get(id=task_id))
 
-    def create_task(self, dto: CreateTaskDTO):
+    def create(self, dto: CreateTaskDTO):
         task = self.model(
             name=dto.name,
             priority=dto.priority,
@@ -302,7 +300,7 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         task.save()
         task.tags.set(dto.tags)
 
-    def update_task(self, dto: TaskDTO) -> TaskDTO:
+    def update(self, dto: TaskDTO) -> TaskDTO:
         task = Task.objects.get(id=dto.id)
 
         task.name = dto.name
