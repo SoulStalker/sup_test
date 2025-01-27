@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from src.apps.custom_view import BaseView
 from src.apps.projects.forms import CreateFeaturesForm, ProjectForm
-from src.domain.project import FeaturesDTO, ProjectDTO
+from src.domain.project import CreateFeaturesDTO, ProjectDTO
 
 User = get_user_model()
 
@@ -224,7 +224,7 @@ class FeaturesView(BaseView):
         features = self.features_service.get_list()
         tags = self.features_service.get_features_tags_list()
         statuses = self.features_service.get_features_status_list()
-        projectes = self.features_service.get_feature_project_list()
+        projects = self.features_service.get_feature_project_list()
         task_url = reverse("projects:tasks")
 
         return render(
@@ -235,7 +235,7 @@ class FeaturesView(BaseView):
                 "users": User.objects.order_by("id"),
                 "tags": tags,
                 "statuses": [str(status) for status in statuses],
-                "project": projectes,
+                "project": projects,
                 "task_url": task_url,
             },
         )
@@ -265,7 +265,7 @@ class CreateFeatureView(BaseView):
         if form.is_valid():
             tags = request.POST.getlist("tags")
             participants = request.POST.getlist("participants")
-            features_dto = FeaturesDTO(
+            features_dto = CreateFeaturesDTO(
                 name=form.cleaned_data["name"],
                 description=form.cleaned_data["description"],
                 status=form.cleaned_data["status"],
@@ -320,7 +320,7 @@ class EditFeatureView(BaseView):
             participants = request.POST.getlist("participants")
 
             # Создаем объект DTO для фичи
-            features_dto = FeaturesDTO(
+            features_dto = CreateFeaturesDTO(
                 name=form.cleaned_data["name"],
                 description=form.cleaned_data["description"],
                 status=form.cleaned_data["status"],

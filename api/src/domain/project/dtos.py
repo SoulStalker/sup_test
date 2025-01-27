@@ -69,7 +69,7 @@ class StatusObject:
 
 
 @dataclass
-class FeaturesDTO:
+class CreateFeaturesDTO:
     name: str
     description: str
     importance: int
@@ -78,6 +78,11 @@ class FeaturesDTO:
     responsible_id: int
     project_id: int
     status: str
+
+
+@dataclass
+class FeaturesDTO(CreateFeaturesDTO):
+    id: int
 
 
 class FeaturesChoicesObject:
