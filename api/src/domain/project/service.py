@@ -126,8 +126,21 @@ class TaskService(BaseService):
         )
         return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update(self, dto: TaskDTO):
-        return self._repository.update_task(dto)
+    def update(self, pk: int, dto: TaskDTO, user_id: int):
+        entity = TaskEntity(
+            name=dto.name,
+            priority=dto.priority,
+            contributor_id=dto.contributor_id,
+            responsible_id=dto.responsible_id,
+            status=dto.status,
+            closed_at=dto.closed_at,
+            feature_id=dto.feature_id,
+            description=dto.description,
+            tags=dto.tags,
+        )
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_task_status_choices(self):
         return self._repository.get_task_status_choices()

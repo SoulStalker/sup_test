@@ -63,7 +63,7 @@ class ITaskRepository(BaseRepository):
         raise NotImplementedError
 
     @abstractmethod
-    def update(self, dto: TaskDTO) -> TaskDTO:
+    def update(self, pk: int, dto: TaskDTO) -> TaskDTO:
         raise NotImplementedError
 
     @abstractmethod

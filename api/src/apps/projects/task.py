@@ -188,30 +188,29 @@ class UpdateTaskView(BaseView):
 
         form = TaskForm(data)
         if form.is_valid():
-            err = self.task_service.update(
-                TaskDTO(
-                    id=task_id,
-                    name=form.cleaned_data["name"],
-                    priority=form.cleaned_data["priority"],
-                    tags=form.cleaned_data["tags"],
-                    contributor_id=form.cleaned_data["contributor"].id,
-                    responsible_id=form.cleaned_data["responsible"].id,
-                    status=form.cleaned_data["status"],
-                    created_at=form.cleaned_data.get("created_at", None),
-                    closed_at=form.cleaned_data.get("closed_at", None),
-                    description=form.cleaned_data["description"],
-                    feature_id=form.cleaned_data["feature"].id,
-                ),
+            task_dto = TaskDTO(
+                id=task_id,
+                name=form.cleaned_data["name"],
+                priority=form.cleaned_data["priority"],
+                tags=form.cleaned_data["tags"],
+                contributor_id=form.cleaned_data["contributor"].id,
+                responsible_id=form.cleaned_data["responsible"].id,
+                status=form.cleaned_data["status"],
+                created_at=form.cleaned_data.get("created_at", None),
+                closed_at=form.cleaned_data.get("closed_at", None),
+                description=form.cleaned_data["description"],
+                feature_id=form.cleaned_data["feature"].id,
             )
-
-            if err:
-                return JsonResponse(
-                    {"status": "error", "message": str(err)}, status=400
-                )
-            return JsonResponse({"status": "success"}, status=201)
-        print("Errors: ", form.errors)
+            return self.handle_form(
+                form,
+                self.task_service.update,
+                pk=task_id,
+                dto=task_dto,
+                user_id=self.user_id,
+            )
+        print(form.errors)
         return JsonResponse(
-            {"status": "error", "error": form.errors}, status=400
+            {"status": "error", "errors": form.errors}, status=400
         )
 
 
