@@ -304,7 +304,7 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         task.save()
         task.tags.set(dto.tags)
 
-    def update(self, dto: TaskDTO) -> TaskDTO:
+    def update(self, pk: int, dto: TaskDTO) -> TaskDTO:
         task = Task.objects.get(id=dto.id)
 
         task.name = dto.name
@@ -316,6 +316,7 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         task.description = dto.description
         task.save()
         task.tags.set(dto.tags)
+        return self._task_orm_to_dto(task)
 
     def delete(self, task_id: int):
         task = Task.objects.get(id=task_id)
