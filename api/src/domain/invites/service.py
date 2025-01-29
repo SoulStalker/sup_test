@@ -11,7 +11,7 @@ class InviteService(BaseService):
 
     def create(self, user_id: int):
         # Проверяем наличие прав
-        if not self._repository.has_permission(user_id, "EDIT"):
+        if not self._repository.has_permission(user_id, 3):
             return None, "У вас нет прав на создание данного объекта"
         return self._repository.create(user_id)
 
@@ -20,7 +20,7 @@ class InviteService(BaseService):
 
     def update_status(self, dto: InviteDTO, status: str = "EXPIRED"):
         invite = InviteEntity(
-            pk=dto.pk,
+            pk=dto.id,
             link=dto.link,
             status=dto.status,
             created_at=dto.created_at,
