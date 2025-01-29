@@ -59,7 +59,10 @@ class RoleRepository(PermissionMixin, IRoleRepository, ABC):
 
     def delete(self, role_id: int):
         role = get_object_or_404(self.model, id=role_id)
-        role.delete()
+        try:
+            role.delete()
+        except Exception as err:
+            print(err)
 
     def get_list(self) -> list[RoleDTO]:
         roles = get_list_or_404(self.model)
