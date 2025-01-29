@@ -12,11 +12,10 @@ from src.domain.user import (
     CreatePermissionDTO,
     CreateRoleDTO,
     CreateUserEntity,
-    PermissionDTO,
     RoleDTO,
     UserDTO,
 )
-from src.domain.user.entity import UserEntity
+from src.domain.user.entity import PermissionEntity, UserEntity
 from src.services.tasks import send_email_to_user
 
 
@@ -153,20 +152,19 @@ class PermissionCreateView(BaseView):
         form = PermissionsForm(request.POST)
 
         if form.is_valid():
-            try:
-                self.permission_service.create(
-                    CreatePermissionDTO(
-                        name=form.cleaned_data["name"],
-                        description=form.cleaned_data["description"],
-                        code=form.cleaned_data["code"],
-                        content_type=form.cleaned_data["content_type"],
-                        object_id=form.cleaned_data["object_id"],
-                    ),
-                    self.user_id,
-                ),
-            except Exception as err:
-                print(err)
-            return JsonResponse({"status": "success"}, status=201)
+            permission_dto = CreatePermissionDTO(
+                name=form.cleaned_data["name"],
+                description=form.cleaned_data["description"],
+                code=form.cleaned_data["code"],
+                content_type=form.cleaned_data["content_type"],
+                object_id=form.cleaned_data["object_id"],
+            )
+            return self.handle_form(
+                form,
+                self.permission_service.create,
+                permission_dto,
+                self.user_id,
+            )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -203,25 +201,25 @@ class PermissionUpdateView(BaseView):
         permission_id = kwargs.get("pk")
         form = PermissionsForm(request.POST)
         if form.is_valid():
-            try:
-                self.permission_service.update(
-                    permission_id=permission_id,
-                    dto=PermissionDTO(
-                        id=permission_id,
-                        name=form.cleaned_data["name"],
-                        description=form.cleaned_data["description"],
-                        code=form.cleaned_data["code"],
-                        content_type=form.cleaned_data["content_type"],
-                        object_id=(
-                            form.cleaned_data["object_id"]
-                            if form.cleaned_data["object_id"]
-                            else None
-                        ),
-                    ),
-                )
-            except Exception as err:
-                print(err)
-            return JsonResponse({"status": "success"}, status=200)
+            permission_dto = PermissionEntity(
+                id=permission_id,
+                name=form.cleaned_data["name"],
+                description=form.cleaned_data["description"],
+                code=form.cleaned_data["code"],
+                content_type=form.cleaned_data["content_type"],
+                object_id=(
+                    form.cleaned_data["object_id"]
+                    if form.cleaned_data["object_id"]
+                    else None
+                ),
+            )
+            return self.handle_form(
+                form,
+                self.permission_service.update,
+                permission_id,
+                permission_dto,
+                self.user_id,
+            )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -236,7 +234,7 @@ class PermissionUpdateView(BaseView):
             )
         except Exception as err:
             return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
+                {"status": "error", "message": str(err)}, status=403
             )
 
 
