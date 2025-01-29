@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('task-feature').value = data.feature || '';
                     document.getElementById('task-contributor').value = data.contributor || '';
 
-                    console.log(data)
 
                     // Логика выделения тегов
                     const tagsContainer = document.querySelectorAll('.tag'); // Все элементы тегов

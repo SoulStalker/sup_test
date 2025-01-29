@@ -174,8 +174,9 @@ class EditProjectView(BaseView):
                 project_dto,
                 self.user_id,
             )
+        print(form.errors)
         return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
+            {"status": "error", "message": form.errors}, status=400
         )
 
 
@@ -187,13 +188,20 @@ class DeleteProjectView(BaseView):
     def delete(self, *args, **kwargs):
         project_id = kwargs.get("project_id")
         try:
-            self.project_service.delete(pk=project_id, user_id=self.user_id)
+            error = self.project_service.delete(
+                pk=project_id, user_id=self.user_id
+            )
+            if error:
+                return JsonResponse(
+                    {"status": "error", "message": error}, status=403
+                )
             return JsonResponse(
-                {"status": "success", "message": "Project deleted"}
+                {"status": "success", "message": "Meet deleted"}
             )
         except Exception as e:
+            print(e)
             return JsonResponse(
-                {"status": "error", "message": str(e)}, status=404
+                {"status": "error", "message": str(e)}, status=403
             )
 
 
@@ -356,8 +364,9 @@ class DeleteFeatureView(BaseView):
                 {"status": "success", "message": "Feature deleted"}
             )
         except Exception as e:
+            print("Error: ", e)
             return JsonResponse(
-                {"status": "error", "message": str(e)}, status=404
+                {"status": "error", "message": str(e)}, status=403
             )
 
 
