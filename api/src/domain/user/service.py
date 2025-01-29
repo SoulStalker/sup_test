@@ -65,12 +65,16 @@ class UserService(BaseService):
     def __init__(self, repository: IUserRepository):
         self._repository = repository
 
-    def create(self, dto: CreateUserEntity):
+    def create(self, dto: CreateUserEntity, user_id: int):
+        entity = dto
         # dto.password = dto.generate_password()
-        return self._repository.create(dto)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update(self, user_id: int, dto: UserDTO):
-        return self._repository.update(user_id, dto)
+    def update(self, pk, dto, user_id):
+        entity = dto
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def change_password(self, user_id: int, new_password: str):
         user = self._repository.get_by_id(user_id)

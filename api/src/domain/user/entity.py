@@ -1,13 +1,14 @@
 import secrets
 import string
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 from src.domain.base import Entity
 
 
 @dataclass
-class CreateUserEntity:
+class CreateUserEntity(Entity):
     name: str
     surname: str
     email: str
@@ -51,6 +52,16 @@ class CreateUserEntity:
         )
 
         return shuffled_password
+
+    def verify_data(self):
+        return super().verify_data(self.name)
+
+
+@dataclass
+class UserEntity(CreateUserEntity):
+    id: int
+    date_joined: datetime | None
+    meet_statuses: dict[int:str] | None
 
 
 @dataclass
