@@ -16,6 +16,7 @@ from src.domain.user import (
     RoleDTO,
     UserDTO,
 )
+from src.domain.user.entity import UserEntity
 from src.services.tasks import send_email_to_user
 
 
@@ -270,63 +271,54 @@ class UserCreateView(BaseView):
 
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            user_dto, error = self.user_service.create(
-                CreateUserEntity(
-                    name=form.cleaned_data["name"],
-                    surname=form.cleaned_data["surname"],
-                    email=form.cleaned_data["email"],
-                    password=form.cleaned_data["password"],
-                    tg_name=form.cleaned_data["tg_name"],
-                    tg_nickname=form.cleaned_data["tg_nickname"],
-                    google_meet_nickname=form.cleaned_data[
-                        "google_meet_nickname"
-                    ],
-                    gitlab_nickname=form.cleaned_data["gitlab_nickname"],
-                    github_nickname=form.cleaned_data["github_nickname"],
-                    avatar=(
-                        request.FILES["avatar"]
-                        if "avatar" in request.FILES
-                        else None
-                    ),
-                    role_id=form.cleaned_data["role"].id,
-                    team_id=(
-                        form.cleaned_data["team"].id
-                        if form.cleaned_data["team"]
-                        else None
-                    ),
-                    permissions_ids=[
-                        int(permission.id)
-                        for permission in form.cleaned_data["permissions"]
-                    ],
-                    is_active=form.cleaned_data.get("is_active", False),
-                    is_admin=form.cleaned_data.get("is_admin", False),
-                    is_superuser=form.cleaned_data.get("is_superuser", False),
+            user_dto = CreateUserEntity(
+                name=form.cleaned_data["name"],
+                surname=form.cleaned_data["surname"],
+                email=form.cleaned_data["email"],
+                password=form.cleaned_data["password"],
+                tg_name=form.cleaned_data["tg_name"],
+                tg_nickname=form.cleaned_data["tg_nickname"],
+                google_meet_nickname=form.cleaned_data["google_meet_nickname"],
+                gitlab_nickname=form.cleaned_data["gitlab_nickname"],
+                github_nickname=form.cleaned_data["github_nickname"],
+                avatar=(
+                    request.FILES["avatar"]
+                    if "avatar" in request.FILES
+                    else None
                 ),
-                self.user_id,
+                role_id=form.cleaned_data["role"].id,
+                team_id=(
+                    form.cleaned_data["team"].id
+                    if form.cleaned_data["team"]
+                    else None
+                ),
+                permissions_ids=[
+                    int(permission.id)
+                    for permission in form.cleaned_data["permissions"]
+                ],
+                is_active=form.cleaned_data.get("is_active", False),
+                is_admin=form.cleaned_data.get("is_admin", False),
+                is_superuser=form.cleaned_data.get("is_superuser", False),
             )
-            if error:
-                return JsonResponse(
-                    {"status": "error", "message": str(error)}, status=400
-                )
-
-            if send_email:
+            print(send_email)
+            if send_email == "true":
                 try:
                     send_email_to_user.delay(
                         name=user_dto.name, email=user_dto.email
                     )
                 except Exception as e:
-                    print(f"Email не отправлен: {str(e)}")
                     return JsonResponse(
                         {
                             "status": "error",
-                            "message": f"Email не отправлен: {str(e)}",
+                            "errors": f"Email не отправлен: {str(e)}",
                         },
                         status=400,
                     )
-
-            return JsonResponse(
-                {"status": "success", "message": "email sent"},
-                status=201,
+            return self.handle_form(
+                form,
+                self.user_service.create,
+                user_dto,
+                self.user_id,
             )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
@@ -364,48 +356,52 @@ class UserUpdateView(BaseView):
 
     def post(self, request, *args, **kwargs):
         user_id = kwargs.get("pk")
-        try:
+        if request.method == "POST":
             form = CreateUserForm(request.POST)
             if form.is_valid():
-                self.user_service.update(
-                    user_id=user_id,
-                    dto=UserDTO(
-                        id=user_id,
-                        name=form.cleaned_data["name"],
-                        surname=form.cleaned_data["surname"],
-                        email=form.cleaned_data["email"],
-                        tg_name=form.cleaned_data["tg_name"],
-                        tg_nickname=form.cleaned_data["tg_nickname"],
-                        google_meet_nickname=form.cleaned_data[
-                            "google_meet_nickname"
-                        ],
-                        gitlab_nickname=form.cleaned_data["gitlab_nickname"],
-                        github_nickname=form.cleaned_data["github_nickname"],
-                        avatar=(
-                            request.FILES["avatar"]
-                            if "avatar" in request.FILES
-                            else None
-                        ),
-                        role_id=form.cleaned_data["role"],
-                        team_id=form.cleaned_data.get("team", None),
-                        permissions_ids=[
-                            int(permission.id)
-                            for permission in form.cleaned_data["permissions"]
-                        ],
-                        is_active=form.cleaned_data.get("is_active", False),
-                        is_admin=form.cleaned_data.get("is_admin", False),
-                        is_superuser=form.cleaned_data.get(
-                            "is_superuser", False
-                        ),
-                        date_joined=form.cleaned_data.get("date_joined", None),
-                        meet_statuses=None,
+                user_dto = UserEntity(
+                    id=user_id,
+                    name=form.cleaned_data["name"],
+                    surname=form.cleaned_data["surname"],
+                    email=form.cleaned_data["email"],
+                    password=(
+                        form.cleaned_data["password"]
+                        if "password" in form
+                        else None
                     ),
+                    tg_name=form.cleaned_data["tg_name"],
+                    tg_nickname=form.cleaned_data["tg_nickname"],
+                    google_meet_nickname=form.cleaned_data[
+                        "google_meet_nickname"
+                    ],
+                    gitlab_nickname=form.cleaned_data["gitlab_nickname"],
+                    github_nickname=form.cleaned_data["github_nickname"],
+                    avatar=(
+                        request.FILES["avatar"]
+                        if "avatar" in request.FILES
+                        else None
+                    ),
+                    role_id=form.cleaned_data["role"],
+                    team_id=form.cleaned_data.get("team", None),
+                    permissions_ids=[
+                        int(permission.id)
+                        for permission in form.cleaned_data["permissions"]
+                    ],
+                    is_active=form.cleaned_data.get("is_active", False),
+                    is_admin=form.cleaned_data.get("is_admin", False),
+                    is_superuser=form.cleaned_data.get("is_superuser", False),
+                    date_joined=form.cleaned_data.get("date_joined", None),
+                    meet_statuses=None,
                 )
-
-                return JsonResponse({"status": "success"}, status=200)
-        except Exception as err:
+                return self.handle_form(
+                    form,
+                    self.user_service.update,
+                    user_id,
+                    user_dto,
+                    self.user_id,
+                )
             return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
+                {"status": "error", "errors": form.errors}, status=400
             )
 
 
