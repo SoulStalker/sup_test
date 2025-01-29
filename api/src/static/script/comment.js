@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const commentModal = document.getElementById('comment-modal');
     const commentForm = document.getElementById('comment-form');
 
+    // Закрытие модального окна
+    function closeCommentModal() {
+        commentModal.classList.add('hidden');
+        commentForm.reset(); // Сбрасываем форму
+    }
+
     // Открытие модального окна для добавления комментария
     openCommentModalButton.forEach(button => {
         button.addEventListener('click', function () {
@@ -15,10 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Закрытие модального окна
-    closeCommentModalButton.addEventListener('click', function () {
-        commentModal.classList.add('hidden');
-        commentForm.reset(); // Сбрасываем форму
-    });
+    closeCommentModalButton.addEventListener('click', closeCommentModal);
 
     // Обработка отправки формы комментариев
     commentForm.addEventListener('submit', function(event) {
@@ -43,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(data => {
             if (data.status === 'success') {
+                console.log('Закрытие модального окна');
                 closeCommentModal(); // Закрываем модальное окно при успешном ответе
                 location.reload(); // Перезагрузка страницы для обновления данных
             } else {
