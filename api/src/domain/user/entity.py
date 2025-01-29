@@ -74,3 +74,8 @@ class CreatePermissionEntity(Entity):
 
     def verify_data(self):
         return super().verify_data(self.name)
+
+
+@dataclass
+class PermissionEntity(CreatePermissionEntity):
+    id: int

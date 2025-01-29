@@ -2,7 +2,6 @@ from src.domain.base import BaseService
 from src.domain.user.dtos import (
     CreatePermissionDTO,
     CreateRoleDTO,
-    PermissionDTO,
     RoleDTO,
     UserDTO,
 )
@@ -42,8 +41,11 @@ class PermissionService(BaseService):
         )
         return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update(self, permission_id: int, dto: PermissionDTO):
-        self._repository.update(permission_id, dto)
+    def update(self, pk, dto, user_id):
+        entity = dto
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_content_types(self):
         return self._repository.get_content_types()
