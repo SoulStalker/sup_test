@@ -1,4 +1,3 @@
-from django.db.utils import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 from src.apps.custom_view import BaseView
@@ -8,14 +7,13 @@ from src.apps.users.forms import (
     PermissionsForm,
     RoleForm,
 )
-from src.domain.user import (
-    CreatePermissionDTO,
-    CreateRoleDTO,
-    CreateUserEntity,
-    RoleDTO,
-    UserDTO,
+from src.domain.user import CreatePermissionDTO, CreateUserEntity, UserDTO
+from src.domain.user.entity import (
+    CreateRoleEntity,
+    PermissionEntity,
+    RoleEntity,
+    UserEntity,
 )
-from src.domain.user.entity import PermissionEntity, UserEntity
 from src.services.tasks import send_email_to_user
 
 
@@ -38,22 +36,16 @@ class RoleCreateView(BaseView):
     def post(self, request):
         form = RoleForm(request.POST)
         if form.is_valid():
-            try:
-                self.role_service.create(
-                    CreateRoleDTO(
-                        name=form.cleaned_data["name"],
-                        color=form.cleaned_data["color"],
-                    )
-                )
-                return JsonResponse({"status": "success"}, status=201)
-            except IntegrityError:
-                return JsonResponse(
-                    {
-                        "status": "error",
-                        "message": "Такая роль уже существует",
-                    },
-                    status=400,
-                )
+            role = CreateRoleEntity(
+                name=form.cleaned_data["name"],
+                color=form.cleaned_data["color"],
+            )
+            return self.handle_form(
+                form,
+                self.role_service.create,
+                role,
+                self.user_id,
+            )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -64,8 +56,11 @@ class RoleEditView(BaseView):
 
     def get(self, request, *args, **kwargs):
         role_id = kwargs.get("pk")
-        role = self.role_service.get_by_id(role_id)
-
+        role, error = self.role_service.get_by_id(role_id, self.user_id)
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": str(error)}, status=403
+            )
         data = {
             "name": role.name,
             "color": role.color,
@@ -73,36 +68,29 @@ class RoleEditView(BaseView):
         return JsonResponse(data)
 
     def post(self, request, *args, **kwargs):
-        try:
-            role_id = kwargs.get("pk")
-            form = RoleForm(request.POST)
-
-            if form.is_valid():
-                self.role_service.update(
-                    role_id=role_id,
-                    dto=RoleDTO(
-                        id=role_id,
-                        name=form.cleaned_data["name"],
-                        color=form.cleaned_data["color"],
-                    ),
-                )
-
-                return JsonResponse(
-                    {"status": "success", "message": "Role updated"},
-                    status=201,
-                )
-        except IntegrityError:
-            return JsonResponse(
-                {"status": "error", "message": "Такая роль уже существует"},
-                status=400,
+        role_id = kwargs.get("pk")
+        form = RoleForm(request.POST)
+        if form.is_valid():
+            role_dto = RoleEntity(
+                id=role_id,
+                name=form.cleaned_data["name"],
+                color=form.cleaned_data["color"],
             )
+            return self.handle_form(
+                form,
+                self.role_service.update,
+                role_id,
+                role_dto,
+                self.user_id,
+            )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
 
     def delete(self, *args, **kwargs):
         role_id = kwargs.get("pk")
-
-        print(role_id)
         try:
-            self.role_service.delete(role_id)
+            self.role_service.delete(role_id, self.user_id)
             return JsonResponse(
                 {"status": "success", "message": "Role deleted"}, status=200
             )

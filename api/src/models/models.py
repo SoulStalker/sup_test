@@ -163,10 +163,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name="аватар",
     )
     role = models.ForeignKey(
-        Role, on_delete=models.CASCADE, null=True, verbose_name="роль"
+        Role, on_delete=models.SET_NULL, null=True, verbose_name="роль"
     )
     team = models.ForeignKey(
-        Team, on_delete=models.CASCADE, null=True, verbose_name="команда"
+        Team, on_delete=models.SET_NULL, null=True, verbose_name="команда"
     )
     permissions = models.ManyToManyField(
         to=Permission,

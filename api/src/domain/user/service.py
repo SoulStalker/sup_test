@@ -1,10 +1,5 @@
 from src.domain.base import BaseService
-from src.domain.user.dtos import (
-    CreatePermissionDTO,
-    CreateRoleDTO,
-    RoleDTO,
-    UserDTO,
-)
+from src.domain.user.dtos import CreatePermissionDTO, UserDTO
 from src.domain.user.entity import CreatePermissionEntity, CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
@@ -17,11 +12,15 @@ class RoleService(BaseService):
     def __init__(self, repository: IRoleRepository):
         self._repository = repository
 
-    def create(self, dto: CreateRoleDTO):
-        self._repository.create(dto)
+    def create(self, dto, user_id):
+        entity = dto
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update(self, role_id: int, dto: RoleDTO):
-        self._repository.update(role_id, dto)
+    def update(self, pk, dto, user_id):
+        entity = dto
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_roles_participants_count(self, role_id: int):
         return self._repository.get_roles_participants_count(role_id)
