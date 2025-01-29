@@ -22,16 +22,15 @@ class InviteRepository(PermissionMixin, IInviteRepository, ABC):
 
     def _invite_orm_to_dto(self, model) -> InviteDTO:
         return InviteDTO(
-            pk=model.id,
+            id=model.id,
             link=model.link,
             status=model.status,
             created_at=model.created_at,
             expires_at=model.expires_at,
         )
 
-    def get_by_id(self, invite_id: int):
-        invite = get_object_or_404(Invite, pk=invite_id)
-        return self._invite_orm_to_dto(invite)
+    def get_by_id(self, pk: int):
+        return self._invite_orm_to_dto(Invite.objects.get(pk=pk))
 
     def get_list(self):
         return [

@@ -10,7 +10,7 @@ class InvitesView(BaseView):
         for invite in invites:
             self.invite_service.update_status(
                 dto=InviteDTO(
-                    pk=invite.pk,
+                    id=invite.id,
                     link=invite.link,
                     status=invite.status,
                     created_at=invite.created_at,
@@ -28,7 +28,9 @@ class InvitesView(BaseView):
         if invite:
             return JsonResponse({"message": "success"})
         else:
-            return JsonResponse({"message": error})
+            return JsonResponse(
+                {"status": "error", "errors": error}, status=400
+            )
 
     def delete(self, *args, **kwargs):
         invite_id = kwargs.get("invite_id")
@@ -42,6 +44,7 @@ class InvitesView(BaseView):
                 {"status": "success", "message": "Invite deleted"}
             )
         except Exception as e:
+            print("Error: ", e)
             return JsonResponse(
                 {"status": "error", "message": str(e)}, status=404
             )

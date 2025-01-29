@@ -17,6 +17,3 @@ class IInviteRepository(BaseRepository):
     @abstractmethod
     def create_inviteDTO(self, invitation_code: str):
         raise NotImplementedError
-
-    def has_permission(self, user_id, param):
-        raise NotImplementedError
