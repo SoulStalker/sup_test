@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) {
                         // Если ответ не OK, пытаемся прочитать JSON с ошибкой
                         return response.json().then(errorData => {
-                            throw new Error(errorData.message || 'Ошибка при удалении инвайта');
+                            throw new Error(errorData.message || 'Ошибка при удалении мита');
                         });
                     }
                     return response.json();
