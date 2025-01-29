@@ -67,33 +67,6 @@ class TaskDetailView(BaseView):
   
         return render(self.request, "task_detail.html", context)
 
-    def post(self, request, *args, **kwargs):
-        form = CommentForm(request.POST)
-        task_id = kwargs.get("task_id")
-        if form.is_valid():
-            comment_dto = CommentDTO(
-                user_id=request.user.id,
-                task_id=self.task_service.get_by_id(
-                    pk=kwargs.get("task_id")
-                ).id,
-                comment=form.cleaned_data["comment"],
-            )
-            try:
-                self.task_service.create_comment(comment_dto)
-                return HttpResponseRedirect(
-                    reverse(
-                        "projects:task_detail", kwargs={"task_id": task_id}
-                    )
-                )
-            except Exception as e:
-                print("Error: ", e)
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
-
 
 class CreateTaskView(BaseView):
     """
@@ -264,11 +237,7 @@ class UpdateCommentView(BaseView):
             print(comment_dto)
             try:
                 self.task_service.create_comment(comment_dto)
-                return HttpResponseRedirect(
-                    reverse(
-                        "projects:task_detail", kwargs={"task_id": task_id}
-                    )
-                )
+                return JsonResponse({"status": "success", "message": "Комментарий добавлен успешно."})
             except Exception as e:
                 print("Error: ", e)
                 return JsonResponse(

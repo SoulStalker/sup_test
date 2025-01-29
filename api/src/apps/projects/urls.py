@@ -107,7 +107,7 @@ urlpatterns = [
         name="delete_tasks",
     ),
     path(
-        "features/tasks/comment/create/",
+        "features/tasks/comment/create/<int:task_id>/",
         UpdateCommentView.as_view(),
         name="create_comment",
     ),
