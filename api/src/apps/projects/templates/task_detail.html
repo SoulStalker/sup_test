@@ -41,9 +41,10 @@
     <!-- Основной контент -->
     <div class="flex flex-col space-y-4"> <!-- Используем flex-col для вертикального расположения -->
         <div class="flex justify-between items-center mb-4 p-6">
+        {% comment %} <div class="flex justify-between items-center mb-4 p-6"> {% endcomment %}
             <a href="{{ task_url }}" class="bg-green-custom text-white px-2 py-1 rounded hover:bg-green-dark">Посмотреть все задачи</a>
-            <button class="flex justify-between items-center mb-4 p-6" data-task-id="{{ task.id }}" data-url="{{ edit_tasks }}">Редактировать задачу</button>
-            <button class="open-comment-modal bg-green-custom text-white px-2 py-1 rounded hover:bg-green-dark" data-task-id="{{ task.id }}">Добавить комментарий</button>
+            <button class="edit-task-button  bg-green-custom text-white px-2 py-1 rounded hover:bg-green-dark mx-2" data-task-id="{{ task.id }}" data-url="{{ edit_tasks }}">Редактировать задачу</button>
+            <button class="open-comment-modal bg-green-custom text-white px-2 py-1 rounded hover:bg-green-dark mx-2" data-task-id="{{ task.id }}">Добавить комментарий</button>
         </div>
         
         <div class="flex-1">

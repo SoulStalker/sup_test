@@ -234,7 +234,6 @@ class UpdateCommentView(BaseView):
                 task_id=self.task_service.get_by_id(pk=task_id).id,
                 comment=form.cleaned_data["comment"],
             )
-            print(comment_dto)
             try:
                 self.task_service.create_comment(comment_dto)
                 return JsonResponse({"status": "success", "message": "Комментарий добавлен успешно."})
