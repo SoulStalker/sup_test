@@ -113,7 +113,8 @@ class PermissionRepository(PermissionMixin, IPermissionRepository, ABC):
         model.name = dto.name
         model.code = dto.code
         model.description = dto.description
-
+        model.content_type = dto.content_type
+        model.object_id = dto.object_id
         model.save()
         return self._permission_orm_to_dto(model)
 
