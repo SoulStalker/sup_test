@@ -160,7 +160,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-api/.env
+.env
 api/src/db.sqlite3
 *~
 

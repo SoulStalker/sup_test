@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+
     path("admin/", admin.site.urls),
     path("meets/", include("src.apps.meets.urls", namespace="meets")),
     path("invites/", include("src.apps.invites.urls", namespace="invites")),
@@ -13,6 +14,7 @@ urlpatterns = [
     path("registration/", include("src.apps.registration.urls", namespace="registration")),
     path("authorization/", include("src.apps.authorization.urls", namespace="authorization")),
     path("verifyemail/", include("src.apps.verifyemail.urls", namespace="verifyemail")),
+    path("", include("src.apps.home.urls", namespace="home")),
 ]
 if settings.DEBUG:
     urlpatterns += static(
