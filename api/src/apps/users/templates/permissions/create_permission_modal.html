@@ -35,12 +35,12 @@
                     </select>
             </div>
             <div class="mb-4">
-                <label for="object" class="block text-sm font-medium text-gray-700">Объект</label>
-                    <select id="object" name="object"
+                <label for="object_id" class="block text-sm font-medium text-gray-700">ОбъектP</label>
+                    <select id="object_id" name="object_id"
                         class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                         <option value="">Все</option>
                         {% for object in objects %}
-                            <option value="{{ object.id }}">{{ object }}</option>
+                            <option value="{{ object.id }}">{{ object.name }}</option>
                         {% endfor %}
                     </select>
             </div>
