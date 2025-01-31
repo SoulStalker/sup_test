@@ -20,10 +20,11 @@ class TasksView(BaseView):
         task_status_choices = self.task_service.get_task_status_choices()
         features = self.features_service.get_list()
         tags = self.features_service.get_features_tags_list()
+        users = self.user_service.get_list()
 
         context = {
             "tasks": tasks,
-            "users": self.user_service.get_list(),
+            "users": users,
             "task_status_choices": task_status_choices,
             "features": features,
             "tags": tags,
@@ -46,54 +47,30 @@ class TaskDetailView(BaseView):
         feature, error = self.features_service.get_by_id(
             task.feature_id, user_id=self.user_id
         )
-        print(feature.id, error)
-        contributor = self.user_service.get_by_id(
-            pk=task.contributor_id, user_id=self.user_id
-        )
-        responsible = self.user_service.get_by_id(
-            pk=task.responsible_id, user_id=self.user_id
-        )
+        features = self.features_service.get_list()
+        users = self.user_service.get_list()
+        contributor = self.user_service.get_by_id(pk=task.contributor_id)
+        responsible = self.user_service.get_by_id(pk=task.responsible_id)
+
         task_url = reverse("projects:tasks")
-        return render(
-            request,
-            "task_detail.html",
-            {
+        edit_tasks = reverse("projects:edit_tasks", kwargs={"task_id": task_id})
+        task_status_choices = self.task_service.get_task_status_choices()
+
+        context = {
                 "task": task,
                 "tags": tags,
+                "users": users,
                 "feature": feature,
+                "features": features,
                 "contributor": contributor,
                 "responsible": responsible,
                 "comments": comments,
                 "task_url": task_url,
-            },
-        )
-
-    def post(self, request, *args, **kwargs):
-        form = CommentForm(request.POST)
-        task_id = kwargs.get("task_id")
-        if form.is_valid():
-            comment_dto = CommentDTO(
-                user_id=request.user.id,
-                task_id=self.task_service.get_by_id(
-                    pk=kwargs.get("task_id")
-                ).id,
-                comment=form.cleaned_data["comment"],
-            )
-            try:
-                self.task_service.create_comment(comment_dto)
-                return HttpResponseRedirect(
-                    reverse(
-                        "projects:task_detail", kwargs={"task_id": task_id}
-                    )
-                )
-            except Exception as e:
-                print("Error: ", e)
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+                "edit_tasks": edit_tasks,
+                "task_status_choices": task_status_choices,
+            }
+  
+        return render(self.request, "task_detail.html", context)
 
 
 class CreateTaskView(BaseView):
@@ -217,7 +194,7 @@ class UpdateTaskView(BaseView):
 
 class DeleteTaskView(BaseView):
     """
-    Удаление проекта
+    Удаление задачи
     """
 
     def delete(self, *args, **kwargs):
@@ -231,3 +208,42 @@ class DeleteTaskView(BaseView):
             return JsonResponse(
                 {"status": "error", "message": str(e)}, status=404
             )
+        
+
+class UpdateCommentView(BaseView):
+    """
+    Добавление коментария в задачи
+    """
+
+    def get(self, request, *args, **kwargs):
+        task_id = kwargs.get("task_id")
+        print(kwargs, args)
+        form = CommentForm(request.POST, request.FILES)
+        return render(
+            request,
+            "create_comment_modal.html",
+            {
+                "form": form,
+            },
+        )
+    def post(self, request, *args, **kwargs):
+        form = CommentForm(request.POST)
+        task_id = request.POST.get('task_id')
+
+        if form.is_valid():
+            comment_dto = CommentDTO(
+                user_id=request.user.id,
+                task_id=self.task_service.get_by_id(pk=task_id).id,
+                comment=form.cleaned_data["comment"],
+            )
+            try:
+                self.task_service.create_comment(comment_dto)
+                return JsonResponse({"status": "success", "message": "Комментарий добавлен успешно."})
+            except Exception as e:
+                print("Error: ", e)
+                return JsonResponse(
+                    {"status": "error", "message": str(e)}, status=400
+                )
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
