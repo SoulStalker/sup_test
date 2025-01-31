@@ -249,6 +249,36 @@ class FeaturesView(BaseView):
         )
 
 
+
+class FeaturesDetailView(BaseView):
+    """Просмотр фичи"""
+
+    def get(self, request, *args, **kwargs):
+        feature_id = kwargs.get("features_id")
+        feature = self.features_service.get_by_id(
+            pk=feature_id, user_id=self.user_id
+        )
+        project = self.project_service.get_by_id(
+            pk=feature.project_id, user_id=self.user_id
+        )
+        users = self.user_service.get_user_id_list(
+            user_id=feature.participants
+        )
+        tags = self.task_service.get_tags_id_list(tags_id=feature.tags)
+        task = self.task_service.get_task_id_list(feature=feature)
+        return render(
+            request,
+            "features_detail.html",
+            {
+                "feature": feature,
+                "users": users,
+                "project": project,
+                "tags": tags,
+                "task": task,
+            },
+        )
+      
+      
 class CreateFeatureView(BaseView):
     def get(self, request, *args, **kwargs):
         form = CreateFeaturesForm(request.POST)

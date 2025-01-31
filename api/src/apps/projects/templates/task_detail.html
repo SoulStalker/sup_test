@@ -21,8 +21,6 @@
                 <span class="block text-2xl">🏠</span>
                 <span class="hidden sidebar-text">Главная</span>
             </a>
-            <form method="post">
-                {% csrf_token %}
             <a href="#" class="block text-center">
                 <span class="block text-2xl">📊</span>
                 <span class="hidden sidebar-text">Отчеты</span>
@@ -43,7 +41,10 @@
     <!-- Основной контент -->
     <div class="flex flex-col space-y-4"> <!-- Используем flex-col для вертикального расположения -->
         <div class="flex justify-between items-center mb-4 p-6">
+        {% comment %} <div class="flex justify-between items-center mb-4 p-6"> {% endcomment %}
             <a href="{{ task_url }}" class="bg-green-custom text-white px-2 py-1 rounded hover:bg-green-dark">Посмотреть все задачи</a>
+            <button class="edit-task-button  bg-green-custom text-white px-2 py-1 rounded hover:bg-green-dark mx-2" data-task-id="{{ task.id }}" data-url="{{ edit_tasks }}">Редактировать задачу</button>
+            <button class="open-comment-modal bg-green-custom text-white px-2 py-1 rounded hover:bg-green-dark mx-2" data-task-id="{{ task.id }}">Добавить комментарий</button>
         </div>
         
         <div class="flex-1">
@@ -106,14 +107,16 @@
             {% endfor %}
         </div>
 
-        <h5 class="text-2xl font-semibold">Добавить коментарий</h5>
-        <input placeholder="Напиши коментарий*" name="comment" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-        <button type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
-        </div>
 
 
 
-    <script src="{% static 'script/tasks.js' %}"></script>
+
+        {% include 'create_task_modal.html' %}
+        {% include 'create_comment_modal.html' %}
+
+        <script src="{% static 'script/tasks.js' %}"></script>
+        <script src="{% static 'script/comment.js' %}"></script>
+        <script src="{% static 'script/pagination.js' %}"></script>
 
 {% endblock %}
 </body>
