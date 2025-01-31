@@ -31,19 +31,22 @@ class PermissionMixin:
             permissions = current_user.permissions.filter(
                 content_type=content_type,
                 object_id=object_id,
-            ).values_list("code", flat=True)
-            if permissions:
-                return max(permissions) >= action
+            ).values_list(
+                "code", flat=True
+            )  # Достаём числовые коды
 
-        # Если права на конкретный объект не найдены, проверяем права на все объекты (object_id = None)
+            if permissions and max(permissions) >= action:
+                return True
+
+        # Если права на конкретный объект не найдены, проверяем глобальные права
         global_permissions = current_user.permissions.filter(
             content_type=content_type,
-            object_id=None,  # Права на все объекты
-        ).values_list("code", flat=True)
+            object_id=None,
+        ).values_list(
+            "code", flat=True
+        )  # Достаём числовые коды
 
-        # Если есть права на все объекты, возвращаем True, если максимальное право >= action
-        if global_permissions:
-            return max(global_permissions) >= action
+        if global_permissions and max(global_permissions) >= action:
+            return True
 
-        # Если ни одно из условий не выполнено, возвращаем False
         return False

@@ -6,6 +6,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const deleteButton = document.getElementById('delete-project-button'); // Кнопка удаления
     const confirmDeletePopup = document.getElementById('confirm-delete-popup'); // Попап подтверждения удаления
     const confirmDeleteButton = document.getElementById('confirm-delete'); // Кнопка подтверждения удаления
+    const accessDeniedPopup = document.getElementById('access-denied-popup');
+    const accessDeniedMessage = document.getElementById('access-denied-message');
+    const closeAccessDeniedPopup = document.getElementById('close-access-denied-popup');
 
     let isEditMode = false; // Флаг редактирования
     let featureId = null; // ID фичи
@@ -197,6 +200,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => {
                 console.error("Ошибка при загрузке данных фичи:", error);
             });
+            // Обработчик закрытия попапа с ошибкой доступа
+            closeAccessDeniedPopup.addEventListener('click', function() {
+                accessDeniedPopup.classList.add('hidden');
+            });
+
     }
 
     // Открытие модального окна для редактирования
