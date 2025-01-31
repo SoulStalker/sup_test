@@ -44,7 +44,9 @@ class TeamCreateView(BaseView):
                     name=form.cleaned_data["name"],
                     participants=form.cleaned_data["participants"],
                 ),
+                self.user_id,
             )
+        print(form.errors)
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -53,7 +55,11 @@ class TeamCreateView(BaseView):
 class TeamUpdateView(BaseView):
     def get(self, *args, **kwargs):
         team_id = kwargs.get("team_id")
-        team = self.team_service.get_by_id(team_id)
+        team, error = self.team_service.get_by_id(team_id, self.user_id)
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )
         data = {
             "name": team.name,
             "participants": team.participants,
@@ -62,18 +68,18 @@ class TeamUpdateView(BaseView):
 
     def post(self, *args, **kwargs):
         team_id = kwargs.get("team_id")
-        team = self.team_service.get_by_id(team_id)
         form = CreateTeamForm(self.request.POST)
         if form.is_valid():
             return self.handle_form(
                 form,
                 self.team_service.update,
-                team.id,
+                team_id,
                 TeamDTO(
-                    id=team.id,
+                    id=team_id,
                     name=form.cleaned_data["name"],
                     participants=form.cleaned_data["participants"],
                 ),
+                self.user_id,
             )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
@@ -88,7 +94,7 @@ class TeamDeleteView(BaseView):
     def delete(self, *args, **kwargs):
         team_id = kwargs.get("team_id")
         try:
-            self.team_service.delete(pk=team_id)
+            self.team_service.delete(pk=team_id, user_id=self.user_id)
             return JsonResponse(
                 {"status": "success", "message": "Team deleted"}
             )

@@ -46,7 +46,7 @@ class ICategoryRepository(ABC):
     """
 
     @abstractmethod
-    def create(self, category: CategoryEntity):
+    def create(self, category: CategoryEntity, user_id):
         raise NotImplementedError
 
     @abstractmethod
