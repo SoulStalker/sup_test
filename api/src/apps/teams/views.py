@@ -9,11 +9,12 @@ User = get_user_model()
 
 
 class TeamListView(BaseView):
+    ''' Список команд'''
     def get(self, *args, **kwargs):
         teams = self.team_service.get_list()
         teams = self.paginate_queryset(teams)
         # users = User.objects.filter(team__isnull=True).distinct()
-        users = self.user_service.get_user_list()
+        users = self.user_service.get_list()
         return render(
             self.request,
             "teams/teams_list.html",
