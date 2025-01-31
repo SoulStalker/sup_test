@@ -93,9 +93,17 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => {
             console.error('Ошибка сети:', error);
+
             const networkErrorDiv = document.createElement('div');
             networkErrorDiv.className = 'network-error';
-            networkErrorDiv.textContent = 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.';
+
+            if (error.message) {
+                networkErrorDiv.textContent = `Произошла ошибка при отправке формы. Причина: ${error.message}. Пожалуйста, попробуйте еще раз.`;
+            } else {
+        // Если сообщение отсутствует, выводим общее сообщение
+                networkErrorDiv.textContent = 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.';
+                console.log('Обработка ошибки...');
+            }
             form.insertBefore(networkErrorDiv, form.firstChild);
         });
     });
@@ -108,12 +116,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 // const modal = document.getElementById('modal');
                 // const form = document.getElementById('edit-task-form');
                 // const submitButton = form.querySelector('button[type="submit"]');
-
+                const editUrl = this.getAttribute('data-url');
                 // Открываем модальное окно
                 modal.classList.remove('hidden');
+                console.log('Редактирование задачи с ID:', currentTaskId, editUrl);
 
                 // Загружаем данные задачи через fetch
-                fetch(`update/${currentTaskId}/`)
+                fetch(editUrl)
                     .then(response => {
                         if (!response.ok) {
                             return response.json().then(errData => {
@@ -144,9 +153,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 tag.classList.remove('selected'); // Убираем класс, если он есть
                             }
                         });
-
+                        console.log('Редактирование задачи с ID:', currentTaskId, editUrl);
                         // Меняем action формы для отправки на обновление
-                        form.setAttribute('action', `update/${currentTaskId}/`);
+                        form.setAttribute('action', `${window.location.origin}${editUrl}`);
                         submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                     })
                     .catch(error => console.error('Ошибка:', error));

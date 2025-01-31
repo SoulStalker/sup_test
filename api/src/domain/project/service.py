@@ -117,7 +117,7 @@ class TaskService(BaseService):
         return self._repository.get_task_id_list(feature)
 
     def create_comment(self, dto: CommentDTO):
-        return self._task_repository.create_comment(dto)
+        return self._repository.create_comment(dto)
 
     def get_comments_list(self, task_id: int):
         return self._repository.get_comments_list(task_id)

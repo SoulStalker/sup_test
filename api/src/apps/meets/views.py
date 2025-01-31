@@ -16,7 +16,7 @@ class MeetsView(BaseView):
 
     def get(self, *args, **kwargs):
         categories = self.category_service.get_list()
-        users = self.user_service.get_user_list()
+        users = self.user_service.get_list()
         meets = self.meet_service.get_list()
         meets = self.paginate_queryset(meets)
 
