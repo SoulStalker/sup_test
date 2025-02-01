@@ -21,6 +21,7 @@ class TasksView(BaseView):
         features = self.features_service.get_list()
         tags = self.features_service.get_features_tags_list()
         users = self.user_service.get_list()
+        features_url = reverse("projects:features")
 
         context = {
             "tasks": tasks,
@@ -28,6 +29,7 @@ class TasksView(BaseView):
             "task_status_choices": task_status_choices,
             "features": features,
             "tags": tags,
+            "features_url": features_url,
         }
         return render(self.request, "tasks_list.html", context)
 
