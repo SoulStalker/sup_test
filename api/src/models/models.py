@@ -1,6 +1,8 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import PermissionsMixin
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from src.models.managers import CustomUserManager
 
@@ -54,26 +56,50 @@ class Team(models.Model):
         return self.name
 
 
+class PermissionCodes(models.IntegerChoices):
+    """Класс для определения кодов прав."""
+
+    READ = 1, "Чтение"
+    COMMENT = 2, "Комментирование"
+    EDIT = 3, "Редактирование"
+
+
 class Permission(models.Model):
     """Модель прав пользователя."""
 
     name = models.CharField(
-        max_length=20,
-        validators=[ModelValidator.validate_letters_space_only()],
-        verbose_name="название",
+        max_length=50, unique=True, verbose_name="Название"
     )
-    code = models.IntegerField(verbose_name="код")
+    code = models.IntegerField(
+        choices=PermissionCodes.choices, verbose_name="Код доступа"
+    )
     description = models.TextField(
-        max_length=500, null=True, blank=True, verbose_name="описание"
+        null=True, blank=True, verbose_name="Описание"
     )
+
+    # Связь с объектами
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Тип объекта",
+        related_name="permissions",
+    )
+    object_id = models.PositiveIntegerField(
+        null=True, blank=True, verbose_name="ID объекта"
+    )
+    content_object = GenericForeignKey("content_type", "object_id")
 
     class Meta:
         verbose_name = "право"
         verbose_name_plural = "права"
         ordering = ["-id"]
+        unique_together = ("code", "content_type", "object_id")
 
     def __str__(self):
-        return self.name
+        obj_info = f" | {self.content_object}" if self.content_object else ""
+        return f"{self.name} ({self.code}){obj_info}"
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -137,15 +163,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name="аватар",
     )
     role = models.ForeignKey(
-        Role, on_delete=models.CASCADE, null=True, verbose_name="роль"
+        Role, on_delete=models.SET_NULL, null=True, verbose_name="роль"
     )
     team = models.ForeignKey(
-        Team, on_delete=models.CASCADE, null=True, verbose_name="команда"
+        Team, on_delete=models.SET_NULL, null=True, verbose_name="команда"
     )
     permissions = models.ManyToManyField(
         to=Permission,
         related_name="customuser_permissions",
         verbose_name="права",
+        blank=True,
     )
     is_active = models.BooleanField(
         default=False, blank=True, null=True, verbose_name="активный статус"
