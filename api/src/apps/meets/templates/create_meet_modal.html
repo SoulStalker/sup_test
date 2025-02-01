@@ -1,5 +1,6 @@
 <div id="modal-create-meet" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
+     <div class="bg-white p-8 rounded-lg shadow-lg w-1/2 relative"> <!-- Добавлен relative -->
+        <div id="error-message" class="error-message hidden"></div> <!-- Перемещен внутрь модального окна -->
         <h2 class="text-xl mb-4">Создать Meet</h2>
         <form id="create-meet-form" method="POST" action="{% url 'meets:create_meet' %}">
             {% csrf_token %}

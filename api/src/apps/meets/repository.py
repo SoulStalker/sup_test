@@ -4,14 +4,18 @@
 
 from abc import ABC
 
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from src.apps.base import PermissionMixin
 from src.domain.meet.dtos import CategoryObject, MeetDTO, ParticipantStatusDTO
 from src.domain.meet.entity import CategoryEntity
 from src.domain.meet.repository import ICategoryRepository, IMeetRepository
 from src.models.meets import Category, Meet, MeetParticipant
 
+user = get_user_model()
 
-class MeetsRepository(IMeetRepository, ABC):
+
+class MeetsRepository(PermissionMixin, IMeetRepository, ABC):
     model = Meet
 
     @classmethod
@@ -74,7 +78,7 @@ class MeetsRepository(IMeetRepository, ABC):
         meet = get_object_or_404(Meet, id=pk)
         meet.delete()
 
-    def get_by_id(self, meet_id: int):
+    def get_by_id(self, meet_id: int) -> MeetDTO:
         return self._meet_orm_to_dto(Meet.objects.get(id=meet_id))
 
     def get_list(self) -> list[MeetDTO]:
@@ -115,13 +119,13 @@ class MeetsRepository(IMeetRepository, ABC):
         return [self._status_orm_to_dto(status) for status in statuses]
 
 
-class CategoryRepository(ICategoryRepository, ABC):
+class CategoryRepository(PermissionMixin, ICategoryRepository, ABC):
     model = Category
 
     def _orm_to_dto(self, category: Category) -> CategoryObject:
         return CategoryObject(pk=category.id, name=category.name)
 
-    def create(self, category: CategoryEntity) -> CategoryObject:
+    def create(self, category: CategoryEntity, user_id) -> CategoryObject:
         category = Category.objects.create(name=category.name)
         return self._orm_to_dto(category)
 
