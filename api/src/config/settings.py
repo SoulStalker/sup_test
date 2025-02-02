@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "src.apps.registration",
     "src.apps.authorization",
     "src.apps.verifyemail",
+    "src.apps.home"
 ]
 
 MIDDLEWARE = [
