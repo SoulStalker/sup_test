@@ -37,6 +37,7 @@ class BaseView:
         self.request = request
         self.args = args
         self.kwargs = kwargs
+        self.user_id = request.user.id
 
     # Сервисы приложений
     category_service = MeetCategoryService(repository=CategoryRepository())

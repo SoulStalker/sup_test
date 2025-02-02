@@ -98,6 +98,8 @@ class PermissionsForm(ModelForm):
             "name",
             "code",
             "description",
+            "content_type",
+            "object_id",
         ]
 
 
@@ -143,5 +145,3 @@ class PasswordChangeForm(forms.Form):
         if commit:
             self.user.save()
         return self.user
-
-

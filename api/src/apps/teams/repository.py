@@ -1,11 +1,16 @@
 from typing import Any
 
+from django.contrib.auth import get_user_model
+from src.apps.base import PermissionMixin
 from src.domain.teams import ITeamRepository
 from src.domain.teams.dtos import CreateTeamDTO, TeamDTO
 from src.models.models import Team
 
+user = get_user_model()
 
-class TeamRepository(ITeamRepository):
+
+class TeamRepository(PermissionMixin, ITeamRepository):
+    model = Team
 
     @classmethod
     def _model_team_to_dto(cls, team) -> TeamDTO:

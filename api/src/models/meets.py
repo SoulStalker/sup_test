@@ -72,6 +72,9 @@ class Meet(models.Model):
         related_name="meets",
         verbose_name="Участники",
     )
+    permissions = models.ManyToManyField(
+        "Permission", related_name="meets", blank=True, verbose_name="Права"
+    )
 
     class Meta:
         db_table = "meets"

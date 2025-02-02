@@ -14,9 +14,9 @@ class MeetService(BaseService):
         self._repository = repository
         self.__category_repository = category_repository
 
-    def create(self, dto):
+    def create(self, dto, user_id):
         """
-        Создание мита
+        Создание мита с проверкой прав пользователя.
         """
         entity = MeetEntity(
             dto.category_id,
@@ -26,9 +26,13 @@ class MeetService(BaseService):
             dto.responsible_id,
             dto.participant_statuses,
         )
-        return self.validate_and_save(entity, self._repository, dto)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update(self, pk, dto):
+    def update(self, pk, dto, user_id):
+        """
+        Обновление мита с проверкой прав пользователя.
+        """
+
         entity = MeetEntity(
             category_id=dto.category_id,
             title=dto.title,
@@ -37,9 +41,14 @@ class MeetService(BaseService):
             responsible_id=dto.responsible_id,
             participant_statuses=dto.participant_statuses,
         )
-        return self.validate_and_update(entity, self._repository, dto, pk)
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_meets_by_category(self, dto) -> list[MeetDTO]:
+        """
+        Получение митов по категории с проверкой прав пользователя.
+        """
         return self._repository.get_meets_by_category(dto)
 
     def get_participants_statuses(self, meet_id: int):
@@ -58,20 +67,21 @@ class MeetCategoryService(BaseService):
     ):
         self._repository = repository
 
-    def create(self, category_name):
+    def create(self, category_name, user_id):
         """
         Создание категории
         """
-
         entity = CategoryEntity(name=category_name)
         dto = CategoryEntity(name=category_name)
 
-        return self.validate_and_save(entity, self._repository, dto)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update(self, pk, category_name):
+    def update(self, pk, category_name, user_id):
         """
         Обновление категории
         """
         entity = CategoryEntity(name=category_name)
-        dto = CategoryObject(name=category_name)
-        return self.validate_and_update(entity, self._repository, dto, pk)
+        dto = CategoryObject(pk=pk, name=category_name)
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
