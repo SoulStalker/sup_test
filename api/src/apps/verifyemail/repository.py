@@ -3,7 +3,6 @@ import random
 from abc import ABC
 from datetime import timedelta
 
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from src.domain.verifyemail.dtos import VerifyEmailDTO
@@ -47,7 +46,7 @@ class VerifyemailRepository(IVerifyemailRepository, ABC):
         меняем статус юзера на активный,
         удаляем ссылку подтверждения почты из БД
         """
-        link = f'{os.getenv('FRONTEND_URL')}/verifyemail/{code}'
+        link = f"{os.getenv('FRONTEND_URL')}/verifyemail/{code}"
         email_user = get_object_or_404(self.model, link=link)
         user = get_object_or_404(CustomUser, email=email_user.email)
 

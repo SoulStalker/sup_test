@@ -7,7 +7,7 @@ from .dtos import InviteDTO
 
 class IInviteRepository(BaseRepository):
     @abstractmethod
-    def create(self) -> InviteDTO:
+    def create(self, user_id: int) -> InviteDTO:
         raise NotImplementedError
 
     @abstractmethod

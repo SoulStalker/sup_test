@@ -2,8 +2,11 @@ import os
 from abc import ABC
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.shortcuts import get_list_or_404, get_object_or_404
+from src.apps.base import PermissionMixin
 from src.domain.user import (
     CreatePermissionDTO,
     CreateRoleDTO,
@@ -17,8 +20,10 @@ from src.domain.user import (
 )
 from src.models.models import CustomUser, Permission, Role
 
+user = get_user_model()
 
-class RoleRepository(IRoleRepository, ABC):
+
+class RoleRepository(PermissionMixin, IRoleRepository, ABC):
     model = Role
 
     def _role_orm_to_dto(self, role: Role) -> RoleDTO:
@@ -54,7 +59,10 @@ class RoleRepository(IRoleRepository, ABC):
 
     def delete(self, role_id: int):
         role = get_object_or_404(self.model, id=role_id)
-        role.delete()
+        try:
+            role.delete()
+        except Exception as err:
+            print(err)
 
     def get_list(self) -> list[RoleDTO]:
         roles = get_list_or_404(self.model)
@@ -65,7 +73,7 @@ class RoleRepository(IRoleRepository, ABC):
         return participants
 
 
-class PermissionRepository(IPermissionRepository, ABC):
+class PermissionRepository(PermissionMixin, IPermissionRepository, ABC):
     model = Permission
 
     def _permission_orm_to_dto(self, permission: Permission) -> PermissionDTO:
@@ -74,6 +82,8 @@ class PermissionRepository(IPermissionRepository, ABC):
             code=permission.code,
             name=permission.name,
             description=permission.description,
+            content_type=permission.content_type,
+            object_id=permission.object_id,
         )
 
     def exists(self, pk: int) -> bool:
@@ -83,11 +93,17 @@ class PermissionRepository(IPermissionRepository, ABC):
         model = get_object_or_404(self.model, id=permission_id)
         return self._permission_orm_to_dto(model)
 
+    def get_permission_by_code(self, code):
+        model = get_object_or_404(self.model, code=code)
+        return self._permission_orm_to_dto(model)
+
     def create(self, dto: CreatePermissionDTO) -> PermissionDTO:
         model = self.model(
             name=dto.name,
             code=dto.code,
             description=dto.description,
+            content_type=dto.content_type,
+            object_id=dto.object_id,
         )
         model.save()
         return self._permission_orm_to_dto(model)
@@ -97,7 +113,8 @@ class PermissionRepository(IPermissionRepository, ABC):
         model.name = dto.name
         model.code = dto.code
         model.description = dto.description
-
+        model.content_type = dto.content_type
+        model.object_id = dto.object_id
         model.save()
         return self._permission_orm_to_dto(model)
 
@@ -109,8 +126,65 @@ class PermissionRepository(IPermissionRepository, ABC):
         models = get_list_or_404(self.model)
         return [self._permission_orm_to_dto(model) for model in models]
 
+    def get_content_types(
+        self,
+    ):
+        # Получаем все модели приложений для выдачи прав пользователю
+        content_types = ContentType.objects.filter(
+            app_label__in=[
+                "models",
+            ]
+        )
+        return content_types
 
-class UserRepository(IUserRepository, ABC):
+    def get_content_object(self, permission_id: int):
+        permission = Permission.objects.get(id=permission_id)
+        content_type = permission.content_type
+        object_id = permission.object_id
+
+        content_object = ContentType.objects.get_for_id(
+            content_type.id
+        ).get_object_for_this_type(id=object_id)
+        return {
+            "id": content_object.id,
+            "name": content_object.name,
+        }
+
+    def get_content_objects(self):
+        content_objects = []
+        content_types = self.get_content_types()
+
+        for content_type in content_types:
+            # Получаем модель по типу контента
+            model_class = content_type.model_class()
+            if model_class:
+                try:
+                    # Получаем все объекты этой модели
+                    objects = model_class.objects.all()
+                    # content_objects.extend(objects)
+                    content_objects.append({content_type: objects})
+                except Exception as e:
+                    # Обработка исключений (например, если модель не поддерживает objects.all())
+                    print(
+                        f"An error occurred while fetching objects for {content_type}: {e}"
+                    )
+        return content_objects
+
+    def get_codes(self):
+        # Получаем все коды прав
+        permissions = Permission.objects.all()
+        codes = [permission.code for permission in permissions]
+        return codes
+
+    def get_objects_data(self, content_type_id):
+        # Получаем модель по типу объекта
+        content_type = ContentType.objects.get(id=content_type_id)
+        objects = content_type.model_class().objects.all()
+        objects_data = [{"id": obj.id, "name": str(obj)} for obj in objects]
+        return objects_data
+
+
+class UserRepository(PermissionMixin, IUserRepository, ABC):
     model = CustomUser
     avatar_path = os.path.join(settings.MEDIA_ROOT, "images", "avatars")
 
@@ -188,8 +262,7 @@ class UserRepository(IUserRepository, ABC):
         model.permissions.set(dto.permissions_ids)
         model.is_active = dto.is_active
         model.is_admin = dto.is_admin
-        model.is_superuser = dto.is_superuser
-
+        # model.is_superuser = dto.is_superuser это поле нельзя менять оно затирает суперпользователя
         model.save()
 
         return self._user_orm_to_dto(model)
@@ -205,9 +278,9 @@ class UserRepository(IUserRepository, ABC):
     def get_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
-    
-    def get_user_id_list(self, user_list_id: list) -> list:
-        user = self.model.objects.filter(id__in=user_list_id)
+      
+    def get_user_id_list(self, user_id: int) -> list[UserDTO]:
+        user = self.model.objects.filter(id__in=user_id)
         return user
 
     def send_welcome_email(self, user_dto):
