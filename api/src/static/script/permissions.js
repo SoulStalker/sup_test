@@ -123,7 +123,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('name').value = data.name;
                     document.getElementById('code').value = data.code;
                     document.getElementById('description').value = data.description;
-
+                    document.getElementById('content_type').value = data.content_type;
+                    document.getElementById('object').value = data.object?.id ?? "";
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/users/permissions/update/${permissionId}/`);
                     form.querySelector('button[type="submit"]').textContent = 'Сохранить';
@@ -191,6 +192,36 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error('Ошибка:', error);
             alert('Произошла ошибка при удалении прав');
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const contentTypeSelect = document.getElementById('content_type');
+    const objectSelect = document.getElementById('object');
+
+    if (contentTypeSelect) {
+        contentTypeSelect.addEventListener('change', function () {
+            const contentTypeId = this.value;
+            if (contentTypeId) {
+                fetch(`/users/permissions/get_objects/?content_type_id=${contentTypeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Очищаем список объектов
+                        objectSelect.innerHTML = '<option value="">Все</option>';
+                        // Заполняем список объектов новыми данными
+                        data.forEach(obj => {
+                            const option = document.createElement('option');
+                            option.value = obj.id;
+                            option.textContent = obj.name;
+                            objectSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Ошибка при загрузке объектов:', error));
+            } else {
+                // Если ContentType не выбран, очищаем список объектов
+                objectSelect.innerHTML = '<option value="">Все</option>';
+            }
         });
     }
 });

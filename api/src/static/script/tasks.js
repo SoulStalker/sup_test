@@ -6,12 +6,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteButton = document.getElementById('delete-task-button'); // Кнопка удаления
     const confirmDeletePopup = document.getElementById('confirm-delete-popup'); // Попап подтверждения удаления
     const confirmDeleteButton = document.getElementById('confirm-delete'); // Кнопка подтверждения удаления
-
+    const task_id = '';
 
     let submitButton = form.querySelector('button[type="submit"]');
-    let currentTaskId = null; // Переменная для хранения текущего ID задача
+    let currentTaskId = null; // Переменная для хранения текущего ID задачи
 
-    // Открытие модального окна для создания задачы
+    // Открытие модального окна для создания задачи
     if (openModalButton) {
         openModalButton.addEventListener('click', function () {
             modal.classList.remove('hidden');
@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
             submitButton.textContent = 'Создать задачу';
             form.reset();
             clearErrors(); // Очистить ошибки при открытии окна
-
         });
     }
 
@@ -28,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.classList.add('hidden');
         form.reset(); // Сбрасываем форму
         clearErrors(); // Очищение ошибок
-
     }
 
     // Обработчик клика по кнопке закрытия модального окна
@@ -42,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Обработка отправки формы
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        console.log('Отправка формы создания задачы');
+        console.log('Отправка формы создания задачи');
 
         // Проверка валидности формы
         if (!form.checkValidity()) {
@@ -102,67 +100,69 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Редактирование задачи
     const editTaskButtons = document.querySelectorAll('.edit-task-button');
-        editTaskButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
-                // const modal = document.getElementById('modal');
-                // const form = document.getElementById('edit-task-form');
-                // const submitButton = form.querySelector('button[type="submit"]');
+    editTaskButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
+            modal.classList.remove('hidden');
 
-                // Открываем модальное окно
-                modal.classList.remove('hidden');
-
-                // Загружаем данные задачи через fetch
-                fetch(`update/${currentTaskId}/`)
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(errData => {
-                                throw new Error(`Ошибка ${response.status}: ${errData.message || 'Неизвестная ошибка'}`);
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Заполняем форму полученными данными
-                        document.getElementById('task-name').value = data.name || '';
-                        document.getElementById('task-priority').value = data.priority || '';
-                        document.getElementById('task-description').value = data.description || '';
-                        document.getElementById('task-status').value = data.status || '';
-                        document.getElementById('task-responsible').value = data.responsible || '';
-                        document.getElementById('task-feature').value = data.feature || '';
-                        document.getElementById('task-contributor').value = data.contributor || '';
-
-                        // Логика выделения тегов
-                        const tagsContainer = document.querySelectorAll('.tag'); // Все элементы тегов
-                        const selectedTags = data.tags || []; // ID выбранных тегов
-
-                        tagsContainer.forEach(tag => {
-                            const tagId = parseInt(tag.getAttribute('data-tag-id'), 10);
-                            if (selectedTags.includes(tagId)) {
-                                tag.classList.add('selected'); // Добавляем класс "selected"
-                            } else {
-                                tag.classList.remove('selected'); // Убираем класс, если он есть
-                            }
+            // Загружаем данные задачи через fetch
+            fetch(`update/${currentTaskId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errData => {
+                            throw new Error(`Ошибка ${response.status}: ${errData.message || 'Неизвестная ошибка'}`);
                         });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Заполняем форму полученными данными
 
-                        // Меняем action формы для отправки на обновление
-                        form.setAttribute('action', `update/${currentTaskId}/`);
-                        submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
-                    })
-                    .catch(error => console.error('Ошибка:', error));
-            });
+                    document.getElementById('task-name').value = data.name || '';
+                    document.getElementById('task-priority').value = data.priority || '';
+                    document.getElementById('task-description').value = data.description || '';
+                    document.getElementById('task-status').value = data.status || '';
+                    document.getElementById('task-responsible').value = data.responsible || '';
+                    document.getElementById('task-feature').value = data.feature || '';
+                    document.getElementById('task-contributor').value = data.contributor || '';
+
+
+                    // Логика выделения тегов
+                    const tagsContainer = document.querySelectorAll('.tag'); // Все элементы тегов
+                    const selectedTags = data.tags || []; // ID выбранных тегов
+                    document.task_id = data.id || null;
+
+                    tagsContainer.forEach(tag => {
+                        const tagId = parseInt(tag.getAttribute('data-tag-id'), 10);
+                        if (selectedTags.includes(tagId)) {
+                            tag.classList.add('selected'); // Добавляем класс "selected"
+                        } else {
+                            tag.classList.remove('selected'); // Убираем класс, если он есть
+                        }
+                    });
+
+                    // Меняем action формы для отправки на обновление
+                    form.setAttribute('action', `update/${currentTaskId}/`);
+                    submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
+                })
+                .catch(error => console.error('Ошибка:', error));
         });
-
+    });
 
     // Обработчик для открытия попапа подтверждения удаления
     deleteButton.addEventListener('click', function () {
+        currentTaskId = this.getAttribute('data-task-id'); // Устанавливаем currentTaskId
+        console.log("Открытие попапа подтверждения удаления");
+        console.log("ID задачи для удаления:", document.task_id);
         confirmDeletePopup.classList.remove('hidden'); // Показываем попап подтверждения удаления
     });
 
     // Обработчик подтверждения удаления задачи
     confirmDeleteButton.addEventListener('click', function () {
-        if (currentTaskId) {
-            fetch(`delete/${currentTaskId}/`, {
+        console.log("Подтверждение удаления задачи");
+        console.log("ID задачи для удаления:", document.task_id);
+        if (document.task_id) {
+            fetch(`delete/${document.task_id}/`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -181,16 +181,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert('Ошибка: ' + data.message); // Показываем сообщение об ошибке
                 }
             })
-            .catch(error => console.error('Ошибка при удалении задача:', error));
+            .catch(error => console.error('Ошибка при удалении задачи:', error));
         }
     });
 
-    // Обработчик отмены удаления задач
+    // Обработчик отмены удаления задачи
     const cancelDeleteButton = document.getElementById('cancel-delete'); // Кнопка отмены удаления
     cancelDeleteButton.addEventListener('click', function () {
         confirmDeletePopup.classList.add('hidden'); // Скрываем попап подтверждения удаления
     });
-
 
     // Очищение ошибок формы
     const clearErrors = () => {
@@ -207,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function () {
         errorDiv.textContent = errors.join(', ');
         field.parentNode.insertBefore(errorDiv, field.nextSibling); // Вставляем ошибку после поля
     };
-
 });
 
 document.addEventListener('DOMContentLoaded', function () {

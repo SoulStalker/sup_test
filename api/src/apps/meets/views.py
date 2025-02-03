@@ -16,7 +16,7 @@ class MeetsView(BaseView):
 
     def get(self, *args, **kwargs):
         categories = self.category_service.get_list()
-        users = self.user_service.get_user_list()
+        users = self.user_service.get_list()
         meets = self.meet_service.get_list()
         meets = self.paginate_queryset(meets)
 
@@ -33,7 +33,11 @@ class MeetsView(BaseView):
     def delete(self, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
         try:
-            self.meet_service.delete(pk=meet_id)
+            error = self.meet_service.delete(pk=meet_id, user_id=self.user_id)
+            if error:
+                return JsonResponse(
+                    {"status": "error", "message": error}, status=403
+                )
             return JsonResponse(
                 {"status": "success", "message": "Meet deleted"}
             )
@@ -73,6 +77,7 @@ class CreateMeetView(BaseView):
                         "participant_statuses"
                     ],
                 ),
+                self.user_id,
             )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
@@ -87,7 +92,11 @@ class EditMeetView(BaseView):
     def get(self, request, *args, **kwargs):
         meet_id = kwargs.get("meet_id")
         statuses = self.meet_service.get_participants_statuses(meet_id)
-        meet = self.meet_service.get_by_id(meet_id)
+        meet, error = self.meet_service.get_by_id(meet_id, self.user_id)
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )
         data = {
             "title": meet.title,
             "start_time": meet.start_time.strftime("%Y-%m-%dT%H:%M"),
@@ -117,6 +126,7 @@ class EditMeetView(BaseView):
                         "participant_statuses"
                     ],
                 ),
+                self.user_id,
             )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
@@ -133,7 +143,9 @@ class CategoryView(BaseView):
             category_name = request.POST.get("category_name")
             if category_name:
                 # Создаем новую категорию
-                category, err = self.category_service.create(category_name)
+                category, err = self.category_service.create(
+                    category_name, self.user_id
+                )
                 if err:
                     return JsonResponse(
                         {"status": "error", "error": str(err)}, status=400

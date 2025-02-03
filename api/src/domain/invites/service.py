@@ -9,15 +9,18 @@ class InviteService(BaseService):
     def __init__(self, repository: IInviteRepository):
         self._repository = repository
 
-    def create(self):
-        return self._repository.create()
+    def create(self, user_id: int):
+        # Проверяем наличие прав
+        if not self._repository.has_permission(user_id, 3):
+            return None, "У вас нет прав на создание данного объекта"
+        return self._repository.create(user_id)
 
     def create_inviteDTO(self, invitation_code):
         return self._repository.create_inviteDTO(invitation_code)
 
     def update_status(self, dto: InviteDTO, status: str = "EXPIRED"):
         invite = InviteEntity(
-            pk=dto.pk,
+            pk=dto.id,
             link=dto.link,
             status=dto.status,
             created_at=dto.created_at,
@@ -30,3 +33,11 @@ class InviteService(BaseService):
         else:
             return "Invalid status"
         self._repository.update_status(invite.pk, status)
+
+    def has_permission(self, user_id: int, action: str, obj=None) -> bool:
+        """
+        Проверка наличия разрешения у пользователя.
+        - action: код действия, например, "EDIT_TASK".
+        - obj: объект, для которого проверяется разрешение. Если None, проверяется глобальное разрешение.
+        """
+        return self.has_permission(user_id, action, obj)

@@ -10,7 +10,7 @@ class InvitesView(BaseView):
         for invite in invites:
             self.invite_service.update_status(
                 dto=InviteDTO(
-                    pk=invite.pk,
+                    id=invite.id,
                     link=invite.link,
                     status=invite.status,
                     created_at=invite.created_at,
@@ -23,18 +23,28 @@ class InvitesView(BaseView):
         return render(self.request, "invites_list.html", context)
 
     def post(self, *args, **kwargs):
-        invite = self.invite_service.create()
+        user_id = self.request.user.id
+        invite, error = self.invite_service.create(user_id=user_id)
         if invite:
             return JsonResponse({"message": "success"})
+        else:
+            return JsonResponse(
+                {"status": "error", "errors": error}, status=400
+            )
 
     def delete(self, *args, **kwargs):
         invite_id = kwargs.get("invite_id")
         try:
-            self.invite_service.delete(invite_id)
+            error = self.invite_service.delete(invite_id, self.user_id)
+            if error:
+                return JsonResponse(
+                    {"status": "error", "message": error}, status=403
+                )
             return JsonResponse(
                 {"status": "success", "message": "Invite deleted"}
             )
         except Exception as e:
+            print("Error: ", e)
             return JsonResponse(
                 {"status": "error", "message": str(e)}, status=404
             )

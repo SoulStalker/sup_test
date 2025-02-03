@@ -9,17 +9,40 @@
                     class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
             </div>
             <div class="mb-4 relative">
-                <label for="code" class="block text-sm font-medium text-gray-700">Введите код*</label>
-                <div class="flex items-center space-x-2">
-                    <input type="text" id="code" name="code" maxlength="6"
-                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
-                </div>
+                <label for="code" class="block text-sm font-medium text-gray-700">Код</label>
+                    <select id="code" name="code"
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <option value="">Выбрать</option>
+                        {% for code in codes %}
+                            <option value="{{ code }}">{{ code }}</option>
+                        {% endfor %}
+                    </select>
             </div>
             <div class="mb-4">
                 <label for="description" class="block text-sm font-medium text-gray-700">Описание</label>
                 <textarea id="description" name="description" maxlength="500"
                     class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                     placeholder="Введите описание (не более 500 символов)"></textarea>
+            </div>
+            <div class="mb-4">
+                 <label for="content_type" class="block text-sm font-medium text-gray-700">Тип объекта*</label>
+                    <select id="content_type" name="content_type"
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                        <option value="">Выбрать</option>
+                        {% for ct in content_types %}
+                            <option value="{{ ct.id }}">{{ ct.name }}</option>
+                        {% endfor %}
+                    </select>
+            </div>
+            <div class="mb-4">
+                <label for="object" class="block text-sm font-medium text-gray-700">Объект</label>
+                    <select id="object" name="object"
+                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <option value="">Все</option>
+                        {% for object in objects %}
+                            <option value="{{ object.id }}">{{ object }}</option>
+                        {% endfor %}
+                    </select>
             </div>
             <div class="flex justify-end space-x-2">
                 <button id="delete-permission" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 delete-btn">Удалить</button>

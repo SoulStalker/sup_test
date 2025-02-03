@@ -3,12 +3,13 @@ from src.domain.project import FeaturesEntity, ProjectEntity
 
 from .dtos import (
     CommentDTO,
+    CreateFeaturesDTO,
     CreateTaskDTO,
-    FeaturesDTO,
     ProjectDTO,
     StatusObject,
     TaskDTO,
 )
+from .entity import TaskEntity
 from .repository import (
     IFeaturesRepository,
     IProjectRepository,
@@ -25,9 +26,9 @@ class ProjectService(BaseService):
         """Получение проекта по его slug."""
         return self._repository.get_project_by_slug(slug)
 
-    def create_project(self, dto: ProjectDTO):
+    def create(self, dto: ProjectDTO, user_id: int):
         """Создание нового проекта."""
-        project = ProjectEntity(
+        entity = ProjectEntity(
             name=dto.name,
             logo=dto.logo,
             description=dto.description,
@@ -36,15 +37,22 @@ class ProjectService(BaseService):
             participants=dto.participants,
             date_created=dto.date_created,
         )
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-        err = project.verify_data()
-        if err:
-            return err
-        return self._repository.create_project(project)
-
-    def update_project(self, project_id, dto):
+    def update(self, pk, dto, user_id):
         """Обновление существующего проекта."""
-        return self._repository.update_project(project_id, dto)
+        entity = ProjectEntity(
+            name=dto.name,
+            logo=dto.logo,
+            description=dto.description,
+            status=dto.status,
+            responsible_id=dto.responsible_id,
+            participants=dto.participants,
+            date_created=dto.date_created,
+        )
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_project_status_choices(self):
         """Возвращает доступные статусы проекта."""
@@ -67,8 +75,8 @@ class FeatureService(BaseService):
     def get_feature_project_list(self) -> list:
         return self._repository.get_feature_project_list()
 
-    def create_features(self, dto: FeaturesDTO):
-        feature = FeaturesEntity(
+    def create(self, dto: CreateFeaturesDTO, user_id: int):
+        entity = FeaturesEntity(
             name=dto.name,
             importance=dto.importance,
             description=dto.description,
@@ -79,16 +87,22 @@ class FeatureService(BaseService):
             status=dto.status,
         )
 
-        err = feature.verify_data()
-        if err:
-            return err
-        return self._repository.create_feature(feature)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def get_feature_id(self, feature_id: int):
-        return self._repository.get_feature_id(feature_id)
-
-    def update_features(self, feature_id: int, dto):
-        return self._repository.update_features(feature_id, dto)
+    def update(self, pk: int, dto, user_id):
+        entity = FeaturesEntity(
+            name=dto.name,
+            importance=dto.importance,
+            description=dto.description,
+            tags=dto.tags,
+            participants=dto.participants,
+            responsible_id=dto.responsible_id,
+            project_id=dto.project_id,
+            status=dto.status,
+        )
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_search_features(self, query: str):
         return self._repository.get_search_features(query)
@@ -98,11 +112,35 @@ class TaskService(BaseService):
     def __init__(self, task_repository: ITaskRepository):
         self._repository = task_repository
 
-    def create_task(self, dto: CreateTaskDTO):
-        return self._repository.create_task(dto)
+    def create(self, dto: CreateTaskDTO, user_id: int):
+        entity = TaskEntity(
+            name=dto.name,
+            priority=dto.priority,
+            contributor_id=dto.contributor_id,
+            responsible_id=dto.responsible_id,
+            status=dto.status,
+            closed_at=dto.closed_at,
+            feature_id=dto.feature_id,
+            description=dto.description,
+            tags=dto.tags,
+        )
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update_task(self, dto: TaskDTO):
-        return self._repository.update_task(dto)
+    def update(self, pk: int, dto: TaskDTO, user_id: int):
+        entity = TaskEntity(
+            name=dto.name,
+            priority=dto.priority,
+            contributor_id=dto.contributor_id,
+            responsible_id=dto.responsible_id,
+            status=dto.status,
+            closed_at=dto.closed_at,
+            feature_id=dto.feature_id,
+            description=dto.description,
+            tags=dto.tags,
+        )
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_task_status_choices(self):
         return self._repository.get_task_status_choices()
@@ -121,3 +159,6 @@ class TaskService(BaseService):
 
     def get_comments_list(self, task_id: int):
         return self._repository.get_comments_list(task_id)
+
+    def get_feature_id(self, feature_id: int):
+        return self._repository.get_feature_id(feature_id)

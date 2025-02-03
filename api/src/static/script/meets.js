@@ -176,58 +176,82 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// Редактирование мита
+// редактирование мита
 document.addEventListener('DOMContentLoaded', function () {
     const editMeetButtons = document.querySelectorAll('.edit-meet-button');
     const modal = document.getElementById('modal-create-meet');
     const form = document.getElementById('create-meet-form');
-
-    let submitButton = form.querySelector('button[type="submit"]');
+    const accessDeniedPopup = document.getElementById('access-denied-popup');
+    const accessDeniedMessage = document.getElementById('access-denied-message');
+    const closeAccessDeniedPopup = document.getElementById('close-access-denied-popup');
 
     editMeetButtons.forEach(button => {
         button.addEventListener('click', function () {
             const meetId = this.getAttribute('data-meet-id');
 
-            // Открываем модальное окно
-            modal.classList.remove('hidden');
-
             // Загружаем данные мита через fetch
             fetch(`/meets/edit/${meetId}/`)
-                .then(response => response.json())
+                .then(response => {
+                    if (response.status === 403) {
+                        // Если доступ запрещён (403), показываем попап с ошибкой
+                        return response.json().then(errorData => {
+                            accessDeniedMessage.textContent = errorData.message || 'Доступ запрещён';
+                            accessDeniedPopup.classList.remove('hidden');
+                            throw new Error(errorData.message || 'Доступ запрещён');
+                        });
+                    }
+                    if (!response.ok) {
+                        throw new Error('Ошибка при загрузке данных мита');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    // Заполняем форму полученными данными
+                    // Открываем модальное окно только если данные успешно получены
+                    modal.classList.remove('hidden');
+
+                    // Заполняем форму данными мита
                     document.getElementById('title').value = data.title;
                     document.getElementById('start_time').value = data.start_time;
                     document.getElementById('category').value = data.category;
                     document.getElementById('responsible').value = data.responsible;
 
-                   // Заполняем статусы участников
+                    // Заполняем статусы участников
                     data.participants.forEach(participant => {
                         const participantCheckbox = document.getElementById(`participant_${participant.participant_id}`);
                         const participantStatusInput = document.getElementById(`participant_status_${participant.participant_id}`);
                         const container = document.getElementById(`container_${participant.participant_id}`);
 
                         if (participantCheckbox) {
-                            participantCheckbox.checked = true;  // Отмечаем участника
+                            participantCheckbox.checked = true;
                         }
 
                         if (participantStatusInput) {
-                            participantStatusInput.value = participant.status;  // Проставляем статус
+                            participantStatusInput.value = participant.status;
                         }
 
                         if (container) {
-                            setStatus(participant.participant_id, participant.status);  // Устанавливаем статус
+                            setStatus(participant.participant_id, participant.status);
                         }
                     });
 
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/meets/edit/${meetId}/`);
-                    submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
+                    submitButton.textContent = 'Сохранить';
                 })
-                .catch(error => console.error('Ошибка:', error));
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    // Модальное окно не открывается, если доступ запрещен
+                });
         });
     });
+
+    // Закрытие попапа с ошибкой доступа
+    closeAccessDeniedPopup.addEventListener('click', function () {
+        accessDeniedPopup.classList.add('hidden');
+    });
 });
+
+
 
 // Удаление мита
 document.addEventListener('DOMContentLoaded', function() {
@@ -270,15 +294,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                 })
                 .then(response => {
-                    if (response.ok) {
+            if (!response.ok) {
+                        // Если ответ не OK, пытаемся прочитать JSON с ошибкой
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Ошибка при удалении мита');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === "success") {
+                        console.log(`Meet with ID: ${meetId} deleted successfully.`);
                         buttonElement.closest('tr').remove();
                     } else {
-                        throw new Error('Ошибка при удалении встречи');
+                        // Обработка случая, когда статус не "success"
+                        throw new Error(data.message || 'Ошибка при удалении мита');
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
-                    alert('Произошла ошибка при удалении встречи');
+                    alert(error.message); // Показываем пользователю сообщение об ошибке
                 });
             }
         });

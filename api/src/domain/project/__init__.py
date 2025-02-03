@@ -1,8 +1,8 @@
 from .dtos import (
     CommentDTO,
+    CreateFeaturesDTO,
     CreateTaskDTO,
     FeaturesChoicesObject,
-    FeaturesDTO,
     ProjectDTO,
     StatusObject,
     TagDTO,
@@ -26,7 +26,7 @@ __all__ = [
     "FeatureService",
     "ProjectService",
     "TaskService",
-    "FeaturesDTO",
+    "CreateFeaturesDTO",
     "ProjectDTO",
     "CommentDTO",
     "CreateTaskDTO",
