@@ -61,17 +61,14 @@ FRONTEND_URL=https://junov.net
     
     ```bash
     env $(cat api/.env | xargs) docker-compose up -d --build
-   
-   или так:
-   docker-compose up -d --build
 	```
         
 5. **Применение миграций и создание суперпользователя**: После первого запуска, выполните миграции и создайте суперпользователя:
     
     ```bash
-    docker-compose exec web python manage.py makemigrations
-    docker-compose exec web python manage.py migrate
-    docker-compose exec web python manage.py createsuperuser
+     python manage.py makemigrations
+     python manage.py migrate
+     python manage.py createsuperuser
      ```
     **Если возникла проблема с миграциями, а данные хотим сохранить, можно выгрузить данные из базы и загрузить их в новую базу после миграций:**    
         
