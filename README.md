@@ -66,9 +66,9 @@ FRONTEND_URL=https://junov.net
 5. **Применение миграций и создание суперпользователя**: После первого запуска, выполните миграции и создайте суперпользователя:
     
     ```bash
-     python manage.py makemigrations
-     python manage.py migrate
-     python manage.py createsuperuser
+    docker-compose exec web python manage.py makemigrations
+    docker-compose exec web python manage.py migrate
+    docker-compose exec web python manage.py createsuperuser
      ```
     **Если возникла проблема с миграциями, а данные хотим сохранить, можно выгрузить данные из базы и загрузить их в новую базу после миграций:**    
         
