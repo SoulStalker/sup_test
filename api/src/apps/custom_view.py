@@ -1,7 +1,8 @@
-from django.contrib.auth.views import redirect_to_login
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
 from django.http import HttpResponseNotAllowed, JsonResponse
+from django.shortcuts import redirect
 from src.apps.invites.repository import InviteRepository
 from src.apps.meets.repository import CategoryRepository, MeetsRepository
 from src.apps.projects.repository import (
@@ -9,20 +10,20 @@ from src.apps.projects.repository import (
     ProjectRepository,
     TaskRepository,
 )
+from src.apps.registration.repository import RegistarionRepository
 from src.apps.teams.repository import TeamRepository
 from src.apps.users.repository import (
     PermissionRepository,
     RoleRepository,
     UserRepository,
 )
-from src.apps.registration.repository import RegistarionRepository
 from src.apps.verifyemail.repository import VerifyemailRepository
-from src.domain.invites.service import InviteService
-from src.domain.meet.service import MeetCategoryService, MeetService
-from src.domain.project.service import FeatureService, ProjectService, TaskService
-from src.domain.teams.service import TeamService
-from src.domain.user.service import PermissionService, RoleService, UserService
+from src.domain.invites import InviteService
+from src.domain.meet import MeetCategoryService, MeetService
+from src.domain.project import FeatureService, ProjectService, TaskService
 from src.domain.registration.service import RegistrationService
+from src.domain.teams import TeamService
+from src.domain.user import PermissionService, RoleService, UserService
 from src.domain.verifyemail.service import VerifyemailService
 
 
@@ -36,6 +37,7 @@ class BaseView:
         self.request = request
         self.args = args
         self.kwargs = kwargs
+        self.user_id = request.user.id
 
     # Сервисы приложений
     category_service = MeetCategoryService(repository=CategoryRepository())
@@ -95,7 +97,9 @@ class BaseView:
     def dispatch(self):
         if self.login_required and not self.request.user.is_authenticated:
             # Перенаправление на страницу авторизации
-            return redirect_to_login(self.request, login_url="/authorization/")
+            next_url = self.request.get_full_path()
+            login_url = f"/authorization/?{REDIRECT_FIELD_NAME}={next_url}"
+            return redirect(login_url)
 
         method = getattr(self, self.request.method.lower(), None)
         if not method or not callable(method):

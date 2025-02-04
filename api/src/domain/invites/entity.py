@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
+from src.domain.base import Entity
 from src.models.choice_classes import InviteChoices
 
 
 @dataclass
-class InviteEntity:
+class InviteEntity(Entity):
     pk: int
     link: str
     status: str

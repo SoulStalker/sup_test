@@ -5,6 +5,7 @@ from src.apps.projects.task import (
     TaskDetailView,
     TasksView,
     UpdateTaskView,
+    UpdateCommentView
 )
 from src.apps.projects.views import (
     CreateFeatureView,
@@ -17,13 +18,17 @@ from src.apps.projects.views import (
     ProjectsView,
     SearchFeatureView,
     SearchProjectView,
+    FeaturesDetailView
 )
 
 app_name = "apps.projects"
 
 urlpatterns = [
     # проекты
-    path("", ProjectsView.as_view(), name="projects"),
+    path("",
+         ProjectsView.as_view(),
+         name="projects"
+    ),
     path(
         "create/",
         CreateProjectView.as_view(),
@@ -49,6 +54,11 @@ urlpatterns = [
         "features/",
         FeaturesView.as_view(),
         name="features",
+    ),
+    path(
+        "features/<int:features_id>/",
+        FeaturesDetailView.as_view(),
+        name="features_detail",
     ),
     path(
         "features/create/",
@@ -95,5 +105,10 @@ urlpatterns = [
         "features/tasks/delete/<int:task_id>/",
         DeleteTaskView.as_view(),
         name="delete_tasks",
+    ),
+    path(
+        "features/tasks/comment/create/<int:task_id>/",
+        UpdateCommentView.as_view(),
+        name="create_comment",
     ),
 ]

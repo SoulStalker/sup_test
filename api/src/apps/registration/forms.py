@@ -1,7 +1,6 @@
 from django import forms
 
 
-
 class RegistrationForm(forms.Form):
     """Форма для Регистрации."""
 

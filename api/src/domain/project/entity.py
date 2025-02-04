@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
-from src.domain.validators.validators import DataVerifier
-from django.core.files import File
 from typing import Optional
+
+from django.core.files import File
+from src.domain.validators import DataVerifier
+
 
 @dataclass
 class ProjectEntity:
@@ -28,6 +30,22 @@ class FeaturesEntity:
     responsible_id: int
     project_id: int
     status: str
+
+    def verify_data(self):
+        return DataVerifier.verify_max_value(self.name, 100)
+
+
+@dataclass
+class TaskEntity:
+    name: str
+    priority: int
+    tags: list
+    contributor_id: int
+    responsible_id: int
+    status: str
+    closed_at: datetime | None
+    feature_id: int
+    description: str
 
     def verify_data(self):
         return DataVerifier.verify_max_value(self.name, 100)

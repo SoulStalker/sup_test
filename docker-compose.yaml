@@ -7,7 +7,7 @@ services:
     volumes:
       - ./api:/app/api
     env_file:
-      - api/.env
+      - .env
     environment:
       DB_ENGINE: ${DB_ENGINE}
       POSTGRES_DB: ${POSTGRES_DB}

@@ -17,15 +17,26 @@ openModalButton.addEventListener('click', () => {
     if (response.ok) {
       return response.json();
     } else {
-      throw new Error("Ошибка при создании приглашения");
+      // Если ответ не OK, пытаемся прочитать JSON с ошибкой
+      return response.json().then(errorData => {
+        throw new Error(errorData.message || 'Ошибка при создании приглашения');
+      });
     }
   })
   .then(data => {
-    console.log("Перед перезагрузкой", data);
-    location.reload();
-    console.log("После перезагрузки"); // Этот лог мы не увидим, если перезагрузка сработает
-    })
-  .catch(error => console.error(error));
+    if (data.message === "success") {
+      console.log("Перед перезагрузкой", data);
+      location.reload();
+      console.log("После перезагрузки"); // Этот лог мы не увидим, если перезагрузка сработает
+    } else {
+      // Если сообщение не "success", значит, сервер вернул ошибку
+      throw new Error(data.message || 'Ошибка при создании приглашения');
+    }
+  })
+  .catch(error => {
+    console.error(error);
+    alert(error.message); // Показываем пользователю сообщение об ошибке
+  });
 });
 
 // Функция для получения CSRF-токена
@@ -96,20 +107,26 @@ document.addEventListener('DOMContentLoaded', function() {
             },
         })
         .then(response => {
-            console.log(`Response status: ${response.status}`);
-            if (response.ok) {
+            if (!response.ok) {
+                // Если ответ не OK, пытаемся прочитать JSON с ошибкой
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'Ошибка при удалении инвайта');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
                 console.log(`Invite with ID: ${inviteId} deleted successfully.`);
                 buttonElement.closest('tr').remove();
             } else {
-                return response.text().then(text => {
-                    console.error(`Error response text: ${text}`);
-                    throw new Error('Ошибка при удалении инвайта');
-                });
+                // Обработка случая, когда статус не "success"
+                throw new Error(data.message || 'Ошибка при удалении инвайта');
             }
         })
         .catch(error => {
             console.error('Ошибка:', error);
-            alert('Произошла ошибка при удалении инвайта');
+            alert(error.message); // Показываем пользователю сообщение об ошибке
         });
     }
 });
