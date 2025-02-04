@@ -11,6 +11,8 @@ from src.apps.users.views import (
     UserPasswordChangeView,
     UserUpdateView,
 )
+from src.apps.users.personal_account import PersonalAccount
+
 
 app_name = "apps.users"
 
@@ -49,5 +51,10 @@ urlpatterns = [
         "permissions/get_objects/",
         PermissionListView.as_view(),
         name="get_objects",
+    ),
+    path(
+        "personal_account/",
+        PersonalAccount.as_view(),
+        name="personal_account",
     ),
 ]

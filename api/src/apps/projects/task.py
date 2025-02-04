@@ -49,8 +49,8 @@ class TaskDetailView(BaseView):
         )
         features = self.features_service.get_list()
         users = self.user_service.get_list()
-        contributor = self.user_service.get_by_id(pk=task.contributor_id)
-        responsible = self.user_service.get_by_id(pk=task.responsible_id)
+        contributor = self.user_service.get_by_id(pk=task.contributor_id, user_id=self.user_id)
+        responsible = self.user_service.get_by_id(pk=task.responsible_id, user_id=self.user_id)
 
         task_url = reverse("projects:tasks")
         edit_tasks = reverse("projects:edit_tasks", kwargs={"task_id": task_id})

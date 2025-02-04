@@ -162,3 +162,9 @@ class TaskService(BaseService):
 
     def get_feature_id(self, feature_id: int):
         return self._repository.get_feature_id(feature_id)
+    
+    def get_list_responsible(self, user_id: int):
+        return self._repository.get_list_responsible(user_id)
+    
+    def get_list_contributor(self, user_id: int):
+        return self._repository.get_list_contributor(user_id)
