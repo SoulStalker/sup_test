@@ -353,3 +353,13 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         task = Task.objects.get(id=task_id)
         comments = Comment.objects.filter(task=task)
         return comments
+
+    def get_list_responsible(self, user_id: int) -> list[Task]:
+        '''Список задач за которые ответственный юзер'''
+        task = Task.objects.filter(responsible=user_id)
+        return task
+    
+    def get_list_contributor(self, user_id: int) -> list[Task]:
+        '''Список задач у которых автор юзер'''
+        task = Task.objects.filter(contributor=user_id)
+        return task
