@@ -1,84 +1,68 @@
-import abc
+from abc import abstractmethod
 
-from src.domain.user.dtos import (
-    CreatePermissionDTO,
-    CreateRoleDTO,
-    PermissionDTO,
-    RoleDTO,
-    UserDTO,
-)
-from src.domain.user.entity import CreateUserEntity
+from src.domain.base import BaseRepository
+from src.domain.user.dtos import CreateRoleDTO, PermissionDTO, RoleDTO, UserDTO
+from src.domain.user.entity import CreatePermissionEntity, CreateUserEntity
 
 
-class IRoleRepository(abc.ABC):
-    @abc.abstractmethod
-    def get_role_by_id(self, role_id: int) -> RoleDTO:
-        raise NotImplementedError
+class IRoleRepository(BaseRepository):
 
-    @abc.abstractmethod
-    def get_role_list(self) -> list[RoleDTO]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
+    @abstractmethod
     def create(self, dto: CreateRoleDTO):
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     def update(self, role_id: int, dto: RoleDTO):
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def delete(self, role_id: int):
-        raise NotImplementedError
-
-    @abc.abstractmethod
+    @abstractmethod
     def get_roles_participants_count(self, role_id: int) -> int:
         raise NotImplementedError
 
 
-class IPermissionRepository(abc.ABC):
-    @abc.abstractmethod
-    def get_permission_by_id(self, permission_id: int) -> PermissionDTO:
+class IPermissionRepository(BaseRepository):
+
+    @abstractmethod
+    def create(self, dto: CreatePermissionEntity):
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def get_permission_list(self) -> list[PermissionDTO]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def create(self, dto: CreatePermissionDTO):
-        raise NotImplementedError
-
-    @abc.abstractmethod
+    @abstractmethod
     def update(self, permission_id: int, dto: PermissionDTO):
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def delete(self, permission_id: int):
+    @abstractmethod
+    def get_permission_by_code(self, code):
+        raise NotImplementedError
+
+    def get_content_types(self):
+        raise NotImplementedError
+
+    def get_content_object(self, permission_id):
+        raise NotImplementedError
+
+    def get_content_objects(self):
+        raise NotImplementedError
+
+    def get_codes(self):
+        raise NotImplementedError
+
+    def get_objects_data(self, content_type_id):
         raise NotImplementedError
 
 
-class IUserRepository(abc.ABC):
-    @abc.abstractmethod
-    def get_user_by_id(self, user_id: int) -> UserDTO:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_user_list(self) -> list[UserDTO]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
+class IUserRepository(BaseRepository):
+    @abstractmethod
     def create(self, dto: CreateUserEntity):
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     def update(self, user_id: int, dto: UserDTO):
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     def delete(self, user_id: int):
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     def send_welcome_email(self, user_dto):
         raise NotImplementedError

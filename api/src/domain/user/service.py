@@ -1,11 +1,6 @@
-from src.domain.user.dtos import (
-    CreatePermissionDTO,
-    CreateRoleDTO,
-    PermissionDTO,
-    RoleDTO,
-    UserDTO,
-)
-from src.domain.user.entity import CreateUserEntity
+from src.domain.base import BaseService
+from src.domain.user.dtos import CreatePermissionDTO, UserDTO
+from src.domain.user.entity import CreatePermissionEntity, CreateUserEntity
 from src.domain.user.repository import (
     IPermissionRepository,
     IRoleRepository,
@@ -13,80 +8,89 @@ from src.domain.user.repository import (
 )
 
 
-class RoleService:
+class RoleService(BaseService):
     def __init__(self, repository: IRoleRepository):
-        self.__repository = repository
+        self._repository = repository
 
-    def get_role(self, role_id: int) -> RoleDTO:
-        return self.__repository.get_role_by_id(role_id)
+    def create(self, dto, user_id):
+        entity = dto
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def get_role_list(self) -> list[RoleDTO]:
-        return self.__repository.get_role_list()
-
-    def create(self, dto: CreateRoleDTO):
-        self.__repository.create(dto)
-
-    def update(self, role_id: int, dto: RoleDTO):
-        self.__repository.update(role_id, dto)
-
-    def delete(self, role_id: int):
-        self.__repository.delete(role_id)
+    def update(self, pk, dto, user_id):
+        entity = dto
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def get_roles_participants_count(self, role_id: int):
-        return self.__repository.get_roles_participants_count(role_id)
+        return self._repository.get_roles_participants_count(role_id)
 
 
-class PermissionService:
+class PermissionService(BaseService):
     def __init__(self, repository: IPermissionRepository):
-        self.__repository = repository
+        self._repository = repository
 
-    def get_permission(self, permission_id: int) -> PermissionDTO:
-        return self.__repository.get_permission_by_id(permission_id)
+    def create(self, dto: CreatePermissionDTO, user_id: int):
+        entity = CreatePermissionEntity(
+            name=dto.name,
+            code=dto.code,
+            description=dto.description,
+            content_type=dto.content_type,
+            object_id=dto.object_id,
+        )
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def get_permission_list(self) -> list[PermissionDTO]:
-        return self.__repository.get_permission_list()
+    def update(self, pk, dto, user_id):
+        entity = dto
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
-    def create(self, dto: CreatePermissionDTO):
-        self.__repository.create(dto)
+    def get_content_types(self):
+        return self._repository.get_content_types()
 
-    def update(self, permission_id: int, dto: PermissionDTO):
-        self.__repository.update(permission_id, dto)
+    def get_content_object(self, permission_id: int):
+        return self._repository.get_content_object(permission_id)
 
-    def delete(self, permission_id: int):
-        self.__repository.delete(permission_id)
+    def get_content_objects(self):
+        return self._repository.get_content_objects()
+
+    def get_codes(self):
+        return self._repository.get_codes()
+
+    def get_objects_data(self, content_type_id: int):
+        return self._repository.get_objects_data(content_type_id)
 
 
-class UserService:
+class UserService(BaseService):
     def __init__(self, repository: IUserRepository):
-        self.__repository = repository
+        self._repository = repository
 
-    def get_user(self, user_id: int) -> UserDTO:
-        return self.__repository.get_user_by_id(user_id)
-
-    def get_user_list(self) -> list[UserDTO]:
-        return self.__repository.get_user_list()
-
-    def create(self, dto: CreateUserEntity):
+    def create(self, dto: CreateUserEntity, user_id: int):
+        entity = dto
         # dto.password = dto.generate_password()
-        return self.__repository.create(dto)
+        return self.validate_and_save(entity, self._repository, dto, user_id)
 
-    def update(self, user_id: int, dto: UserDTO):
-        self.__repository.update(user_id, dto)
-
-    def delete(self, user_id: int):
-        self.__repository.delete(user_id)
+    def update(self, pk, dto, user_id):
+        entity = dto
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
 
     def change_password(self, user_id: int, new_password: str):
-        user = self.__repository.get_user_by_id(user_id)
+        user = self._repository.get_by_id(user_id)
         user.set_password(new_password)
         user.save()
 
     def create_user_with_generated_password(self, dto: UserDTO):
         password = self.generate_password()
-        user = self.__repository.create(dto)
+        user = self._repository.create(dto)
         user.set_password(password)
         user.save()
         return user
 
     def send_welcome_email(self, user_dto):
-        self.__repository.send_welcome_email(user_dto)
+        self._repository.send_welcome_email(user_dto)
+
+    def get_user_id_list(self, user_list_id: list):
+        self._repository.get_user_id_list(user_list_id)

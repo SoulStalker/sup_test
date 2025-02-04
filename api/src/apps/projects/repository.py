@@ -1,38 +1,47 @@
 from abc import ABC
 
+from django.contrib.auth import get_user_model
 from django.db.models import Q
-from src.domain.project.dtos import (
+from src.apps.base import PermissionMixin
+from src.domain.project import (
+    CommentDTO,
+    CreateFeaturesDTO,
     CreateTaskDTO,
     FeaturesChoicesObject,
-    FeaturesDTO,
+    IFeaturesRepository,
+    IProjectRepository,
+    ITaskRepository,
     ProjectDTO,
     StatusObject,
     TagDTO,
     TaskChoicesObject,
     TaskDTO,
 )
-from src.domain.project.repository import (
-    IFeaturesRepository,
-    IProjectRepository,
-    ITaskRepository,
-)
-from src.models.projects import Features, Project, Tags, Task
+from src.domain.project.dtos import FeaturesDTO
+from src.models.models import CustomUser
+from src.models.projects import Comment, Features, Project, Tags, Task
+
+user = get_user_model()
 
 
-class ProjectRepository(IProjectRepository, ABC):
+class ProjectRepository(PermissionMixin, IProjectRepository, ABC):
 
     model = Project
 
-    def get_project_list(self) -> list[ProjectDTO]:
+    @classmethod
+    def exists(cls, pk: int) -> bool:
+        return cls.model.objects.filter(id=pk).exists()
+
+    def get_list(self) -> list[ProjectDTO]:
         return list(Project.objects.all().order_by("id"))
 
     def get_project_by_slug(self, slug: str) -> ProjectDTO:
         return Project.objects.get(slug=slug)
 
-    def get_project_by_id(self, project_id: int) -> ProjectDTO:
+    def get_by_id(self, project_id: int) -> ProjectDTO:
         return Project.objects.get(id=project_id)
 
-    def update_project(self, project_id: int, dto: ProjectDTO) -> ProjectDTO:
+    def update(self, project_id: int, dto: ProjectDTO) -> ProjectDTO:
         project = Project.objects.get(id=project_id)
         project.name = dto.name
         project.logo = dto.logo
@@ -55,7 +64,7 @@ class ProjectRepository(IProjectRepository, ABC):
             date_created=project.date_created,
         )
 
-    def create_project(self, dto: ProjectDTO) -> ProjectDTO:
+    def create(self, dto: ProjectDTO) -> ProjectDTO:
         project = Project.objects.create(
             name=dto.name,
             logo=dto.logo,
@@ -81,8 +90,8 @@ class ProjectRepository(IProjectRepository, ABC):
             date_created=project.date_created,
         )
 
-    def delete_project(self, project_id: int):
-        project = Project.objects.get(id=project_id)
+    def delete(self, pk: int):
+        project = Project.objects.get(id=pk)
         project.delete()
 
     def get_valid_statuses(self):
@@ -115,11 +124,15 @@ class ProjectRepository(IProjectRepository, ABC):
         ]
 
 
-class FeaturesRepository(IFeaturesRepository, ABC):
+class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
 
     model = Features
 
-    def get_features_list(self) -> FeaturesDTO:
+    @classmethod
+    def exists(cls, pk: int) -> bool:
+        return cls.model.objects.filter(id=pk).exists()
+
+    def get_list(self) -> CreateFeaturesDTO:
         return Features.objects.all().order_by("id")
 
     def get_features_tags_list(self) -> list:
@@ -131,7 +144,7 @@ class FeaturesRepository(IFeaturesRepository, ABC):
     def get_feature_project_list(self) -> list:
         return Project.objects.all().order_by("id")
 
-    def create_feature(self, dto: FeaturesDTO) -> FeaturesDTO:
+    def create(self, dto: CreateFeaturesDTO) -> CreateFeaturesDTO:
         # Создаем объект Features без тегов
         feature = Features.objects.create(
             name=dto.name,
@@ -149,7 +162,7 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             feature.participants.set(dto.participants)
 
         # Возвращаем созданный объект в виде FeaturesDTO без тегов
-        return FeaturesDTO(
+        return CreateFeaturesDTO(
             name=feature.name,
             importance=feature.importance,
             description=feature.description,
@@ -160,9 +173,10 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             status=feature.status,
         )
 
-    def get_feature_by_id(self, feature_id: int) -> FeaturesDTO:
+    def get_by_id(self, feature_id: int) -> CreateFeaturesDTO:
         feature = Features.objects.get(id=feature_id)  # может быть исключение
         return FeaturesDTO(
+            id=feature.id,
             name=feature.name,
             importance=feature.importance,
             description=feature.description,
@@ -177,9 +191,9 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             status=feature.status,
         )
 
-    def update_features(
-        self, feature_id: int, dto: FeaturesDTO
-    ) -> FeaturesDTO:
+    def update(
+        self, feature_id: int, dto: CreateFeaturesDTO
+    ) -> CreateFeaturesDTO:
         try:
             feature = Features.objects.get(id=feature_id)
         except Features.DoesNotExist:
@@ -201,7 +215,7 @@ class FeaturesRepository(IFeaturesRepository, ABC):
                 dto.participants
             )  # Передаем список ID участников
 
-        return FeaturesDTO(
+        return CreateFeaturesDTO(
             name=feature.name,
             importance=feature.importance,
             description=feature.description,
@@ -212,11 +226,11 @@ class FeaturesRepository(IFeaturesRepository, ABC):
             status=feature.status,
         )
 
-    def delete_features(self, feature_id: int):
+    def delete(self, feature_id: int):
         feature = Features.objects.get(id=feature_id)
         feature.delete()
 
-    def get_search_features(self, query: str) -> list[FeaturesDTO]:
+    def get_search_features(self, query: str) -> list[CreateFeaturesDTO]:
         if not query:
             return []
         # Поиск фичей по имени или описанию
@@ -225,7 +239,7 @@ class FeaturesRepository(IFeaturesRepository, ABC):
         ).order_by("id")
 
         return [
-            FeaturesDTO(
+            CreateFeaturesDTO(
                 name=feature.name,
                 importance=feature.importance,
                 description=feature.description,
@@ -244,9 +258,13 @@ class FeaturesRepository(IFeaturesRepository, ABC):
         ]
 
 
-class TaskRepository(ITaskRepository, ABC):
+class TaskRepository(PermissionMixin, ITaskRepository, ABC):
 
     model = Task
+
+    @classmethod
+    def exists(cls, pk: int) -> bool:
+        return cls.model.objects.filter(id=pk).exists()
 
     @classmethod
     def _task_orm_to_dto(cls, task: Task) -> TaskDTO:
@@ -266,13 +284,13 @@ class TaskRepository(ITaskRepository, ABC):
             feature_id=task.feature_id,
         )
 
-    def get_tasks_list(self) -> TaskDTO:
+    def get_list(self) -> TaskDTO:
         return Task.objects.all().order_by("id")
 
-    def get_task_by_id(self, task_id: int) -> TaskDTO:
+    def get_by_id(self, task_id: int) -> TaskDTO:
         return self._task_orm_to_dto(Task.objects.get(id=task_id))
 
-    def create_task(self, dto: CreateTaskDTO):
+    def create(self, dto: CreateTaskDTO):
         task = self.model(
             name=dto.name,
             priority=dto.priority,
@@ -286,7 +304,7 @@ class TaskRepository(ITaskRepository, ABC):
         task.save()
         task.tags.set(dto.tags)
 
-    def update_task(self, dto: TaskDTO) -> TaskDTO:
+    def update(self, pk: int, dto: TaskDTO) -> TaskDTO:
         task = Task.objects.get(id=dto.id)
 
         task.name = dto.name
@@ -298,8 +316,9 @@ class TaskRepository(ITaskRepository, ABC):
         task.description = dto.description
         task.save()
         task.tags.set(dto.tags)
+        return self._task_orm_to_dto(task)
 
-    def delete_task(self, task_id: int):
+    def delete(self, task_id: int):
         task = Task.objects.get(id=task_id)
         task.delete()
 
@@ -312,3 +331,25 @@ class TaskRepository(ITaskRepository, ABC):
         return [
             TagDTO(id=tag.id, name=tag.name, color=tag.color) for tag in tags
         ]
+
+    def get_tags_id_list(self, tags_id: int):
+        tags = Tags.objects.filter(id__in=tags_id)
+        return tags
+
+    def get_task_id_list(self, feature: int):
+        feature_instance = Features.objects.get(name=feature.name)
+        task = feature_instance.tasks_features.all()
+        return task
+
+    def create_comment(self, dto: CommentDTO):
+        comment = Comment(
+            user=CustomUser.objects.get(id=dto.user_id),
+            comment=dto.comment,
+            task=Task.objects.get(id=dto.task_id),
+        )
+        comment.save()
+
+    def get_comments_list(self, task_id):
+        task = Task.objects.get(id=task_id)
+        comments = Comment.objects.filter(task=task)
+        return comments
