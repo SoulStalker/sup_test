@@ -25,7 +25,9 @@ class UserAuthorization(BaseView):
 
     def post(self, request):
         form = AuthorizationForm(request.POST)
-        next_url = request.GET.get(REDIRECT_FIELD_NAME, "/meets/")
+        next_url = request.GET.get(
+            REDIRECT_FIELD_NAME, "/").replace('/authorization/logout/', '/'
+                                )
         if form.is_valid():
             cd = form.cleaned_data
             try:
