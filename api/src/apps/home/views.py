@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from src.apps.custom_view import BaseView
 
 class HomeView(BaseView):
+    login_required = False
     def get(self, request):
-        login_required = False
 
 
         return render(request, 'home/home.html')
