@@ -14,8 +14,6 @@ class PersonalAccount(BaseView):
         task_responsible = self.task_service.get_list_responsible(user_id=user.id)
         #список у каких задач автор
         task_contributor = self.task_service.get_list_contributor(user_id=user.id)
-
-
         context = {
                 'user': user,
                 'task_responsible': task_responsible,
