@@ -77,11 +77,6 @@ class UserService(BaseService):
             entity, self._repository, dto, pk, user_id
         )
 
-    def change_password(self, user_id: int, new_password: str):
-        user = self._repository.get_by_id(user_id)
-        user.set_password(new_password)
-        user.save()
-
     def create_user_with_generated_password(self, dto: UserDTO):
         password = self.generate_password()
         user = self._repository.create(dto)

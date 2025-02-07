@@ -21,7 +21,7 @@ urlpatterns = [
     path("create/", UserCreateView.as_view(), name="create_user"),
     path("update/<int:pk>/", UserUpdateView.as_view(), name="update_user"),
     path(
-        "password/<int:pk>/",
+        "password/",
         UserPasswordChangeView.as_view(),
         name="update_password",
     ),
