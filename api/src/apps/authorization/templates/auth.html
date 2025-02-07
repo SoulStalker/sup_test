@@ -17,6 +17,9 @@
             <div class="mb-4">
                 <input type="email" placeholder="Email*" name="email" class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
                 <input type="password" placeholder="password*" name="password" class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
+                {% if error_message %}
+                    <div class="alert alert-danger">{{ error_message }}</div>
+                {% endif %}
             </div>
 
             <div class="text-right">

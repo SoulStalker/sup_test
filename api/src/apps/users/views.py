@@ -394,18 +394,20 @@ class UserUpdateView(BaseView):
 class UserPasswordChangeView(BaseView):
     """Смена пароля пользователя."""
 
+    def get(self, request, *args, **kwargs):
+        return render(request, "password_change.html")
+
     def post(self, request, *args, **kwargs):
-        user_id = kwargs.get("user_id")
         try:
-            form = PasswordChangeForm(request.POST)
+            user = request.user
+            form = PasswordChangeForm(request.POST, user=user)
             if form.is_valid():
-                self.user_service.change_password(
-                    user_id=user_id,
-                    dto=UserDTO(
-                        password=form.cleaned_data["password"],
-                    ),
-                )
+                form.save()
                 return JsonResponse({"status": "success"}, status=200)
+            return JsonResponse(
+                {"status": "error", "errors": form.errors}, status=400
+            )
+            
         except Exception as err:
             return JsonResponse(
                 {"status": "error", "message": str(err)}, status=404
