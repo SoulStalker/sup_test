@@ -60,6 +60,9 @@ class ProjectService(BaseService):
 
     def search_projects(self, query: str):
         return self._repository.search_projects(query)
+    
+    def get_list_participants(self, user_id: id):
+        return self._repository.get_list_participants(user_id)
 
 
 class FeatureService(BaseService):
