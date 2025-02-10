@@ -124,16 +124,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Редактирование проекта
     const editProjectButtons = document.querySelectorAll('.edit-project-button');
+    const accessDeniedPopup = document.getElementById('access-denied-popup');
+    const accessDeniedMessage = document.getElementById('access-denied-message');
+    const closeAccessDeniedPopup = document.getElementById('close-access-denied-popup');
 
     editProjectButtons.forEach(button => {
         button.addEventListener('click', function () {
             currentProjectId = this.getAttribute('data-project-id'); // Получаем ID проекта
-            // Открываем модальное окно
-            modal.classList.remove('hidden');
 
             // Загружаем данные проекта через fetch
             fetch(`/projects/edit/${currentProjectId}/`)
                 .then(response => {
+                    if (response.status === 403) {
+                        // Если доступ запрещён (403), показываем попап с ошибкой
+                        return response.json().then(errorData => {
+                            accessDeniedMessage.textContent = errorData.message || 'Доступ запрещён';
+                            accessDeniedPopup.classList.remove('hidden');
+                            throw new Error(errorData.message || 'Доступ запрещён');
+                        });
+                    }
                     if (!response.ok) {
                         return response.json().then(errData => {
                             throw new Error(`Ошибка ${response.status}: ${errData.message || 'Неизвестная ошибка'}`);
@@ -143,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
 
                 .then(data => {
+                    modal.classList.remove('hidden');
                     // Заполняем форму полученными данными
                     document.getElementById('project-name').value = data.name || '';
                     document.getElementById('project-description').value = data.description || '';
@@ -195,16 +205,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .catch(error => console.error('Ошибка:', error));
+             // Закрытие попапа с ошибкой доступа
+            closeAccessDeniedPopup.addEventListener('click', function () {
+            accessDeniedPopup.classList.add('hidden');
         });
+        });
+
     });
+    //
 
     // Обработчик для открытия попапа подтверждения удаления
     deleteButton.addEventListener('click', function () {
         confirmDeletePopup.classList.remove('hidden'); // Показываем попап подтверждения удаления
+        console.log("Подтверждение удаления проекта", currentProjectId);
     });
 
-    // Обработчик подтверждения удаления проекта
+    // Обработчик подтверждения удаления проекта (обновленная версия)
     confirmDeleteButton.addEventListener('click', function () {
+        console.log("Подтверждение удаления проекта", currentProjectId);
         if (currentProjectId) {
             fetch(`/projects/delete/${currentProjectId}/`, {
                 method: 'DELETE',
@@ -213,27 +231,41 @@ document.addEventListener('DOMContentLoaded', function () {
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 },
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 403) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || 'Доступ запрещён');
+                    });
+                }
+                if (!response.ok) {
+                    throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.status === 'success') {
-                    confirmDeletePopup.classList.add('hidden'); // Закрываем попап подтверждения удаления
-                    closeModal(); // Закрываем модальное окно редактирования
-
-                    // Перенаправляем на страницу проектов
-                    window.location.reload(); // Это обновит текущую страницу
+                    confirmDeletePopup.classList.add('hidden');
+                    closeModal();
+                    window.location.reload();
                 } else {
-                    alert('Ошибка: ' + data.message); // Показываем сообщение об ошибке
+                    throw new Error(data.message || 'Неизвестная ошибка');
                 }
             })
-            .catch(error => console.error('Ошибка при удалении проекта:', error));
+            .catch(error => {
+                // Показываем попап с ошибкой и НЕ закрываем модальное окно
+                modal.classList.add('hidden');
+                accessDeniedMessage.textContent = error.message;
+                accessDeniedPopup.classList.remove('hidden');
+                confirmDeletePopup.classList.add('hidden');
+            });
         }
     });
 
-    // Обработчик отмены удаления проекта
-    const cancelDeleteButton = document.getElementById('cancel-delete'); // Кнопка отмены удаления
-    cancelDeleteButton.addEventListener('click', function () {
-        confirmDeletePopup.classList.add('hidden'); // Скрываем попап подтверждения удаления
+    // Обработчик закрытия попапа с ошибкой доступа
+    closeAccessDeniedPopup.addEventListener('click', function() {
+        accessDeniedPopup.classList.add('hidden');
     });
+
 
     // Функция для обновления текста с выбранными участниками
     function updateSelectedParticipants(participantIds) {
@@ -433,4 +465,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-

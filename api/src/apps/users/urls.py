@@ -45,4 +45,9 @@ urlpatterns = [
         PermissionUpdateView.as_view(),
         name="delete_permission",
     ),
+    path(
+        "permissions/get_objects/",
+        PermissionListView.as_view(),
+        name="get_objects",
+    ),
 ]

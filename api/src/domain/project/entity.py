@@ -33,3 +33,19 @@ class FeaturesEntity:
 
     def verify_data(self):
         return DataVerifier.verify_max_value(self.name, 100)
+
+
+@dataclass
+class TaskEntity:
+    name: str
+    priority: int
+    tags: list
+    contributor_id: int
+    responsible_id: int
+    status: str
+    closed_at: datetime | None
+    feature_id: int
+    description: str
+
+    def verify_data(self):
+        return DataVerifier.verify_max_value(self.name, 100)
