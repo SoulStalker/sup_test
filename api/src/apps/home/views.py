@@ -8,3 +8,12 @@ class HomeView(BaseView):
 
 
         return render(request, 'home/home.html')
+
+
+class KanbanView(BaseView):
+    def get(self, request):
+        return render(request, 'kanban/kanban.html')
+
+class HomeLKView(BaseView):
+    def get(self, request):
+        return render(request, 'home/home_lk.html')
