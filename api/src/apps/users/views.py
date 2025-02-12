@@ -410,3 +410,25 @@ class UserPasswordChangeView(BaseView):
             return JsonResponse(
                 {"status": "error", "message": str(err)}, status=404
             )
+
+
+class ProfileView(BaseView):
+    def get(self, request, *args, **kwargs):
+        roles = self.role_service.get_list()
+        permissions = self.permission_service.get_list()
+        teams = self.team_service.get_list()
+        user, error = self.user_service.get_by_id(self.user_id, self.user_id)
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": str(error)}, status=403
+            )
+        return render(
+            self.request,
+            "users/profile.html",
+            {
+                "user": user,
+                "roles": roles,
+                "permissions": permissions,
+                "teams": teams,
+            },
+        )
