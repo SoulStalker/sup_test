@@ -1,5 +1,6 @@
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 from src.apps.custom_view import BaseView
 from src.apps.users.forms import (
     CreateUserForm,
@@ -394,21 +395,27 @@ class UserUpdateView(BaseView):
 class UserPasswordChangeView(BaseView):
     """Смена пароля пользователя."""
 
+    def get(self, request, *args, **kwargs):
+        return render(request, "password_change.html")
+
     def post(self, request, *args, **kwargs):
-        user_id = kwargs.get("user_id")
         try:
-            form = PasswordChangeForm(request.POST)
+            user = request.user
+            form = PasswordChangeForm(request.POST, user=user)
             if form.is_valid():
-                self.user_service.change_password(
-                    user_id=user_id,
-                    dto=UserDTO(
-                        password=form.cleaned_data["password"],
-                    ),
+                form.save()
+                return HttpResponseRedirect(reverse("users:personal_account"))
+            error_message =  [
+                error for field, errors in form.errors.items() for error in errors
+                ]
+            return render(
+                request,
+                "password_change.html",
+                {"form": form, "error_message": error_message}
                 )
-                return JsonResponse({"status": "success"}, status=200)
         except Exception as err:
             return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
+                {"status": "error", "message": str(err)}, status=400
             )
 
 

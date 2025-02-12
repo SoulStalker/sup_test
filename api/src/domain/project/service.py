@@ -102,6 +102,9 @@ class ProjectService(BaseService):
         :return: Список DTO проектов.
         """
         return self._repository.search_projects(query)
+    
+    def get_list_participants(self, user_id: id):
+        return self._repository.get_list_participants(user_id)
 
 
 class FeatureService(BaseService):
@@ -321,3 +324,9 @@ class TaskService(BaseService):
         :return: Идентификатор фичи.
         """
         return self._repository.get_feature_id(feature_id)
+    
+    def get_list_responsible(self, user_id: int):
+        return self._repository.get_list_responsible(user_id)
+    
+    def get_list_contributor(self, user_id: int):
+        return self._repository.get_list_contributor(user_id)
