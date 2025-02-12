@@ -107,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
             const editUrl = this.getAttribute('data-url');
-            // Загружаем данные задачи через fetch
             fetch(editUrl)
                 .then(response => {
                     if (response.status === 403) {
