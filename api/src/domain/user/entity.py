@@ -2,13 +2,34 @@ import secrets
 import string
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional
 
 from src.domain.base import Entity
 
 
 @dataclass
 class CreateUserEntity(Entity):
+    """
+    Сущность для создания пользователя.
+
+    :param name: Имя пользователя.
+    :param surname: Фамилия пользователя.
+    :param email: Электронная почта пользователя.
+    :param password: Пароль пользователя (опционально).
+    :param tg_name: Имя пользователя в Telegram.
+    :param tg_nickname: Никнейм пользователя в Telegram.
+    :param google_meet_nickname: Никнейм пользователя в Google Meet.
+    :param gitlab_nickname: Никнейм пользователя в GitLab.
+    :param github_nickname: Никнейм пользователя в GitHub.
+    :param avatar: Аватар пользователя (опционально).
+    :param role_id: Идентификатор роли пользователя.
+    :param team_id: Идентификатор команды пользователя (опционально).
+    :param permissions_ids: Список идентификаторов разрешений пользователя.
+    :param is_active: Флаг активности пользователя (опционально).
+    :param is_admin: Флаг администратора пользователя (опционально).
+    :param is_superuser: Флаг суперпользователя пользователя.
+    """
+
     name: str
     surname: str
     email: str
@@ -28,7 +49,11 @@ class CreateUserEntity(Entity):
 
     @classmethod
     def generate_password(cls) -> str:
-        # Определяем обязательные компоненты
+        """
+        Генерирует случайный пароль.
+
+        :return: Сгенерированный пароль.
+        """
         uppercase = secrets.choice(string.ascii_uppercase)  # Заглавная буква
         digit = secrets.choice(string.digits)  # Цифра
         special = secrets.choice("!@#$%^&*()-_=+[]{}|;:,.<>?/")  # Спецсимвол
@@ -53,43 +78,95 @@ class CreateUserEntity(Entity):
 
         return shuffled_password
 
-    def verify_data(self):
+    def verify_data(self) -> Optional[str]:
+        """
+        Проверяет валидность данных пользователя.
+
+        :return: Сообщение об ошибке, если данные невалидны, иначе None.
+        """
         return super().verify_data(self.name)
 
 
 @dataclass
 class UserEntity(CreateUserEntity):
+    """
+    Сущность пользователя.
+
+    :param id: Уникальный идентификатор пользователя.
+    :param date_joined: Дата и время регистрации пользователя (опционально).
+    :param meet_statuses: Статусы пользователя в митингах (опционально).
+    """
+
     id: int
-    date_joined: datetime | None
-    meet_statuses: dict[int:str] | None
+    date_joined: Optional[datetime]
+    meet_statuses: Optional[Dict[int, str]]
 
 
 @dataclass
 class CreatePermissionEntity(Entity):
+    """
+    Сущность для создания разрешения.
+
+    :param name: Название разрешения.
+    :param code: Код разрешения.
+    :param description: Описание разрешения.
+    :param content_type: Тип контента, к которому применяется разрешение.
+    :param object_id: Идентификатор объекта, к которому применяется разрешение (опционально).
+    """
+
     name: str
     code: str
     description: str
     content_type: str
-    object_id: int | None
+    object_id: Optional[int]
 
-    def verify_data(self):
+    def verify_data(self) -> Optional[str]:
+        """
+        Проверяет валидность данных разрешения.
+
+        :return: Сообщение об ошибке, если данные невалидны, иначе None.
+        """
         return super().verify_data(self.name)
 
 
 @dataclass
 class PermissionEntity(CreatePermissionEntity):
+    """
+    Сущность разрешения.
+
+    :param id: Уникальный идентификатор разрешения.
+    """
+
     id: int
 
 
 @dataclass
 class CreateRoleEntity(Entity):
+    """
+    Сущность для создания роли.
+
+    :param name: Название роли.
+    :param color: Цвет роли.
+    """
+
     name: str
     color: str
 
-    def verify_data(self):
+    def verify_data(self) -> Optional[str]:
+        """
+        Проверяет валидность данных роли.
+
+        :return: Сообщение об ошибке, если данные невалидны, иначе None.
+        """
         return super().verify_data(self.name)
 
 
 @dataclass
 class RoleEntity(CreateRoleEntity):
+    """
+    Сущность роли.
+
+    :param id: Уникальный идентификатор роли.
+    """
+
     id: int
