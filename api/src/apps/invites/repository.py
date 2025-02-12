@@ -61,7 +61,7 @@ class InviteRepository(PermissionMixin, IInviteRepository, ABC):
         invite.status = status
         invite.save()
 
-    def create_inviteDTO(self, invitation_code):
+    def create_invite_dto(self, invitation_code):
         link = f"{os.getenv('FRONTEND_URL')}/registration/{invitation_code}"
         objects_invite = self.model.objects.get(link=link)
         return self._invite_orm_to_dto(objects_invite)
