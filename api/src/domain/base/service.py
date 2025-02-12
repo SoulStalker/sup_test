@@ -34,7 +34,7 @@ class BaseService:
         :param save_method: Метод репозитория (например, create или update).
         :return: Кортеж (результат операции, ошибка), где результат — результат операции, а ошибка — сообщение об ошибке.
         """
-        err = entity.verify_data(dto)
+        err = entity.verify_data()
         if err:
             return None, err
 
