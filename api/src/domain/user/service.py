@@ -201,6 +201,7 @@ class UserService(BaseService):
             entity, self._repository, dto, pk, user_id
         )
 
+
     def change_password(self, user_id: int, new_password: str) -> None:
         """
         Изменяет пароль пользователя.
