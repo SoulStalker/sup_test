@@ -25,9 +25,9 @@
                         <img src="https://ui-avatars.com/api/?name=John+Doe" alt="Аватар" class="w-24 h-24 rounded-full border-2 border-[#327680] transition-all duration-300">
 
                         <div>
-                            <h1 class="text-2xl font-semibold text-[#327680]">Иван Петров</h1>
-                            <p class="text-sm opacity-90">ivan@example.com</p>
-                            <p class="text-xs opacity-75">Дата регистрации: 01.03.2024</p>
+                            <h1 class="text-2xl font-semibold text-[#327680]">{{ user.name }} {{ user.surname }}</h1>
+                            <p class="text-sm opacity-90">{{ user.email }}</p>
+                            <p class="text-xs opacity-75">Дата регистрации: {{ user.date_joined }}</p>
 
                             <div class="flex space-x-2 mt-4">
                                 <a href="#" class="icon-wrapper">
@@ -46,21 +46,17 @@
                         </div>
                     </div>
 
-
-
                     <!-- Кнопки -->
                     <div class="flex space-x-4">
-                        <button class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm transition-colors">
+                        <a href="{% url 'apps.users:update_password' %}" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm transition-colors">
                             Сменить пароль
-                        </button>
-                        <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm text-white transition-colors">
+                        </a>
+                        <a href="{% url 'apps.authorization:logout' %}" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm text-white transition-colors">
                             Выход
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
-
-
 
 
             <!-- Main Content Grid -->
@@ -73,57 +69,46 @@
                 <div class="md:col-span-1 space-y-6 flex flex-col justify-between" style="max-height: 525px;">
                     <div class="bg-white p-6 rounded-xl shadow-sm">
                         <h3 class="text-gray-500 text-sm mb-2">Закрытые задачи</h3>
-                        <p class="text-3xl font-bold text-[#327680]">24</p>
+                        <p class="text-3xl font-bold text-[#327680]">{{ task_success }}</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm">
                         <h3 class="text-gray-500 text-sm mb-2">Всего задач</h3>
-                        <p class="text-3xl font-bold text-[#327680]">36</p>
+                        <p class="text-3xl font-bold text-[#327680]">{{ quantity_task_responsible }}</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm">
                         <h3 class="text-gray-500 text-sm mb-2">Завершенные проекты</h3>
-                        <p class="text-3xl font-bold text-[#327680]">5</p>
+                        <p class="text-3xl font-bold text-[#327680]">{{ projects_success }}</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm">
                         <h3 class="text-gray-500 text-sm mb-2">Активные проекты</h3>
-                        <p class="text-3xl font-bold text-[#327680]">3</p>
+                        <p class="text-3xl font-bold text-[#327680]">{{ projects_active }}</p>
                     </div>
                 </div>
             </div>
-
 
             <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-semibold">Задачи</h2>
                     <div class="flex space-x-2">
                         <button class="task-filter active" data-filter="all">Все</button>
-                        <button class="task-filter" data-filter="active">В работе</button>
-                        <button class="task-filter" data-filter="completed">Завершенные</button>
-                        <button class="task-filter" data-filter="overdue">Просроченные</button>
+                        <button class="task-filter" data-filter="new">Новая</button>
+                        <button class="task-filter" data-filter="development">В разработке</button>
+                        <button class="task-filter" data-filter="testing">Тестирование</button>
+                        <button class="task-filter" data-filter="ready">Готова</button>
                     </div>
                 </div>
                 <div class="space-y-4" id="tasksList">
-                    <div class="task-item p-4 border rounded-lg active" data-status="active">
+                    {% for task in task_responsible %}
+                    <div class="task-item p-4 border rounded-lg active" data-status={{ task.status}}>
                         <div class="flex justify-between items-center">
-                            <h3 class="font-medium">Разработка дизайна</h3>
-                            <span class="text-sm status-badge">В работе</span>
+                            <h3 class="font-medium">{{ task.name }}</h3>
+                            <span class="text-sm status-badge">{{ task.status }}</span>
                         </div>
                         <p class="text-sm text-gray-500 mt-1">Дедлайн: 2024-03-15</p>
                     </div>
-                    <div class="task-item p-4 border rounded-lg completed" data-status="completed">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-medium">Верстка главной страницы</h3>
-                            <span class="text-sm status-badge">Завершено</span>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-1">Дедлайн: 2024-03-10</p>
-                    </div>
-                    <div class="task-item p-4 border rounded-lg overdue" data-status="overdue">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-medium">Оптимизация SQL запросов</h3>
-                            <span class="text-sm status-badge">Просрочено</span>
-                        </div>
+                    {% endfor %}
                         <p class="text-sm text-gray-500 mt-1">Дедлайн: 2024-03-01</p>
                     </div>
-
                     <div class="pagination">
                         <span>Пагинация</span>
                         <button class="pagination-btn">
@@ -143,22 +128,18 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-xl shadow-sm">
                     <h2 class="text-xl font-semibold mb-4">Проекты</h2>
+                    {% for project in projects_participants %}
                     <div class="space-y-4">
                         <div class="p-4 border rounded-lg">
                             <div class="flex justify-between items-center">
-                                <h3 class="font-medium">CRM Система</h3>
-                                <span class="text-sm text-green-600">Активный</span>
+                                <h3 class="font-medium">{{ project.name }}</h3>
+                                <span class="text-sm text-green-600">{{ project.status}}</span>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1">Роль: Стажер</p>
-                        </div>
-                        <div class="p-4 border rounded-lg">
-                            <div class="flex justify-between items-center">
-                                <h3 class="font-medium">Портал обучения</h3>
-                                <span class="text-sm text-gray-500">Завершено</span>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1">Роль: Ментор</p>
+                            <p class="text-sm text-gray-500 mt-1">Роль: {{ user.role }}</p>
                         </div>
                     </div>
+                    {% endfor %}
+
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-sm">
                     <h2 class="text-xl font-semibold mb-4">Команда</h2>
@@ -215,9 +196,13 @@
                     document.querySelectorAll('.task-filter').forEach(btn => btn.classList.remove('active'));
                     e.target.classList.add('active');
                     const filter = e.target.dataset.filter;
-
                     document.querySelectorAll('.task-item').forEach(task => {
-                        if (filter === 'all' || task.classList.contains(filter)) {
+                        const status = task.dataset.status;
+                        if (filter === 'all' || (filter === 'active' && status === 'active') || 
+                            (filter === 'ready' && status === 'Готов') || 
+                            (filter === 'development' && status === 'Разработка') || 
+                            (filter === 'testing' && status === 'Тестирование') || 
+                            (filter === 'new' && status === 'Новая')) {
                             task.style.display = 'block';
                         } else {
                             task.style.display = 'none';
