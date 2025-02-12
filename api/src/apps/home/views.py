@@ -33,7 +33,6 @@ class HomeLKView(BaseView):
         #количество активныз проектов
         projects_active = len(tuple(filter(lambda x: x.status in ('В обсуждении', 'В разработке'), projects_participants)))
 
-        personal_account_url = reverse("users:personal_account")
         
         context = {
                 'user': user,
@@ -44,6 +43,5 @@ class HomeLKView(BaseView):
                 'projects_participants': projects_participants,
                 'projects_success': projects_success,
                 'projects_active': projects_active,
-                'personal_account_url': personal_account_url,
             }
         return render(request, 'home/home_lk.html', context)
