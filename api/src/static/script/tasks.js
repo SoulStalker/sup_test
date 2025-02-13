@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteButton = document.getElementById('delete-task-button'); // Кнопка удаления
     const confirmDeletePopup = document.getElementById('confirm-delete-popup'); // Попап подтверждения удаления
     const confirmDeleteButton = document.getElementById('confirm-delete'); // Кнопка подтверждения удаления
+    const accessDeniedPopup = document.getElementById('access-denied-popup');
+    const accessDeniedMessage = document.getElementById('access-denied-message');
+    const closeAccessDeniedPopup = document.getElementById('close-access-denied-popup');
     const task_id = '';
 
     let submitButton = form.querySelector('button[type="submit"]');
@@ -103,11 +106,20 @@ document.addEventListener('DOMContentLoaded', function () {
     editTaskButtons.forEach(button => {
         button.addEventListener('click', function () {
             currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
-            modal.classList.remove('hidden');
+            const editUrl = this.getAttribute('data-url');
 
             // Загружаем данные задачи через fetch
             fetch(`update/${currentTaskId}/`)
+            fetch(editUrl)
                 .then(response => {
+                    if (response.status === 403) {
+                        // Если доступ запрещён (403), показываем попап с ошибкой
+                        return response.json().then(errorData => {
+                            accessDeniedMessage.textContent = errorData.message || 'Доступ запрещён';
+                            accessDeniedPopup.classList.remove('hidden');
+                            throw new Error(errorData.message || 'Доступ запрещён');
+                        });
+                    }
                     if (!response.ok) {
                         return response.json().then(errData => {
                             throw new Error(`Ошибка ${response.status}: ${errData.message || 'Неизвестная ошибка'}`);
@@ -140,12 +152,16 @@ document.addEventListener('DOMContentLoaded', function () {
                             tag.classList.remove('selected'); // Убираем класс, если он есть
                         }
                     });
-
+                    modal.classList.remove('hidden');
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `update/${currentTaskId}/`);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
                 .catch(error => console.error('Ошибка:', error));
+            // Обработчик закрытия попапа с ошибкой доступа
+            closeAccessDeniedPopup.addEventListener('click', function() {
+                accessDeniedPopup.classList.add('hidden');
+            });
         });
     });
 

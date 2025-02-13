@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('code').value = data.code;
                     document.getElementById('description').value = data.description;
                     document.getElementById('content_type').value = data.content_type;
-                    document.getElementById('object').value = data.object?.id ?? "";
+                    document.getElementById('object_id').value = data.object_id?.id ?? "";
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/users/permissions/update/${permissionId}/`);
                     form.querySelector('button[type="submit"]').textContent = 'Сохранить';
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
     const contentTypeSelect = document.getElementById('content_type');
-    const objectSelect = document.getElementById('object');
+    const objectSelect = document.getElementById('object_id');
 
     if (contentTypeSelect) {
         contentTypeSelect.addEventListener('change', function () {

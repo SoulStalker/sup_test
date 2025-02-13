@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en" class="dfark">
+{% load static %}
+<head>
+    <meta charset="utf-8" />
+    <title>SUP - Система управления проектами</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="SUP  — это современная и мощная система управления проектами, предназначенная для эффективного планирования, координации и отслеживания всех аспектов вашего проекта. Независимо от размера и сложности вашего проекта, SUP  предоставляет инструменты, которые помогут вам достичь высоких результатов и снизить риски." name="description" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.svg' %}">
+
+    <!-- style css -->
+    <link href="{%  static 'css/home/style.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- unicons Icons css -->
+    <link href="{% static 'libs/@iconscout/unicons/css/line.css' %}" rel="stylesheet" type="text/css">
+
+    <!--Swiper slider css-->
+    <link href="{% static 'libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <!-- Navbar Start -->
+    <header id="navbar-sticky" class="navbar nav-dark">
+        <div class="container">
+            <nav>
+                <!-- Navbar Brand Logo -->
+                <a href="{% url 'home:home_view' %}" class="logo flex items-center">
+                    <img src="{% static 'images/logo.svg' %}" class="h-10 logo-dark" alt="SUP Logo">
+                    <span class="logo-text">SUP Project Management</span>
+                </a>
+                <!-- Mobile Menu Toggle Button (Offcanvas Button) -->
+                <div class="lg:hidden flex items-center ms-auto px-2.5">
+                    <button class="hs-collapse-toggle inline-flex items-center justify-center h-9 w-12 rounded-md border border-gray-300 bg-slate-300/30" type="button" id="hs-unstyled-collapse" data-hs-collapse="#mobileMenu" data-hs-type="collapse">
+                        <i class="uil uil-bars text-2xl"></i>
+                    </button>
+                </div>
+                <!-- Navigation Menu -->
+                <div id="mobileMenu" class="hs-collapse overflow-hidden transition-all duration-300 lg:basis-auto basis-full grow hidden lg:flex items-center justify-center mx-auto mt-2 lg:mt-0">
+                    <ul id="navbar-navlist" class="navbar-nav">
+                        <!-- Home Page Link -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home:home_view' %}">Главная</a>
+                        </li>
+                        <!-- Service Page Link -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#service">Сервис</a>
+                        </li>
+                        <!-- Features Page Link -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#features">Функции</a>
+                        </li>
+                        <!-- FAQ Page Link -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#faq">FAQ</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Download Button -->
+                <div class="hidden lg:flex items-center">
+                    <a href="{% url 'authorization:authorization' %}" class="nav-btn">Войти</a>
+                </div>
+            </nav><!-- end nav -->
+        </div>
+    </header>
+    <!-- Navbar End -->
+
+    <!-- Hero Section Start -->
+
+    <section id="home" class="relative overflow-hidden pt-40 pb-96 bg-gradient-to-r from-blue-100 to-blue-50 bg-opacity-50">
+        <div class="container relative">
+            <div class="text-center">
+                <div class="flex justify-center mt-6">
+                    <div class="max-w-2xl">
+                        <h1 class="text-5xl/tight text-gray-800 font-bold mb-10">
+                            Эффективное управление проектами с SUP
+                        </h1>
+                        <p class="text-base text-gray-700 lg:max-w-md mx-auto">
+                            SUP Project Management — система управления проектами для эффективного планирования, координации и отслеживания всех аспектов вашего проекта.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-10 flex justify-center space-x-4">
+                    <a href="#features" class="relative flex items-center justify-center rounded-full text-base font-medium py-3.5 px-6 bg-primary text-white">
+                        Узнать больше
+                    </a>
+                </div>
+            </div>
+        </div><!-- Container End -->
+        <div class="shape absolute sm:-bottom-px -bottom-[1px] start-0 end-0 overflow-hidden text-white">
+            <svg class="w-full h-auto scale-[2.0] origin-top" viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
+            </svg>
+        </div><!-- end shape -->
+    </section>
+
+    <div class="pb-24">
+        <div class="max-w-3xl mx-auto -mt-80 relative px-6 z-10">
+            <div class="hidden lg:block">
+                <div class="h-24 w-24 absolute -top-10 -end-5 -z-[1] bg-[url('{% static 'images/dot.svg' %}')]"></div>
+                <div class="h-24 w-24 absolute -bottom-10 -start-5 -z-[1] bg-[url('..{% static 'images/other/dot2.svg' %}')]"></div>
+            </div>
+            <img src="{% static 'images/fichi.jpg' %}" alt="" class="rounded-md w-full h-full">
+        </div>
+    </div>
+    <!-- Hero Section End -->
+
+    <!-- Service Section Start -->
+    <section id="service" class="py-24">
+        <div class="container">
+            <div class="flex items-center justify-center mb-14">
+                <div class="max-w-2xl text-center">
+                    <h5 class="capitalize text-lg text-gray-800 font-medium mb-2">Комплексные <span class="font-semibold text-primary">Услуги</span></h5>
+                    <h2 class="text-3xl/snug font-bold capitalize text-gray-800 mb-1">Выберите панель для каждого этапа вашего проекта</h2>
+                    <p class="text-base text-gray-600">SUP Project Management предоставляет инструменты для эффективного управления проектами на всех этапах.</p>
+                </div>
+            </div>
+            <div class="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <span class="inline-flex relative z-0 bg-green-50 h-14 w-14 mb-6" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                        <div class="absolute -z-20 top-5 left-5 right-0 bottom-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                    </span>
+                    <h5 class="text-xl font-medium mt-5 text-gray-800">Удобный Интерфейс</h5>
+                    <p class="text-base text-slate-600 mt-4">Чистый и интуитивно понятный интерфейс для легкого управления проектами и задачами.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <span class="inline-flex relative z-0 bg-green-50 h-14 w-14 mb-6" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                        <div class="absolute -z-20 top-5 left-5 right-0 bottom-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path>
+                            </svg>
+                        </div>
+                    </span>
+                    <h5 class="text-xl font-medium mt-5 text-gray-800">Полная Функциональность</h5>
+                    <p class="text-base text-slate-600 mt-4">Все необходимые инструменты для планирования, координации и отслеживания проектов.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <span class="inline-flex relative z-0 bg-green-50 h-14 w-14 mb-6" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                        <div class="absolute -z-20 top-5 left-5 right-0 bottom-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 0 1-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 0 1 4.82 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0 1 18.6 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.51L23 13.45a.84.84 0 0 1-.35.94z"></path>
+                            </svg>
+                        </div>
+                    </span>
+                    <h5 class="text-xl font-medium mt-5 text-gray-800">Креативные Решения</h5>
+                    <p class="text-base text-slate-600 mt-4">Гибкие и инновационные решения для любых проектов и задач.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <span class="inline-flex relative z-0 bg-green-50 h-14 w-14 mb-6" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                        <div class="absolute -z-20 top-5 left-5 right-0 bottom-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </div>
+                    </span>
+                    <h5 class="text-xl font-medium mt-5 text-gray-800">Безграничные Возможности</h5>
+                    <p class="text-base text-slate-600 mt-4">Большое количество функций и инструментов для эффективного управления проектами.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <span class="inline-flex relative z-0 bg-green-50 h-14 w-14 mb-6" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                        <div class="absolute -z-20 top-5 left-5 right-0 bottom-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </div>
+                    </span>
+                    <h5 class="text-xl font-medium mt-5 text-gray-800">Адаптивный Дизайн</h5>
+                    <p class="text-base text-slate-600 mt-4">Полностью адаптивный дизайн для комфортного использования на любом устройстве.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <span class="inline-flex relative z-0 bg-green-50 h-14 w-14 mb-6" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                        <div class="absolute -z-20 top-5 left-5 right-0 bottom-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <line x1="21.17" y1="8" x2="12" y2="8"></line>
+                                <line x1="3.95" y1="6.06" x2="8.54" y2="14"></line>
+                                <line x1="10.88" y1="21.94" x2="15.46" y2="14"></line>
+                            </svg>
+                        </div>
+                    </span>
+                    <h5 class="text-xl font-medium mt-5 text-gray-800">Надежная Поддержка</h5>
+                    <p class="text-base text-slate-600 mt-4">Круглосуточная техническая поддержка и профессиональная помощь на всех этапах работы.</p>
+                </div>
+            </div><!-- Grid End -->
+        </div><!-- Container End -->
+    </section>
+    <!-- service Section End -->
+
+    <!-- features Section Start -->
+    <section id="features" class="bg-slate-50 bg-cover bg-left">
+        <div class="py-24">
+            <div class="container">
+                <div class="flex items-center justify-center mb-14">
+                    <div class="max-w-2xl text-center">
+                        <h5 class="capitalize text-lg text-gray-800 font-medium mb-2">Наши <span class="font-semibold text-primary">особенности</span></h5>
+                        <h2 class="text-3xl/snug font-bold text-gray-800 mb-1">Удобное управление проектами для стажировок</h2>
+                        <p class="text-base text-gray-600">Эффективно управляйте проектами, командами и задачами, отслеживайте прогресс стажёров и организуйте онлайн-встречи.</p>
+
+
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 grid-cols-1 gap-6 mt-14 items-center">
+                    <div>
+                        <img src="{% static 'images/saas2.png' %}" class="max-w-full max-h-full rounded-md" alt="">
+                    </div>
+
+                    <div class="my-auto md:mx-auto">
+                       <h2 class="lg:text-3xl text-2xl text-gray-800 font-semibold mb-2">Система управления проектами для стажировок</h2>
+                        <p class="text-base text-gray-600">Платформа разработана для управления проектами стажёров с учётом ролей, прав доступа и аналитики успеваемости.</p>
+
+                        <div class="mt-10 flex flex-col gap-y-4">
+
+                            <!-- Первый блок -->
+                            <div class="flex items-center gap-5">
+                                <div>
+                                    <span class="inline-flex relative z-0 bg-primary/10 h-8 w-8" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                                        <div class="absolute -z-20 top-4 left-4 right-0 bottom-0">
+                                            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                               <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <rect id="bound" x="0" y="0" width="24" height="24"></rect> <path d="M7,14 C7,16.7614237 9.23857625,19 12,19 C14.7614237,19 17,16.7614237 17,14 C17,12.3742163 15.3702913,9.86852817 12,6.69922982 C8.62970872,9.86852817 7,12.3742163 7,14 Z M12,21 C8.13400675,21 5,17.8659932 5,14 C5,11.4226712 7.33333333,8.08933783 12,4 C16.6666667,8.08933783 19,11.4226712 19,14 C19,17.8659932 15.8659932,21 12,21 Z" id="Oval-2" fill="currentColor"></path> <path d="M12,4 C16.6666667,8.08933783 19,11.4226712 19,14 C19,17.8659932 15.8659932,21 12,21 L12,4 Z" id="Combined-Shape" fill="currentColor"></path> </g></svg>
+                                            </svg>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-medium text-gray-600">Ролевая система доступа</p>
+                                </div>
+                            </div><!-- Flex End -->
+
+                            <!-- Второй блок -->
+                            <div class="flex items-center gap-5">
+                                <div>
+                                    <span class="inline-flex relative z-0 bg-primary/10 h-8 w-8" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                                        <div class="absolute -z-20 top-4 left-4 right-0 bottom-0">
+                                            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <rect id="bound" x="0" y="0" width="24" height="24"></rect> <polygon id="Path-48" fill="currentColor" opacity="0.3" points="5 3 19 3 23 8 1 8"></polygon><polygon id="Path-48-Copy" fill="currentColor" points="23 8 12 20 1 8"> </polygon></g></svg>
+                                            </svg>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-medium text-gray-600">Управление проектами и задачами</p>
+                                </div>
+                            </div><!-- Flex End -->
+
+                            <!-- Третий блок -->
+                            <div class="flex items-center gap-5">
+                                <div>
+                                    <span class="inline-flex relative z-0 bg-primary/10 h-8 w-8" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                                        <div class="absolute -z-20 top-4 left-4 right-0 bottom-0">
+                                            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon><path d="M4.85714286,1 L11.7364114,1 C12.0910962,1 12.4343066,1.12568431 12.7051108,1.35473959 L17.4686994,5.3839416 C17.8056532,5.66894833 18,6.08787823 18,6.52920201 L18,19.0833333 C18,20.8738751 17.9795521,21 16.1428571,21 L4.85714286,21 C3.02044787,21 3,20.8738751 3,19.0833333 L3,2.91666667 C3,1.12612489 3.02044787,1 4.85714286,1 Z M8,12 C7.44771525,12 7,12.4477153 7,13 C7,13.5522847 7.44771525,14 8,14 L15,14 C15.5522847,14 16,13.5522847 16,13 C16,12.4477153 15.5522847,12 15,12 L8,12 Z M8,16 C7.44771525,16 7,16.4477153 7,17 C7,17.5522847 7.44771525,18 8,18 L11,18 C11.5522847,18 12,17.5522847 12,17 C12,16.4477153 11.5522847,16 11,16 L8,16 Z" id="Combined-Shape-Copy" fill="currentColor" opacity="0.3"></path><path d="M6.85714286,3 L14.7364114,3 C15.0910962,3 15.4343066,3.12568431 15.7051108,3.35473959 L20.4686994,7.3839416 C20.8056532,7.66894833 21,8.08787823 21,8.52920201 L21,21.0833333 C21,22.8738751 20.9795521,23 19.1428571,23 L6.85714286,23 C5.02044787,23 5,22.8738751 5,21.0833333 L5,4.91666667 C5,3.12612489 5.02044787,3 6.85714286,3 Z M8,12 C7.44771525,12 7,12.4477153 7,13 C7,13.5522847 7.44771525,14 8,14 L15,14 C15.5522847,14 16,13.5522847 16,13 C16,12.4477153 15.5522847,12 15,12 L8,12 Z M8,16 C7.44771525,16 7,16.4477153 7,17 C7,17.5522847 7.44771525,18 8,18 L11,18 C11.5522847,18 12,17.5522847 12,17 C12,16.4477153 11.5522847,16 11,16 L8,16 Z" id="Combined-Shape" fill="currentColor"></path></g></svg>
+                                            </svg>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-medium text-gray-600">Отслеживание посещаемости митов</p>
+                                </div>
+                            </div><!-- Flex End -->
+
+                            <!-- Четвертый блок -->
+                            <div class="flex items-center gap-5">
+                                <div>
+                                    <span class="inline-flex relative z-0 bg-primary/10 h-8 w-8" style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                                        <div class="absolute -z-20 top-4 left-4 right-0 bottom-0">
+                                            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="Stockholm-icons-/-Layout-/-Layout-top-panel-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <rect id="bound" x="0" y="0" width="24" height="24"></rect> <path d="M3,4 L20,4 C20.5522847,4 21,4.44771525 21,5 L21,7 C21,7.55228475 20.5522847,8 20,8 L3,8 C2.44771525,8 2,7.55228475 2,7 L2,5 C2,4.44771525 2.44771525,4 3,4 Z M10,10 L20,10 C20.5522847,10 21,10.4477153 21,11 L21,19 C21,19.5522847 20.5522847,20 20,20 L10,20 C9.44771525,20 9,19.5522847 9,19 L9,11 C9,10.4477153 9.44771525,10 10,10 Z" id="Combined-Shape" fill="currentColor"></path> <rect id="Rectangle-7-Copy-2" fill="currentColor" opacity="0.3" x="2" y="10" width="5" height="10" rx="1"></rect> </g> </svg>
+                                            </svg>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-medium text-gray-600">Аналитика успеваемости стажёров</p>
+                                </div>
+                            </div><!-- Flex End -->
+                        </div>
+                    </div>
+                </div><!-- Grid End -->
+            </div><!-- Container End -->
+        </div>
+
+        <div class="pb-24">
+            <div class="container">
+                <div class="grid md:grid-cols-2 grid-cols-1 gap-6 items-center">
+                    <div class="my-auto md:mx-auto">
+                        <h2 class="lg:text-3xl text-2xl text-gray-800 font-semibold mb-2">Аналитика и отчеты</h2>
+                        <p class="text-base font-medium text-gray-600">Отслеживайте успеваемость стажёров и эффективность выполнения задач <br> с помощью детальной аналитики и отчетов.</p>
+
+
+                        <div class="mt-10 flex flex-col gap-y-4">
+                            <div class="flex items-center gap-5">
+                                <div>
+                                    <span class="inline-flex relative z-0 bg-primary/10 h-8 w-8"
+                                        style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                                        <div class="absolute -z-20 top-4 left-4 right-0 bottom-0">
+                                            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect id="bound" x="0" y="0" width="24" height="24"></rect>
+                                                    <path
+                                                        d="M7,14 C7,16.7614237 9.23857625,19 12,19 C14.7614237,19 17,16.7614237 17,14 C17,12.3742163 15.3702913,9.86852817 12,6.69922982 C8.62970872,9.86852817 7,12.3742163 7,14 Z M12,21 C8.13400675,21 5,17.8659932 5,14 C5,11.4226712 7.33333333,8.08933783 12,4 C16.6666667,8.08933783 19,11.4226712 19,14 C19,17.8659932 15.8659932,21 12,21 Z"
+                                                        id="Oval-2" fill="currentColor"></path>
+                                                    <path
+                                                        d="M12,4 C16.6666667,8.08933783 19,11.4226712 19,14 C19,17.8659932 15.8659932,21 12,21 L12,4 Z"
+                                                        id="Combined-Shape" fill="currentColor"></path>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-medium text-gray-600">Детальная аналитика</p>
+                                </div>
+                            </div><!-- Flex End -->
+
+                            <div class="flex items-center gap-5">
+                                <div>
+                                    <span class="inline-flex relative z-0 bg-primary/10 h-8 w-8"
+                                        style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                                        <div class="absolute -z-20 top-4 left-4 right-0 bottom-0">
+                                            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect id="bound" x="0" y="0" width="24" height="24"></rect>
+                                                    <polygon id="Path-48" fill="currentColor" opacity="0.3"
+                                                        points="5 3 19 3 23 8 1 8"></polygon>
+                                                    <polygon id="Path-48-Copy" fill="currentColor" points="23 8 12 20 1 8">
+                                                    </polygon>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-medium text-gray-600">Визуализация данных</p>
+                                </div>
+                            </div><!-- Flex End -->
+
+                            <div class="flex items-center gap-5">
+                                <div>
+                                    <span class="inline-flex relative z-0 bg-primary/10 h-8 w-8"
+                                        style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                                        <div class="absolute -z-20 top-4 left-4 right-0 bottom-0">
+                                            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon>
+                                                    <path d="M4.85714286,1 L11.7364114,1 C12.0910962,1 12.4343066,1.12568431 12.7051108,1.35473959 L17.4686994,5.3839416 C17.8056532,5.66894833 18,6.08787823 18,6.52920201 L18,19.0833333 C18,20.8738751 17.9795521,21 16.1428571,21 L4.85714286,21 C3.02044787,21 3,20.8738751 3,19.0833333 L3,2.91666667 C3,1.12612489 3.02044787,1 4.85714286,1 Z M8,12 C7.44771525,12 7,12.4477153 7,13 C7,13.5522847 7.44771525,14 8,14 L15,14 C15.5522847,14 16,13.5522847 16,13 C16,12.4477153 15.5522847,12 15,12 L8,12 Z M8,16 C7.44771525,16 7,16.4477153 7,17 C7,17.5522847 7.44771525,18 8,18 L11,18 C11.5522847,18 12,17.5522847 12,17 C12,16.4477153 11.5522847,16 11,16 L8,16 Z" id="Combined-Shape-Copy" fill="currentColor" opacity="0.3"></path>
+                                                    <path d="M6.85714286,3 L14.7364114,3 C15.0910962,3 15.4343066,3.12568431 15.7051108,3.35473959 L20.4686994,7.3839416 C20.8056532,7.66894833 21,8.08787823 21,8.52920201 L21,21.0833333 C21,22.8738751 20.9795521,23 19.1428571,23 L6.85714286,23 C5.02044787,23 5,22.8738751 5,21.0833333 L5,4.91666667 C5,3.12612489 5.02044787,3 6.85714286,3 Z M8,12 C7.44771525,12 7,12.4477153 7,13 C7,13.5522847 7.44771525,14 8,14 L15,14 C15.5522847,14 16,13.5522847 16,13 C16,12.4477153 15.5522847,12 15,12 L8,12 Z M8,16 C7.44771525,16 7,16.4477153 7,17 C7,17.5522847 7.44771525,18 8,18 L11,18 C11.5522847,18 12,17.5522847 12,17 C12,16.4477153 11.5522847,16 11,16 L8,16 Z" id="Combined-Shape" fill="currentColor"></path>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-medium text-gray-600">Отчеты по проектам</p>
+                                </div>
+                            </div><!-- Flex End -->
+
+                            <div class="flex items-center gap-5">
+                                <div>
+                                    <span class="inline-flex relative z-0 bg-primary/10 h-8 w-8"
+                                        style="border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;">
+                                        <div class="absolute -z-20 top-4 left-4 right-0 bottom-0">
+                                            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" version="1.1"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <g id="Stockholm-icons-/-Layout-/-Layout-top-panel-2" stroke="none"
+                                                    stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect id="bound" x="0" y="0" width="24" height="24"></rect>
+                                                    <path
+                                                        d="M3,4 L20,4 C20.5522847,4 21,4.44771525 21,5 L21,7 C21,7.55228475 20.5522847,8 20,8 L3,8 C2.44771525,8 2,7.55228475 2,7 L2,5 C2,4.44771525 2.44771525,4 3,4 Z M10,10 L20,10 C20.5522847,10 21,10.4477153 21,11 L21,19 C21,19.5522847 20.5522847,20 20,20 L10,20 C9.44771525,20 9,19.5522847 9,19 L9,11 C9,10.4477153 9.44771525,10 10,10 Z"
+                                                        id="Combined-Shape" fill="currentColor"></path>
+                                                    <rect id="Rectangle-7-Copy-2" fill="currentColor" opacity="0.3" x="2"
+                                                        y="10" width="5" height="10" rx="1"></rect>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-medium text-gray-600">Экспорт данных</p>
+                                </div>
+                            </div><!-- Flex End -->
+                        </div>
+                        <a href="/authorization/" class="nav-btn mt-8">Присоедениться командой</a>
+
+                    </div>
+
+                    <div>
+                        <img src="{% static 'images/app.png' %}" class="max-w-full max-h-[650px] mx-auto rounded-md" alt="">
+                    </div>
+                </div><!-- grid End -->
+            </div><!-- Container End -->
+        </div>
+    </section>
+    <!-- features Section End -->
+    <section class="py-28 relative">
+        <div class="container px-1 sm:px-[32px]">
+            <!-- Фоновое изображение -->
+            <div class="absolute inset-0 bg-cover bg-no-repeat bg-center" style="background-image: url('{% static 'images/cta-bg.jpg' %}')">
+                <div class="relative w-full h-full z-30 bg-black/60"></div>
+            </div>
+
+            <!-- Контент -->
+            <div class="flex justify-center">
+                <div class="max-w-2xl">
+                    <div class="relative z-30 text-center">
+                        <!-- Заголовок -->
+                        <h5 class="capitalize text-lg text-white font-medium mb-2">Создайте свою команду</h5>
+                        <h2 class="text-3xl/snug font-bold text-white mb-1">Зарегистрируйте команду прямо сейчас</h2>
+                        <p class="text-base text-white mb-10">
+                            SUP — это современная платформа для управления проектами, которая поможет вашей команде достичь высоких результатов. Зарегистрируйтесь, чтобы получить доступ ко всем инструментам и начать работу.
+                        </p>
+
+                        <!-- Форма -->
+                        <form class="space-y-4">
+                            <div class="flex flex-col md:flex-row gap-4">
+                                <input type="text" placeholder="Имя команды" class="w-full px-4 py-3 rounded-md border border-gray-300 bg-white text-gray-800 focus:outline-none focus:border-primary">
+                                <input type="email" placeholder="Email администратора" class="w-full px-4 py-3 rounded-md border border-gray-300 bg-white text-gray-800 focus:outline-none focus:border-primary">
+                            </div>
+                            <button type="submit" class="w-full bg-white/90 text-primary hover:bg-white rounded-md transition-all duration-700 py-3 px-6">
+                                Отправить заявку
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- Flex End -->
+        </div><!-- Container End -->
+    </section>
+    <!-- FAQ Start -->
+    <section id="faq" class="py-24">
+        <div class="container">
+            <div class="flex items-center justify-center mb-14">
+                <div class="max-w-2xl text-center">
+                    <h5 class="capitalize text-lg text-gray-800 font-medium mb-2">Центр <span class="font-semibold text-primary">поддержки</span></h5>
+                    <h2 class="text-3xl/snug font-bold text-gray-800 mb-1">Часто задаваемые вопросы</h2>
+                    <p class="text-base text-gray-600">Ответы на все ваши вопросы о системе управления проектами для стажировок.</p>
+                </div>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+                <div class="hs-accordion-group space-y-4">
+                    <div class="hs-accordion-group space-y-4">
+                        <!-- Аккордеон 1 -->
+                        <div class="hs-accordion border border-gray-200 rounded-lg overflow-hidden" id="faq-item-1">
+                            <button class="hs-accordion-toggle capitalize px-6 py-4 inline-flex items-center justify-between gap-x-3 w-full text-left text-gray-950 transition-all" aria-controls="faq-content-1">
+                                <h5 class="text-base font-semibold">
+                                    <i class="uil uil-question-circle text-xl/none align-middle me-2"></i>
+                                    Как назначаются роли пользователям?
+                                </h5>
+                                <i data-lucide="chevron-up" class="h-4 w-4 transition-all duration-500 hs-accordion-active:-rotate-180"></i>
+                            </button>
+                            <div id="faq-content-1" class="hs-accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="faq-item-1">
+                                <div class="px-6 pb-4 pt-0">
+                                    <p class="text-gray-600 text-sm font-medium mb-2">
+                                        Роли назначаются администратором при создании или редактировании профиля пользователя. Каждая роль определяет набор прав и обязанностей, например, "Тим лид" или "Редактор".
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        <!-- Аккордеон 2 -->
+                        <div class="hs-accordion border border-gray-200 rounded-lg overflow-hidden" id="faq-item-2">
+                            <button class="hs-accordion-toggle capitalize px-6 py-4 inline-flex items-center justify-between gap-x-3 w-full text-left text-gray-950 transition-all" aria-controls="faq-content-2">
+                                <h5 class="text-base font-semibold">
+                                    <i class="uil uil-question-circle text-xl/none align-middle me-2"></i>
+                                    Как организованы проекты и задачи?
+                                </h5>
+                                <i data-lucide="chevron-up" class="h-4 w-4 transition-all duration-500 hs-accordion-active:-rotate-180"></i>
+                            </button>
+                            <div id="faq-content-2" class="hs-accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="faq-item-2">
+                                <div class="px-6 pb-4 pt-0">
+                                    <p class="text-gray-600 text-sm font-medium mb-2">
+                                        Проекты организованы в иерархии: Проект → Фичи → Задачи. Каждый проект может содержать несколько фич, а каждая фича делится на задачи.
+                                    </p>
+                                    <p class="text-gray-600 text-sm font-medium">
+                                        Доступ к проектам и задачам регулируется правами пользователей.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Аккордеон 3 -->
+                        <div class="hs-accordion border border-gray-200 rounded-lg overflow-hidden" id="faq-item-3">
+                            <button class="hs-accordion-toggle capitalize px-6 py-4 inline-flex items-center justify-between gap-x-3 w-full text-left text-gray-950 transition-all" aria-controls="faq-content-3">
+                                <h5 class="text-base font-semibold">
+                                    <i class="uil uil-question-circle text-xl/none align-middle me-2"></i>
+                                    Как отслеживается посещаемость митов?
+                                </h5>
+                                <i data-lucide="chevron-up" class="h-4 w-4 transition-all duration-500 hs-accordion-active:-rotate-180"></i>
+                            </button>
+                            <div id="faq-content-3" class="hs-accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="faq-item-3">
+                                <div class="px-6 pb-4 pt-0">
+                                    <p class="text-gray-600 text-sm font-medium mb-2">
+                                        Посещаемость митов отслеживается автоматически. Участники могут отметить своё присутствие, отсутствие или предупредить о неучастии заранее.
+                                    </p>
+                                    <p class="text-gray-600 text-sm font-medium">
+                                        Администратор может просматривать статистику посещаемости для каждого участника.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Аккордеон 4 -->
+                        <div class="hs-accordion border border-gray-200 rounded-lg overflow-hidden" id="faq-item-4">
+                            <button class="hs-accordion-toggle capitalize px-6 py-4 inline-flex items-center justify-between gap-x-3 w-full text-left text-gray-950 transition-all" aria-controls="faq-content-4">
+                                <h5 class="text-base font-semibold">
+                                    <i class="uil uil-question-circle text-xl/none align-middle me-2"></i>
+                                    Как формируется аналитика успеваемости?
+                                </h5>
+                                <i data-lucide="chevron-up" class="h-4 w-4 transition-all duration-500 hs-accordion-active:-rotate-180"></i>
+                            </button>
+                            <div id="faq-content-4" class="hs-accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="faq-item-4">
+                                <div class="px-6 pb-4 pt-0">
+                                    <p class="text-gray-600 text-sm font-medium mb-2">
+                                        Аналитика формируется на основе выполненных задач, посещаемости митов и активности в проектах. Данные визуализируются в виде графиков и таблиц.
+                                    </p>
+                                    <p class="text-gray-600 text-sm font-medium">
+                                        Вы можете экспортировать отчёты в PDF или Excel для дальнейшего анализа.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Аккордеон 5 -->
+                        <div class="hs-accordion border border-gray-200 rounded-lg overflow-hidden" id="faq-item-5">
+                            <button class="hs-accordion-toggle capitalize px-6 py-4 inline-flex items-center justify-between gap-x-3 w-full text-left text-gray-950 transition-all" aria-controls="faq-content-5">
+                                <h5 class="text-base font-semibold">
+                                    <i class="uil uil-question-circle text-xl/none align-middle me-2"></i>
+                                    Как зарегистрироваться на платформе?
+                                </h5>
+                                <i data-lucide="chevron-up" class="h-4 w-4 transition-all duration-500 hs-accordion-active:-rotate-180"></i>
+                            </button>
+                            <div id="faq-content-5" class="hs-accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="faq-item-5">
+                                <div class="px-6 pb-4 pt-0">
+                                    <p class="text-gray-600 text-sm font-medium mb-2">
+                                        Для регистрации необходимо получить инвайт-ссылку от администратора. Без ссылки регистрация невозможна.
+                                    </p>
+                                    <p class="text-gray-600 text-sm font-medium">
+                                        После регистрации администратор назначит вам роль и права доступа.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Аккордеон 6 -->
+                        <div class="hs-accordion border border-gray-200 rounded-lg overflow-hidden" id="faq-item-6">
+                            <button class="hs-accordion-toggle capitalize px-6 py-4 inline-flex items-center justify-between gap-x-3 w-full text-left text-gray-950 transition-all" aria-controls="faq-content-6">
+                                <h5 class="text-base font-semibold">
+                                    <i class="uil uil-question-circle text-xl/none align-middle me-2"></i>
+                                    Как создаются команды?
+                                </h5>
+                                <i data-lucide="chevron-up" class="h-4 w-4 transition-all duration-500 hs-accordion-active:-rotate-180"></i>
+                            </button>
+                            <div id="faq-content-6" class="hs-accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="faq-item-6">
+                                <div class="px-6 pb-4 pt-0">
+                                    <p class="text-gray-600 text-sm font-medium mb-2">
+                                        Команды создаются администратором. Каждая команда состоит из группы пользователей, работающих над конкретным проектом или задачей.
+                                    </p>
+                                    <p class="text-gray-600 text-sm font-medium">
+                                        Участники команды могут обмениваться комментариями и отслеживать прогресс выполнения задач.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- Container End -->
+    </section>
+    <!-- FAQ End -->
+
+   <!-- Footer section start -->
+    <footer class="bg-slate-900 bg-center bg-no-repeat">
+        <div class="container lg:px-20">
+            <!-- Основной контент футера -->
+            <div class="flex flex-col lg:flex-row justify-between gap-14 py-24">
+                <!-- Левая часть: Описание компании -->
+                <div class="lg:w-5/12">
+                    <a href="#" class="flex items-center gap-2 logo">
+                        <img src="{% static 'images/logo.svg' %}" class="w-36" alt="SUP Project Manager">
+                    </a>
+                    <p class="text-gray-400 text-base font-medium max-w-lg mt-6">SUP — система управления проектами для эффективного планирования и контроля. Подходит для проектов любого масштаба, помогает достигать целей и минимизировать риски.</p>
+                </div>
+
+                <!-- Правая часть: Меню в несколько колонок -->
+                <div class="lg:w-7/12">
+                    <div class="grid md:grid-cols-3 sm:grid-cols-2 gap-8">
+                        <!-- Колонка 1 -->
+                        <div>
+                            <h5 class="xl:text-xl lg:text-lg font-semibold text-gray-200 mb-4">О нас</h5>
+                            <ul class="flex flex-col gap-3">
+                                <li>
+                                    <a href="javascript:void(0);" class="text-base font-medium text-gray-400 hover:text-white transition-all">
+                                         Поддержка
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="text-base font-medium text-gray-400 hover:text-white transition-all">
+                                         О компании
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="text-base font-medium text-gray-400 hover:text-white transition-all">
+                                         Авторские права
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Колонка 2 -->
+                        <div>
+                            <h5 class="xl:text-xl lg:text-lg font-semibold text-gray-200 mb-4">Полезные ссылки</h5>
+                            <ul class="flex flex-col gap-3">
+                                <li>
+                                    <a href="javascript:void(0);" class="text-base font-medium text-gray-400 hover:text-white transition-all">
+                                         Популярные кампании
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="text-base font-medium text-gray-400 hover:text-white transition-all">
+                                         Конфиденциальность
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Колонка 3 -->
+                        <div>
+                            <h5 class="xl:text-xl lg:text-lg font-semibold text-gray-200 mb-4">Юридическая информация</h5>
+                            <ul class="flex flex-col gap-3">
+                                <li>
+                                    <a href="javascript:void(0);" class="text-base font-medium text-gray-400 hover:text-white transition-all">
+                                         Условия использования
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="text-base font-medium text-gray-400 hover:text-white transition-all">
+                                         Политика конфиденциальности
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="text-base font-medium text-gray-400 hover:text-white transition-all">
+                                         Правовая информация
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Grid End -->
+        </div><!-- Container End -->
+
+        <!-- Нижняя часть футера -->
+        <div class="border-t border-slate-700/20 h-[75px]">
+            <div class="container lg:px-20 flex flex-wrap justify-center items-center h-full md:justify-between text-center md:text-start">
+                <p class="text-base font-medium text-gray-400">
+                    © <script>document.write(new Date().getFullYear())</script>
+                    SUP Project Manager -
+                    <a href="#" class="hover:text-primary transition-colors duration-300">
+                        Разработано с <i data-lucide="heart" class="inline h-4 w-4 text-red-500 fill-red-500"></i> командой профессионалов
+                    </a>
+                </p>
+
+            </div><!-- Flex End -->
+        </div><!-- Container End -->
+    </footer>
+    <!-- Footer section End -->
+
+    <!-- Back To Top Start -->
+    <button id="back-to-top" onclick="topFunction()" class="fixed text-xl rounded-full z-10 bottom-5 end-5 h-9 w-9 text-center bg-primary/20 text-primary flex justify-center items-center">
+        <i class="uil uil-arrow-up text-base"></i>
+    </button>
+    <!-- Back To Top End -->
+    <script src="{% static 'script/home.js' %}"></script>
+
+</body>
+
+</html>

@@ -113,7 +113,8 @@ class PermissionRepository(PermissionMixin, IPermissionRepository, ABC):
         model.name = dto.name
         model.code = dto.code
         model.description = dto.description
-
+        model.content_type = dto.content_type
+        model.object_id = dto.object_id
         model.save()
         return self._permission_orm_to_dto(model)
 
@@ -277,7 +278,7 @@ class UserRepository(PermissionMixin, IUserRepository, ABC):
     def get_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
-
+      
     def get_user_id_list(self, user_id: int) -> list[UserDTO]:
         user = self.model.objects.filter(id__in=user_id)
         return user

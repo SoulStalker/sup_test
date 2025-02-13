@@ -12,7 +12,9 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 DEBUG = env.bool("DEBUG", False)
 
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", ["127.0.0.1"])
+ALLOWED_HOSTS = env.list(
+    "DJANGO_ALLOWED_HOSTS", ["127.0.0.1", "localhost", "127.0.0.1:8000"]
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -31,6 +33,7 @@ INSTALLED_APPS = [
     "src.apps.registration",
     "src.apps.authorization",
     "src.apps.verifyemail",
+    "src.apps.home"
 ]
 
 MIDDLEWARE = [
