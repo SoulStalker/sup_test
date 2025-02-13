@@ -10,6 +10,7 @@ from .dtos import (
     ProjectDTO,
     StatusObject,
     TaskDTO,
+    FeaturesDTO,
 )
 from .entity import TaskEntity
 from .repository import (
@@ -289,14 +290,14 @@ class TaskService(BaseService):
         """
         return self._repository.get_tags_id_list(tags_id)
 
-    def get_task_id_list(self, feature_id: int) -> list[int]:
+    def get_task_id_list(self, dto: FeaturesDTO) -> list[TaskDTO]:
         """
         Получает список идентификаторов задач для фичи.
 
-        :param feature_id: Идентификатор фичи.
+        :param dto: DTO фичи.
         :return: Список идентификаторов задач.
         """
-        return self._repository.get_task_id_list(feature_id)
+        return self._repository.get_task_id_list(dto)
 
     def create_comment(self, dto: CommentDTO) -> CommentDTO:
         """

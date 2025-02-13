@@ -104,10 +104,9 @@
                             <h3 class="font-medium">{{ task.name }}</h3>
                             <span class="text-sm status-badge">{{ task.status }}</span>
                         </div>
-                        <p class="text-sm text-gray-500 mt-1">Дедлайн: 2024-03-15</p>
+                        <p class="text-sm text-gray-500 mt-1">Дедлайн: {{ task.closed_at }}</p>
                     </div>
                     {% endfor %}
-                        <p class="text-sm text-gray-500 mt-1">Дедлайн: 2024-03-01</p>
                     </div>
                     <div class="pagination">
                         <span>Пагинация</span>

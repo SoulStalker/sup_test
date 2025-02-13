@@ -342,10 +342,10 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         tags = Tags.objects.filter(id__in=tags_id)
         return tags
 
-    def get_task_id_list(self, feature: int):
+    def get_task_id_list(self, feature: FeaturesDTO):
         feature_instance = Features.objects.get(name=feature.name)
-        task = feature_instance.tasks_features.all()
-        return task
+        tasks = feature_instance.tasks_features.all()
+        return [self._task_orm_to_dto(task) for task in tasks]
 
     def create_comment(self, dto: CommentDTO):
         comment = Comment(
