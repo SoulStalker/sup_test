@@ -303,10 +303,10 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
             contributor_id=dto.contributor_id,
             responsible_id=dto.responsible_id,
             status=dto.status,
+            closed_at=dto.closed_at,
             feature_id=dto.feature_id,
             description=dto.description,
         )
-
         task.save()
         task.tags.set(dto.tags)
 
