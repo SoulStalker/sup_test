@@ -1,31 +1,11 @@
 import pytest
 import json
 from django.urls import reverse
-from django.test.client import Client
 from django.contrib.auth import get_user_model
 
 from src.models.invites import Invite
-from src.domain.invites.dtos import InviteDTO
 
 User = get_user_model()
-
-
-@pytest.fixture
-def client():
-    return Client()
-
-
-@pytest.fixture
-def admin_user(db):
-    user = User.objects.create_user(
-        email='admin@admin.org',
-        password='admin',
-    )
-    user.is_staff = True
-    user.is_superuser = True
-    user.is_active = True
-    user.save()
-    return user
 
 
 @pytest.mark.django_db
@@ -45,7 +25,6 @@ def test_create_invite(client, admin_user):
     response = client.post(reverse('invites:create_invite'))
 
     response_data = json.loads(response.content)
-    print(Invite.objects.first().link[-22:])
 
     assert success_login
     assert response.status_code == 200
@@ -65,7 +44,6 @@ def test_delete_invite(client, admin_user):
     response = client.delete(reverse('invites:delete_invite', args=[invite.id]))
 
     response_data = json.loads(response.content)
-    print(response_data)
 
     assert response.status_code == 200
     assert not Invite.objects.filter(id=invite.id).exists()
