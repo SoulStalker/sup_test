@@ -1,5 +1,4 @@
 import pytest
-import json
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
@@ -9,20 +8,13 @@ User = get_user_model()
 
 
 @pytest.mark.django_db
-def test_get_registration_page(client, admin_user):
-    success_admin_login = client.login(email='admin@admin.org', password='admin')
-    assert success_admin_login
-
-    creating_invite = client.post(reverse('invites:create_invite'))
-    assert creating_invite.status_code == 200
-
-    response = client.get(reverse('registration:registration', args=[Invite.objects.first().link[-22:]]))
-
+def test_get_authorization_page(client):
+    response = client.get(reverse('authorization:authorization'))
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_post_registration_page(client, admin_user):
+def test_post_authorization_page(client, admin_user):
     success_admin_login = client.login(email='admin@admin.org', password='admin')
     assert success_admin_login
 
@@ -42,13 +34,25 @@ def test_post_registration_page(client, admin_user):
         "github_nickname": "github_1",
     }
 
-    response = client.post(reverse(
+    creating_user = client.post(reverse(
         'registration:registration',
         args=[Invite.objects.first().link[-22:]]
     ), data=data)
-    response_data = json.loads(response.content)
+    assert creating_user.status_code == 201
 
-    assert response.status_code == 201
-    assert response_data['status'] == 'success'
-    assert User.objects.filter(email='user1@example.com').exists()
-    assert User.objects.filter(email='user1@example.com').count() == 1
+    # сразу авторизуется после регистрации
+    logout = client.get(reverse('authorization:logout'))
+
+    data = {
+        "email": "user1@example.com",
+        "password": "Password_123",
+    }
+    # не меняется статус по ендпоинту verifyemail
+    user = User.objects.get(email='user1@example.com')
+    user.is_active = True
+    user.save()
+    response = client.post(reverse('authorization:authorization'), data=data)
+    # response_data = json.loads(response.content)
+    # print(response_data)
+
+    assert response.status_code == 302  # может стоить добавить доп ответ, что авторизация успешна?
