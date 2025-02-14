@@ -1,11 +1,15 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from typing import Dict, Optional
 
 
 class CategoryObject:
     """
-    ValueObject: Категория мита
+    ValueObject: Категория мита.
+
+    :param pk: Уникальный идентификатор категории.
+    :param name: Название категории.
     """
 
     pk: int
@@ -19,7 +23,15 @@ class CategoryObject:
 @dataclass
 class MeetDTO:
     """
-    DTO: Объект мита
+    DTO: Объект мита.
+
+    :param id: Уникальный идентификатор мита.
+    :param category_id: Идентификатор категории мита.
+    :param title: Название мита.
+    :param start_time: Время начала мита.
+    :param author_id: Идентификатор автора мита.
+    :param responsible_id: Идентификатор ответственного за мит.
+    :param participant_statuses: Статусы участников мита.
     """
 
     id: int | None

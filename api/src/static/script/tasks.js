@@ -106,9 +106,8 @@ document.addEventListener('DOMContentLoaded', function () {
     editTaskButtons.forEach(button => {
         button.addEventListener('click', function () {
             currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
-
-            // Загружаем данные задачи через fetch
-            fetch(`update/${currentTaskId}/`)
+            const editUrl = this.getAttribute('data-url');
+            fetch(editUrl)
                 .then(response => {
                     if (response.status === 403) {
                         // Если доступ запрещён (403), показываем попап с ошибкой

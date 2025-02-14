@@ -71,7 +71,7 @@
         </div>
         <h5 class="text-2xl font-semibold">Список задач</h5>
         <div class="flex-1">
-            {% for item_task in task %}
+            {% for item_task in tasks %}
             <p>
             <a href="{% url 'projects:task_detail' item_task.id %}">
                 {{ item_task.name }}</a></td>

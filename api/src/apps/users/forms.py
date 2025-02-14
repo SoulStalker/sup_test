@@ -127,13 +127,12 @@ class PasswordChangeForm(forms.Form):
         return current_password
 
     def clean_new_password2(self):
+        current_password = self.cleaned_data.get("current_password")
         new_password1 = self.cleaned_data.get("new_password1")
         new_password2 = self.cleaned_data.get("new_password2")
-
         if new_password1 != new_password2:
             raise forms.ValidationError("Пароли не совпадают")
-
-        if new_password1 == self.user.password:
+        if new_password1 == current_password:
             raise forms.ValidationError(
                 "Новый пароль должен отличаться от старого"
             )

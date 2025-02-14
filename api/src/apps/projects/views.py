@@ -226,6 +226,7 @@ class SearchProjectView(BaseView):
 
 
 class FeaturesView(BaseView):
+    '''Список фичей'''
     items_per_page = 16
 
     def get(self, request, *args, **kwargs):
