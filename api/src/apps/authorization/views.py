@@ -5,7 +5,7 @@ from django.contrib.auth import (
     logout,
 )
 from django.db.utils import IntegrityError
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from src.apps.authorization.forms import AuthorizationForm

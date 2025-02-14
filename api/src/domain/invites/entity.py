@@ -36,5 +36,10 @@ class InviteEntity(Entity):
         return self.status
 
     def use_invite(self) -> str:
+        """
+        Обновляет статус приглашения на "USED".
+
+        :return: Новый статус приглашения.
+        """
         self.status = InviteChoices.USED
         return self.status

@@ -28,11 +28,11 @@ class BaseService:
         """
         Универсальный метод для валидации и сохранения/обновления данных.
 
-        :param entity: Entity для валидации данных
-        :param repository: Репозиторий для выполнения операций с базой
-        :param dto: DTO с данными
-        :param save_method: Метод репозитория (например, create или update)
-        :return: Tuple (result, error), где result — результат операции, а error — ошибка
+        :param entity: Сущность для валидации данных.
+        :param repository: Репозиторий для выполнения операций с базой.
+        :param dto: DTO с данными.
+        :param save_method: Метод репозитория (например, create или update).
+        :return: Кортеж (результат операции, ошибка), где результат — результат операции, а ошибка — сообщение об ошибке.
         """
         err = entity.verify_data()
         if err:
@@ -42,9 +42,21 @@ class BaseService:
         return result, None
 
     @classmethod
-    def validate_and_save(cls, entity, repository, dto, user_id):
+    def validate_and_save(
+        cls,
+        entity: Entity,
+        repository: BaseRepository,
+        dto: Any,
+        user_id: int,
+    ) -> Tuple[Optional[Any], Optional[str]]:
         """
         Упрощённая обёртка для создания объектов.
+
+        :param entity: Сущность для валидации данных.
+        :param repository: Репозиторий для выполнения операций с базой.
+        :param dto: DTO с данными.
+        :param user_id: Идентификатор пользователя.
+        :return: Кортеж (результат операции, ошибка), где результат — результат операции, а ошибка — сообщение об ошибке.
         """
         # Проверяем наличие прав
         if not repository.has_permission(user_id, 3):
@@ -54,16 +66,23 @@ class BaseService:
         )
 
     @classmethod
-    def validate_and_update(cls, entity, repository, dto, pk, user_id):
+    def validate_and_update(
+        cls,
+        entity: Entity,
+        repository: BaseRepository,
+        dto: Any,
+        pk: int,
+        user_id: int,
+    ) -> Tuple[Optional[Any], Optional[str]]:
         """
         Метод для обновления объектов.
 
-        :param entity: Entity для валидации данных
-        :param repository: Репозиторий для выполнения операций с базой
-        :param dto: DTO с данными
-        :param pk: Первичный ключ объекта
-        :param user_id: Идентификатор пользователя
-        :return: Tuple (result, error), где result — результат операции, а error — ошибка
+        :param entity: Сущность для валидации данных.
+        :param repository: Репозиторий для выполнения операций с базой.
+        :param dto: DTO с данными.
+        :param pk: Первичный ключ объекта.
+        :param user_id: Идентификатор пользователя.
+        :return: Кортеж (результат операции, ошибка), где результат — результат операции, а ошибка — сообщение об ошибке.
         """
         # Проверяем существование объекта
         if not repository.exists(pk):
@@ -78,35 +97,32 @@ class BaseService:
             entity, repository, dto, lambda d: repository.update(pk, d)
         )
 
-    def exists(self, pk):
+    def exists(self, pk: int) -> bool:
+        """
+        Проверяет существование объекта по его идентификатору.
+
+        :param pk: Идентификатор объекта.
+        :return: True, если объект существует, иначе False.
+        """
         return self._repository.exists(pk)
 
-    def get_list(self):
+    def get_list(self) -> list[Any]:
         """
-        Получение списка объектов с проверкой прав доступа.
+        Получает список всех объектов.
 
-        :param user_id: Идентификатор пользователя
-        :return: Список объектов, к которым у пользователя есть доступ
+        :return: Список объектов.
         """
-        # all_objects = self._repository.get_list()
-
-        # Фильтруем объекты, оставляя только те, к которым у пользователя есть доступ
-        # accessible_objects = []
-        # for obj in all_objects:
-        #     if self._repository.has_permission(user_id, "READ", obj):
-        #         accessible_objects.append(obj)
-
-        # return accessible_objects, None
-        # решили что список можно видеть всем авторизованным
         return self._repository.get_list()
 
-    def get_by_id(self, pk, user_id):
+    def get_by_id(
+        self, pk: int, user_id: int
+    ) -> Tuple[Optional[Any], Optional[str]]:
         """
-        Получение объекта по ID с проверкой прав доступа.
+        Получает объект по его идентификатору с проверкой прав доступа.
 
-        :param pk: Первичный ключ объекта
-        :param user_id: Идентификатор пользователя
-        :return: Объект или None, если нет прав доступа или объект не найден
+        :param pk: Идентификатор объекта.
+        :param user_id: Идентификатор пользователя.
+        :return: Кортеж (объект, ошибка), где объект — найденный объект, а ошибка — сообщение об ошибке.
         """
         if not self._repository.exists(pk):
             return None, f"Объект с id {pk} не найден."
@@ -119,16 +135,29 @@ class BaseService:
 
         return model, None
 
-    def delete(self, pk, user_id):
+    def delete(self, pk: int, user_id: int) -> Optional[str]:
+        """
+        Удаляет объект по его идентификатору с проверкой прав доступа.
+
+        :param pk: Идентификатор объекта.
+        :param user_id: Идентификатор пользователя.
+        :return: Сообщение об ошибке, если удаление не удалось, иначе None.
+        """
         model = self._repository.get_by_id(pk)
         if not self._repository.has_permission(user_id, 3, model):
             return "У вас нет прав на удаление данного объекта"
         self._repository.delete(pk)
+        return None
 
-    def has_permission(self, user_id: int, action: int, obj=None) -> bool:
+    def has_permission(
+        self, user_id: int, action: int, obj: Optional[Any] = None
+    ) -> bool:
         """
-        Проверка наличия разрешения у пользователя.
-        - action: код действия, например, "EDIT_TASK".
-        - obj: объект, для которого проверяется разрешение. Если None, проверяется глобальное разрешение.
+        Проверяет наличие прав у пользователя на выполнение действия над объектом.
+
+        :param user_id: Идентификатор пользователя.
+        :param action: Код действия.
+        :param obj: Объект, над которым выполняется действие. Если None, проверяется глобальное разрешение.
+        :return: True, если пользователь имеет права, иначе False.
         """
-        return self.has_permission(user_id, action, obj)
+        return self._repository.has_permission(user_id, action, obj)
