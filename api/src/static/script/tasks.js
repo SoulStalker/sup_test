@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                     modal.classList.remove('hidden');
                     // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `update/${currentTaskId}/`);
+                    form.setAttribute('action', editUrl);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
                 .catch(error => console.error('Ошибка:', error));

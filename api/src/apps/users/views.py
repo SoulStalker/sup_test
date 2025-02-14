@@ -395,19 +395,47 @@ class UserUpdateView(BaseView):
 class UserPasswordChangeView(BaseView):
     """Смена пароля пользователя."""
 
+    def get(self, request, *args, **kwargs):
+        return render(request, "password_change.html")
+
     def post(self, request, *args, **kwargs):
-        user_id = kwargs.get("user_id")
         try:
-            form = PasswordChangeForm(request.POST)
+            user = request.user
+            form = PasswordChangeForm(request.POST, user=user)
             if form.is_valid():
-                self.user_service.change_password(
-                    user_id=user_id,
-                    dto=UserDTO(
-                        password=form.cleaned_data["password"],
-                    ),
+                form.save()
+                return HttpResponseRedirect(reverse("users:personal_account"))
+            error_message =  [
+                error for field, errors in form.errors.items() for error in errors
+                ]
+            return render(
+                request,
+                "password_change.html",
+                {"form": form, "error_message": error_message}
                 )
-                return JsonResponse({"status": "success"}, status=200)
         except Exception as err:
             return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
+                {"status": "error", "message": str(err)}, status=400
             )
+
+
+class ProfileView(BaseView):
+    def get(self, request, *args, **kwargs):
+        roles = self.role_service.get_list()
+        permissions = self.permission_service.get_list()
+        teams = self.team_service.get_list()
+        user, error = self.user_service.get_by_id(self.user_id, self.user_id)
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": str(error)}, status=403
+            )
+        return render(
+            self.request,
+            "users/profile.html",
+            {
+                "user": user,
+                "roles": roles,
+                "permissions": permissions,
+                "teams": teams,
+            },
+        )

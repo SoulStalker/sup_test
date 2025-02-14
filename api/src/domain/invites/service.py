@@ -67,11 +67,15 @@ class InviteService(BaseService):
         else:
             return "Invalid status"
         self._repository.update_status(invite.pk, status)
+        return None
 
     def has_permission(self, user_id: int, action: str, obj=None) -> bool:
         """
-        Проверка наличия разрешения у пользователя.
-        - action: код действия, например, "EDIT_TASK".
-        - obj: объект, для которого проверяется разрешение. Если None, проверяется глобальное разрешение.
+        Проверяет наличие прав у пользователя на выполнение действия над объектом.
+
+        :param user_id: Идентификатор пользователя.
+        :param action: Код действия.
+        :param obj: Объект, над которым выполняется действие. Если None, проверяется глобальное разрешение.
+        :return: True, если пользователь имеет права, иначе False.
         """
-        return self.has_permission(user_id, action, obj)
+        return self._repository.has_permission(user_id, action, obj)
