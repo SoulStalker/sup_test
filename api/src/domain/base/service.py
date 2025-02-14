@@ -1,7 +1,30 @@
+from typing import Any, Callable, Optional, Tuple
+
+from .entity import Entity
+from .repository import BaseRepository
+
+
 class BaseService:
+    """
+    Базовый класс для сервисов, предоставляющий методы для валидации и обработки данных.
+    """
+
+    def __init__(self, repository: BaseRepository):
+        """
+        Инициализирует сервис с указанным репозиторием.
+
+        :param repository: Репозиторий для работы с данными.
+        """
+        self._repository = repository
 
     @classmethod
-    def validate_and_process(cls, entity, repository, dto, save_method):
+    def validate_and_process(
+        cls,
+        entity: Entity,
+        repository: BaseRepository,
+        dto: Any,
+        save_method: Callable[[Any], Any],
+    ) -> Tuple[Optional[Any], Optional[str]]:
         """
         Универсальный метод для валидации и сохранения/обновления данных.
 

@@ -124,6 +124,12 @@ class ProjectRepository(PermissionMixin, IProjectRepository, ABC):
         ]
 
 
+    def get_list_participants(self, user_id: int) -> list[Project]:
+        '''Список проектов у которых участник юзер'''
+        projects = self.model.objects.filter(participants=user_id)
+        return projects
+
+
 class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
 
     model = Features

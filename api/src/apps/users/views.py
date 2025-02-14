@@ -1,5 +1,6 @@
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 from src.apps.custom_view import BaseView
 from src.apps.users.forms import (
     CreateUserForm,

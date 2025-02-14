@@ -25,7 +25,10 @@ class UserAuthorization(BaseView):
 
     def post(self, request):
         form = AuthorizationForm(request.POST)
-        next_url = request.GET.get(REDIRECT_FIELD_NAME, "/meets/")
+        next_url = request.GET.get(
+            REDIRECT_FIELD_NAME, "/").replace('/authorization/logout/', '/'
+                                )
+        error_message = None
         if form.is_valid():
             cd = form.cleaned_data
             try:
@@ -36,21 +39,10 @@ class UserAuthorization(BaseView):
                     login(request, user)
                     return redirect(next_url)
                 else:
-                    return JsonResponse(
-                        {
-                            "status": "error",
-                            "message": "Неверный логин или пароль.",
-                        },
-                        status=400,
-                    )
+                    error_message = "Неверный логин или пароль."
             except IntegrityError:
-                return JsonResponse(
-                    {
-                        "status": "error",
-                        "message": "Такого email не существует",
-                    },
-                    status=404,
-                )
+                error_message = "Неверный логин или пароль."
+        return render(request, "auth.html", {"form": form, "error_message": error_message})
 
 
 class UserLogout(BaseView):
