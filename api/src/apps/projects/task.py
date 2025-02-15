@@ -44,7 +44,7 @@ class TaskDetailView(BaseView):
             pk=task_id, user_id=self.user_id
         )
         tags = self.task_service.get_tags_list(task_id=task_id)
-        comments = self.task_service.get_comments_list(task_id=task_id)
+        comments = self.comment_service.get_comments_list(task_id=task_id)
         feature, error = self.features_service.get_by_id(
             task.feature_id, user_id=self.user_id
         )
@@ -219,7 +219,6 @@ class UpdateCommentView(BaseView):
 
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
-        print(kwargs, args)
         form = CommentForm(request.POST, request.FILES)
         return render(
             request,
@@ -238,14 +237,75 @@ class UpdateCommentView(BaseView):
                 task_id=task.id,
                 comment=form.cleaned_data["comment"],
             )
-            try:
-                self.task_service.create_comment(comment_dto)
-                return JsonResponse({"status": "success", "message": "Комментарий добавлен успешно."})
-            except Exception as e:
-                print("Error: ", e)
-                return JsonResponse(
-                    {"status": "error", "message": str(e)}, status=400
-                )
+            return self.handle_form(
+                form,
+                self.comment_service.create,
+                comment_dto,
+                self.user_id,
+            )
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
+    
+
+
+
+
+
+# form = TaskForm(data)
+#         if form.is_valid():
+#             task_dto = CreateTaskDTO(
+#                 name=form.cleaned_data["name"],
+#                 priority=form.cleaned_data["priority"],
+#                 tags=form.cleaned_data["tags"],
+#                 contributor_id=form.cleaned_data["contributor"].id,
+#                 responsible_id=form.cleaned_data["responsible"].id,
+#                 status=form.cleaned_data["status"],
+#                 closed_at=form.cleaned_data.get("closed_at", None),
+#                 description=form.cleaned_data["description"],
+#                 feature_id=form.cleaned_data["feature"].id,
+#             )
+#             return self.handle_form(
+#                 form,
+#                 self.task_service.create,
+#                 task_dto,
+#                 self.user_id,
+#             )
+#         return JsonResponse(
+#             {"status": "error", "errors": form.errors}, status=400
+#         )
+
+
+# class UpdateCommentView(BaseView):
+#     """
+#     Редактирование комментария
+#     """
+
+#     def get(self, request, *args, **kwargs):
+#         task_id = kwargs.get("task_id")
+#         print(task_id)
+#         task, error = self.task_service.get_by_id(
+#             pk=task_id, user_id=self.user_id
+#         )
+#         # if error:
+        #     return JsonResponse(
+        #         {"status": "error", "message": error}, status=403
+        #     )
+        # task_status_choices = self.task_service.get_task_status_choices()
+
+        # data = {
+        #     "id": task.id,
+        #     "name": task.name,
+        #     "priority": task.priority,
+        #     "tags": task.tags,
+        #     "contributor": task.contributor_id,
+        #     "responsible": task.responsible_id,
+        #     "status": task.status,
+        #     "created_at": task.created_at,
+        #     "closed_at": task.closed_at,
+        #     "description": task.description,
+        #     "feature": task.feature_id,
+        #     "task_status_choices": task_status_choices,
+        # }
+
+        # return JsonResponse(data)
