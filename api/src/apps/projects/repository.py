@@ -384,8 +384,15 @@ class CommentRepository(PermissionMixin, ICommentRepository, ABC):
         )
         comment.save()
 
-    def get_by_id(self, comment_id: int) -> CommentDTO:
-        return self._comment_orm_to_dto(self.model.objects.get(id=comment_id))
+    def update(self, pk: int, dto: CommentDTO) -> CommentDTO:
+        comment = self.model.objects.get(id=pk)
+        comment.comment = dto.comment
+        comment.save()
+        return self._comment_orm_to_dto(comment)
+
+
+    def get_by_id(self, pk: int) -> CommentDTO:
+        return self._comment_orm_to_dto(self.model.objects.get(id=pk))
 
     def delete(self, task_id: int):
         task = self.model.objects.get(id=task_id)

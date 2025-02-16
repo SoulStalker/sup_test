@@ -212,13 +212,12 @@ class DeleteTaskView(BaseView):
             )
         
 
-class UpdateCommentView(BaseView):
+class CreateCommentView(BaseView):
     """
     Добавление коментария в задачи
     """
 
     def get(self, request, *args, **kwargs):
-        task_id = kwargs.get("task_id")
         form = CommentForm(request.POST, request.FILES)
         return render(
             request,
@@ -230,7 +229,13 @@ class UpdateCommentView(BaseView):
     def post(self, request, *args, **kwargs):
         form = CommentForm(request.POST)
         task_id = request.POST.get('task_id')
-        task, error = self.task_service.get_by_id(pk=task_id, user_id=self.user_id)
+        task, error = self.task_service.get_by_id(
+            pk=task_id, user_id=self.user_id
+            )
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )        
         if form.is_valid():
             comment_dto = CommentDTO(
                 user_id=request.user.id,
@@ -249,63 +254,36 @@ class UpdateCommentView(BaseView):
     
 
 
+class UpdateCommentView(BaseView):
+    def get(self, request, *args, **kwargs):
+        comment_id = kwargs.get("comment_id")
+        comment, error = self.comment_service.get_by_id(
+            pk=comment_id, user_id=self.user_id
+            )
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )
+        form = CommentForm(initial={'comment': comment.comment})
+        return JsonResponse({'comment': comment.comment})
 
+    def post(self, request, *args, **kwargs):
+        comment_id = kwargs.get("comment_id")
+        comment, error = self.comment_service.get_by_id(
+            pk=comment_id, user_id=self.user_id
+            )
+        comment.id = comment_id
+        form = CommentForm(request.POST)
 
+        if form.is_valid():
+            comment.comment = form.cleaned_data["comment"]
 
-# form = TaskForm(data)
-#         if form.is_valid():
-#             task_dto = CreateTaskDTO(
-#                 name=form.cleaned_data["name"],
-#                 priority=form.cleaned_data["priority"],
-#                 tags=form.cleaned_data["tags"],
-#                 contributor_id=form.cleaned_data["contributor"].id,
-#                 responsible_id=form.cleaned_data["responsible"].id,
-#                 status=form.cleaned_data["status"],
-#                 closed_at=form.cleaned_data.get("closed_at", None),
-#                 description=form.cleaned_data["description"],
-#                 feature_id=form.cleaned_data["feature"].id,
-#             )
-#             return self.handle_form(
-#                 form,
-#                 self.task_service.create,
-#                 task_dto,
-#                 self.user_id,
-#             )
-#         return JsonResponse(
-#             {"status": "error", "errors": form.errors}, status=400
-#         )
+            return self.handle_form(
+                form,
+                self.comment_service.update,
+                pk=comment_id,
+                dto=comment,
+                user_id=self.user_id,
+            )
 
-
-# class UpdateCommentView(BaseView):
-#     """
-#     Редактирование комментария
-#     """
-
-#     def get(self, request, *args, **kwargs):
-#         task_id = kwargs.get("task_id")
-#         print(task_id)
-#         task, error = self.task_service.get_by_id(
-#             pk=task_id, user_id=self.user_id
-#         )
-#         # if error:
-        #     return JsonResponse(
-        #         {"status": "error", "message": error}, status=403
-        #     )
-        # task_status_choices = self.task_service.get_task_status_choices()
-
-        # data = {
-        #     "id": task.id,
-        #     "name": task.name,
-        #     "priority": task.priority,
-        #     "tags": task.tags,
-        #     "contributor": task.contributor_id,
-        #     "responsible": task.responsible_id,
-        #     "status": task.status,
-        #     "created_at": task.created_at,
-        #     "closed_at": task.closed_at,
-        #     "description": task.description,
-        #     "feature": task.feature_id,
-        #     "task_status_choices": task_status_choices,
-        # }
-
-        # return JsonResponse(data)
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)

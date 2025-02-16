@@ -100,10 +100,17 @@
 
         <div class="flex-1">
             <h5 class="text-xl font-semibold">Коментарии</h5>
+            ____________________________________
             {% for comment in comments %}
             <h6 class="text-xl font-semibold">{{ comment.user.email }}</h6>
             <p>{{ comment.comment }}</p>
             <p>{{ comment.created_at }}</p>
+            <div class="comment" data-comment-id="{{ comment.id }}">
+                <p>{{ comment.text }}</p>
+                <button class="edit-comment" data-comment-id="{{ comment.id }}">Редактировать</button>
+                <button class="delete-comment" data-comment-id="{{ comment.id }}">Удалить</button>
+            </div>
+            ____________________________________
             {% endfor %}
         </div>
 

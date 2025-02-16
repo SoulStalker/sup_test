@@ -65,4 +65,56 @@ document.addEventListener('DOMContentLoaded', function () {
             // Обработка сетевой ошибки
         });
     });
+    document.querySelectorAll('.edit-comment').forEach(button => {
+        button.addEventListener('click', function () {
+            const commentId = this.getAttribute('data-comment-id');
+    
+            // Запрос старого комментария
+            fetch(`/projects/features/tasks/comment/update/${commentId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.comment) {
+                        document.getElementById('comment-text').value = data.comment; // Автозаполнение старым текстом
+                        document.getElementById('comment-task-id').value = commentId; // Устанавливаем ID комментария
+                        commentModal.classList.remove('hidden'); // Открываем модальное окно
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении комментария:', error);
+                });
+        });
+    });
+    commentForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const commentId = document.getElementById('comment-task-id').value; // Получаем ID комментария
+    
+        const formData = new FormData(commentForm);
+        const url = commentId ? `/projects/features/tasks/comment/update/${commentId}/` : commentForm.action; // Используем правильный URL
+    
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Сеть ответила с ошибкой: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                closeCommentModal(); // Закрываем модальное окно при успешном ответе
+                location.reload(); // Перезагрузка страницы для обновления данных
+            } else {
+                // Обработка ошибок
+                console.error('Ошибки:', data.errors);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка сети:', error);
+        });
+    });
 });

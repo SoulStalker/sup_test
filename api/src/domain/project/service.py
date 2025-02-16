@@ -355,6 +355,25 @@ class CommentService(BaseService):
         )
         return self.validate_and_save(entity, self._repository, dto, user_id)
     
+    def update(
+        self, pk: int, dto: CommentDTO, user_id: int
+    ) -> Tuple[Optional[CommentDTO], Optional[str]]:
+        """
+        Обновляет существующую задачу.
+
+        :param pk: Идентификатор комментария.
+        :param dto: DTO комментария с обновленными данными.
+        :param user_id: Идентификатор пользователя.
+        :return: Кортеж (DTO задачи, ошибка), где DTO — обновленная задача, а ошибка — сообщение об ошибке.
+        """
+        entity = CommentEntity(
+            user_id=dto.user_id,
+            comment=dto.comment,
+            task_id=dto.task_id,
+        )
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
     
     def get_comments_list(self, task_id: int):
         return self._repository.get_comments_list(task_id)
