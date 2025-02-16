@@ -272,6 +272,10 @@ class UpdateCommentView(BaseView):
         comment, error = self.comment_service.get_by_id(
             pk=comment_id, user_id=self.user_id
             )
+        if error:
+            return JsonResponse(
+                {"status": "error", "message": error}, status=403
+            )  
         comment.id = comment_id
         form = CommentForm(request.POST)
 
@@ -285,5 +289,19 @@ class UpdateCommentView(BaseView):
                 dto=comment,
                 user_id=self.user_id,
             )
-
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
+    
+
+class DeleteCommentView(BaseView):
+
+    def delete(self, *args, **kwargs):
+        comment_id = kwargs.get("comment_id")
+        try:
+            self.comment_service.delete(pk=comment_id, user_id=self.user_id)
+            return JsonResponse(
+                {"status": "success", "message": "Task deleted"}
+            )
+        except Exception as e:
+            return JsonResponse(
+                {"status": "error", "message": str(e)}, status=404
+            )

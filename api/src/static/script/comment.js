@@ -117,4 +117,36 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Ошибка сети:', error);
         });
     });
+    document.querySelectorAll('.delete-comment').forEach(button => {
+        button.addEventListener('click', function () {
+            const commentId = this.getAttribute('data-comment-id');
+            const isConfirmed = confirm('Вы уверены, что хотите удалить этот комментарий?'); // Подтверждение удаления
+    
+            if (isConfirmed) {
+                fetch(`/projects/features/tasks/comment/delete/${commentId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Сеть ответила с ошибкой: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        console.log('Комментарий удален');
+                        location.reload(); // Перезагрузка страницы для обновления данных
+                    } else {
+                        console.error('Ошибка удаления комментария:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка сети:', error);
+                });
+            }
+        });
+    });
 });
