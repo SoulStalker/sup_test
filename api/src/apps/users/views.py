@@ -8,7 +8,7 @@ from src.apps.users.forms import (
     PermissionsForm,
     RoleForm,
 )
-from src.domain.user import CreatePermissionDTO, CreateUserEntity, UserDTO
+from src.domain.user import CreatePermissionDTO, CreateUserEntity
 from src.domain.user.entity import (
     CreateRoleEntity,
     PermissionEntity,
@@ -254,7 +254,8 @@ class UserCreateView(BaseView):
     """Создание пользователя."""
 
     def post(self, request, *args, **kwargs):
-        send_email = request.POST.get("send_email", False)
+        send_email = request.POST.get("send_email", "")
+        print(request.POST)
 
         form = CreateUserForm(request.POST)
         if form.is_valid():
@@ -405,14 +406,16 @@ class UserPasswordChangeView(BaseView):
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect(reverse("users:personal_account"))
-            error_message =  [
-                error for field, errors in form.errors.items() for error in errors
-                ]
+            error_message = [
+                error
+                for field, errors in form.errors.items()
+                for error in errors
+            ]
             return render(
                 request,
                 "password_change.html",
-                {"form": form, "error_message": error_message}
-                )
+                {"form": form, "error_message": error_message},
+            )
         except Exception as err:
             return JsonResponse(
                 {"status": "error", "message": str(err)}, status=400
