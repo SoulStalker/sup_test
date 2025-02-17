@@ -31,6 +31,7 @@ class CustomUserAdmin(UserAdmin):
         "is_active",
         "is_admin",
         "date_joined",
+        "get_related_field",
     )
     search_fields = ("name", "surname", "email", "tg_name", "tg_nickname")
     list_filter = ("role", "is_active", "is_admin")
@@ -90,3 +91,7 @@ class CustomUserAdmin(UserAdmin):
     )
     ordering = ("email",)
     filter_horizontal = ()
+
+    def get_related_field(self, obj):
+        return ", ".join([str(field) for field in obj.permissions.all()])
+    get_related_field.short_description = 'Права'
