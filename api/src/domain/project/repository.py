@@ -2,7 +2,14 @@ from abc import abstractmethod
 
 from src.domain.base import BaseRepository
 
-from .dtos import CreateFeaturesDTO, CreateTaskDTO, ProjectDTO, TagDTO, TaskDTO
+from .dtos import (
+    CreateFeaturesDTO,
+    CreateTaskDTO,
+    ProjectDTO,
+    TagDTO,
+    TaskDTO,
+    CommentDTO,
+)
 
 
 class IProjectRepository(BaseRepository):
@@ -161,5 +168,21 @@ class ITaskRepository(BaseRepository):
 
         :param task_id: Идентификатор задачи.
         :return: Список DTO тегов.
+        """
+        raise NotImplementedError
+
+
+class ICommentRepository(BaseRepository):
+    """
+    Интерфейс репозитория для работы с комментариями.
+    """
+
+    @abstractmethod
+    def create(self, dto: CommentDTO) -> CommentDTO:
+        """
+        Создает новый комментарий.
+
+        :param dto: DTO комментария.
+        :return: Созданный DTO комментария.
         """
         raise NotImplementedError
