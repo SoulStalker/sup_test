@@ -290,9 +290,20 @@ class UserCreateView(BaseView):
             )
             print(send_email)
             if send_email == "true":
+                invite, err = self.invite_service.create(user_id=self.user_id)
+                if err:
+                    return JsonResponse(
+                        {
+                            "status": "error",
+                            "errors": f"Email не отправлен: {str(err)}",
+                        },
+                        status=400,
+                    )
                 try:
                     send_email_to_user.delay(
-                        name=user_dto.name, email=user_dto.email
+                        name=user_dto.name,
+                        email=user_dto.email,
+                        link=invite.link,
                     )
                 except Exception as e:
                     return JsonResponse(
