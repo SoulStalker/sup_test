@@ -1,4 +1,4 @@
-<div class="pagination flex items-center justify-center mt-4">
+<div class="pagination flex items-center justify-center">
     <nav class="step-links flex items-center space-x-2">
         {% if page.has_previous %}
             <a href="?page={{ page.previous_page_number }}&per_page={{ request.GET.per_page|default:10 }}"
