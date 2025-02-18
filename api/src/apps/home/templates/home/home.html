@@ -57,9 +57,24 @@
                         </li>
                     </ul>
                 </div>
-                <!-- Download Button -->
                 <div class="hidden lg:flex items-center">
-                    <a href="{% url 'authorization:authorization' %}" class="nav-btn">Войти</a>
+                    {% if user.is_authenticated %}
+                        <div class="relative" id="user-profile-container">
+                            <button class="flex items-center space-x-2 focus:outline-none" id="profile-btn">
+                                <img src="https://ui-avatars.com/api/?name={{ user.name }} {{ user.surname }}" alt="User Avatar" class="w-8 h-8 rounded-full">
+                                <span>{{ user.name }} {{ user.surname }}</span>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden" id="dropdown-menu">
+                                <a href="{% url 'home:home_lk_view' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:bg-[rgba(50,118,128,0.3)] menu-item">Личный кабинет</a>
+                                <a href="{% url 'meets:meets' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:bg-[rgba(50,118,128,0.3)] menu-item">Миты</a>
+                                <a href="{% url 'projects:projects' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:bg-[rgba(50,118,128,0.3)] menu-item">Проекты</a>
+                                <a href="{% url 'invites:invite' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:bg-[rgba(50,118,128,0.3)] menu-item">Пригласить</a>
+                                <a href="{% url 'authorization:logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:bg-[rgba(50,118,128,0.3)] menu-item">Выйти</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'authorization:authorization' %}" class="nav-btn">Войти</a>
+                    {% endif %}
                 </div>
             </nav><!-- end nav -->
         </div>

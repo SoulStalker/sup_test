@@ -37,3 +37,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const userProfileContainer = document.getElementById('user-profile-container');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    if (userProfileContainer && dropdownMenu) {
+        let timeoutId;
+        userProfileContainer.addEventListener('mouseenter', function () {
+            clearTimeout(timeoutId); // Отменяем скрытие, если курсор вернулся
+            dropdownMenu.classList.remove('hidden');
+        });
+        dropdownMenu.addEventListener('mouseenter', function () {
+            clearTimeout(timeoutId); // Если курсор на меню, не скрываем его
+        });
+        userProfileContainer.addEventListener('mouseleave', function () {
+            timeoutId = setTimeout(() => {
+                dropdownMenu.classList.add('hidden');
+            }, 200); // Небольшая задержка, чтобы успеть навести курсор на меню
+        });
+        dropdownMenu.addEventListener('mouseleave', function () {
+            dropdownMenu.classList.add('hidden');
+        });
+    }
+});
