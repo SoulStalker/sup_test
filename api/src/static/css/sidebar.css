@@ -1,0 +1,144 @@
+/* Sidebar styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 59px;
+    background-color: #1F2A37;
+    transition: width 0.3s ease-in-out;
+    z-index: 50;
+}
+
+.sidebar.expanded {
+    width: 200px;
+}
+
+.sidebar-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+        padding-top: 3rem;
+}
+
+/* Logo and toggle button */
+.logo-container {
+    padding: 1rem;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+}
+
+.toggle-button {
+    position: absolute;
+    right: -12px;
+    width: 25px;
+    height: 25px;
+    background-color: white;
+    color: #327680;
+    border: 2px solid #327680;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.expanded .toggle-button {
+    transform: rotate(180deg);
+}
+
+/* Menu styles */
+.menu {
+    margin-top: 1.5rem;
+    flex-grow: 1;
+}
+
+.menu ul {
+    list-style: none;
+}
+
+.menu li {
+    margin-bottom: 1rem;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+}
+
+.menu i {
+    font-size: 1rem;
+    width: 25px;
+    text-align: center;
+}
+
+/* Menu text */
+.menu-text {
+    margin-left: 0.5rem;
+    opacity: 0;
+    display: none;
+    transition: opacity 0.3s ease-in-out;
+    color: white;
+}
+
+.sidebar.expanded .menu-text {
+    opacity: 1;
+    display: inline;
+}
+
+/* Footer styles */
+.sidebar-footer {
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+}
+
+.sidebar-footer p {
+    font-size: 0.875rem;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Контейнер для основного контента */
+.main-content {
+    margin-left: 59px; /* Сдвигаем на ширину сайдбара */
+}
+
+/* Для расширенного сайдбара */
+.sidebar.expanded + .main-content {
+    margin-left: 200px; /* Сдвиг на расширенную ширину */
+}
+
+/* Для сайдбара */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 59px;
+    background-color: #1F2A37;
+    transition: width 0.3s ease-in-out;
+    z-index: 50;
+}
+
+/* Для контента, когда сайдбар расширен */
+.sidebar.expanded {
+    width: 200px;
+}
+
+.menu_active{
+    color: #327680!important;
+}
