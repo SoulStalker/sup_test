@@ -115,3 +115,12 @@
 .icon-wrapper:hover i {
     color: white; /* Иконка становится белой при наведении */
 }
+
+
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+

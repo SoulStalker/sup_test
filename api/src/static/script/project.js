@@ -465,3 +465,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+function sortTable(columnIndex) {
+    const table = document.getElementById("table-style-1");
+    const tbody = table.tBodies[0];
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    const isAscending = table.dataset.sortOrder === "asc";
+    const direction = isAscending ? 1 : -1;
+
+    rows.sort((a, b) => {
+        const aText = a.children[columnIndex].textContent.trim();
+        const bText = b.children[columnIndex].textContent.trim();
+
+        if (!isNaN(aText) && !isNaN(bText)) {
+            return (Number(aText) - Number(bText)) * direction;
+        } else {
+            return aText.localeCompare(bText) * direction;
+        }
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+    table.dataset.sortOrder = isAscending ? "desc" : "asc";
+
+    // Update sort arrow styles
+    document.querySelectorAll(".sort-arrow").forEach(span => {
+        span.textContent = "↕";
+    });
+    const arrow = table.dataset.sortOrder === "asc" ? "↑" : "↓";
+    document.getElementById(`sort-arrow-${columnIndex}`).textContent = arrow;
+}

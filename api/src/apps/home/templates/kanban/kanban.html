@@ -3,12 +3,16 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.svg' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Канбан доска</title>
     <link rel="stylesheet" href="{% static 'css/kanban/styles.css' %}">
 </head>
-<body>
-    <div class="container">
+<body class="bg-gray-50">
+
+    {% include 'includes/sidebar.html' %}
+     <main class="main-content">
         <!-- Top Navigation Bar -->
         <nav class="navbar">
             <div class="navbar-left">
@@ -89,6 +93,6 @@
                 </button>
             </div>
         </div>
-    </div>
+     </main>
 </body>
 </html>

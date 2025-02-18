@@ -3,15 +3,22 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.svg' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный кабинет | Система Управления Проектами</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/home_lk/style.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'script/home_lk.js' %}"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
 <body class="bg-gray-50">
+
+
+    {% include 'includes/sidebar.html' %}
+
+
     <div class="min-h-screen">
         <!-- Header -->
 
@@ -122,7 +129,6 @@
                         </button>
                     </div>
                 </div>
-            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-xl shadow-sm">
@@ -197,10 +203,10 @@
                     const filter = e.target.dataset.filter;
                     document.querySelectorAll('.task-item').forEach(task => {
                         const status = task.dataset.status;
-                        if (filter === 'all' || (filter === 'active' && status === 'active') || 
-                            (filter === 'ready' && status === 'Готов') || 
-                            (filter === 'development' && status === 'Разработка') || 
-                            (filter === 'testing' && status === 'Тестирование') || 
+                        if (filter === 'all' || (filter === 'active' && status === 'active') ||
+                            (filter === 'ready' && status === 'Готов') ||
+                            (filter === 'development' && status === 'Разработка') ||
+                            (filter === 'testing' && status === 'Тестирование') ||
                             (filter === 'new' && status === 'Новая')) {
                             task.style.display = 'block';
                         } else {

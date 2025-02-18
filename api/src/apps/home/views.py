@@ -6,9 +6,8 @@ from src.apps.custom_view import BaseView
 class HomeView(BaseView):
     login_required = False
     def get(self, request):
-
-
-        return render(request, 'home/home.html')
+        user = request.user
+        return render(request, 'home/home.html', {'user': user})
 
 
 class KanbanView(BaseView):
