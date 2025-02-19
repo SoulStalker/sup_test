@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+
     // Обработка отправки формы
     form.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -311,41 +312,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    // Скрипт для кастомного множественного выбора
-    const selectContainer = document.getElementById('select-container');
-    const selectItems = document.getElementById('select-items');
-    const selectElement = document.getElementById('project-participants');
 
-    if (selectContainer) {
-        selectContainer.addEventListener('click', () => {
-            selectContainer.classList.toggle('active');
-            selectItems.classList.toggle('visible-menu');
-            console.log('Клик на контейнер выбора участников');
-        });
-    }
-
-    if (selectItems) {
-        selectItems.addEventListener('click', (event) => {
-            if (event.target.tagName === 'DIV') {
-                const value = event.target.getAttribute('data-value');
-                const option = Array.from(selectElement.options).find(option => option.value === value);
-                if (option) {
-                    option.selected = !option.selected;
-                    event.target.classList.toggle('selected');
-                    console.log('Выбор участника:', value);
-                }
-                selectContainer.textContent = Array.from(selectElement.options)
-                    .filter(option => option.selected)
-                    .map(option => option.text)
-                    .join(', ') || 'Выберите участников';
-            }
-        });
-    }
 });
-
-
-
-
 
 
 
