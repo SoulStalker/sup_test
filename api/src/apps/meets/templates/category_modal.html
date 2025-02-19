@@ -1,17 +1,44 @@
-<!-- Модальное окно для добавления категории -->
-<div id="modal-add-category" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center" style="z-index: 1000;">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
-        <h2 class="text-xl mb-4">Добавить категорию</h2>
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<!-- Подключение jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Подключение CSS и JS библиотеки Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+<div id="modal-add-category"
+     class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-11">
+    <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/2">
+        <div class="modal-header mb-4">
+            <h2 class="modal-title text-xl font-semibold">Добавить категорию</h2>
+        </div>
+
         <form id="add-category-form" method="POST" action="{% url 'meets:add_category' %}" novalidate>
             {% csrf_token %}
-            <div class="mb-4">
-                <label for="category-name" class="block text-sm font-medium text-gray-700">Название категории*</label>
-                <input type="text" id="category-name" name="category_name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+
+            <!-- Category Name -->
+            <div class="form-group mb-4">
+                <label for="category-name" class="form-label block text-sm font-medium text-gray-700">Название
+                    категории*</label>
+                <input type="text" id="category-name" name="category_name"
+                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                       required>
             </div>
+
+            <!-- Button Group -->
             <div class="flex justify-end space-x-2">
-                <button id="cancel-add-category" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-                <button id="submit-category" type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Добавить</button>
+                <button type="button" id="cancel-add-category"
+                        class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена
+                </button>
+                <button type="submit" id="submit-category"
+                        class="btn btn-primary bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">
+                    Добавить
+                </button>
             </div>
         </form>
     </div>
 </div>
+
