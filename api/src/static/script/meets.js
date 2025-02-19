@@ -324,18 +324,23 @@ function setStatus(userId, status) {
     const statusInput = document.getElementById(`participant_status_${userId}`);
     const participantCheckbox = document.getElementById(`participant_${userId}`);
 
+    if (!container || !statusInput || !participantCheckbox) {
+        console.error(`Missing element for userId: ${userId}`);
+        return;
+    }
+
     // Сброс всех цветов
-    container.children[0].classList.remove('bg-blue-500');
-    container.children[1].classList.remove('bg-green-500');
-    container.children[2].classList.remove('bg-red-500');
+    Array.from(container.children).forEach(child => {
+        child.classList.remove('bg-blue-500', 'bg-green-500', 'bg-red-500');
+    });
 
     // Установка нового цвета и статуса
     if (status === 'PRESENT') {
-        container.children[0].classList.add('bg-blue-500');
+        container.children[0]?.classList.add('bg-blue-500');
     } else if (status === 'WARNED') {
-        container.children[1].classList.add('bg-green-500');
+        container.children[1]?.classList.add('bg-green-500');
     } else if (status === 'ABSENT') {
-        container.children[2].classList.add('bg-red-500');
+        container.children[2]?.classList.add('bg-red-500');
     }
 
     statusInput.value = status;
