@@ -183,3 +183,7 @@ class IUserRepository(BaseRepository):
         :param user_dto: DTO пользователя.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def get_active_users(self) -> list[UserDTO]:
+        raise NotImplementedError
