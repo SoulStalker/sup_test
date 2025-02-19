@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from src.apps.custom_view import BaseView
@@ -20,7 +20,7 @@ class TasksView(BaseView):
         task_status_choices = self.task_service.get_task_status_choices()
         features = self.features_service.get_list()
         tags = self.features_service.get_features_tags_list()
-        users = self.user_service.get_list()
+        users = self.user_service.get_active_users()
         features_url = reverse("projects:features")
 
         context = {
@@ -38,6 +38,7 @@ class TaskDetailView(BaseView):
     """
     Просмотр задачи
     """
+
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
         task, error = self.task_service.get_by_id(
@@ -57,21 +58,23 @@ class TaskDetailView(BaseView):
             pk=task.responsible_id, user_id=self.user_id
         )
         task_url = reverse("projects:tasks")
-        edit_tasks = reverse("projects:edit_tasks", kwargs={"task_id": task_id})
+        edit_tasks = reverse(
+            "projects:edit_tasks", kwargs={"task_id": task_id}
+        )
         task_status_choices = self.task_service.get_task_status_choices()
         context = {
-                "task": task,
-                "tags": tags,
-                "users": users,
-                "feature": feature,
-                "features": features,
-                "contributor": contributor,
-                "responsible": responsible,
-                "comments": comments,
-                "task_url": task_url,
-                "edit_tasks": edit_tasks,
-                "task_status_choices": task_status_choices,
-            }
+            "task": task,
+            "tags": tags,
+            "users": users,
+            "feature": feature,
+            "features": features,
+            "contributor": contributor,
+            "responsible": responsible,
+            "comments": comments,
+            "task_url": task_url,
+            "edit_tasks": edit_tasks,
+            "task_status_choices": task_status_choices,
+        }
         return render(self.request, "task_detail.html", context)
 
 
@@ -210,7 +213,7 @@ class DeleteTaskView(BaseView):
             return JsonResponse(
                 {"status": "error", "message": str(e)}, status=404
             )
-        
+
 
 class CreateCommentView(BaseView):
     """
@@ -226,16 +229,17 @@ class CreateCommentView(BaseView):
                 "form": form,
             },
         )
+
     def post(self, request, *args, **kwargs):
         form = CommentForm(request.POST)
-        task_id = request.POST.get('task_id')
+        task_id = request.POST.get("task_id")
         task, error = self.task_service.get_by_id(
             pk=task_id, user_id=self.user_id
-            )
+        )
         if error:
             return JsonResponse(
                 {"status": "error", "message": error}, status=403
-            )        
+            )
         if form.is_valid():
             comment_dto = CommentDTO(
                 user_id=request.user.id,
@@ -251,7 +255,6 @@ class CreateCommentView(BaseView):
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
-    
 
 
 class UpdateCommentView(BaseView):
@@ -259,23 +262,23 @@ class UpdateCommentView(BaseView):
         comment_id = kwargs.get("comment_id")
         comment, error = self.comment_service.get_by_id(
             pk=comment_id, user_id=self.user_id
-            )
+        )
         if error:
             return JsonResponse(
                 {"status": "error", "message": error}, status=403
             )
-        form = CommentForm(initial={'comment': comment.comment})
-        return JsonResponse({'comment': comment.comment})
+        # from = CommentForm(initial={"comment": comment.comment})
+        return JsonResponse({"comment": comment.comment})
 
     def post(self, request, *args, **kwargs):
         comment_id = kwargs.get("comment_id")
         comment, error = self.comment_service.get_by_id(
             pk=comment_id, user_id=self.user_id
-            )
+        )
         if error:
             return JsonResponse(
                 {"status": "error", "message": error}, status=403
-            )  
+            )
         comment.id = comment_id
         form = CommentForm(request.POST)
 
@@ -289,8 +292,10 @@ class UpdateCommentView(BaseView):
                 dto=comment,
                 user_id=self.user_id,
             )
-        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
-    
+        return JsonResponse(
+            {"status": "error", "errors": form.errors}, status=400
+        )
+
 
 class DeleteCommentView(BaseView):
 
