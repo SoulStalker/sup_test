@@ -1,5 +1,6 @@
 import os
 from abc import ABC
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -277,11 +278,15 @@ class UserRepository(PermissionMixin, IUserRepository, ABC):
     def get_list(self) -> list[UserDTO]:
         models = get_list_or_404(self.model)
         return [self._user_orm_to_dto(model) for model in models]
-      
+
+    def get_active_users(self) -> list[UserDTO]:
+        models = self.model.objects.filter(is_active=True).order_by("id")
+        return [self._user_orm_to_dto(model) for model in models]
+
     def get_user_id_list(self, user_id: int) -> list[UserDTO]:
         user = self.model.objects.filter(id__in=user_id)
         return user
-    
+
     def send_welcome_email(self, user_dto):
         subject = "Добро пожаловать!"
         message = (
