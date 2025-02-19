@@ -1,5 +1,6 @@
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 from src.apps.custom_view import BaseView
 from src.apps.users.forms import (
     CreateUserForm,
@@ -7,7 +8,7 @@ from src.apps.users.forms import (
     PermissionsForm,
     RoleForm,
 )
-from src.domain.user import CreatePermissionDTO, CreateUserEntity, UserDTO
+from src.domain.user import CreatePermissionDTO, CreateUserEntity
 from src.domain.user.entity import (
     CreateRoleEntity,
     PermissionEntity,
@@ -253,7 +254,8 @@ class UserCreateView(BaseView):
     """Создание пользователя."""
 
     def post(self, request, *args, **kwargs):
-        send_email = request.POST.get("send_email", False)
+        send_email = request.POST.get("send_email", "")
+        print(request.POST)
 
         form = CreateUserForm(request.POST)
         if form.is_valid():
@@ -288,9 +290,20 @@ class UserCreateView(BaseView):
             )
             print(send_email)
             if send_email == "true":
+                invite, err = self.invite_service.create(user_id=self.user_id)
+                if err:
+                    return JsonResponse(
+                        {
+                            "status": "error",
+                            "errors": f"Email не отправлен: {str(err)}",
+                        },
+                        status=400,
+                    )
                 try:
                     send_email_to_user.delay(
-                        name=user_dto.name, email=user_dto.email
+                        name=user_dto.name,
+                        email=user_dto.email,
+                        link=invite.link,
                     )
                 except Exception as e:
                     return JsonResponse(
@@ -394,21 +407,29 @@ class UserUpdateView(BaseView):
 class UserPasswordChangeView(BaseView):
     """Смена пароля пользователя."""
 
+    def get(self, request, *args, **kwargs):
+        return render(request, "password_change.html")
+
     def post(self, request, *args, **kwargs):
-        user_id = kwargs.get("user_id")
         try:
-            form = PasswordChangeForm(request.POST)
+            user = request.user
+            form = PasswordChangeForm(request.POST, user=user)
             if form.is_valid():
-                self.user_service.change_password(
-                    user_id=user_id,
-                    dto=UserDTO(
-                        password=form.cleaned_data["password"],
-                    ),
-                )
-                return JsonResponse({"status": "success"}, status=200)
+                form.save()
+                return HttpResponseRedirect(reverse("users:personal_account"))
+            error_message = [
+                error
+                for field, errors in form.errors.items()
+                for error in errors
+            ]
+            return render(
+                request,
+                "password_change.html",
+                {"form": form, "error_message": error_message},
+            )
         except Exception as err:
             return JsonResponse(
-                {"status": "error", "message": str(err)}, status=404
+                {"status": "error", "message": str(err)}, status=400
             )
 
 

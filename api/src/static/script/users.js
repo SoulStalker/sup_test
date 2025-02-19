@@ -259,21 +259,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function () {
     const sendEmailButton = document.getElementById('submit-user-email');
-    const sendEmailInput = document.getElementById('send-email');
+    const sendEmailInput = document.getElementById('send_email');
     const submitButton = document.getElementById('submit-user');
 
     // Обработка нажатия кнопки "Создать и отправить Email"
     if (sendEmailButton) {
         sendEmailButton.addEventListener('click', function () {
             sendEmailInput.value = "true"; // Устанавливаем значение true для отправки email
-            submitButton.click(); // Триггерим отправку формы
         });
     }
 
     // Обработка нажатия кнопки "Создать"
     if (submitButton) {
         submitButton.addEventListener('click', function () {
-            sendEmailInput.value = "false"; // Сбрасываем значение на false
+            // Не сбрасываем значение send_email, если кнопка "Создать и отправить Email" не была нажата
+            if (sendEmailInput.value !== "true") {
+                sendEmailInput.value = "false"; // Сбрасываем значение на false только если кнопка "Создать и отправить Email" не была нажата
+            }
         });
     }
 });

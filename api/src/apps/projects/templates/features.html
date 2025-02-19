@@ -9,32 +9,10 @@
     <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
     <link href="{% static 'output.css' %}" rel="stylesheet">
 </head>
-<body class="bg-gray-100 h-screen flex">
+<body class="bg-gray-50">
 
-    <!-- Sidebar -->
-    <div id="sidebar" class="w-16 bg-gray-800 text-white flex flex-col items-center p-4 h-screen transition-all duration-300">
-        <button id="sidebar-toggle" class="mb-8 focus:outline-none">
-            <span class="text-xl">&#9776;</span>
-        </button>
-        <div class="space-y-6">
-            <a href="#" class="block text-center">
-                <span class="block text-2xl">🏠</span>
-                <span class="hidden sidebar-text">Главная</span>
-            </a>
-            <a href="#" class="block text-center">
-                <span class="block text-2xl">📊</span>
-                <span class="hidden sidebar-text">Отчеты</span>
-            </a>
-            <a href="#" class="block text-center">
-                <span class="block text-2xl">⚙️</span>
-                <span class="hidden sidebar-text">Настройки</span>
-            </a>
-            <a href="#" class="block text-center">
-                <span class="block text-2xl">🧑‍💼</span>
-                <span class="hidden sidebar-text">Пользователи</span>
-            </a>
-        </div>
-    </div>
+    {% include 'includes/sidebar.html' %}
+     <main class="main-content">
 {% block content %}
     <!-- Основной контент -->
     <div class="flex-1 flex flex-col">
@@ -82,52 +60,114 @@
                     <button id="open-modal-create" class="open-modal-btn bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать фичу</button>
                 </div>
             </div>
-            <div class="fitch-table">
-                <table class="w-full" id="feature-container">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
-                            <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Название</th>
-                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Исполнители</th>
-                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Проект</th>
-                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Дата создания</th>
-                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Важность</th>
-                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Статус</th>
-                            <th class="px-4 py-4 border-b text-center text-gray-600 font-medium">Действие</th>
-                        </tr>
+            <div class="fitch-table overflow-x-auto">
+                <script>
+                    // Функция сортировки таблицы
+                    function sortTable(columnIndex) {
+                        const table = document.getElementById("table-style-1");
+                        const tbody = table.querySelector("tbody");
+                        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+                        // Определение текущего порядка сортировки
+                        let currentOrder = table.getAttribute("data-sort-order") || "asc";
+                        const isAscending = currentOrder === "asc";
+
+                        // Очистить содержимое стрелок сортировки
+                        document.querySelectorAll(".sort-arrow").forEach(arrow => arrow.innerHTML = "↕");
+
+                        // Установить направление стрелки сортировки
+                        const arrowElement = document.getElementById("sort-arrow-" + columnIndex);
+                        arrowElement.innerHTML = isAscending ? "↑" : "↓";
+
+                        // Отсортировать строки
+                        rows.sort((rowA, rowB) => {
+                            const cellA = rowA.querySelectorAll("td")[columnIndex].innerText.trim();
+                            const cellB = rowB.querySelectorAll("td")[columnIndex].innerText.trim();
+
+                            // Проверка, является ли содержимое числами
+                            const isNumeric = !isNaN(cellA) && !isNaN(cellB);
+                            if (isNumeric) {
+                                return isAscending ? cellA - cellB : cellB - cellA;
+                            }
+
+                            // Если данные строковые, сортировать лексикографически
+                            return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                        });
+
+                        // Удалить старые строки из таблицы и добавить отсортированные
+                        rows.forEach(row => tbody.appendChild(row));
+
+                        // Переключить порядок сортировки
+                        table.setAttribute("data-sort-order", isAscending ? "desc" : "asc");
+                    }
+                </script>
+                <table id="table-style-1" class="w-full table-fixed mx-auto min-w-max" data-sort-order="asc">
+                    <thead class="bg-gray-100 text-xs">
+                    <tr>
+                        <th class="border-b py-2 px-4 text-left w-1/12 cursor-pointer sticky left-0 bg-gray-100 z-10"
+                            onclick="sortTable(0)">
+                            ID <span class="sort-arrow" id="sort-arrow-0">&uarr;&darr;</span>
+                        </th>
+                        <th class="border-b py-2 px-4 text-left w-6/12 cursor-pointer" onclick="sortTable(1)">
+                            Название <span class="sort-arrow" id="sort-arrow-1">&uarr;&darr;</span>
+                        </th>
+                        <th class="border-b py-2 px-4 text-left w-2/12 cursor-pointer" onclick="sortTable(2)">
+                            Исполнители <span class="sort-arrow" id="sort-arrow-2">&uarr;&darr;</span>
+                        </th>
+                        <th class="border-b py-2 px-4 text-center w-2/12 cursor-pointer" onclick="sortTable(3)">
+                            Проект <span class="sort-arrow" id="sort-arrow-3">&uarr;&darr;</span>
+                        </th>
+                        <th class="border-b py-2 px-4 text-left w-2/12 cursor-pointer" onclick="sortTable(4)">
+                            Дата создания <span class="sort-arrow" id="sort-arrow-4">&uarr;&darr;</span>
+                        </th>
+                        <th class="border-b py-2 px-4 text-center w-1/12 cursor-pointer" onclick="sortTable(5)">
+                            Важность <span class="sort-arrow" id="sort-arrow-5">&uarr;&darr;</span>
+                        </th>
+                        <th class="border-b py-2 px-4 text-center w-2/12 cursor-pointer" onclick="sortTable(6)">
+                            Статус <span class="sort-arrow" id="sort-arrow-6">&uarr;&darr;</span>
+                        </th>
+                        <th class="border-b py-2 px-4 text-center w-1/12 sticky right-0 bg-gray-100 z-10"></th>
+                    </tr>
                     </thead>
                     <tbody>
                     {% for item_features in features %}
-                        <!-- Пример строки с данными -->
-                        <tr class="hover:bg-gray-50" data-project-id="{{ item_features.project.id }}" data-status="{{ item_features.status }}">
-                            <td class="px-4 py-4 border-b">{{ item_features.id }}</td>
-                            <td class="px-4 py-4 border-b items-center">
-                                <a href="{% url 'projects:features_detail' item_features.id %}">
-                                    {{ item_features.name }}</a></td>
-                            </td>
-                            <td class="px-4 py-4 border-b text-center">
-                                <div class="inline-flex -space-x-2">
-                                    {% for item_features_user in item_features.participants.all %}
-                                        <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}" alt="{{ item_features_user.name }}" class="inline-block border border-white rounded-full w-6 h-6">
-                                    {% endfor %}
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 text-center border-b">{{ item_features.project }}</td>
-                            <td class="px-4 py-4 text-center border-b">{{ item_features.date_created }}</td>
-                            <td class="px-4 py-4 border-b text-center">{{ item_features.importance }}</td>
-                            <td class="px-4 py-4 border-b text-center">{{ item_features.status }}</td>
-                            <td class="px-4 py-4 border-b text-center">
-
-                                <button id="open-modal-edit" type="button" class="open-modal-btn text-red-600 hover:text-red-800" data-feature-id="{{ item_features.id }}">
-                                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M15.4525 10.7353L15.448 10.7416L9.02434 17.1658L10.9495 19.0903L17.3786 12.6616L15.4525 10.7353Z" fill="#0C0C0C"/>
-                                        <path d="M5.82559 13.9668L7.75078 15.893L14.1753 9.46878L14.1816 9.46428L12.2546 7.53709L5.82559 13.9668Z" fill="#0C0C0C"/>
-                                        <path d="M4.79594 15.4826L3.04625 20.7313C2.93824 21.0544 3.02285 21.4118 3.26406 21.6521C3.43507 21.824 3.66548 21.9167 3.90039 21.9167C3.9958 21.9167 4.0921 21.9014 4.18481 21.8699L9.43297 20.1201L4.79594 15.4826Z" fill="#0C0C0C"/>
-                                        <path d="M19.9401 4.97531C18.5279 3.5639 16.2292 3.5639 14.817 4.97531L13.5282 6.2643L18.6521 11.3888L19.941 10.0998C21.3532 8.68746 21.3532 6.38762 19.9401 4.97531Z" fill="#0C0C0C"/>
-                                    </svg>
-                                </button>
-                            </td>
-                        </tr>
+                    <tr class="w-full hover:bg-gray-100" data-project-id="{{ item_features.project.id }}"
+                        data-status="{{ item_features.status }}">
+                        <td class="border-b py-2 px-4 text-left sticky left-0 bg-white z-10">{{ item_features.id }}</td>
+                        <td class="border-b py-2 px-4 max-w-[300px] overflow-hidden text-ellipsis">
+                            <a href="{% url 'projects:features_detail' item_features.id %}">{{ item_features.name }}</a>
+                        </td>
+                        <td class="border-b py-2 px-4 text-left">
+                            <div class="inline-flex -space-x-2">
+                                {% for item_features_user in item_features.participants.all %}
+                                <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}"
+                                     alt="{{ item_features_user.name }}"
+                                     class="inline-block border border-white rounded-full w-6 h-6">
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="border-b py-2 px-4 text-center">{{ item_features.project }}</td>
+                        <td class="border-b py-2 px-4 text-left">{{ item_features.date_created }}</td>
+                        <td class="border-b py-2 px-4 text-center">{{ item_features.importance }}</td>
+                        <td class="border-b py-2 px-4 text-center">{{ item_features.status }}</td>
+                        <td class="border-b py-2 px-4 text-center sticky right-0 bg-white z-10">
+                            <button id="open-modal-edit" type="button"
+                                    class="open-modal-btn text-red-600 hover:text-red-800"
+                                    data-feature-id="{{ item_features.id }}">
+                                <svg width="24" height="25" viewBox="0 0 24 25" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15.4525 10.7353L15.448 10.7416L9.02434 17.1658L10.9495 19.0903L17.3786 12.6616L15.4525 10.7353Z"
+                                          fill="#0C0C0C"/>
+                                    <path d="M5.82559 13.9668L7.75078 15.893L14.1753 9.46878L14.1816 9.46428L12.2546 7.53709L5.82559 13.9668Z"
+                                          fill="#0C0C0C"/>
+                                    <path d="M4.79594 15.4826L3.04625 20.7313C2.93824 21.0544 3.02285 21.4118 3.26406 21.6521C3.43507 21.824 3.66548 21.9167 3.90039 21.9167C3.9958 21.9167 4.0921 21.9014 4.18481 21.8699L9.43297 20.1201L4.79594 15.4826Z"
+                                          fill="#0C0C0C"/>
+                                    <path d="M19.9401 4.97531C18.5279 3.5639 16.2292 3.5639 14.817 4.97531L13.5282 6.2643L18.6521 11.3888L19.941 10.0998C21.3532 8.68746 21.3532 6.38762 19.9401 4.97531Z"
+                                          fill="#0C0C0C"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
                     {% endfor %}
                     </tbody>
                 </table>
@@ -135,9 +175,9 @@
         </div>
 
     </div>
+     </main>
 
     {% include 'create_features_modal.html' %}
-
 
 
     <!-- Модальное окно для просмотра фитчи -->

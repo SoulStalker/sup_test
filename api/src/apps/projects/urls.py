@@ -5,7 +5,9 @@ from src.apps.projects.task import (
     TaskDetailView,
     TasksView,
     UpdateTaskView,
-    UpdateCommentView
+    CreateCommentView,
+    UpdateCommentView,
+    DeleteCommentView,
 )
 from src.apps.projects.views import (
     CreateFeatureView,
@@ -108,7 +110,17 @@ urlpatterns = [
     ),
     path(
         "features/tasks/comment/create/<int:task_id>/",
-        UpdateCommentView.as_view(),
+        CreateCommentView.as_view(),
         name="create_comment",
+    ),
+    path(
+        "features/tasks/comment/update/<int:comment_id>/",
+        UpdateCommentView.as_view(),
+        name="update_comment",
+    ),
+    path(
+        "features/tasks/comment/delete/<int:comment_id>/",
+        DeleteCommentView.as_view(),
+        name="delete_comment",
     ),
 ]

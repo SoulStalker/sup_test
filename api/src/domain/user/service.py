@@ -241,3 +241,11 @@ class UserService(BaseService):
         :return: Список идентификаторов пользователей.
         """
         return self._repository.get_user_id_list(user_list_id)
+
+    def get_active_users(self) -> list[UserDTO]:
+        """
+        Получает список активных пользователей.
+
+        :return: Список активных пользователей.
+        """
+        return self._repository.get_active_users()

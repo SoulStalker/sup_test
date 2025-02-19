@@ -14,8 +14,9 @@ from .repository import (
     IFeaturesRepository,
     IProjectRepository,
     ITaskRepository,
+    ICommentRepository,
 )
-from .service import FeatureService, ProjectService, TaskService
+from .service import FeatureService, ProjectService, TaskService, CommentService
 
 __all__ = [
     "FeaturesEntity",
@@ -23,9 +24,11 @@ __all__ = [
     "IFeaturesRepository",
     "IProjectRepository",
     "ITaskRepository",
+    "ICommentRepository",
     "FeatureService",
     "ProjectService",
     "TaskService",
+    "CommentService",
     "CreateFeaturesDTO",
     "ProjectDTO",
     "CommentDTO",

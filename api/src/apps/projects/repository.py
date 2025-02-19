@@ -11,6 +11,7 @@ from src.domain.project import (
     IFeaturesRepository,
     IProjectRepository,
     ITaskRepository,
+    ICommentRepository,
     ProjectDTO,
     StatusObject,
     TagDTO,
@@ -122,6 +123,12 @@ class ProjectRepository(PermissionMixin, IProjectRepository, ABC):
             )
             for project in projects
         ]
+    
+
+    def get_list_participants(self, user_id: int) -> list[Project]:
+        '''Список проектов у которых участник юзер'''
+        projects = self.model.objects.filter(participants=user_id)
+        return projects
 
 
 class FeaturesRepository(PermissionMixin, IFeaturesRepository, ABC):
@@ -285,10 +292,10 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         )
 
     def get_list(self) -> TaskDTO:
-        return Task.objects.all().order_by("id")
+        return self.model.objects.all().order_by("id")
 
     def get_by_id(self, task_id: int) -> TaskDTO:
-        return self._task_orm_to_dto(Task.objects.get(id=task_id))
+        return self._task_orm_to_dto(self.model.objects.get(id=task_id))
 
     def create(self, dto: CreateTaskDTO):
         task = self.model(
@@ -297,15 +304,15 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
             contributor_id=dto.contributor_id,
             responsible_id=dto.responsible_id,
             status=dto.status,
+            closed_at=dto.closed_at,
             feature_id=dto.feature_id,
             description=dto.description,
         )
-
         task.save()
         task.tags.set(dto.tags)
 
     def update(self, pk: int, dto: TaskDTO) -> TaskDTO:
-        task = Task.objects.get(id=dto.id)
+        task = self.model.objects.get(id=dto.id)
 
         task.name = dto.name
         task.priority = dto.priority
@@ -319,14 +326,14 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         return self._task_orm_to_dto(task)
 
     def delete(self, task_id: int):
-        task = Task.objects.get(id=task_id)
+        task = self.model.objects.get(id=task_id)
         task.delete()
 
     def get_task_status_choices(self):
         return TaskChoicesObject.choices()
 
     def get_tags_list(self, task_id: int) -> list[TagDTO]:
-        task = Task.objects.get(id=task_id)
+        task = self.model.objects.get(id=task_id)
         tags = task.tags.all()
         return [
             TagDTO(id=tag.id, name=tag.name, color=tag.color) for tag in tags
@@ -336,12 +343,40 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         tags = Tags.objects.filter(id__in=tags_id)
         return tags
 
-    def get_task_id_list(self, feature: int):
+    def get_task_id_list(self, feature: FeaturesDTO):
         feature_instance = Features.objects.get(name=feature.name)
-        task = feature_instance.tasks_features.all()
+        tasks = feature_instance.tasks_features.all()
+        return [self._task_orm_to_dto(task) for task in tasks]
+
+    def get_list_responsible(self, user_id: int) -> list[Task]:
+        '''Список задач за которые ответственный юзер'''
+        task = Task.objects.filter(responsible=user_id)
+        return task
+    
+    def get_list_contributor(self, user_id: int) -> list[Task]:
+        '''Список задач у которых автор юзер'''
+        task = Task.objects.filter(contributor=user_id)
+        print(Project.objects.filter(participants=user_id))
         return task
 
-    def create_comment(self, dto: CommentDTO):
+
+class CommentRepository(PermissionMixin, ICommentRepository, ABC):
+
+    model = Comment
+
+    @classmethod
+    def exists(cls, pk: int) -> bool:
+        return cls.model.objects.filter(id=pk).exists()
+    
+    @classmethod
+    def _comment_orm_to_dto(cls, comment: Comment) -> TaskDTO:
+        return CommentDTO(
+            user_id=comment.user_id,
+            comment=comment.comment,
+            task_id=comment.task_id,
+        )
+    
+    def create(self, dto: CommentDTO):
         comment = Comment(
             user=CustomUser.objects.get(id=dto.user_id),
             comment=dto.comment,
@@ -349,7 +384,23 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         )
         comment.save()
 
+    def update(self, pk: int, dto: CommentDTO) -> CommentDTO:
+        comment = self.model.objects.get(id=pk)
+        comment.comment = dto.comment
+        comment.save()
+        return self._comment_orm_to_dto(comment)
+
+
+    def get_by_id(self, pk: int) -> CommentDTO:
+        return self._comment_orm_to_dto(self.model.objects.get(id=pk))
+
+    def delete(self, task_id: int):
+        task = self.model.objects.get(id=task_id)
+        task.delete()
+
+    def get_list(self, task_id):
+        return self.model.objects.all().order_by("id")
+    
     def get_comments_list(self, task_id):
-        task = Task.objects.get(id=task_id)
-        comments = Comment.objects.filter(task=task)
+        comments = Comment.objects.filter(task_id=task_id)
         return comments

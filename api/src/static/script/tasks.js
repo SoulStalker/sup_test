@@ -107,9 +107,6 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
             const editUrl = this.getAttribute('data-url');
-
-            // Загружаем данные задачи через fetch
-            fetch(`update/${currentTaskId}/`)
             fetch(editUrl)
                 .then(response => {
                     if (response.status === 403) {
@@ -154,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                     modal.classList.remove('hidden');
                     // Меняем action формы для отправки на обновление
-                    form.setAttribute('action', `update/${currentTaskId}/`);
+                    form.setAttribute('action', editUrl);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
                 .catch(error => console.error('Ошибка:', error));

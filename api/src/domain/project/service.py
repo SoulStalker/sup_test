@@ -10,12 +10,14 @@ from .dtos import (
     ProjectDTO,
     StatusObject,
     TaskDTO,
+    FeaturesDTO,
 )
-from .entity import TaskEntity
+from .entity import TaskEntity, CommentEntity
 from .repository import (
     IFeaturesRepository,
     IProjectRepository,
     ITaskRepository,
+    ICommentRepository,
 )
 
 
@@ -102,6 +104,9 @@ class ProjectService(BaseService):
         :return: Список DTO проектов.
         """
         return self._repository.search_projects(query)
+    
+    def get_list_participants(self, user_id: id):
+        return self._repository.get_list_participants(user_id)
 
 
 class FeatureService(BaseService):
@@ -286,14 +291,14 @@ class TaskService(BaseService):
         """
         return self._repository.get_tags_id_list(tags_id)
 
-    def get_task_id_list(self, feature_id: int) -> list[int]:
+    def get_task_id_list(self, dto: FeaturesDTO) -> list[TaskDTO]:
         """
         Получает список идентификаторов задач для фичи.
 
-        :param feature_id: Идентификатор фичи.
+        :param dto: DTO фичи.
         :return: Список идентификаторов задач.
         """
-        return self._repository.get_task_id_list(feature_id)
+        return self._repository.get_task_id_list(dto)
 
     def create_comment(self, dto: CommentDTO) -> CommentDTO:
         """
@@ -304,15 +309,6 @@ class TaskService(BaseService):
         """
         return self._repository.create_comment(dto)
 
-    def get_comments_list(self, task_id: int) -> list[CommentDTO]:
-        """
-        Получает список комментариев для задачи.
-
-        :param task_id: Идентификатор задачи.
-        :return: Список DTO комментариев.
-        """
-        return self._repository.get_comments_list(task_id)
-
     def get_feature_id(self, feature_id: int) -> int:
         """
         Получает идентификатор фичи.
@@ -321,3 +317,63 @@ class TaskService(BaseService):
         :return: Идентификатор фичи.
         """
         return self._repository.get_feature_id(feature_id)
+    
+    def get_list_responsible(self, user_id: int):
+        return self._repository.get_list_responsible(user_id)
+    
+    def get_list_contributor(self, user_id: int):
+        return self._repository.get_list_contributor(user_id)
+
+
+class CommentService(BaseService):
+    """
+    Сервис для работы с комментарими.
+    """
+
+    def __init__(self, comment_repository: ICommentRepository):
+        """
+        Инициализирует сервис с указанным репозиторием.
+
+        :param task_repository: Репозиторий для работы с задачами.
+        """
+        self._repository = comment_repository
+
+    def create(
+        self, dto: CommentDTO, user_id: int
+    ) -> Tuple[Optional[CommentDTO], Optional[str]]:
+        """
+        Создает новую задачу.
+
+        :param dto: DTO задачи.
+        :param user_id: Идентификатор пользователя.
+        :return: Кортеж (DTO задачи, ошибка), где DTO — созданная задача, а ошибка — сообщение об ошибке.
+        """
+        entity = CommentEntity(
+            user_id=dto.user_id,
+            comment=dto.comment,
+            task_id=dto.task_id,
+        )
+        return self.validate_and_save(entity, self._repository, dto, user_id)
+    
+    def update(
+        self, pk: int, dto: CommentDTO, user_id: int
+    ) -> Tuple[Optional[CommentDTO], Optional[str]]:
+        """
+        Обновляет существующую задачу.
+
+        :param pk: Идентификатор комментария.
+        :param dto: DTO комментария с обновленными данными.
+        :param user_id: Идентификатор пользователя.
+        :return: Кортеж (DTO задачи, ошибка), где DTO — обновленная задача, а ошибка — сообщение об ошибке.
+        """
+        entity = CommentEntity(
+            user_id=dto.user_id,
+            comment=dto.comment,
+            task_id=dto.task_id,
+        )
+        return self.validate_and_update(
+            entity, self._repository, dto, pk, user_id
+        )
+    
+    def get_comments_list(self, task_id: int):
+        return self._repository.get_comments_list(task_id)

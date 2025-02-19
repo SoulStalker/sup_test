@@ -103,3 +103,26 @@ class TaskEntity:
         :return: Сообщение об ошибке, если данные невалидны, иначе None.
         """
         return DataVerifier.verify_max_value(self.name, 100)
+
+
+@dataclass
+class CommentEntity:
+    """
+    Сущность комментария.
+
+    :param user_id: Идентификатор участника, создавшего комментарий.
+    :param comment: Комментарий.
+    :param tags: Идентификатор задачи, к которой относится комментарий.
+    """
+
+    user_id: int
+    comment: str
+    task_id: int
+
+    def verify_data(self) -> Optional[str]:
+        """
+        Проверяет валидность данных задачи.
+
+        :return: Сообщение об ошибке, если данные невалидны, иначе None.
+        """
+        return DataVerifier.verify_letter_digits_symbols(self.comment)

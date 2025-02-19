@@ -27,10 +27,12 @@ class ProjectsView(BaseView):
             project.participants.set(project.participants.all())
         projects = self.paginate_queryset(projects)
         features_url = reverse("projects:features")
+        users = self.user_service.get_active_users()
 
         context = {
             "projects": projects,
-            "users": User.objects.order_by("id"),
+            "users": users,
+            # тут косяк. идет прямой запрос в базу
             "project_status_choices": project_status_choices,
             "features_url": features_url,
         }
@@ -75,38 +77,8 @@ class CreateProjectView(BaseView):
                 ),
                 self.user_id,
             )
-
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
-        )
-
-
-class FeaturesDetailView(BaseView):
-    """Просмотр фичи"""
-
-    def get(self, request, *args, **kwargs):
-        feature_id = kwargs.get("features_id")
-        feature = self.features_service.get_by_id(
-            pk=feature_id, user_id=self.user_id
-        )
-        project = self.project_service.get_by_id(
-            pk=feature.project_id, user_id=self.user_id
-        )
-        users = self.user_service.get_user_id_list(
-            user_id=feature.participants
-        )
-        tags = self.task_service.get_tags_id_list(tags_id=feature.tags)
-        task = self.task_service.get_task_id_list(feature=feature)
-        return render(
-            request,
-            "features_detail.html",
-            {
-                "feature": feature,
-                "users": users,
-                "project": project,
-                "tags": tags,
-                "task": task,
-            },
         )
 
 
@@ -174,7 +146,6 @@ class EditProjectView(BaseView):
                 project_dto,
                 self.user_id,
             )
-        print(form.errors)
         return JsonResponse(
             {"status": "error", "message": form.errors}, status=400
         )
@@ -226,7 +197,8 @@ class SearchProjectView(BaseView):
 
 
 class FeaturesView(BaseView):
-    '''Список фичей'''
+    """Список фичей"""
+
     items_per_page = 16
 
     def get(self, request, *args, **kwargs):
@@ -235,20 +207,20 @@ class FeaturesView(BaseView):
         statuses = self.features_service.get_features_status_list()
         projects = self.features_service.get_feature_project_list()
         task_url = reverse("projects:tasks")
+        users = self.user_service.get_active_users()
 
         return render(
             request,
             "features.html",
             {
                 "features": features,
-                "users": User.objects.order_by("id"),
+                "users": users,
                 "tags": tags,
                 "statuses": [str(status) for status in statuses],
                 "project": projects,
                 "task_url": task_url,
             },
         )
-
 
 
 class FeaturesDetailView(BaseView):
@@ -266,7 +238,7 @@ class FeaturesDetailView(BaseView):
             user_list_id=feature.participants
         )
         tags = self.task_service.get_tags_id_list(tags_id=feature.tags)
-        task = self.task_service.get_task_id_list(feature=feature)
+        tasks = self.task_service.get_task_id_list(dto=feature)
         return render(
             request,
             "features_detail.html",
@@ -275,11 +247,11 @@ class FeaturesDetailView(BaseView):
                 "users": users,
                 "project": project,
                 "tags": tags,
-                "task": task,
+                "tasks": tasks,
             },
         )
-      
-      
+
+
 class CreateFeatureView(BaseView):
     def get(self, request, *args, **kwargs):
         form = CreateFeaturesForm(request.POST)
