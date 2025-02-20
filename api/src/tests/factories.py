@@ -2,12 +2,15 @@ import factory
 import secrets
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
+from django.template.defaultfilters import slugify
 from datetime import timedelta
+from uuid import uuid4
 
 from src.models.invites import Invite
 from src.models.choice_classes import InviteChoices
 from src.models.models import CustomUser, Role, Team
 from src.models.meets import Category, Meet, MeetParticipant
+from src.models.projects import Project, Tags, Features, Task, Comment
 
 
 class InviteFactory(factory.django.DjangoModelFactory):
@@ -101,3 +104,53 @@ class MeetParticipantFactory(factory.django.DjangoModelFactory):
     meet = factory.SubFactory(MeetFactory)
     custom_user = factory.SubFactory(CustomUserFactory)
     status = "PRESENT"
+
+class ProjectFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Project
+
+    name = factory.Sequence(lambda n: f"Project {n}")
+    slug = factory.LazyAttribute(lambda o: slugify(o.name))
+    description = factory.Faker("text", max_nb_chars=500)
+    responsible = factory.SubFactory(CustomUserFactory)
+    status = "DISCUSSION"
+
+class TagsFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Tags
+
+    name = factory.Sequence(lambda n: f"Tag {n}")
+    slug = factory.LazyAttribute(lambda o: slugify(o.name) + "_" + f"{uuid4().hex}")
+    color = factory.Faker("hex_color")
+
+class FeaturesFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Features
+
+    name = factory.Sequence(lambda n: f"Feature {n}")
+    slug = factory.LazyAttribute(lambda o: slugify(o.name) + "_" + f"{uuid4().hex}")
+    description = factory.Faker("text", max_nb_chars=10000)
+    importance = factory.Faker("random_int", min=0, max=10)
+    responsible = factory.SubFactory(CustomUserFactory)
+    status = "NEW"
+    project = factory.SubFactory(ProjectFactory)
+
+class TaskFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Task
+
+    name = factory.Sequence(lambda n: f"Task {n}")
+    priority = factory.Faker("random_int", min=1, max=10)
+    contributor = factory.SubFactory(CustomUserFactory)
+    responsible = factory.SubFactory(CustomUserFactory)
+    status = "NEW"
+    feature = factory.SubFactory(FeaturesFactory)
+    description = factory.Faker("text", max_nb_chars=10000)
+
+class CommentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Comment
+
+    user = factory.SubFactory(CustomUserFactory)
+    task = factory.SubFactory(TaskFactory)
+    comment = factory.Faker("text", max_nb_chars=1000)
