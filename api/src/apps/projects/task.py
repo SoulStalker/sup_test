@@ -215,6 +215,8 @@ class DeleteTaskView(BaseView):
             )
 
 
+=======
+>>>>>>> Stashed changes
 class CreateCommentView(BaseView):
     """
     Добавление коментария в задачи
@@ -236,6 +238,12 @@ class CreateCommentView(BaseView):
         task, error = self.task_service.get_by_id(
             pk=task_id, user_id=self.user_id
         )
+=======
+        task_id = request.POST.get('task_id')
+        task, error = self.task_service.get_by_id(
+            pk=task_id, user_id=self.user_id
+            )
+>>>>>>> Stashed changes
         if error:
             return JsonResponse(
                 {"status": "error", "message": error}, status=403
@@ -292,6 +300,8 @@ class UpdateCommentView(BaseView):
                 dto=comment,
                 user_id=self.user_id,
             )
+=======
+>>>>>>> Stashed changes
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -310,3 +320,6 @@ class DeleteCommentView(BaseView):
             return JsonResponse(
                 {"status": "error", "message": str(e)}, status=404
             )
+=======
+            )
+>>>>>>> Stashed changes
