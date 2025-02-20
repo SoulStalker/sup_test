@@ -45,51 +45,29 @@
                         <tbody>
                         {% for user in users %}
                         <tr>
-                            <td class="py-2 px-4 border-b">{{ user.id }}</td>
-                            <td class="py-2 px-4 border-b">{{ user.name }}</td>
-                            <td class="py-2 px-4 border-b">{{ user.tg_nickname }}</td>
-                            <td class="py-2 px-4 border-b">
-                                <div id="status-container-{{ user.id }}" class="flex space-x-2">
-                                    <button type="button"
-                                            class="status-btn p-1 border bg-green-100 text-green-800 rounded-[6px] w-[30px] h-[30px]"
-                                            onclick="setStatus('{{ user.id }}', 'PRESENT'); setActive('{{ user.id }}', 'PRESENT')">
-                                        Б
-                                    </button>
-                                    <button type="button"
-                                            class="status-btn p-1 border bg-yellow-100 text-yellow-800 rounded-[6px] w-[30px] h-[30px]"
-                                            onclick="setStatus('{{ user.id }}', 'WARNED'); setActive('{{ user.id }}', 'WARNED')">
-                                        П
-                                    </button>
-                                    <button type="button"
-                                            class="status-btn p-1 border bg-red-100 text-red-800 rounded-[6px] w-[30px] h-[30px]"
-                                            onclick="setStatus('{{ user.id }}', 'ABSENT'); setActive('{{ user.id }}', 'ABSENT')">
-                                        Н
-                                    </button>
-                                </div>
-                                <input type="hidden" name="participant_status_{{ user.id }}"
-                                       id="participant_status_{{ user.id }}" value="">
+                            <td class="border-b py-2 px-4">{{ user.id }}</td>
+                            <td class="border-b py-2 px-4">{{ user.name }}</td>
+                            <td class="border-b py-2 px-4">{{ user.tg_nickname }}</td>
+                            <td class="border-b py-2 px-4">
+                                <input type="checkbox" name="participants" value="{{ user.id }}" id="participant_{{ user.id }}" class="hidden">
+                                <label for="participant_{{ user.id }}" class="cursor-pointer">{{ user.tg_name }}</label>
                             </td>
-
-                            <script>
-                                function setActive(userId, status) {
-                                    const container = document.getElementById(`status-container-${userId}`);
-                                    const buttons = container.querySelectorAll('.status-btn');
-
-                                    buttons.forEach(button => {
-                                        button.classList.remove('bg-green-400', 'bg-yellow-400', 'bg-red-400');
-                                    });
-
-                                    if (status === 'PRESENT') {
-                                        container.querySelector("button[onclick*='PRESENT']").classList.add('bg-green-400');
-                                    } else if (status === 'WARNED') {
-                                        container.querySelector("button[onclick*='WARNED']").classList.add('bg-yellow-400');
-                                    } else if (status === 'ABSENT') {
-                                        container.querySelector("button[onclick*='ABSENT']").classList.add('bg-red-400');
-                                    }
-                                }
-                            </script>
+                            <td class="border-b py-2 px-4">
+                                <div id="container_{{ user.id }}" class="w-full flex bg-gray-300 border rounded-lg border-[#666666] py-0 px-0">
+                                    <div id="item1_{{ user.id }}" class="flex-item rounded-tl rounded-bl bg-transparent cursor-pointer" onclick="setStatus('{{ user.id }}', 'PRESENT')">
+                                        <div class="text-center text-[#1e1e1e] text-xs font-normal">Б</div>
+                                    </div>
+                                    <div id="item2_{{ user.id }}" class="flex-item bg-transparent cursor-pointer" onclick="setStatus('{{ user.id }}', 'WARNED')">
+                                        <div class="text-center text-[#1e1e1e] text-xs font-normal">П</div>
+                                    </div>
+                                    <div id="item3_{{ user.id }}" class="flex-item rounded-tr rounded-br bg-transparent cursor-pointer" onclick="setStatus('{{ user.id }}', 'ABSENT')">
+                                        <div class="text-center text-[#1e1e1e] text-xs font-normal">Н</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="participant_status_{{ user.id }}" id="participant_status_{{ user.id }}" value="">
+                            </td>
                         </tr>
-                        {% endfor %}
+                    {% endfor %}
                         </tbody>
                     </table>
                 </div>
