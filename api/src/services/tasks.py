@@ -19,7 +19,7 @@ def send_email_to_user(**kwargs):
         f"Здравствуйте, {name}!\n\nВаш аккаунт успешно создан.\n\nДля подтверждения электронной почты перейдите по ссылке\n\n{link}",
     )
     recipient_list = [email]
-    
+
     send_mail(
         subject, message, from_email, recipient_list, fail_silently=False
     )
