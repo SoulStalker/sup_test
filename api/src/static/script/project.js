@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+
     // Обработка отправки формы
     form.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -311,41 +312,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    // Скрипт для кастомного множественного выбора
-    const selectContainer = document.getElementById('select-container');
-    const selectItems = document.getElementById('select-items');
-    const selectElement = document.getElementById('project-participants');
 
-    if (selectContainer) {
-        selectContainer.addEventListener('click', () => {
-            selectContainer.classList.toggle('active');
-            selectItems.classList.toggle('visible-menu');
-            console.log('Клик на контейнер выбора участников');
-        });
-    }
-
-    if (selectItems) {
-        selectItems.addEventListener('click', (event) => {
-            if (event.target.tagName === 'DIV') {
-                const value = event.target.getAttribute('data-value');
-                const option = Array.from(selectElement.options).find(option => option.value === value);
-                if (option) {
-                    option.selected = !option.selected;
-                    event.target.classList.toggle('selected');
-                    console.log('Выбор участника:', value);
-                }
-                selectContainer.textContent = Array.from(selectElement.options)
-                    .filter(option => option.selected)
-                    .map(option => option.text)
-                    .join(', ') || 'Выберите участников';
-            }
-        });
-    }
 });
-
-
-
-
 
 
 
@@ -465,3 +433,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+function sortTable(columnIndex) {
+    const table = document.getElementById("table-style-1");
+    const tbody = table.tBodies[0];
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    const isAscending = table.dataset.sortOrder === "asc";
+    const direction = isAscending ? 1 : -1;
+
+    rows.sort((a, b) => {
+        const aText = a.children[columnIndex].textContent.trim();
+        const bText = b.children[columnIndex].textContent.trim();
+
+        if (!isNaN(aText) && !isNaN(bText)) {
+            return (Number(aText) - Number(bText)) * direction;
+        } else {
+            return aText.localeCompare(bText) * direction;
+        }
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+    table.dataset.sortOrder = isAscending ? "desc" : "asc";
+
+    // Update sort arrow styles
+    document.querySelectorAll(".sort-arrow").forEach(span => {
+        span.textContent = "↕";
+    });
+    const arrow = table.dataset.sortOrder === "asc" ? "↑" : "↓";
+    document.getElementById(`sort-arrow-${columnIndex}`).textContent = arrow;
+}

@@ -1,29 +1,49 @@
-<div id="modal-create-meet" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-     <div class="bg-white p-8 rounded-lg shadow-lg w-1/2 relative"> <!-- Добавлен relative -->
-        <div id="error-message" class="error-message hidden"></div> <!-- Перемещен внутрь модального окна -->
-        <h2 class="text-xl mb-4">Создать Meet</h2>
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<!-- Подключение jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Подключение CSS и JS библиотеки Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+
+
+<div id="modal-create-meet"
+     class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-11">
+    <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/2">
+        <div class="modal-header mb-4">
+            <h2 class="modal-title text-xl font-semibold">Создать Meet</h2>
+        </div>
+
         <form id="create-meet-form" method="POST" action="{% url 'meets:create_meet' %}">
             {% csrf_token %}
-            <div class="mb-4">
-                <label for="title" class="block text-sm font-medium text-gray-700">Название Meet*</label>
-                <input type="text" id="title" name="title" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
-            </div>
-            <div class="mb-4">
 
+            <!-- Название Meet -->
+            <div class="form-group mb-4">
+                <label for="title" class="form-label block text-sm font-medium text-gray-700">Название Meet*</label>
+                <input type="text" id="title" name="title"
+                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                       required>
             </div>
-            <table class="w-full mx-auto max-h-[300px] overflow-y-auto block">
-                <table class="w-full mx-auto block">
-                    <thead class="bg-gray-100 text-xs sticky top-0">
+
+            <!-- Участники -->
+            <div class="form-group mb-4">
+                <label for="participants" class="form-label block text-sm font-medium text-gray-700">Участники</label>
+                <div class="overflow-y-auto max-h-60 border border-gray-300 rounded">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-100 sticky top-0">
                         <tr>
-                            <th class="border-b py-2 px-4 text-left">ID</th>
-                            <th class="border-b py-2 px-4 text-left">Имя</th>
-                            <th class="border-b py-2 px-4 text-left">Ник telegram</th>
-                            <th class="border-b py-2 px-4 text-left">Имя telegram</th>
-                            <th class="border-b py-2 px-4 text-left">Присутствовали</th>
+                            <th class="py-2 px-4 text-left font-medium">ID</th>
+                            <th class="py-2 px-4 text-left font-medium">Имя</th>
+                            <th class="py-2 px-4 text-left font-medium">Ник telegram</th>
+                            <th class="py-2 px-4 text-left font-medium">Присутствие</th>
                         </tr>
-                    </thead>
-                    <tbody class="block overflow-y-auto" style="max-height: 300px;">
-                    {% for user in users %}
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
                         <tr>
                             <td class="border-b py-2 px-4">{{ user.id }}</td>
                             <td class="border-b py-2 px-4">{{ user.name }}</td>
@@ -48,33 +68,57 @@
                             </td>
                         </tr>
                     {% endfor %}
-                </tbody>
-            </table>
-            <div class="mb-4">
-                <label for="start_time" class="block text-sm font-medium text-gray-700">Время начала*</label>
-                <input type="datetime-local" id="start_time" name="start_time" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="category" class="block text-sm font-medium text-gray-700">Категория*</label>
-                <select id="category" name="category" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
-                    {% for category in categories %}
-                        <option value="{{ category.pk }}">{{ category.name }}</option>
-                    {% endfor %}
-                </select>
-                <button id="open-add-category-modal" class="ml-2 bg-blue-500 text-white px-3 py-1 rounded">+</button>
 
+            <!-- Время начала -->
+            <div class="form-group mb-4">
+                <label for="start_time" class="form-label block text-sm font-medium text-gray-700">Время начала*</label>
+                <input type="datetime-local" id="start_time" name="start_time"
+                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                       required>
             </div>
-            <div class="mb-4">
-                <label for="responsible" class="block text-sm font-medium text-gray-700">Ответственный*</label>
-                <select id="responsible" name="responsible" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+
+            <!-- Категория -->
+            <div class="form-group mb-4">
+                <label for="category" class="form-label block text-sm font-medium text-gray-700 mb-1">Категория*</label>
+                <div class="flex items-center">
+                    <select id="category" name="category"
+                            class="form-select p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full h-12"
+                            required>
+                        {% for category in categories %}
+                        <option value="{{ category.pk }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button id="open-add-category-modal"
+                            class="ml-2 bg-[#327680] text-white px-4 py-2 rounded-[6px] h-12">+
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ответственный -->
+            <div class="form-group mb-4">
+                <label for="responsible"
+                       class="form-label block text-sm font-medium text-gray-700">Ответственный*</label>
+                <select id="responsible" name="responsible"
+                        class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                        required>
                     {% for user in users %}
-                        <option value="{{ user.id }}">{{ user.name }}</option>
+                    <option value="{{ user.id }}">{{ user.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="flex justify-end space-x-2">
-                <button id="cancel-meet" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-                <button id="submit-meet" type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
+
+            <!-- Кнопки действия -->
+            <div class="form-group flex justify-end space-x-2">
+                <button type="button" id="cancel-meet"
+                        class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена
+                </button>
+                <button type="submit" id="submit-meet"
+                        class="btn btn-primary bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать
+                </button>
             </div>
         </form>
     </div>

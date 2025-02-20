@@ -2846,3 +2846,12 @@ h1,h2,h3,h4,h5,h6 {
     }
 }
 /*# sourceMappingURL=style.min.css.map */
+#dropdown-menu .menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#dropdown-menu .menu-item:hover {
+    background-color: rgba(50, 118, 128, 0.3); /* Светлый оттенок */
+}

@@ -155,3 +155,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+
+function sortTable(columnIndex) {
+    const table = document.getElementById("table-style-1");
+    const rows = Array.from(table.rows).slice(1); // Get all rows except the header row
+    const isAscending = table.getAttribute("data-sort-order") === "asc";
+
+    rows.sort((rowA, rowB) => {
+        const cellA = rowA.cells[columnIndex].innerText;
+        const cellB = rowB.cells[columnIndex].innerText;
+
+        if (columnIndex === 0 || columnIndex === 2) { // Sort ID or Status (numeric or textual)
+            return isAscending ? cellA - cellB : cellB - cellA;
+        }
+
+        // For Date columns, parse the date string and compare
+        if (columnIndex === 3 || columnIndex === 4) {
+            const dateA = new Date(cellA.split('.').reverse().join('-'));
+            const dateB = new Date(cellB.split('.').reverse().join('-'));
+            return isAscending ? dateA - dateB : dateB - dateA;
+        }
+
+        // Default text sorting
+        return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+    });
+
+    // Re-add the sorted rows to the table
+    rows.forEach(row => table.appendChild(row));
+
+    // Toggle the sorting order for the next click
+    table.setAttribute("data-sort-order", isAscending ? "desc" : "asc");
+}
