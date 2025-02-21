@@ -53,11 +53,31 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{% url 'projects:tasks' %}"
+                       class="override {% if request.resolver_match.url_name == 'taskss' %}menu_active{% endif %}"> <i
+                            class="fas fa-tasks fa-fw"></i>
+                        <span class="menu-text">Задачи</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{% url 'invites:invite' %}"
                        class="override {% if request.resolver_match.url_name == 'invite' %}menu_active{% endif %}">
                         <i class="fas fa-users fa-fw"></i>
                         <span class="menu-text">Инвайты</span>
                     </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="override">
+                        <i class="fas fa-user-shield fa-fw"></i>
+                        <span class="menu-text">Администратор</span>
+                        <i class="fas fa-chevron-down drop"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'users:users' %}">Все пользователи</a></li>
+                        <li><a href="{% url 'users:roles' %}">Команда</a></li>
+                        <li><a href="{% url 'users:permissions' %}">Права доступа</a></li>
+                        <li><a href="{% url 'teams:teams' %}">Команды</a></li>
+                    </ul>
                 </li>
                 <li>
                     <a href="{% url 'authorization:logout' %}"
@@ -87,4 +107,5 @@
         });
     });
     document.getElementById('current-year').textContent = new Date().getFullYear();
+    
 </script>

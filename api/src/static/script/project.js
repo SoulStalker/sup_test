@@ -61,14 +61,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Обновленный обработчик отправки формы
+
+    // Обработка отправки формы
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        console.log('Отправка формы создания/редактирования проекта');
+        console.log('Отправка формы создания проекта');
 
-        clearErrors();
+        // Проверка валидности формы
+        if (!form.checkValidity()) {
+            console.error('Форма невалидна. Пожалуйста, проверьте введенные данные.');
+            return;
+        }
 
         const formData = new FormData(form);
+        console.log('Данные формы:', Array.from(formData.entries()));
 
         fetch(form.action, {
             method: 'POST',
@@ -78,62 +84,44 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
         .then(response => {
-            // Обрабатываем ответ даже при ошибках HTTP
+            console.log('Ответ от сервера:', response);
             if (!response.ok) {
-                return response.json().then(errorData => {
-                    // Создаем кастомную ошибку с данными сервера
-                    const error = new Error(errorData.message || 'Неизвестная ошибка');
-                    error.data = errorData;
-                    throw error;
-                }).catch(() => {
-                    throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
-                });
+                throw new Error('Сеть ответила с ошибкой: ' + response.status);
             }
             return response.json();
         })
         .then(data => {
+            console.log('Данные от сервера:', data);
             if (data.status === 'success') {
-                closeModal();
-                location.reload();
+                closeModal(); // Закрываем модальное окно при успешном ответе
+                location.reload(); // Перезагрузка страницы для обновления данных
             } else {
-                // Обрабатываем структурированные ошибки
+                // Обработка ошибок
                 if (data.errors) {
+                    console.error('Ошибки валидации:', data.errors);
                     Object.entries(data.errors).forEach(([fieldName, errors]) => {
                         const field = form.querySelector(`[name="${fieldName}"]`);
-                        if (field) showError(field, errors);
+                        if (field) {
+                            showError(field, errors);
+                        }
                     });
-                }
-                // Отображаем общее сообщение об ошибке
-                if (data.message) {
-                    showGeneralError(data.message);
+                } else if (data.message) {
+                    console.error('Ошибка сервиса:', data.message);
+                    const generalErrorDiv = document.createElement('div');
+                    generalErrorDiv.className = 'general-error';
+                    generalErrorDiv.textContent = data.message;
+                    form.insertBefore(generalErrorDiv, form.firstChild);
                 }
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
-            // Отображаем сообщение из ошибки
-            const errorMessage = error.data?.message || error.message;
-            showGeneralError(errorMessage);
+            console.error('Ошибка сети:', error);
+            const networkErrorDiv = document.createElement('div');
+            networkErrorDiv.className = 'network-error';
+            networkErrorDiv.textContent = 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.';
+            form.insertBefore(networkErrorDiv, form.firstChild);
         });
     });
-
-    // Новая функция для отображения общих ошибок
-    function showGeneralError(message) {
-        // Удаляем старые общие ошибки
-        const oldErrors = form.querySelectorAll('.general-error');
-        oldErrors.forEach(error => error.remove());
-
-        // Создаем новый блок ошибки
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'general-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4';
-        errorDiv.textContent = message;
-
-        // Вставляем ошибку перед формой
-        form.insertBefore(errorDiv, form.firstElementChild);
-
-        // Прокручиваем к ошибке
-        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
 
     // Редактирование проекта
     const editProjectButtons = document.querySelectorAll('.edit-project-button');
@@ -324,41 +312,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    // Скрипт для кастомного множественного выбора
-    const selectContainer = document.getElementById('select-container');
-    const selectItems = document.getElementById('select-items');
-    const selectElement = document.getElementById('project-participants');
 
-    if (selectContainer) {
-        selectContainer.addEventListener('click', () => {
-            selectContainer.classList.toggle('active');
-            selectItems.classList.toggle('visible-menu');
-            console.log('Клик на контейнер выбора участников');
-        });
-    }
-
-    if (selectItems) {
-        selectItems.addEventListener('click', (event) => {
-            if (event.target.tagName === 'DIV') {
-                const value = event.target.getAttribute('data-value');
-                const option = Array.from(selectElement.options).find(option => option.value === value);
-                if (option) {
-                    option.selected = !option.selected;
-                    event.target.classList.toggle('selected');
-                    console.log('Выбор участника:', value);
-                }
-                selectContainer.textContent = Array.from(selectElement.options)
-                    .filter(option => option.selected)
-                    .map(option => option.text)
-                    .join(', ') || 'Выберите участников';
-            }
-        });
-    }
 });
-
-
-
-
 
 
 

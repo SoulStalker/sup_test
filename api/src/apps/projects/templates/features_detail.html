@@ -1,86 +1,77 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
+    <link rel="shortcut icon" href="{% static 'images/favicon.svg' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ task.name }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
-    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <title>Детали фичи | Система Управления Проектами</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/home_lk/style.css' %}">
 </head>
-<body class="bg-gray-100 h-screen flex">
+<body class="bg-gray-50">
+    {% include 'includes/sidebar.html' %}
 
-    <!-- Sidebar -->
-    <div id="sidebar" class="w-16 bg-gray-800 text-white flex flex-col items-center p-4 h-screen transition-all duration-300">
-        <button id="sidebar-toggle" class="mb-8 focus:outline-none">
-            <span class="text-xl">&#9776;</span>
-        </button>
-        <div class="space-y-6">
-            <a href="#" class="block text-center">
-                <span class="block text-2xl">🏠</span>
-                <span class="hidden sidebar-text">Главная</span>
-            </a>
-            <a href="#" class="block text-center">
-                <span class="block text-2xl">📊</span>
-                <span class="hidden sidebar-text">Отчеты</span>
-            </a>
-            <a href="#" class="block text-center">
-                <span class="block text-2xl">⚙️</span>
-                <span class="hidden sidebar-text">Настройки</span>
-            </a>
-            <a href="#" class="block text-center">
-                <span class="block text-2xl">🧑‍💼</span>
-                <span class="hidden sidebar-text">Пользователи</span>
-            </a>
-        </div>
-    </div>
-{% block content %}
-    <!-- Основной контент -->
-    <div> <!-- Используем flex-col для вертикального расположения -->
-        <div class="flex-1">
-            <h1 class="text-2xl font-semibold mb-1">Фича: {{ feature.name }}</h1>
-        </div>
-        <h5 class="text-2xl font-semibold">Проект</h5>
-        <div class="flex-1">
-            <p>{{ project }}</p>
-        </div>
-        <h5 class="text-2xl font-semibold">Описание</h5>
-        <div class="flex-1">
-            <p>{{ feature.description }}</p>
-        </div>
-        <h5 class="text-2xl font-semibold">Теги</h5>
-        <div class="flex-1">
-            {% for item_tags in tags %}
-                <p>{{ item_tags.name }}</p>
-            {% endfor %}
-        </div>
-        <h5 class="text-2xl font-semibold">Исполнитель</h5>
-        <div class="flex-1">
-            {% for item_users in users %}
-                <p>{{ item_users.email }}</p>
-            {% endfor %}
-        </div>
-        <h5 class="text-2xl font-semibold">Важность</h5>
-        <div class="flex-1">
-            <p>{{ feature.importance }}</p>
-        </div>
-        <h5 class="text-2xl font-semibold">Статус</h5>
-        <div class="flex-1">
-            <p>{{ feature.status }}</p>
-        </div>
-        <h5 class="text-2xl font-semibold">Список задач</h5>
-        <div class="flex-1">
-            {% for item_task in tasks %}
-            <p>
-            <a href="{% url 'projects:task_detail' item_task.id %}">
-                {{ item_task.name }}</a></td>
-            </p>
-            {% endfor %}
-        </div>
-    </div>
-    <script src="{% static 'script/tasks.js' %}"></script>
+    <div class="min-h-screen">
+        <main class="container mx-auto px-4 py-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-semibold text-[#327680]">{{ feature.name }}</h1>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Проект: {{ project.name }}</p>
+                <p class="text-sm text-gray-500 mt-1">Статус: {{ feature.status }}</p>
+                <p class="text-sm text-gray-500 mt-1">Дата создания: {{ feature.created_at }}</p>
+                <p class="text-sm text-gray-500 mt-1">Дедлайн: {{ feature.deadline }}</p>
+            </div>
 
-{% endblock %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h2 class="text-xl font-semibold mb-4">Описание</h2>
+                    <p class="text-sm text-gray-500">{{ feature.description }}</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h2 class="text-xl font-semibold mb-4">Участники</h2>
+                    <div class="space-y-4">
+                        {% for user in users %}
+                        <div class="flex items-center space-x-3 p-4 border rounded-lg">
+                            <div class="w-10 h-10 rounded-full bg-[#327680] text-white flex items-center justify-center">
+                                {{ user.name|slice:":1" }}{{ user.surname|slice:":1" }}
+                            </div>
+                            <div>
+                                <h3 class="font-medium">{{ user.name }} {{ user.surname }}</h3>
+                                <p class="text-sm text-gray-500">{{ user.role }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+                <h2 class="text-xl font-semibold mb-4">Теги</h2>
+                <div class="flex flex-wrap gap-2">
+                    {% for tag in tags %}
+                    <span class="bg-[#327680] text-white px-3 py-1 rounded-full text-sm">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+                <h2 class="text-xl font-semibold mb-4">Задачи</h2>
+                <div class="space-y-4">
+                    {% for task in tasks %}
+                    <div class="p-4 border rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-medium">{{ task.name }}</h3>
+                            <span class="text-sm text-green-600">{{ task.status }}</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Дедлайн: {{ task.deadline }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </main>
+    </div>
 </body>
 </html>
