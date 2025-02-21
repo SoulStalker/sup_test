@@ -209,6 +209,118 @@
 
     <script src="{% static 'script/meets.js' %}"></script>
     <script src="{% static 'script/pagination.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.querySelector('input[type="text"]'); // Получаем поле поиска
+            const tables = document.querySelectorAll('table tbody'); // Получаем тела всех таблиц
+            const tableStyle1 = document.getElementById('table-style-1');
+            const tableStyle2 = document.getElementById('table-style-2');
+
+            // Создаем элемент для сообщения "Данные не найдены"
+            const createNoDataMessage = (colSpan) => {
+                const noDataMessage = document.createElement('tr');
+                const noDataCell = document.createElement('td');
+                noDataCell.colSpan = colSpan;
+                noDataCell.textContent = 'Данные не найдены';
+                noDataCell.classList.add('text-center', 'text-gray-500', 'py-4');
+                noDataMessage.appendChild(noDataCell);
+                return noDataMessage;
+            };
+
+            const highlightMatch = (text, query) => {
+                const regex = new RegExp(`(${query})`, 'gi');
+                return text.replace(regex, '<span class="bg-yellow-200">$1</span>');
+            };
+
+            let noDataMessages = [];
+
+            tables.forEach((tableBody) => {
+                const colSpan = tableBody.closest('table').querySelectorAll('thead th').length;
+                const noDataMessage = createNoDataMessage(colSpan);
+                tableBody.appendChild(noDataMessage);
+                noDataMessages.push(noDataMessage);
+                noDataMessage.style.display = 'none'; // Изначально скрываем сообщение
+            });
+
+            // Обработчик ввода в поле поиска
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.toLowerCase(); // Получаем строку поиска
+                let foundInStyle1 = false;
+                let foundInStyle2 = false;
+
+                tables.forEach(function (tableBody, index) {
+                    const rows = tableBody.querySelectorAll('tr:not(:last-child)'); // Получаем все строки таблицы, кроме сообщения "Данные не найдены"
+                    let hasVisibleRows = false; // Отслеживаем, есть ли видимые строки
+
+                    rows.forEach(function (row) {
+                        const cells = row.querySelectorAll('td');
+                        let match = false;
+
+                        // Проверяем, есть ли совпадения в данных таблицы
+                        cells.forEach(function (cell) {
+                            const originalText = cell.textContent;
+                            if (originalText.toLowerCase().includes(query)) {
+                                match = true;
+                                cell.innerHTML = highlightMatch(originalText, query);
+                            } else {
+                                cell.innerHTML = originalText; // Сбрасываем подсветку
+                            }
+                        });
+
+                        // Если совпадение есть, показываем строку, иначе скрываем
+                        if (match) {
+                            row.style.display = '';
+                            hasVisibleRows = true;
+                            if (index === 0) foundInStyle1 = true; // Совпадение в таблице 1
+                            if (index === 1) foundInStyle2 = true; // Совпадение в таблице 2
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // Если видимых строк нет, показываем сообщение "Данные не найдены"
+                    if (!hasVisibleRows) {
+                        noDataMessages[index].style.display = ''; // Показываем сообщение
+                    } else {
+                        noDataMessages[index].style.display = 'none'; // Скрываем сообщение
+                    }
+                });
+
+                // Переключение вида таблицы на основе совпадений
+                if (foundInStyle1) {
+                    tableStyle1.classList.remove('hidden');
+                    tableStyle2.classList.add('hidden');
+                } else if (foundInStyle2) {
+                    tableStyle2.classList.remove('hidden');
+                    tableStyle1.classList.add('hidden');
+                }
+            });
+
+            // Обработчик для очистки поля поиска (если потребуется сбросить фильтрацию)
+            searchInput.addEventListener('blur', function () {
+                if (searchInput.value === '') {
+                    tables.forEach(function (tableBody, index) {
+                        const rows = tableBody.querySelectorAll('tr:not(:last-child)');
+                        rows.forEach(function (row) {
+                            const cells = row.querySelectorAll('td');
+                            cells.forEach(function (cell) {
+                                cell.innerHTML = cell.textContent; // Сбрасываем подсветку
+                            });
+                            row.style.display = ''; // Показываем все строки
+                        });
+
+                        // Скрываем сообщение "Данные не найдены", если оно есть
+                        noDataMessages[index].style.display = 'none';
+                    });
+
+                    // Сбрасываем таблицы к виду по умолчанию
+                    tableStyle1.classList.remove('hidden');
+                    tableStyle2.classList.add('hidden');
+                }
+            });
+        });
+
+    </script>
 {% endblock %}
 
 </body>

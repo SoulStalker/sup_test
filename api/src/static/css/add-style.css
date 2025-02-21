@@ -33,7 +33,7 @@
     position: relative;
 }
 .select-items {
-    position: absolute;
+    position: relative;
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -224,7 +224,7 @@ a {
     position: relative;
 }
 .select-items {
-    position: absolute;
+    position: relative;
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 5px;

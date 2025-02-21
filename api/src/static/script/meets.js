@@ -1,3 +1,7 @@
+
+
+
+
 // переключение на вторую таблицу
 function toggleTableStyle2() {
     const tableStyle1 = document.getElementById('table-style-1');
