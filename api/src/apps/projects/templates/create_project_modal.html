@@ -1,14 +1,7 @@
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
-<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
-<!-- Подключение jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Подключение CSS и JS библиотеки Select2 -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<div id="notification-messages"></div>
 
 <div id="modal" class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-11">
     <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/2">
@@ -21,21 +14,7 @@
             <div class="form-group mb-4">
                 <label for="project-name" class="form-label block text-sm font-medium text-gray-700">Название проекта</label>
                 <input type="text" id="project-name" name="name"
-                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
-                       required oninput="validateProjectName(this)">
-                <div id="project-name-error" class="text-red-500 text-sm mt-1 hidden">Цифры и специальные символы запрещены.</div>
-                <script>
-                    function validateProjectName(input) {
-                        const errorDiv = document.getElementById('project-name-error');
-                        const regex = /^[a-zA-Zа-яА-Я\s]*$/;
-                        if (!regex.test(input.value)) {
-                            errorDiv.classList.remove('hidden');
-                            input.value = input.value.replace(/[^a-zA-Zа-яА-Я\s]/g, '');
-                        } else {
-                            errorDiv.classList.add('hidden');
-                        }
-                    }
-                </script>
+                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
             </div>
             <!-- Project Logo -->
             <div class="form-group mb-4">
@@ -68,8 +47,8 @@
                 <div class="w-1/2">
                     <!-- Project Date -->
                     <div class="form-group mb-4">
-                        <label for="project-date" class="form-label block text-sm font-medium text-gray-700">Дата</label>
-                        <input type="date" id="project-date" name="date_created" class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <label for="project-date_created" class="form-label block text-sm font-medium text-gray-700">Дата и время</label>
+                        <input type="datetime-local" id="project-date_created" name="date_created" class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                     </div>
                 </div>
             </div>
@@ -86,14 +65,16 @@
                 <!-- Участники -->
                 <div class="form-group mb-4 w-1/2">
                     <label for="project-participants" class="form-label block text-sm font-medium text-gray-700">Участники*</label>
-                    <select id="project-participants" name="participants"
-                            class="form-select p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                    <select id="project-participants" name="participants" multiple
+                            class="form-select select2 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            required>
                         {% for user in users %}
                         <option value="{{ user.id }}">{{ user.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
+            <div class="text-red-500 text-sm mt-1 hidden"></div>
 
             <!-- Button Group -->
             <div class="flex justify-end space-x-2">
@@ -116,3 +97,4 @@
         </div>
     </div>
 </div>
+

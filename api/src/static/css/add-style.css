@@ -385,3 +385,10 @@ a {
     padding-bottom: 4px !important;
     padding-top: 6px !important;
 }
+
+.text-red-500 {
+    background: #FDB;
+    padding: 3px;
+    text-align: center;
+    border-radius: 6px;
+}

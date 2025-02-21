@@ -118,3 +118,15 @@ class DataVerifier:
         elif not re.search(r"[\W_]", password):
             return "Пароль должен содержать хотя бы один специальный символ."
         return None
+
+    @staticmethod
+    def validate_letters_space_only(value):
+        """
+        Валидатор, который проверяет, содержит ли строка только буквы и пробелы.
+        """
+        # Проверяем, что строка состоит только из букв и пробелов
+        if not re.match("^[A-Za-zА-Яа-яЁё\s]+$", value):
+            raise ValidationError(
+                "Название должно содержать только буквы и пробелы.",
+                code="invalid_characters",
+            )
