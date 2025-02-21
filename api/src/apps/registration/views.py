@@ -50,7 +50,7 @@ class UserRegistration(BaseView):
                     return JsonResponse(
                         {"status": "error", "message": str(err)}, status=400
                     )
-                invite_DTO = self.invite_service.create_inviteDTO(
+                invite_DTO = self.invite_service.create_invite_dto(
                     invitation_code
                     )
                 self.invite_service.update_status(invite_DTO, status = 'USED')

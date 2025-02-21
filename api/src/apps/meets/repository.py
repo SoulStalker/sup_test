@@ -125,7 +125,7 @@ class CategoryRepository(PermissionMixin, ICategoryRepository, ABC):
     def _orm_to_dto(self, category: Category) -> CategoryObject:
         return CategoryObject(pk=category.id, name=category.name)
 
-    def create(self, category: CategoryEntity, user_id) -> CategoryObject:
+    def create(self, category: CategoryEntity) -> CategoryObject:
         category = Category.objects.create(name=category.name)
         return self._orm_to_dto(category)
 
