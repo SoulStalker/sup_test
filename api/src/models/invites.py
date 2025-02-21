@@ -28,6 +28,7 @@ class Invite(models.Model):
         db_table = "invite"
         verbose_name = "Приглашение"
         verbose_name_plural = "Приглашения"
+        app_label = "invites"
 
     def __str__(self):
         return self.link

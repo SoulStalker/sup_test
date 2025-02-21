@@ -61,9 +61,6 @@ FRONTEND_URL=https://junov.net
     
     ```bash
     env $(cat api/.env | xargs) docker-compose up -d --build
-   
-   или так:
-   docker-compose up -d --build
 	```
         
 5. **Применение миграций и создание суперпользователя**: После первого запуска, выполните миграции и создайте суперпользователя:
