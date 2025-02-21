@@ -44,9 +44,10 @@ def test_post_verify_email(client, admin_user):
         "password": "Password_123"
     }
     # не меняется статус, хз как реализовать переход по ссылке, чтоб статус менялся
-    user.is_active = True
-    user.save()
-    # response = client.get(reverse('verifyemail:verifyemail', args=[VerifyEmail.objects.last().link[-4:]]), data=data)
-    # print(response)
+    # user.is_active = True
+    # user.save()
+    response = client.get(reverse('verifyemail:verifyemail', args=[VerifyEmail.objects.last().link[-4:]]), data=data)
+    # print(user.is_active)
     # print(VerifyEmail.objects.last())
-    # assert response.status_code == 200
+    # print("Response content:", response.content.decode())
+    assert response.status_code == 200

@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from src.models.invites import Invite
 from src.models.choice_classes import InviteChoices
-from src.models.models import CustomUser, Role, Team
+from src.models.models import CustomUser, Role, Team, Permission
 from src.models.meets import Category, Meet, MeetParticipant
 from src.models.projects import Project, Tags, Features, Task, Comment
 
@@ -39,7 +39,7 @@ class TeamFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def participants(self, create, extracted, **kwargs):
-        if not create:
+        if not create or extracted is None:
             return
 
         if extracted:
@@ -79,6 +79,17 @@ class CustomUserFactory(factory.django.DjangoModelFactory):
     date_joined = factory.LazyFunction(timezone.now)
 
 
+class PermissionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Permission
+
+    name = factory.Sequence(lambda n: f"Permission{n}")
+    code = factory.Iterator([1, 2, 3])
+    description = factory.Faker("text", max_nb_chars=200)
+    content_type = None
+    object_id = None
+
+
 class CategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Category
@@ -103,7 +114,8 @@ class MeetParticipantFactory(factory.django.DjangoModelFactory):
 
     meet = factory.SubFactory(MeetFactory)
     custom_user = factory.SubFactory(CustomUserFactory)
-    status = "PRESENT"
+    status = factory.Iterator(["PRESENT", "ABSENT", "WARNED"])
+
 
 class ProjectFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -113,7 +125,8 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     slug = factory.LazyAttribute(lambda o: slugify(o.name))
     description = factory.Faker("text", max_nb_chars=500)
     responsible = factory.SubFactory(CustomUserFactory)
-    status = "DISCUSSION"
+    status = factory.Iterator(["В обсуждении", "В разработке", "В поддержке"])
+
 
 class TagsFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -121,7 +134,8 @@ class TagsFactory(factory.django.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: f"Tag {n}")
     slug = factory.LazyAttribute(lambda o: slugify(o.name) + "_" + f"{uuid4().hex}")
-    color = factory.Faker("hex_color")
+    color = factory.Iterator(["ff5733", "33ff57", "3357ff", "ff33a8", "33fff5"])
+
 
 class FeaturesFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -132,8 +146,9 @@ class FeaturesFactory(factory.django.DjangoModelFactory):
     description = factory.Faker("text", max_nb_chars=10000)
     importance = factory.Faker("random_int", min=0, max=10)
     responsible = factory.SubFactory(CustomUserFactory)
-    status = "NEW"
+    status = factory.Iterator(["Новая", "Разработка", "Тестирование", "Готов"])
     project = factory.SubFactory(ProjectFactory)
+
 
 class TaskFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -143,9 +158,10 @@ class TaskFactory(factory.django.DjangoModelFactory):
     priority = factory.Faker("random_int", min=1, max=10)
     contributor = factory.SubFactory(CustomUserFactory)
     responsible = factory.SubFactory(CustomUserFactory)
-    status = "NEW"
+    status = factory.Iterator(["Новая", "Разработка", "Тестирование", "Готов"])
     feature = factory.SubFactory(FeaturesFactory)
     description = factory.Faker("text", max_nb_chars=10000)
+
 
 class CommentFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -153,4 +169,5 @@ class CommentFactory(factory.django.DjangoModelFactory):
 
     user = factory.SubFactory(CustomUserFactory)
     task = factory.SubFactory(TaskFactory)
-    comment = factory.Faker("text", max_nb_chars=1000)
+    comment = factory.Sequence(lambda n: f"Test comment {n}")
+    created_at = factory.LazyFunction(timezone.now)

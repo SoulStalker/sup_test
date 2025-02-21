@@ -40,7 +40,6 @@ def test_post_authorization_page(client, admin_user):
     ), data=data)
     assert creating_user.status_code == 201
 
-    # сразу авторизуется после регистрации
     logout = client.get(reverse('authorization:logout'))
 
     data = {

@@ -36,8 +36,10 @@ def test_create_invite(client, admin_user):
 def test_delete_invite(client, admin_user):
     success_login = client.login(email='admin@admin.org', password='admin')
     assert success_login
+
     response = client.post(reverse('invites:create_invite'))
     assert response.status_code == 200
+
     invite = Invite.objects.first()
     assert invite is not None
 
