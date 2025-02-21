@@ -375,3 +375,13 @@ a {
     border-bottom: 1px solid #c62828; /* Граница для выделения */
     z-index: 10; /* Убедитесь, что ошибка поверх других элементов */
 }
+#access-denied-popup {
+    z-index: 150;
+}
+.select2-container {
+    width: 100% !important;
+}
+.select2-container--default .select2-selection--multiple {
+    padding-bottom: 4px !important;
+    padding-top: 6px !important;
+}
