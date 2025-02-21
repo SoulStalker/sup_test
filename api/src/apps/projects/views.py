@@ -86,9 +86,12 @@ class EditProjectView(BaseView):
     """
     Редактирование проекта
     """
-
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get("project_id")
+        if not project_id:
+            return JsonResponse(
+                {"status": "error", "message": "ID проекта не указан"}, status=400
+            )
         project, error = self.project_service.get_by_id(
             pk=project_id, user_id=self.user_id
         )
@@ -96,10 +99,14 @@ class EditProjectView(BaseView):
             return JsonResponse(
                 {"status": "error", "message": error}, status=403
             )
+        # Проверяем, существует ли проект
+        if not project:
+            return JsonResponse(
+                {"status": "error", "message": "Проект не найден"}, status=404
+            )
         project_status_choices = (
             self.project_service.get_project_status_choices()
         )
-
         data = {
             "name": project.name,
             "logo": project.logo.url if project.logo else None,
@@ -111,11 +118,14 @@ class EditProjectView(BaseView):
             "date_created": project.date_created.isoformat(),
             "project_status_choices": project_status_choices,
         }
-
         return JsonResponse(data)
 
     def post(self, request, *args, **kwargs):
         project_id = kwargs.get("project_id")
+        if not project_id:
+            return JsonResponse(
+                {"status": "error", "message": "ID проекта не указан"}, status=400
+            )
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             project, error = self.project_service.get_by_id(
@@ -125,11 +135,24 @@ class EditProjectView(BaseView):
                 return JsonResponse(
                     {"status": "error", "message": error}, status=403
                 )
-            logo = (
-                form.cleaned_data.get("logo")
-                if "logo" in request.FILES
-                else None
-            )
+            # Проверяем, существует ли проект
+            if not project:
+                return JsonResponse(
+                    {"status": "error", "message": "Проект не найден"}, status=404
+                )
+
+            # Обработка логотипа
+            logo = None
+            if "logo" in request.FILES:
+                logo_file = request.FILES["logo"]
+                if logo_file.size > MAX_FILE_SIZE:  # Например, 5 MB
+                    return JsonResponse(
+                        {"status": "error", "errors": {"logo": ["Файл слишком большой"]}},
+                        status=400
+                    )
+                logo = logo_file
+
+            # Создаем DTO
             project_dto = ProjectDTO(
                 name=form.cleaned_data["name"],
                 logo=logo if logo else project.logo,
@@ -139,6 +162,8 @@ class EditProjectView(BaseView):
                 date_created=form.cleaned_data["date_created"],
                 participants=form.cleaned_data["participants"],
             )
+
+            # Обработка формы через handle_form
             return self.handle_form(
                 form,
                 self.project_service.update,
@@ -146,10 +171,22 @@ class EditProjectView(BaseView):
                 project_dto,
                 self.user_id,
             )
-        return JsonResponse(
-            {"status": "error", "message": form.errors}, status=400
-        )
+        else:
+            # Возвращаем ошибки формы в формате JSON
+            errors = {field: error_list for field, error_list in form.errors.items()}
+            return JsonResponse({"status": "error", "errors": errors}, status=400)
 
+    def handle_form(self, form, service_method, *args, **kwargs):
+        try:
+            result = service_method(*args, **kwargs)
+            return JsonResponse({"status": "success", "message": "Операция выполнена успешно"})
+        except Exception as e:
+            # Логируем ошибку
+            print(traceback.format_exc())
+            return JsonResponse(
+                {"status": "error", "message": f"Произошла ошибка: {str(e)}"},
+                status=500
+            )
 
 class DeleteProjectView(BaseView):
     """
