@@ -39,6 +39,7 @@
                             <th class="py-2 px-4 text-left font-medium">ID</th>
                             <th class="py-2 px-4 text-left font-medium">Имя</th>
                             <th class="py-2 px-4 text-left font-medium">Ник telegram</th>
+                            <th class="py-2 px-4 text-left font-medium">Ссылка telegram</th>
                             <th class="py-2 px-4 text-left font-medium">Присутствие</th>
                         </tr>
                         </thead>
@@ -53,21 +54,29 @@
                                 <label for="participant_{{ user.id }}" class="cursor-pointer">{{ user.tg_name }}</label>
                             </td>
                             <td class="border-b py-2 px-4">
-                                <div id="container_{{ user.id }}" class="w-full flex bg-gray-300 border rounded-lg border-[#666666] py-0 px-0">
-                                    <div id="item1_{{ user.id }}" class="flex-item rounded-tl rounded-bl bg-transparent cursor-pointer" onclick="setStatus('{{ user.id }}', 'PRESENT')">
+                                <div id="container_{{ user.id }}"
+                                     class="w-full flex bg-gray-300 border rounded-lg border-[#666666] py-1 px-1">
+                                    <div id="item1_{{ user.id }}"
+                                         class="flex-item w-8 h-8 bg-transparent rounded-[6px] cursor-pointer flex items-center justify-center mx-1"
+                                         onclick="setStatus('{{ user.id }}', 'PRESENT')">
                                         <div class="text-center text-[#1e1e1e] text-xs font-normal">Б</div>
                                     </div>
-                                    <div id="item2_{{ user.id }}" class="flex-item bg-transparent cursor-pointer" onclick="setStatus('{{ user.id }}', 'WARNED')">
+                                    <div id="item2_{{ user.id }}"
+                                         class="flex-item w-8 h-8 bg-transparent rounded-[6px] cursor-pointer flex items-center justify-center mx-1"
+                                         onclick="setStatus('{{ user.id }}', 'WARNED')">
                                         <div class="text-center text-[#1e1e1e] text-xs font-normal">П</div>
                                     </div>
-                                    <div id="item3_{{ user.id }}" class="flex-item rounded-tr rounded-br bg-transparent cursor-pointer" onclick="setStatus('{{ user.id }}', 'ABSENT')">
+                                    <div id="item3_{{ user.id }}"
+                                         class="flex-item w-8 h-8 bg-transparent rounded-[6px] cursor-pointer flex items-center justify-center mx-1"
+                                         onclick="setStatus('{{ user.id }}', 'ABSENT')">
                                         <div class="text-center text-[#1e1e1e] text-xs font-normal">Н</div>
                                     </div>
                                 </div>
-                                <input type="hidden" name="participant_status_{{ user.id }}" id="participant_status_{{ user.id }}" value="">
+                                <input type="hidden" name="participant_status_{{ user.id }}"
+                                       id="participant_status_{{ user.id }}" value="">
                             </td>
                         </tr>
-                    {% endfor %}
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
