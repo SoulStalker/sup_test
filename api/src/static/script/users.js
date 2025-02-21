@@ -1,3 +1,46 @@
+$(document).ready(function() {
+    $('#permissions').select2({
+        width: 'resolve',
+        placeholder: 'Выберите права'
+    }).on('change', updateSelectedPermissions);
+});
+
+function updateSelectedPermissions() {
+    const selectedOptions = $('#permissions').select2('data');
+    const permissionsContainer = document.getElementById('permissions-container');
+    if (permissionsContainer) {
+        if (selectedOptions.length > 0) {
+            const selectedPermissions = selectedOptions.map(option => option.text).join(', ');
+            permissionsContainer.textContent = selectedPermissions;
+        } else {
+            permissionsContainer.textContent = 'Выберите права';
+        }
+    }
+}
+
+// Функция для очистки формы
+function resetFormForCreation(form) {
+    form.reset();
+    // Очищаем аватар
+    const avatarContainer = document.querySelector('.mb-4');
+    const avatarImg = avatarContainer.querySelector('img');
+    const avatarSpan = avatarContainer.querySelector('span');
+    if (avatarImg) avatarImg.style.display = 'none';
+    if (avatarSpan) avatarSpan.style.display = 'block';
+
+    // Очищаем мультиселект с правами
+    const permissionsSelect = document.getElementById('permissions');
+    Array.from(permissionsSelect.options).forEach(option => {
+        option.selected = false;
+    });
+    $('#permissions').trigger('change'); // Обновляем Select2
+    updateSelectedPermissions(); // Обновляем текстовое представление выбранных прав
+
+    // Устанавливаем action формы для создания
+    form.setAttribute('action', '/users/create/');
+}
+
+
 // Создание юзера
 document.addEventListener('DOMContentLoaded', function () {
     const openModalButton = document.getElementById('open-modal');
@@ -153,6 +196,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 Array.from(permissionsSelect.options).forEach(option => {
                     option.selected = data.permissions_ids.includes(parseInt(option.value, 10));
                 });
+
+                // Обновляем состояние Select2 и вызываем функцию для обновления отображения выбранных прав
+                $('#permissions').trigger('change'); // Обновляем Select2
+                updateSelectedPermissions(); // Обновляем текстовое представление выбранных прав
+
 
                 // Меняем action формы для отправки на обновление
                 form.setAttribute('action', `/users/update/${userId}/`);
