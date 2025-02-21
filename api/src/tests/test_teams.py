@@ -53,8 +53,6 @@ def test_team_update_view(authenticated_client):
 
     assert response.status_code == 201
     assert response.json()["status"] == "success"
-
-    # Проверяем, что команда обновилась в базе данных
     team.refresh_from_db()
     assert team.name == "Updated Team"
 
@@ -72,5 +70,4 @@ def test_team_delete_view(authenticated_client):
     assert response.status_code == 200
     assert response.json()["status"] == "success"
     assert response.json()["message"] == "Team deleted"
-
     assert not Team.objects.filter(id=team.id).exists()
