@@ -35,6 +35,7 @@
 
                     </form>
                     {% include "pagination.html" with page=permissions %}
+
                     <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать права</button>
                 </div>
             </div>
@@ -92,7 +93,6 @@
 
     <script src="{% static 'script/permissions.js' %}"></script>
     <script src="{% static 'script/pagination.js' %}"></script>
-
 {% endblock %}
 
 </body>
