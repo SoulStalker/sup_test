@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.edit-comment').forEach(button => {
         button.addEventListener('click', function () {
             const commentId = this.getAttribute('data-comment-id');
-
+    
             // Запрос старого комментария
             fetch(`/projects/features/tasks/comment/update/${commentId}/`)
                 .then(response => response.json())
@@ -87,10 +87,10 @@ document.addEventListener('DOMContentLoaded', function () {
     commentForm.addEventListener('submit', function(event) {
         event.preventDefault();
         const commentId = document.getElementById('comment-task-id').value; // Получаем ID комментария
-
+    
         const formData = new FormData(commentForm);
         const url = commentId ? `/projects/features/tasks/comment/update/${commentId}/` : commentForm.action; // Используем правильный URL
-
+    
         fetch(url, {
             method: 'POST',
             body: formData,
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             const commentId = this.getAttribute('data-comment-id');
             const isConfirmed = confirm('Вы уверены, что хотите удалить этот комментарий?'); // Подтверждение удаления
-
+    
             if (isConfirmed) {
                 fetch(`/projects/features/tasks/comment/delete/${commentId}/`, {
                     method: 'DELETE',

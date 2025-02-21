@@ -416,7 +416,7 @@ class UserPasswordChangeView(BaseView):
             form = PasswordChangeForm(request.POST, user=user)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(reverse("home:home_lk_view"))
+                return HttpResponseRedirect(reverse("users:personal_account"))
             error_message = [
                 error
                 for field, errors in form.errors.items()

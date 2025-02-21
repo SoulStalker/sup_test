@@ -123,7 +123,7 @@ class ProjectRepository(PermissionMixin, IProjectRepository, ABC):
             )
             for project in projects
         ]
-
+    
 
     def get_list_participants(self, user_id: int) -> list[Project]:
         '''Список проектов у которых участник юзер'''
@@ -352,7 +352,7 @@ class TaskRepository(PermissionMixin, ITaskRepository, ABC):
         '''Список задач за которые ответственный юзер'''
         task = Task.objects.filter(responsible=user_id)
         return task
-
+    
     def get_list_contributor(self, user_id: int) -> list[Task]:
         '''Список задач у которых автор юзер'''
         task = Task.objects.filter(contributor=user_id)
@@ -367,7 +367,7 @@ class CommentRepository(PermissionMixin, ICommentRepository, ABC):
     @classmethod
     def exists(cls, pk: int) -> bool:
         return cls.model.objects.filter(id=pk).exists()
-
+    
     @classmethod
     def _comment_orm_to_dto(cls, comment: Comment) -> TaskDTO:
         return CommentDTO(
@@ -375,7 +375,7 @@ class CommentRepository(PermissionMixin, ICommentRepository, ABC):
             comment=comment.comment,
             task_id=comment.task_id,
         )
-
+    
     def create(self, dto: CommentDTO):
         comment = Comment(
             user=CustomUser.objects.get(id=dto.user_id),
@@ -400,7 +400,7 @@ class CommentRepository(PermissionMixin, ICommentRepository, ABC):
 
     def get_list(self, task_id):
         return self.model.objects.all().order_by("id")
-
+    
     def get_comments_list(self, task_id):
         comments = Comment.objects.filter(task_id=task_id)
         return comments
