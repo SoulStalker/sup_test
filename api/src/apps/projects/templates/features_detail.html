@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="{% static 'images/favicon.svg' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали фичи | Система Управления Проектами</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/home_lk/style.css' %}">
+</head>
+<body class="bg-gray-50">
+    {% include 'includes/sidebar.html' %}
+
+    <div class="min-h-screen">
+        <main class="container mx-auto px-4 py-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-semibold text-[#327680]">{{ feature.name }}</h1>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Проект: {{ project.name }}</p>
+                <p class="text-sm text-gray-500 mt-1">Статус: {{ feature.status }}</p>
+                <p class="text-sm text-gray-500 mt-1">Дата создания: {{ feature.created_at }}</p>
+                <p class="text-sm text-gray-500 mt-1">Дедлайн: {{ feature.deadline }}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h2 class="text-xl font-semibold mb-4">Описание</h2>
+                    <p class="text-sm text-gray-500">{{ feature.description }}</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h2 class="text-xl font-semibold mb-4">Участники</h2>
+                    <div class="space-y-4">
+                        {% for user in users %}
+                        <div class="flex items-center space-x-3 p-4 border rounded-lg">
+                            <div class="w-10 h-10 rounded-full bg-[#327680] text-white flex items-center justify-center">
+                                {{ user.name|slice:":1" }}{{ user.surname|slice:":1" }}
+                            </div>
+                            <div>
+                                <h3 class="font-medium">{{ user.name }} {{ user.surname }}</h3>
+                                <p class="text-sm text-gray-500">{{ user.role }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+                <h2 class="text-xl font-semibold mb-4">Теги</h2>
+                <div class="flex flex-wrap gap-2">
+                    {% for tag in tags %}
+                    <span class="bg-[#327680] text-white px-3 py-1 rounded-full text-sm">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+                <h2 class="text-xl font-semibold mb-4">Задачи</h2>
+                <div class="space-y-4">
+                    {% for task in tasks %}
+                    <div class="p-4 border rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-medium">{{ task.name }}</h3>
+                            <span class="text-sm text-green-600">{{ task.status }}</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Дедлайн: {{ task.deadline }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
