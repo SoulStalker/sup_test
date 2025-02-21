@@ -126,14 +126,12 @@
                         <option value="{{ team.id }}">{{ team.name }}</option>
                         {% endfor %}
                     </select>
-                </div>
-
-                <!-- Права -->
-                <div class="form-group h-full">
+                </div>                <!-- Права -->
+                <div class="form-group mb-4 w-full">
                     <label for="permissions" class="form-label block text-sm font-medium text-gray-700">Права*</label>
-                    <select id="permissions" name="permissions"
-                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
-                            required>
+                    <select id="permissions" name="permissions" multiple
+                            class="form-select p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                            required onchange="updateSelectedPermissions()">
                         {% for permission in permissions %}
                         <option value="{{ permission.id }}">{{ permission.name }}</option>
                         {% endfor %}
