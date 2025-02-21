@@ -1,27 +1,54 @@
-<div id="modal-create-role" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
-        <h2 class="text-xl mb-4">Создание роли</h2>
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<!-- Подключение jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Подключение CSS и JS библиотеки Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+<div id="modal-create-role"
+     class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-11">
+    <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/2">
+        <div class="modal-header mb-4">
+            <h2 class="modal-title text-xl font-semibold">Создание роли</h2>
+        </div>
+
         <form id="create-role-form" method="POST" action="{% url 'users:roles' %}">
             {% csrf_token %}
-            <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700">Название роли*</label>
+
+            <!-- Role Name -->
+            <div class="form-group mb-4">
+                <label for="name" class="form-label block text-sm font-medium text-gray-700">Название роли*</label>
                 <input type="text" id="name" name="name" maxlength="20" pattern="[A-Za-zА-Яа-я]+"
-                    class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                       required>
             </div>
-            <div class="mb-4 relative">
-                <label for="color" class="block text-sm font-medium text-gray-700">Цвет роли*</label>
-                <div>
-                    <input type="color" id="color-picker" class="color-picker" value="#FFB43F">
-                </div>
-                <div class="flex items-center space-x-2">
-                    <input type="text" id="color" name="color" maxlength="6"
-                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
-                </div>
+
+            <!-- Role Color -->
+            <div class="form-group mb-4 relative flex items-center space-x-2">
+                <label for="color" class="form-label block text-sm font-medium text-gray-700 w-1/4">Цвет роли*</label>
+                <input type="color" id="color-picker"
+                       class="color-picker h-[50px] w-12 p-0 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
+                <input type="text" id="color" name="color" maxlength="6"
+                       class="form-input h-[50px] p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 flex-1"
+                       required>
             </div>
-            <div class="flex justify-end space-x-2">
-                <button id="delete-role" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 delete-btn">Удалить</button>
-                <button id="cancel-role" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-                <button id="submit-role" type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
+
+            <!-- Button Group -->
+            <div class="form-group flex justify-end space-x-2">
+                <button type="button" id="delete-role"
+                        class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 delete-btn">
+                    Удалить
+                </button>
+                <button type="button" id="cancel-role"
+                        class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена
+                </button>
+                <button type="submit" id="submit-role"
+                        class="btn btn-primary bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать
+                </button>
             </div>
         </form>
     </div>
@@ -30,12 +57,17 @@
 
 
 <!-- Попап подтверждения удаления -->
-<div id="confirm-delete-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+<div id="confirm-delete-popup"
+     class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-12">
     <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
-        <h2 class="text-lg mb-4">Роль будет удалена</h2>
-        <div class="flex justify-end space-x-2">
-            <button id="confirm-delete" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
-            <button id="cancel-delete" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+        <h2 class="modal-title text-xl text-center font-semibold">Роль будет удалена</h2>
+        <div class="flex justify-center mt-4 space-x-2">
+            <button id="confirm-delete" type="button"
+                    class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить
+            </button>
+            <button id="cancel-delete" type="button"
+                    class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена
+            </button>
         </div>
     </div>
 </div>

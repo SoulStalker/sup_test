@@ -1,92 +1,153 @@
- <!-- Модальное окно для создания фитчи -->
-     <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
-            <h2 class="text-xl mb-4">Создать фичу</h2>
-            <form id="create-project-form" method="POST" action="{% url 'projects:create_features' %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="mb-4 flex">
-                    <div class="w-1/2">
-                        <label for="project-name" class="block text-sm font-medium text-gray-700">Название фичи</label>
-                        <input type="text" id="project-name" name="name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                    </div>
-                    <div class="w-1/2 pl-2">
-                        <label for="project-responsible" class="block text-sm font-medium text-gray-700">Ответственный*</label>
-                        <select id="project-responsible" name="responsible" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                            {% for user in users %}
-                                <option value="{{ user.id }}">{{ user.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="project-description" class="block text-sm font-medium text-gray-700">Описание фитчи</label>
-                    <textarea id="project-description" name="description" class="editor mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"></textarea>
-                </div>
-                <div class="mb-4 flex">
-                    <div class="w-1/3 pr-2">
-                        <label for="project-tags" class="block text-sm font-medium text-gray-700">Теги*</label>
-                        <select id="project-tags" name="tags" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                            {% for item_tags in tags %}
-                                <option value="{{ item_tags.id }}">{{ item_tags.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="w-1/3 pl-2 custom-select">
-                        <label for="project-participants" class="block text-sm font-medium text-gray-700">Исполнители*</label>
-                        <div id="select-container" class="select-selected">Выберите исполнителей</div>
-                        <div id="select-items" class="select-items">
-                            {% for user in users %}
-                                <div data-value="{{ user.id }}">{{ user.name }}</div>
-                            {% endfor %}
-                        </div>
-                        <select id="project-participants" name="participants" multiple class="hidden">
-                            {% for user in users %}
-                                <option value="{{ user.id }}">{{ user.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-4 flex">
-                    <div class="w-1/3 pl-2">
-                        <label for="project-importance" class="block text-sm font-medium text-gray-700">Важность*</label>
-                        <input type="number" id="project-importance" name="importance" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                    </div>
-                    <div class="w-1/3 pl-2">
-                        <label for="project-status" class="block text-sm font-medium text-gray-700">Статус*</label>
-                        <select id="project-status" name="status" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                            <option>Выберите статус</option>
-                            {% for item_status in statuses %}
-                                <option value="{{ item_status }}">{{ item_status }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="w-1/3 pl-2">
-                        <label for="project-project" class="block text-sm font-medium text-gray-700">Проект*</label>
-                        <select id="project-project" name="project" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                            <option>Выберите проект</option>
-                            {% for item_project in project %}
-                                <option value="{{ item_project.id }}">{{ item_project.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
+{% load static %}
 
-                <div class="flex justify-end space-x-2">
-                    <button id="delete-project-button" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
-                    <button id="close-modal" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-                    <button type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
-                </div>
-            </form>
+<link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<!-- Подключение jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Подключение CSS и JS библиотеки Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<!-- Подключение jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Подключение CSS и JS библиотеки Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+
+
+<div id="modal"
+     class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-11">
+    <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/2">
+        <div class="modal-header mb-4">
+            <h2 class="modal-title text-xl font-semibold">Создать фичу</h2>
         </div>
+        <form id="create-project-form" method="POST" action="{% url 'projects:create_features' %}"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Feature Name -->
+            <div class="form-group mb-4 flex">
+                <div class="w-1/2 pr-2">
+                    <label for="project-name" class="form-label block text-sm font-medium text-gray-700">Название
+                        фичи</label>
+                    <input type="text" id="project-name" name="name"
+                           class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                </div>
+                <div class="w-1/2 pl-2">
+                    <label for="project-responsible" class="form-label block text-sm font-medium text-gray-700">Ответственный*</label>
+                    <select id="project-responsible" name="responsible"
+                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Feature Description -->
+            <div class="form-group mb-4">
+                <label for="project-description" class="form-label block text-sm font-medium text-gray-700">Описание
+                    фитчи</label>
+                <textarea id="project-description" name="description"
+                          class="editor form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"></textarea>
+            </div>
+
+            <!-- Tags and Participants -->
+            <div class="form-group mb-4 flex">
+                <div class="w-1/3 pr-2">
+                    <label for="project-tags" class="form-label block text-sm font-medium text-gray-700">Теги*</label>
+                    <select id="project-tags" name="tags"
+                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        {% for item_tags in tags %}
+                        <option value="{{ item_tags.id }}">{{ item_tags.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="w-1/3 pl-2 custom-select">
+                    <label for="project-participants" class="block text-sm font-medium text-gray-700">Исполнители*</label>
+                    <div id="select-container" class="select-selected">Выберите исполнителей</div>
+                    <div id="select-items" class="select-items">
+                        {% for user in users %}
+                            <div data-value="{{ user.id }}">{{ user.name }}</div>
+                        {% endfor %}
+                    </div>
+                    <select id="project-participants" name="participants" multiple class="hidden">
+                        {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Importance, Status, and Project -->
+            <div class="form-group mb-4 flex space-x-4">
+                <div class="w-1/3">
+                    <label for="project-importance"
+                           class="form-label block text-sm font-medium text-gray-700">Важность*</label>
+                    <input type="number" id="project-importance" name="importance"
+                           class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                </div>
+                <div class="w-1/3">
+                    <label for="project-status"
+                           class="form-label block text-sm font-medium text-gray-700">Статус*</label>
+                    <select id="project-status" name="status"
+                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <option>Выберите статус</option>
+                        {% for item_status in statuses %}
+                        <option value="{{ item_status }}">{{ item_status }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="w-1/3">
+                    <label for="project-project"
+                           class="form-label block text-sm font-medium text-gray-700">Проект*</label>
+                    <select id="project-project" name="project"
+                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <option>Выберите проект</option>
+                        {% for item_project in project %}
+                        <option value="{{ item_project.id }}">{{ item_project.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Button Group -->
+            <div class="flex justify-end space-x-2">
+                <button id="delete-project-button" type="button"
+                        class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить
+                </button>
+                <button id="close-modal" type="button"
+                        class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена
+                </button>
+                <button type="submit"
+                        class="btn btn-primary bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать
+                </button>
+            </div>
+        </form>
     </div>
- <!-- Попап подтверждения удаления -->
-<div id="confirm-delete-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
-        <h2 class="text-lg mb-4">Данный проект будет удален</h2>
-        <div class="flex justify-end space-x-2">
-            <button id="confirm-delete" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
-            <button id="cancel-delete" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+</div>
+
+<!-- Delete Confirmation Popup -->
+<div id="confirm-delete-popup"
+     class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-12">
+    <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/3">
+        <h2 class="modal-title text-xl text-center font-semibold">Данная фича будет удалена</h2>
+        <div class="flex justify-center space-x-2 mt-4">
+            <button id="confirm-delete" type="button"
+                    class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить
+            </button>
+            <button id="cancel-delete" type="button"
+                    class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена
+            </button>
         </div>
     </div>
 </div>
+
 
