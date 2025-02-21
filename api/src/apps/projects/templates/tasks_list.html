@@ -25,12 +25,10 @@
             <!-- Поиск и элементы управления -->
             <div class="p-4 flex items-center">
                 <!-- Поиск -->
-                <form id="search-form" method="get" class="flex items-center space-x-2 w-1/2">
-                    <input type="text" name="q" placeholder="Поиск" id="search-input"
-                           class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-1/3 mr-4">
-                </form>
+                <input type="text" name="q" placeholder="Поиск" id="search-input"
+                       class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 flex-grow mr-4">
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
-                <div class="flex items-center ml-auto space-x-4">
+                <div class="flex items-center space-x-4">
                     <!-- Выпадающий список для количества строк -->
                     <form id="rows-per-page-form" method="get" class="flex items-center">
                         <label for="rows-per-page" class="mr-2 text-green-custom">Строк на странице:</label>
@@ -125,7 +123,80 @@
 </div>
 <!-- tasks.html -->
 {% include 'create_task_modal.html' %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-input');
+        const tableBody = document.querySelector('table tbody');
+        const table = document.getElementById('task-container');
 
+        // Create "No Data" message
+        const createNoDataMessage = (colSpan) => {
+            const noDataMessage = document.createElement('tr');
+            const noDataCell = document.createElement('td');
+            noDataCell.colSpan = colSpan;
+            noDataCell.textContent = 'Данных нет';
+            noDataCell.classList.add('text-center', 'text-gray-500', 'py-4');
+            noDataMessage.appendChild(noDataCell);
+            return noDataMessage;
+        };
+
+        const colSpan = table.querySelectorAll('thead th').length;
+        let noDataMessage = createNoDataMessage(colSpan);
+        tableBody.appendChild(noDataMessage);
+        noDataMessage.style.display = 'none';
+
+        const resetHighlight = () => {
+            const highlightedElements = document.querySelectorAll('mark.highlight');
+            highlightedElements.forEach(el => { el.outerHTML = el.textContent; });
+        };
+
+        const highlightText = (element, searchText) => {
+            const innerText = element.textContent;
+            const regex = new RegExp(`(${searchText})`, 'gi');
+            element.innerHTML = innerText.replace(regex, '<mark class="highlight">$1</mark>');
+        };
+
+        searchInput.addEventListener('input', function () {
+            const query = searchInput.value.toLowerCase().trim();
+            const rows = tableBody.querySelectorAll('tr:not(:last-child)');
+            let hasVisibleRows = false;
+
+            resetHighlight();
+
+            rows.forEach(function (row) {
+                const cells = row.querySelectorAll('td');
+                let match = false;
+
+                cells.forEach(function (cell) {
+                    if (cell.textContent.toLowerCase().includes(query)) {
+                        match = true;
+                        highlightText(cell, query);
+                    }
+                });
+
+                if (match) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noDataMessage.style.display = hasVisibleRows ? 'none' : '';
+        });
+
+        searchInput.addEventListener('blur', function () {
+            if (searchInput.value === '') {
+                const rows = tableBody.querySelectorAll('tr:not(:last-child)');
+                rows.forEach(function (row) {
+                    row.style.display = '';
+                });
+                resetHighlight();
+                noDataMessage.style.display = 'none';
+            }
+        });
+    });
+</script>
 <script src="{% static 'script/tasks.js' %}"></script>
 <script src="{% static 'script/pagination.js' %}"></script>
 {% block extra_js %}

@@ -1,47 +1,80 @@
-<div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
-        <h2 class="text-xl mb-4">Создать команду</h2>
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<!-- Подключение jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Подключение CSS и JS библиотеки Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+<div id="modal"
+     class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-11">
+    <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/2">
+        <div class="modal-header mb-4">
+            <h2 class="modal-title text-xl font-semibold">Создать команду</h2>
+        </div>
+
         <form id="create-team-form" method="POST" action="{% url 'teams:create_team' %}" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="mb-4 flex">
-                <div class="w-1/2 pr-2">
-                    <label for="team-name" class="block text-sm font-medium text-gray-700">Название команды</label>
-                    <input type="text" id="team-name" name="name" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
-                </div>
+
+            <!-- Team Name -->
+            <div class="form-group mb-4">
+                <label for="team-name" class="form-label block text-sm font-medium text-gray-700">Название
+                    команды*</label>
+                <input type="text" id="team-name" name="name"
+                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                       required>
             </div>
-            <div class="mb-4 flex">
-                <div class="w-1/2 pl-2 custom-select">
-                    <label for="team-participants" class="block text-sm font-medium text-gray-700">Участники*</label>
-                    <div id="select-container" class="select-selected">Выберите участников </div>
-                    <div id="select-items" class="select-items">
-                        {% for user in users %}
-                            <div data-value="{{ user.id }}">{{ user.name }}</div>
-                        {% endfor %}
-                    </div>
-                    <select id="team-participants" name="participants" multiple class="hidden">
-                        {% for user in users %}
-                            <option value="{{ user.id }}">{{ user.name }}</option>
-                        {% endfor %}
-                    </select>
+            <!-- Participants Selection -->
+            <div class="form-group mb-4">
+                <label for="team-participants"
+                       class="form-label block text-sm font-medium text-gray-700">Участники*</label>
+                <div id="select-container" class="select-selected">Выберите участников</div>
+                <div id="select-items" class="select-items" style="max-width: 100%;">
+                    {% for user in users %}
+                    <div data-value="{{ user.id }}">{{ user.name }}</div>
+                    {% endfor %}
                 </div>
+                <select id="team-participants" name="participants" multiple class="hidden">
+                    {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="flex justify-end space-x-2">
-                <button id="delete-team-button" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" data-team-id="{{ team.id }}">Удалить</button>
-                <button id="close-modal" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-                <button id="submit-button" type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
+
+            <!-- Button Group -->
+            <div class="form-group flex justify-end space-x-2">
+                <button id="delete-team-button" type="button"
+                        class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                        data-team-id="{{ team.id }}">Удалить
+                </button>
+                <button id="close-modal" type="button"
+                        class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">
+                    Отмена
+                </button>
+                <button id="submit-button" type="submit"
+                        class="btn btn-primary bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">
+                    Создать
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-
 <!-- Попап подтверждения удаления -->
-<div id="confirm-delete-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
-        <h2 class="text-lg mb-4">Данный проект будет удален</h2>
-        <div class="flex justify-end space-x-2">
-            <button id="confirm-delete" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
-            <button id="cancel-delete" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+<div id="confirm-delete-popup"
+     class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-12">
+    <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/3">
+        <h2 class="modal-title text-xl text-center font-semibold">Данный проект будет удален</h2>
+        <div class="flex justify-center mt-4 space-x-2">
+            <button id="confirm-delete" type="button"
+                    class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить
+            </button>
+            <button id="cancel-delete" type="button"
+                    class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена
+            </button>
         </div>
     </div>
 </div>
