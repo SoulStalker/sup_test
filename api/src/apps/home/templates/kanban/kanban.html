@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.svg' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Канбан доска</title>
+    <link rel="stylesheet" href="{% static 'css/kanban/styles.css' %}">
+</head>
+<body class="bg-gray-50">
+
+    {% include 'includes/sidebar.html' %}
+     <main class="main-content">
+        <!-- Top Navigation Bar -->
+        <nav class="navbar">
+            <div class="navbar-left">
+                <h1 class="logo">Доска</h1>
+                <div class="select-wrapper">
+                    <select class="project-select">
+                        <option>Проект</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="navbar-right">
+                <div class="pagination">
+                    <span>Пагинация</span>
+                    <button class="pagination-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button class="pagination-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+                <button class="add-task-btn">Добавить задачу</button>
+            </div>
+        </nav>
+
+        <!-- Kanban Board -->
+        <div class="board">
+            <!-- Column -->
+            <div class="column">
+                <div class="column-header">
+                    <h2>Название столбца</h2>
+                    <button class="expand-btn">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="column-content">
+                    <!-- Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Название столбца</h3>
+                            <button class="menu-btn">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="card-description">Значимость этих проблем настолько</p>
+                        <div class="card-footer">
+                            <div class="badges">
+                                <span class="badge badge-gray">Badge</span>
+                                <span class="badge badge-yellow">Badge</span>
+                                <span class="badge badge-blue">Badge</span>
+                            </div>
+                            <div class="avatar">
+                                <span>АВ</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Repeat cards as needed -->
+                </div>
+            </div>
+            <!-- Repeat columns as needed -->
+
+            <!-- Add Column Button -->
+            <div class="add-column">
+                <button class="add-column-btn">
+                    <span>Название столбца</span>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+     </main>
+</body>
+</html>
