@@ -27,7 +27,7 @@
                     <div class="form-group mb-4">
                         <label for="name" class="form-label block text-sm font-medium text-gray-700">Имя*</label>
                         <input type="text" id="name" name="name" maxlength="50"
-                               class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                               class="form-input  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                                required>
                     </div>
 
@@ -35,7 +35,7 @@
                     <div class="form-group mb-4">
                         <label for="surname" class="form-label block text-sm font-medium text-gray-700">Фамилия*</label>
                         <input type="text" id="surname" name="surname" maxlength="50"
-                               class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                               class="form-input  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                                required>
                     </div>
 
@@ -43,7 +43,7 @@
                     <div class="form-group mb-4">
                         <label for="email" class="form-label block text-sm font-medium text-gray-700">Email*</label>
                         <input type="email" id="email" name="email" maxlength="50"
-                               class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                               class="form-input  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                                required>
                     </div>
 
@@ -51,14 +51,14 @@
                     <div class="form-group mb-4">
                         <label for="password" class="form-label block text-sm font-medium text-gray-700">Пароль*</label>
                         <input type="text" id="password" name="password" readonly
-                               class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full bg-gray-100"
+                               class="form-input  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full bg-gray-100"
                                placeholder="Будет сгенерирован автоматически">
                     </div>
                     <!-- Роль -->
                     <div class="form-group mb-4">
                         <label for="role" class="form-label block text-sm font-medium text-gray-700">Роль*</label>
                         <select id="role" name="role"
-                                class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                                class="form-select  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                                 required>
                             {% for role in roles %}
                             <option value="{{ role.id }}">{{ role.name }}</option>
@@ -74,7 +74,7 @@
                         <label for="tg_name" class="form-label block text-sm font-medium text-gray-700">Имя в
                             ТГ*</label>
                         <input type="text" id="tg_name" name="tg_name" maxlength="50"
-                               class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                               class="form-input  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                                required>
                     </div>
 
@@ -83,7 +83,7 @@
                         <label for="tg_nickname" class="form-label block text-sm font-medium text-gray-700">Ник
                             ТГ*</label>
                         <input type="text" id="tg_nickname" name="tg_nickname" maxlength="50"
-                               class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                               class="form-input  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                                required>
                     </div>
 
@@ -92,7 +92,7 @@
                         <label for="google_meet_nickname" class="form-label block text-sm font-medium text-gray-700">Ник
                             в Гугл мит*</label>
                         <input type="text" id="google_meet_nickname" name="google_meet_nickname" maxlength="50"
-                               class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                               class="form-input  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                                required>
                     </div>
 
@@ -101,14 +101,14 @@
                         <label for="gitlab_nickname" class="form-label block text-sm font-medium text-gray-700">Ник в
                             GitLab*</label>
                         <input type="text" id="gitlab_nickname" name="gitlab_nickname" maxlength="50"
-                               class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                               class="form-input  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                                required>
                     </div>
                     <div class="form-group mb-4">
                         <label for="github_nickname" class="form-label block text-sm font-medium text-gray-700">Ник в
                             GitHub*</label>
                         <input type="text" id="github_nickname" name="github_nickname" maxlength="50"
-                               class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                               class="form-input  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                                required>
                     </div>
 
@@ -120,7 +120,7 @@
                 <div class="form-group">
                     <label for="team" class="form-label block text-sm font-medium text-gray-700">Команда</label>
                     <select id="team" name="team"
-                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                            class="form-select  p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                         <option value="">Без команды</option>
                         {% for team in teams %}
                         <option value="{{ team.id }}">{{ team.name }}</option>

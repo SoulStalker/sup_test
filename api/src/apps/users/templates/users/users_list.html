@@ -80,47 +80,48 @@
                     </thead>
                     <tbody>
                     {% for user in users %}
-                    <tr class="hover:bg-gray-50">
-                        <td class="border-b py-2 px-4 text-left" style="width: 30px;">{{ user.id }}</td>
-                        <td class="border-b py-2 px-4 text-left">{{ user.name }}</td>
-                        <td class="border-b py-2 px-4 text-left">{{ user.surname }}</td>
-                        <td class="border-b py-2 px-4 text-left">{{ user.email }}</td>
-                        <td class="border-b py-2 px-4 text-left">
-                            <a href="https://t.me/{{ user.tg_nickname|urlencode }}"
-                               class="text-blue-600 hover:underline" target="_blank">{{ user.tg_nickname }}</a>
-                        </td>
-                        <td class="border-b py-2 px-4 text-left">{{ user.tg_name }}</td>
-                        <td class="border-b py-2 px-4 text-left">{{ user.google_meet_nickname }}</td>
-                        <td class="border-b py-2 px-4 text-left">{{ user.gitlab_nickname }}</td>
-                        <td class="border-b py-2 px-4 text-left">{{ user.github_nickname }}</td>
-                        <td class="border-b py-2 px-4 text-left">{{ user.team_id.name }}</td>
-                        <td class="border-b py-2 px-4 text-left">
-                            <div class="w-6 h-6 inline-block rounded-full border border-gray-300 align-middle"
-                                 style="background-color: #{{ user.role_id.color }}"></div>
-                            <span class="ml-2 align-middle">{{ user.role_id }}</span>
-                        </td>
-                        <td class="border-b py-2 px-4 text-left">{{ user.date_joined | date:"d.m.y" }}</td>
-                        <td class="border-b py-2 px-4 text-center">
-                            {% if user.is_active %}
-                            <svg class="w-6 h-6 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M5 13l4 4L19 7"/>
-                            </svg>
-                            {% else %}
-                            <svg class="w-6 h-6 text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                            {% endif %}
-                        </td>
-                        <td class="border-b py-2 px-4 text-left edit-user-button" style="width: 30px;"
-                            data-user-id="{{ user.id }}">
-                            <button class="text-gray-600 hover:text-gray-900">✏️</button>
-                        </td>
-                    </tr>
+                        <tr class="hover:bg-gray-50" data-role="{{ user.role_id.id }}" data-team="{{ user.team_id.id }}">
+                            <td class="border-b py-2 px-4 text-left" style="width: 30px;">{{ user.id }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.name }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.surname }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.email }}</td>
+                            <td class="border-b py-2 px-4 text-left">
+                                <a href="https://t.me/{{ user.tg_nickname|urlencode }}"
+                                   class="text-blue-600 hover:underline" target="_blank">{{ user.tg_nickname }}</a>
+                            </td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.tg_name }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.google_meet_nickname }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.gitlab_nickname }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.github_nickname }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.team_id.name }}</td>
+                            <td class="border-b py-2 px-4 text-left">
+                                <div class="w-6 h-6 inline-block rounded-full border border-gray-300 align-middle"
+                                     style="background-color: #{{ user.role_id.color }}"></div>
+                                <span class="ml-2 align-middle">{{ user.role_id.name }}</span>
+                            </td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.date_joined | date:"d.m.y" }}</td>
+                            <td class="border-b py-2 px-4 text-center">
+                                {% if user.is_active %}
+                                <svg class="w-6 h-6 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M5 13l4 4L19 7"/>
+                                </svg>
+                                {% else %}
+                                <svg class="w-6 h-6 text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                {% endif %}
+                            </td>
+                            <td class="border-b py-2 px-4 text-left edit-user-button" style="width: 30px;"
+                                data-user-id="{{ user.id }}">
+                                <button class="text-gray-600 hover:text-gray-900">✏️</button>
+                            </td>
+                        </tr>
                     {% endfor %}
+
                     </tbody>
                 </table>
             </div>

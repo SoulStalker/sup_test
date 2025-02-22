@@ -1,22 +1,13 @@
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
-<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
-<!-- Подключение jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Подключение CSS и JS библиотеки Select2 -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
-
 
 <!-- Модальное окно для создания проекта -->
 <div id="modal"
      class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-11">
     <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/2">
         <div class="modal-header mb-4">
-            <h2 class="modal-title text-xl font-semibold">Редактировать задачу</h2>
+            <h2 id="modal-title" class="modal-title text-xl font-semibold">Редактировать задачу</h2>
         </div>
         <form id="create-task-form" method="POST" action="{% url 'projects:create_task' %}"
               enctype="multipart/form-data">
@@ -26,14 +17,14 @@
                     <label for="task-name" class="form-label block text-sm font-medium text-gray-700">Название
                         задачи</label>
                     <input type="text" id="task-name" name="name"
-                           class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                           class="form-input p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                            required>
                 </div>
                 <div class="w-1/2 pr-2">
                     <label for="task-priority"
                            class="form-label block text-sm font-medium text-gray-700">Приоритет</label>
                     <input type="text" id="task-priority" name="priority"
-                           class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                           class="form-input p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
                            required>
                 </div>
             </div>
@@ -55,20 +46,20 @@
                 <label for="task-description" class="form-label block text-sm font-medium text-gray-700">Описание
                     задачи</label>
                 <textarea id="task-description" name="description"
-                          class="editor form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"></textarea>
+                          class="editor form-input p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"></textarea>
             </div>
             <div class="form-group mb-4 flex">
                 <div class="w-1/2 pr-2">
                     <label for="task-status" class="form-label block text-sm font-medium text-gray-700">Статус*</label>
                     <select id="task-status" name="status"
-                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                            class="form-select mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                         {% for value, label in task_status_choices %}
                         <option value="{{ value }}">{{ label }}</option>
                         {% endfor %}
                     </select>
                     <label for="task-feature" class="form-label block text-sm font-medium text-gray-700">Фича*</label>
                     <select id="task-feature" name="feature"
-                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                            class="form-select p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                         {% for feature in features %}
                         <option value="{{ feature.id }}">{{ feature.name }}</option>
                         {% endfor %}
@@ -77,14 +68,14 @@
                 <div class="w-1/2 pr-2">
                     <label for="task-contributor" class="form-label block text-sm font-medium text-gray-700">Исполнитель*</label>
                     <select id="task-contributor" name="contributor"
-                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                            class="form-select mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                         {% for user in users %}
                         <option value="{{ user.id }}">{{ user.name }}</option>
                         {% endfor %}
                     </select>
                     <label for="task-responsible" class="form-label block text-sm font-medium text-gray-700">Ответственный*</label>
                     <select id="task-responsible" name="responsible"
-                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                            class="form-select p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                         {% for user in users %}
                         <option value="{{ user.id }}">{{ user.name }}</option>
                         {% endfor %}
@@ -95,7 +86,7 @@
                 <label for="task-close-date" class="form-label block text-sm font-medium text-gray-700">Дата
                     закрытия</label>
                 <input type="date" id="task-close-date" name="closed_at"
-                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                       class="form-input p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
             </div>
             <div class="form-group flex justify-end space-x-2">
                 <button id="delete-task-button" type="button"

@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     const editpermissionButtons = document.querySelectorAll('.edit-permission-button');
     const modal = document.getElementById('modal-create-permission');
+    const modalTitle = modal.querySelector('.modal-title'); // Получаем заголовок модального окна
     const form = document.getElementById('create-permission-form');
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
@@ -106,11 +107,14 @@ document.addEventListener('DOMContentLoaded', function () {
     editpermissionButtons.forEach(button => {
         button.addEventListener('click', function () {
             const permissionId = this.getAttribute('data-permission-id');
-            currentpermissionId = permissionId;// Устанавливаем текущий ID прав
+            currentpermissionId = permissionId; // Устанавливаем текущий ID прав
             confirmDeleteButton.setAttribute('data-permission-id', currentpermissionId);
 
             const deletepermissionButton = document.getElementById('delete-permission');
             deletepermissionButton.setAttribute('data-permission-id', permissionId);
+
+            // Меняем заголовок модального окна
+            modalTitle.textContent = 'Редактирование прав';
 
             // Открываем модальное окно
             modal.classList.remove('hidden');
@@ -135,31 +139,83 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Обработка удаления прав
     deleteButtons.forEach(button => {
-    button.addEventListener('click', function () {
-        console.log("Кнопка удаления:", this); // Проверяем выбранный элемент
-        const permissionId = this.getAttribute('data-permission-id');
-        console.log("Удаление прав с ID:", permissionId); // Проверяем значение атрибута
+        button.addEventListener('click', function () {
+            console.log("Кнопка удаления:", this); // Проверяем выбранный элемент
+            const permissionId = this.getAttribute('data-permission-id');
+            console.log("Удаление прав с ID:", permissionId); // Проверяем значение атрибута
 
-        currentpermissionId = permissionId; // Устанавливаем текущий ID прав для удаления
-        currentDeleteButton = this; // Устанавливаем текущую кнопку для удаления
+            currentpermissionId = permissionId; // Устанавливаем текущий ID прав для удаления
+            currentDeleteButton = this; // Устанавливаем текущую кнопку для удаления
 
-        if (!permissionId) {
-            console.error("Ошибка: отсутствует data-permission-id у кнопки удаления.");
-            return;
+            if (!permissionId) {
+                console.error("Ошибка: отсутствует data-permission-id у кнопки удаления.");
+                return;
+            }
+
+            // Открываем popup подтверждения удаления
+            confirmDeletePopup.classList.remove('hidden');
+        });
+    });
+
+    // Сброс заголовка при закрытии модального окна (если потребуется)
+    modal.addEventListener('click', function (event) {
+        if (event.target.classList.contains('modal-close')) {
+            modalTitle.textContent = 'Создание прав';
         }
-
-        // Открываем popup подтверждения удаления
-        confirmDeletePopup.classList.remove('hidden');
     });
 });
 
+
+document.addEventListener('DOMContentLoaded', function () {
+    const editpermissionButtons = document.querySelectorAll('.edit-permission-button');
+    const modal = document.getElementById('modal-create-permission');
+    const form = document.getElementById('create-permission-form');
+    const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+    const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
+
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const confirmDeletePopup = document.getElementById('confirm-delete-popup');
+    const confirmDeleteButton = document.getElementById('confirm-delete');
+    const cancelDeleteButton = document.getElementById('cancel-delete');
+
+    let currentDeleteButton = null;
+    let currentpermissionId = null;
+
+    if (!confirmDeleteButton) {
+        console.error("Ошибка: Кнопка подтверждения удаления не найдена!");
+        return;
+    }
+
+    if (!cancelDeleteButton) {
+        console.error("Ошибка: Кнопка отмены удаления не найдена!");
+        return;
+    }
+
+    // Обработка удаления прав
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            console.log("Кнопка удаления:", this);
+            const permissionId = this.getAttribute('data-permission-id');
+            console.log("Удаление прав с ID:", permissionId);
+
+            currentpermissionId = permissionId;
+            currentDeleteButton = this;
+
+            if (!permissionId) {
+                console.error("Ошибка: отсутствует data-permission-id у кнопки удаления.");
+                return;
+            }
+
+            confirmDeletePopup.classList.remove('hidden');
+        });
+    });
 
     // Подтверждение удаления
     confirmDeleteButton.addEventListener('click', function () {
         if (currentpermissionId) {
             deletepermission(currentpermissionId, currentDeleteButton);
-            currentpermissionId = null; // Сбрасываем текущий ID прав
-            currentDeleteButton = null; // Сбрасываем текущую кнопку
+            currentpermissionId = null;
+            currentDeleteButton = null;
         }
         confirmDeletePopup.classList.add('hidden');
     });
@@ -167,8 +223,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Отмена удаления
     cancelDeleteButton.addEventListener('click', function () {
         confirmDeletePopup.classList.add('hidden');
-        currentpermissionId = null; // Сбрасываем текущий ID прав
-        currentDeleteButton = null; // Сбрасываем текущую кнопку
+        currentpermissionId = null;
+        currentDeleteButton = null;
     });
 
     // Функция удаления прав
@@ -195,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const contentTypeSelect = document.getElementById('content_type');
