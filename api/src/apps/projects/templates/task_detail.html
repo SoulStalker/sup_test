@@ -33,19 +33,10 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-xl shadow-sm mb-8 flex flex-col h-full">
-                    <h2 class="text-xl font-semibold mb-4">Теги</h2>
-                    <div class="flex flex-wrap gap-2 flex-grow">
-                        {% for tag in tags %}
-                        <span class="bg-[#327680] text-white px-3 py-1 rounded-full text-sm leading-none"
-                              style="height: 25px;">{{ tag.name }}</span>
-                        {% endfor %}
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl shadow-sm flex flex-col h-full">
                     <h2 class="text-xl font-semibold mb-4">Ответственные</h2>
-                    <div class="grid grid-cols-3 gap-4 flex-grow">
                         <div class="flex items-center space-x-3 p-4 border rounded-lg">
                             <div class="w-10 h-10 rounded-full bg-[#327680] text-white flex items-center justify-center">
                                 {{ contributor.name|slice:":1" }}{{ contributor.surname|slice:":1" }}
@@ -68,11 +59,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm">
-                <h2 class="text-xl font-semibold mb-4">Описание</h2>
-                {{ task.description|safe }}
             </div>
-
 
             <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
                 <h2 class="text-xl font-semibold mb-4">Комментарии</h2>
