@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from src.apps.custom_view import BaseView
 from src.apps.projects.forms import CommentForm, TaskForm
@@ -240,18 +240,19 @@ class CreateCommentView(BaseView):
             return JsonResponse(
                 {"status": "error", "message": error}, status=403
             )
+
         if form.is_valid():
             comment_dto = CommentDTO(
                 user_id=request.user.id,
                 task_id=task.id,
                 comment=form.cleaned_data["comment"],
             )
-            return self.handle_form(
-                form,
-                self.comment_service.create,
-                comment_dto,
-                self.user_id,
-            )
+            # Создаем комментарий
+            self.comment_service.create(comment_dto, self.user_id)
+            # Редирект на страницу задачи
+            return redirect("projects:task_detail", task_id=task_id)
+
+        # Если форма не валидна, возвращаем ошибки
         return JsonResponse(
             {"status": "error", "errors": form.errors}, status=400
         )
@@ -272,14 +273,20 @@ class UpdateCommentView(BaseView):
 
     def post(self, request, *args, **kwargs):
         comment_id = kwargs.get("comment_id")
-        comment, error = self.comment_service.get_by_id(
-            pk=comment_id, user_id=self.user_id
-        )
-        if error:
-            return JsonResponse(
-                {"status": "error", "message": error}, status=403
+
+        print("Comment id: ", comment_id)
+        if comment_id:
+
+            print("Get parent comment")
+
+            comment, error = self.comment_service.get_by_id(
+                pk=comment_id, user_id=self.user_id
             )
-        comment.id = comment_id
+            if error:
+                return JsonResponse(
+                    {"status": "error", "message": error}, status=403
+                )
+            comment.id = comment_id
         form = CommentForm(request.POST)
 
         if form.is_valid():

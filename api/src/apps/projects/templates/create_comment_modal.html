@@ -1,9 +1,10 @@
+{% load static %}
 <div id="comment-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
     <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
         <h2 class="text-xl mb-4">Добавить комментарий</h2>
         <form id="comment-form" method="POST" action="{% url 'projects:create_comment' task_id=task.id %}" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="hidden" id="comment-task-id" name="task_id" value="">
+            <input type="hidden" id="comment-task-id" name="task_id" value="{{ task.id }}">
             <div class="mb-4">
                 <label for="comment-text" class="block text-sm font-medium text-gray-700">Комментарий</label>
                 <textarea id="comment-text" name="comment" class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required></textarea>
@@ -14,4 +15,5 @@
             </div>
         </form>
     </div>
+
 </div>

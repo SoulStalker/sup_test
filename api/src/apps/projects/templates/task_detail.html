@@ -40,7 +40,7 @@
                     <h2 class="text-xl font-semibold mb-4">Описание</h2>
                     <!-- Блок для рендеринга Markdown -->
                     <div id="taskDescription" class="markdown-content markdown-body">
-                        {{ task.description }}
+                        {{ task.description | safe }}
                     </div>
                 </div>
 
@@ -84,15 +84,16 @@
                     {% for comment in comments %}
                     <div class="p-4 border rounded-lg">
                         <div class="flex items-center space-x-3">
+
                             <div class="w-10 h-10 rounded-full bg-[#327680] text-white flex items-center justify-center">
                                 {{ comment.user.name|slice:":1" }}{{ comment.user.surname|slice:":1" }}
                             </div>
                             <div>
-                                <h3 class="font-medium">{{ comment.user.name }} {{ comment.user.surname }}</h3>
-                                <p class="text-sm text-gray-500">{{ comment.created_at }}</p>
+                                <p class="text-sm text-gray-500 mt-2">{{ comment.user.name }} {{ comment.user.surname }}</p>
+                                <p class="font-medium">{{ comment.comment }}</p>
+                                <small class="text-sm text-gray-500">{{ comment.created_at }}</small>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-500 mt-2">{{ comment.text }}</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -102,6 +103,7 @@
                 <h2 class="text-xl font-semibold mb-4">Добавить комментарий</h2>
                 <form method="post" action="{% url 'projects:create_comment' task_id=task.id %}">
                     {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{ task.id }}">
                     <textarea name="comment" class="w-full p-2 border rounded-lg" rows="4" placeholder="Введите ваш комментарий..."></textarea>
                     <button type="submit" class="bg-[#327680] text-white px-4 py-2 rounded-lg mt-4">Отправить</button>
                 </form>
@@ -119,5 +121,6 @@
             }
         });
     </script>
+    <script src="{% static 'script/tasks.js' %}"></script>
 </body>
 </html>
