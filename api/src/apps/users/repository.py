@@ -18,7 +18,7 @@ from src.domain.user import (
     RoleDTO,
     UserDTO,
 )
-from src.models.models import CustomUser, Permission, Role
+from src.models.models import CustomUser, Permission, PermissionCodes, Role
 
 user = get_user_model()
 
@@ -172,9 +172,7 @@ class PermissionRepository(PermissionMixin, IPermissionRepository, ABC):
 
     def get_codes(self):
         # Получаем все коды прав
-        permissions = Permission.objects.all()
-        codes = [permission.code for permission in permissions]
-        return codes
+        return [code for code in PermissionCodes.choices]
 
     def get_objects_data(self, content_type_id):
         # Получаем модель по типу объекта

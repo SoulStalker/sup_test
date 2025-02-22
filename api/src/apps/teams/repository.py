@@ -28,7 +28,11 @@ class TeamRepository(PermissionMixin, ITeamRepository):
     def get_list(self) -> list[TeamDTO]:
         teams = Team.objects.all()
         return [
-            TeamDTO(id=team.id, name=team.name, participants=team.participants)
+            TeamDTO(
+                id=team.id,
+                name=team.name,
+                participants=team.participants.all(),
+            )
             for team in teams
         ]
 

@@ -34,8 +34,8 @@
                 <select id="code" name="code"
                         class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                     <option value="">Выбрать</option>
-                    {% for code in codes %}
-                    <option value="{{ code }}">{{ code }}</option>
+                    {% for code, label in codes %}
+                    <option value="{{ code }}">{{ label }}</option>
                     {% endfor %}
                 </select>
             </div>
