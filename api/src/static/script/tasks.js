@@ -277,4 +277,83 @@ document.addEventListener('DOMContentLoaded', function () {
         // Обновляем значение скрытого поля
         tagsInput.value = selectedTags.join(',');
     });
-});ы
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const openCommentModalButton = document.getElementById('open-comment-modal');
+    const closeCommentModalButton = document.getElementById('close-comment-modal');
+    const commentModal = document.getElementById('comment-modal');
+    const commentForm = document.getElementById('comment-form');
+
+    // Открытие модального окна для создания комментария
+    if (openCommentModalButton) {
+        openCommentModalButton.addEventListener('click', function () {
+            const taskId = this.getAttribute('data-task-id');
+            document.getElementById('comment-task-id').value = taskId;
+            commentModal.classList.remove('hidden');
+        });
+    }
+
+    // Закрытие модального окна
+    closeCommentModalButton.addEventListener('click', function () {
+        commentModal.classList.add('hidden');
+    });
+
+    // Обработка отправки формы комментария
+    commentForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(commentForm);
+
+        fetch(commentForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сеть ответила с ошибкой: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    commentModal.classList.add('hidden');
+                    location.reload(); // Перезагрузка страницы для обновления данных
+                } else {
+                    // Обработка ошибок
+                    if (data.errors) {
+                        Object.entries(data.errors).forEach(([fieldName, errors]) => {
+                            const field = commentForm.querySelector(`[name="${fieldName}"]`);
+                            if (field) {
+                                showError(field, errors);
+                            }
+                        });
+                    } else if (data.message) {
+                        const generalErrorDiv = document.createElement('div');
+                        generalErrorDiv.className = 'general-error';
+                        generalErrorDiv.textContent = data.message;
+                        commentForm.insertBefore(generalErrorDiv, commentForm.firstChild);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка сети:', error);
+                const networkErrorDiv = document.createElement('div');
+                networkErrorDiv.className = 'network-error';
+                networkErrorDiv.textContent = 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.';
+                commentForm.insertBefore(networkErrorDiv, commentForm.firstChild);
+            });
+    });
+
+    // Функция для отображения ошибок
+    const showError = (field, errors) => {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error';
+        errorDiv.textContent = errors.join(', ');
+        field.parentNode.insertBefore(errorDiv, field.nextSibling);
+    };
+});
+
