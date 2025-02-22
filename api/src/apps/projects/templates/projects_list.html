@@ -1,25 +1,11 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таблица проектов</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
-    <link href="{% static 'output.css' %}" rel="stylesheet">
-</head>
-<body class="bg-gray-50">
+{% extends "base.html" %}
 
-    {% include 'includes/sidebar.html' %}
-     <main class="main-content">
 {% block content %}
-    <!-- Основной контент -->
-    <div class="flex-grow p-6">
+{% load static %}
 
         <!-- Верхняя панель -->
             <div class="p-4 flex items-center justify-between">
-                <h1 class="text-2xl font-bold">Таблица проектов</h1>
+                <h1 class="text-2xl font-bold">{% block title %}Таблица проектов{% endblock %}</h1>
             </div>
             <div class="bg-white shadow rounded-lg">
                 <!-- Поиск и элементы управления -->
@@ -74,16 +60,6 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% if query %}
-                        <div class="search_info">
-                            {% if projects %}
-                            <h2 id="search-info">Ваш поисковый запрос: <strong>{{ query }}</strong></h2>
-                            {% else %}
-                            <p><strong>По вашему запросу ничего не найдено.</strong></p>
-                            {% endif %}
-                            <button id="clear-search">Очистить поиск</button>
-                        </div>
-                        {% endif %}
                         {% for item_project in projects %}
                         <tr class="w-full hover:bg-gray-100">
                             <td class="border-b py-2 px-4 text-left sticky left-0 bg-white z-10">{{ item_project.id }}
@@ -93,28 +69,16 @@
                             <td class="border-b py-2 px-4 text-left">
                                 <div class="inline-flex -space-x-2">
                                     {% for user in item_project.participants.all %}
-                                    <img src="{% if user.avatar %}{{ user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}"
+                                    <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}"
                                          alt="" class="inline-block border border-white rounded-full w-6 h-6">
                                     {% endfor %}
                                 </div>
                             </td>
-                            <td class="border-b py-2 px-4 text-left overflow-auto break-words whitespace-normal">{{ item_project.description }}
-                            </td>
+                            <td class="border-b py-2 px-4 text-left overflow-auto break-words whitespace-normal">{{ item_project.description|safe }}</td>
                             <td class="border-b py-2 px-4 text-left">{{ item_project.date_created }}</td>
                             <td class="border-b py-2 px-4 text-center sticky right-0 bg-white z-10">
-                                <button class="text-red-600 hover:text-red-800 edit-project-button"
-                                        data-project-id="{{ item_project.id }}">
-                                    <svg width="18" height="19" viewBox="0 0 18 19" fill="none"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12.4525 7.73527L12.448 7.74157L6.02434 14.1658L7.94954 16.0903L14.3786 9.66156L12.4525 7.73527Z"
-                                              fill="#0C0C0C"/>
-                                        <path d="M2.82559 10.9668L4.75078 12.893L11.1753 6.46878L11.1816 6.46428L9.2546 4.53709L2.82559 10.9668Z"
-                                              fill="#0C0C0C"/>
-                                        <path d="M1.79594 12.4826L0.0462492 17.7313C-0.0617561 18.0544 0.0228479 18.4118 0.26406 18.6521C0.435068 18.824 0.66548 18.9167 0.900391 18.9167C0.995796 18.9167 1.0921 18.9014 1.18481 18.8699L6.43297 17.1201L1.79594 12.4826Z"
-                                              fill="#0C0C0C"/>
-                                        <path d="M16.9401 1.97531C15.5279 0.563895 13.2292 0.563895 11.817 1.97531L10.5282 3.2643L15.6521 8.38877L16.941 7.09978C18.3532 5.68746 18.3532 3.38762 16.9401 1.97531Z"
-                                              fill="#0C0C0C"/>
-                                    </svg>
+                                <button class="text-red-600 hover:text-red-800 edit-project-button" data-project-id="{{ item_project.id }}">
+                                    <i class="fas fa-edit"></i>
                                 </button>
                             </td>
                         </tr>
@@ -123,109 +87,13 @@
                     </table>
                 </div>
             </div>
-    
-        </div>
-     </main>
 
-    <div id="access-denied-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
-            <h2 class="text-lg mb-4" id="access-denied-message"></h2>
-        </div>
-    </div>
     <!-- projects.html -->
     {% include 'create_project_modal.html' %}
 
     <script src="{% static 'script/project.js' %}"></script>
-    <script src="{% static 'script/pagination.js' %}"></script>
+
     {% block extra_js %}
     {% endblock %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.getElementById('search-input'); // Получаем поле поиска
-        const tableBody = document.querySelector('table tbody'); // Получаем тело таблицы
-        const table = document.getElementById('table-style-1'); // Получаем таблицу
 
-        // Создаем элемент для сообщения "Данных нет"
-        const createNoDataMessage = (colSpan) => {
-            const noDataMessage = document.createElement('tr');
-            const noDataCell = document.createElement('td');
-            noDataCell.colSpan = colSpan;
-            noDataCell.textContent = 'Данных нет';
-            noDataCell.classList.add('text-center', 'text-gray-500', 'py-4');
-            noDataMessage.appendChild(noDataCell);
-            return noDataMessage;
-        };
-
-        const colSpan = table.querySelectorAll('thead th').length;
-        let noDataMessage = createNoDataMessage(colSpan);
-        tableBody.appendChild(noDataMessage);
-        noDataMessage.style.display = 'none'; // Изначально скрываем сообщение
-
-        // Функция для сброса подсветки
-        const resetHighlight = () => {
-            const highlightedElements = document.querySelectorAll('mark.highlight');
-            highlightedElements.forEach(el => {
-                el.outerHTML = el.textContent; // Убираем тег <mark>
-            });
-        };
-
-        // Функция для подсветки найденного текста
-        const highlightText = (element, searchText) => {
-            const innerText = element.textContent;
-            const regex = new RegExp(`(${searchText})`, 'gi'); // Искать слово без учета регистра
-            element.innerHTML = innerText.replace(regex, '<mark class="highlight">$1</mark>');
-        };
-
-        // Обработчик ввода в поле поиска
-        searchInput.addEventListener('input', function () {
-            const query = searchInput.value.toLowerCase().trim(); // Получаем строку поиска
-            const rows = tableBody.querySelectorAll('tr:not(:last-child)'); // Получаем все строки таблицы, кроме сообщения "Данных нет"
-            let hasVisibleRows = false; // Отслеживаем, есть ли видимые строки
-
-            resetHighlight(); // Сбрасываем подсветку перед новым поиском
-
-            rows.forEach(function (row) {
-                const cells = row.querySelectorAll('td');
-                let match = false;
-
-                // Проверяем, есть ли совпадения в данных таблицы
-                cells.forEach(function (cell) {
-                    if (cell.textContent.toLowerCase().includes(query)) {
-                        match = true;
-                        highlightText(cell, query); // Подсвечиваем найденное слово
-                    }
-                });
-
-                // Если совпадение есть, показываем строку, иначе скрываем
-                if (match) {
-                    row.style.display = '';
-                    hasVisibleRows = true;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            // Если видимых строк нет, показываем сообщение "Данных нет"
-            if (!hasVisibleRows) {
-                noDataMessage.style.display = '';
-            } else {
-                noDataMessage.style.display = 'none';
-            }
-        });
-
-        // Обработчик для очистки поля поиска (если потребуется сбросить фильтрацию)
-        searchInput.addEventListener('blur', function () {
-            if (searchInput.value === '') {
-                const rows = tableBody.querySelectorAll('tr:not(:last-child)');
-                rows.forEach(function (row) {
-                    row.style.display = ''; // Показываем все строки
-                });
-                resetHighlight(); // Сбрасываем подсветку
-                noDataMessage.style.display = 'none';
-            }
-        });
-    });
-</script>
 {% endblock %}
-</body>
-</html>

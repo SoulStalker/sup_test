@@ -13,11 +13,11 @@ User = get_user_model()
 
 
 class ProjectForm(forms.Form):
-
     name = forms.CharField(
-        max_length=50,
+        max_length=20,
         label="Название",
         widget=forms.TextInput(attrs={"class": "form-control"}),
+        validators=[DataVerifier.validate_letters_space_only],
     )
 
     logo = forms.ImageField(
@@ -45,9 +45,9 @@ class ProjectForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
     )
 
-    date_created = forms.DateField(
+    date_created = forms.DateTimeField(
         label="Дата создания",
-        widget=forms.DateInput(attrs={"class": "form-control"}),
+        widget=forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
     )
 
     responsible = forms.ModelChoiceField(
@@ -78,9 +78,10 @@ class ProjectForm(forms.Form):
 class CreateFeaturesForm(forms.Form):
 
     name = forms.CharField(
-        max_length=50,
+        max_length=20,
         label="Название",
         widget=forms.TextInput(attrs={"class": "form-control"}),
+        validators=[DataVerifier.validate_letters_space_only],
     )
 
     description = forms.CharField(
@@ -145,9 +146,10 @@ class CreateFeaturesForm(forms.Form):
 class TaskForm(forms.Form):
 
     name = forms.CharField(
-        max_length=50,
+        max_length=20,
         label="Название",
         widget=forms.TextInput(attrs={"class": "form-control"}),
+        validators=[DataVerifier.validate_letters_space_only],
     )
 
     priority = forms.IntegerField(

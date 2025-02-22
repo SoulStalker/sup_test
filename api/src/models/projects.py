@@ -1,5 +1,5 @@
 from uuid import uuid4
-
+from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.shortcuts import redirect
@@ -60,7 +60,7 @@ class Project(models.Model):
     )
 
     date_created = models.DateTimeField(
-        auto_now_add=True,
+        default=now,
         verbose_name="Дата создания",
     )
 
