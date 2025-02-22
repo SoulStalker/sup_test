@@ -228,64 +228,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function() {
     const roleSelect = document.getElementById('role-select');
-
-    // Слушаем изменения в селекторе ролей
-    roleSelect.addEventListener('change', function() {
-        const selectedRole = this.value;
-        filterTablesByRole(selectedRole);
-    });
-
-    function filterTablesByRole(role) {
-        const tables = ['table-users'];
-
-        // Проходим по всем таблицам
-        tables.forEach(tableId => {
-            const table = document.getElementById(tableId);
-            const rows = table.querySelectorAll('tbody tr');
-
-            rows.forEach(row => {
-                const rowRole = row.getAttribute('data-role');
-                // Скрываем или показываем строку в зависимости от выбранной роли
-                if (role === 'Роль' || rowRole === role) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-    }
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
     const teamSelect = document.getElementById('team-select');
 
-    // Слушаем изменения в селекторе команд
-    teamSelect.addEventListener('change', function() {
-        const selectedTeam = this.value;
-        filterTablesByTeam(selectedTeam);
-    });
+    roleSelect.addEventListener('change', filterTables);
+    teamSelect.addEventListener('change', filterTables);
 
-    function filterTablesByTeam(team) {
-        const tables = ['table-users'];
+    function filterTables() {
+        const selectedRole = roleSelect.value;
+        const selectedTeam = teamSelect.value;
+        const table = document.getElementById('table-container');
+        const rows = table.querySelectorAll('tbody tr');
 
-        // Проходим по всем таблицам
-        tables.forEach(tableId => {
-            const table = document.getElementById(tableId);
-            const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const rowRole = row.getAttribute('data-role');
+            const rowTeam = row.getAttribute('data-team');
 
-            rows.forEach(row => {
-                const rowTeam = row.getAttribute('data-team');
-                // Скрываем или показываем строку в зависимости от выбранной команды
-                if (team === 'Команда' || rowTeam === team) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+            const roleMatch = (selectedRole === 'Роль' || rowRole === selectedRole);
+            const teamMatch = (selectedTeam === 'Команда' || rowTeam === selectedTeam);
+
+            row.style.display = (roleMatch && teamMatch) ? '' : 'none';
         });
     }
 });
+
 
 // Загрузка аватара
 document.addEventListener('DOMContentLoaded', function() {

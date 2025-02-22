@@ -576,40 +576,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const errorDivs = form.querySelectorAll('.error');
         errorDivs.forEach(div => div.remove());
     }
-//    // Функция для отображения уведомлений в указанном контейнере
-//    function showNotification(message, type = 'info', containerId = 'access-denied-message') {
-//        const container = document.getElementById(containerId);
-//        if (!container) {
-//            console.error(`Контейнер с ID ${containerId} не найден.`);
-//            return;
-//        }
-//
-//        // Создание элемента уведомления
-//        const notification = document.createElement('div');
-//        notification.className = `notification ${type === 'error' ? 'text-red-500' : 'text-green-500'} modal-title text-xl text-center font-semibold`;
-//        notification.textContent = message;
-//
-//        // Добавление уведомления в контейнер
-//        container.appendChild(notification);
-//
-//        // Удаление уведомления через 3 секунды
-//        setTimeout(() => {
-//            notification.remove();
-//        }, 3000);
-//
-//        // Открываем попап в любом случае
-//        const popup = document.getElementById('access-denied-popup');
-//        if (popup) {
-//            popup.classList.remove('hidden'); // Убираем класс hidden, чтобы показать попап
-//
-//            // Автоматическое закрытие попапа через 3 секунды
-//            setTimeout(() => {
-//                popup.classList.add('hidden'); // Добавляем класс hidden, чтобы скрыть попап
-//            }, 3000);
-//        } else {
-//            console.error('Попап с ID "access-denied-popup" не найден.');
-//        }
-//    }
 
 
 });

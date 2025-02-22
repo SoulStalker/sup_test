@@ -1,5 +1,5 @@
 /* Custom styles to complement Tailwind CSS */
-.task-filter {
+.task-filter, .interval-button {
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     font-size: 0.875rem;
@@ -8,11 +8,11 @@
     transition: all 0.2s;
 }
 
-.task-filter:hover {
+.task-filter:hover, .interval-button:hover {
     background: #e5e7eb;
 }
 
-.task-filter.active {
+.task-filter.active, .interval-button.active {
     background: #327680;
     color: white;
 }

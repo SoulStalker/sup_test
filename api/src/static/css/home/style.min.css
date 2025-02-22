@@ -2855,3 +2855,6 @@ h1,h2,h3,h4,h5,h6 {
 #dropdown-menu .menu-item:hover {
     background-color: rgba(50, 118, 128, 0.3); /* Светлый оттенок */
 }
+.60vh {
+    height:60vh
+}
