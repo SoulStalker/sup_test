@@ -1,23 +1,35 @@
 <!DOCTYPE html>
 <html lang="ru">
+{% load static %}
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8"/>
+    <title>Авторизация - SUP</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Авторизация</title>
+    <meta content="Система авторизации для SUP Project Manager." name="description"/>
+    <link rel="shortcut icon" href="{% static 'images/favicon.svg' %}">
+    <link href="{% static 'libs/@iconscout/unicons/css/line.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/home/style.min.css' %}" rel="stylesheet" type="text/css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="./css/add-style.css" rel="stylesheet">
     <link href="./output.css" rel="stylesheet">
 </head>
-<body class="bg-white-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 class="text-2xl font-semibold mb-6">Вы авторизованы, хотите выйти?</h2>
-        <form method="post">
-            {% csrf_token %}
-            <div class="text-right">
-                <button id="logoutButton">Выйти</button>
-                {% comment %} <button type="submit">Войти</button> {% endcomment %}
-            </div>
-        </form>
-    </div>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+<div class="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg">
+    <h2 class="text-xl font-semibold text-gray-800 mb-6 text-center">Вы авторизованы, хотите выйти?</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="flex justify-center space-x-4">
+            <button id="logoutButton" type="submit"
+                    class="px-6 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all">
+                Выйти
+            </button>
+            <button id="cancelButton" type="button"
+                    class="px-6 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-all"
+                    onclick="window.history.back();">
+                Отмена
+            </button>
+        </div>
+    </form>
+</div>
 </body>
 </html>

@@ -1,25 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таблица задач</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
-    <link href="{% static 'css/output.css' %}" rel="stylesheet">
-</head>
-<body class="bg-gray-50">
-
-{% include 'includes/sidebar.html' %}
-<main class="main-content">
-    {% block content %}
-    <!-- Основной контент -->
-    <div class="flex-grow p-6">
-
         <!-- Верхняя панель -->
-        <div class="p-4 flex items-center justify-between">
-            <h1 class="text-2xl font-bold">Таблица задач</h1>
+        <div class="flex justify-between items-center mb-4 p-6">
+            <h1 class="text-2xl font-bold">{% block title %}Таблица задач{% endblock %}</h1>
         </div>
         <div class="bg-white shadow rounded-lg">
             <!-- Поиск и элементы управления -->
@@ -62,16 +47,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% if query %}
-                    <div class="search_info">
-                        {% if tasks %}
-                        <h2 id="search-info">Ваш поисковый запрос: <strong>{{ query }}</strong></h2>
-                        {% else %}
-                        <p><strong>По вашему запросу ничего не найдено.</strong></p>
-                        {% endif %}
-                        <button id="clear-search">Очистить поиск</button>
-                    </div>
-                    {% endif %}
+
                     {% for item_task in tasks %}
                     <tr class="w-full hover:bg-gray-100">
                         <td class="border-b py-2 px-4 text-left">{{ item_task.id }}
@@ -81,8 +57,7 @@
                                 {{ item_task.name }}</a>
                         </td>
                         <td class="border-b py-2 px-4 text-left">{{ item_task.contributor.name }}</td>
-                        <td class="border-b py-2 px-4 text-left overflow-auto break-words whitespace-normal">{{
-                            item_task.description|truncatechars:100 }}
+                        <td class="border-b py-2 px-4 text-left overflow-auto break-words whitespace-normal">{{ item_task.description|truncatechars:100|safe }}
                         </td>
                         <td class="border-b py-2 px-4 text-left">{{ item_task.created_at }}</td>
                         <td class="border-b py-2 px-4 text-center">
@@ -199,9 +174,8 @@
 </script>
 <script src="{% static 'script/tasks.js' %}"></script>
 <script src="{% static 'script/pagination.js' %}"></script>
-{% block extra_js %}
-{% endblock %}
+
+    {% block extra_js %}
+    {% endblock %}
 
 {% endblock %}
-</body>
-</html>

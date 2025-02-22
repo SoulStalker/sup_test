@@ -1,29 +1,15 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таблица фичей</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
-    <link href="{% static 'output.css' %}" rel="stylesheet">
-</head>
-<body class="bg-gray-50"> {% include 'includes/sidebar.html' %}
-<main class="main-content">
-    {% block content %}
-    <!-- Основной контент -->
-    <div class="flex-1 flex flex-col">
+{% extends "base.html" %}
 
+{% block content %}
+{% load static %}
         <!-- Верхняя панель -->
         <div class="flex justify-between items-center mb-4 p-6">
-            <h1 class="text-2xl font-bold">Таблица фичи</h1>
+            <h1 class="text-2xl font-bold">{% block title %}Таблица фичи{% endblock %}</h1>
         </div>
 
         <!-- Таблица -->
-        <div class="bg-white shadow-md rounded-lg overflow-hidden m-2.5 w-1/1.5"> <!-- Добавлен внешний отступ -->
-            <div class="p-4 flex items-center"><input id="searchInput" type="text" placeholder="Поиск"
-                                                      class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full mr-4">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden m-2.5 w-1/1.5">
+            <div class="p-4 flex items-center"><input id="searchInput" type="text" placeholder="Поиск" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full mr-4">
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
                     <select id="userFilter"
@@ -57,8 +43,8 @@
                         {% endfor %}
                     </select>
 
-                    <button id="open-modal-create"
-                            class="open-modal-btn bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">
+                    <button id="open-modal"
+                            class="open-modal-btn bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark whitespace-nowrap">
                         Создать фичу
                     </button>
                 </div>
@@ -109,7 +95,7 @@
                         <td class="border-b py-2 px-4 text-left">
                             <div class="inline-flex -space-x-2">
                                 {% for item_features_user in item_features.participants.all %}
-                                <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}"
+                                <img src="{% if item_features_user.avatar %}{{ item_features_user.avatar.url }}{% else %}{% static 'images/icon-user-project.png' %}{% endif %}"
                                      alt="{{ item_features_user.name }}"
                                      class="inline-block border border-white rounded-full w-6 h-6">
                                 {% endfor %}
@@ -120,20 +106,10 @@
                         <td class="border-b py-2 px-4 text-center">{{ item_features.importance }}</td>
                         <td class="border-b py-2 px-4 text-center">{{ item_features.status }}</td>
                         <td class="border-b py-2 px-4 text-center sticky right-0 bg-white z-10">
-                            <button id="open-modal-edit" type="button"
-                                    class="open-modal-btn text-red-600 hover:text-red-800"
+                            <button type="button"
+                                    class="edit-project-button text-red-600 hover:text-red-800"
                                     data-feature-id="{{ item_features.id }}">
-                                <svg width="24" height="25" viewBox="0 0 24 25" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15.4525 10.7353L15.448 10.7416L9.02434 17.1658L10.9495 19.0903L17.3786 12.6616L15.4525 10.7353Z"
-                                          fill="#0C0C0C"/>
-                                    <path d="M5.82559 13.9668L7.75078 15.893L14.1753 9.46878L14.1816 9.46428L12.2546 7.53709L5.82559 13.9668Z"
-                                          fill="#0C0C0C"/>
-                                    <path d="M4.79594 15.4826L3.04625 20.7313C2.93824 21.0544 3.02285 21.4118 3.26406 21.6521C3.43507 21.824 3.66548 21.9167 3.90039 21.9167C3.9958 21.9167 4.0921 21.9014 4.18481 21.8699L9.43297 20.1201L4.79594 15.4826Z"
-                                          fill="#0C0C0C"/>
-                                    <path d="M19.9401 4.97531C18.5279 3.5639 16.2292 3.5639 14.817 4.97531L13.5282 6.2643L18.6521 11.3888L19.941 10.0998C21.3532 8.68746 21.3532 6.38762 19.9401 4.97531Z"
-                                          fill="#0C0C0C"/>
-                                </svg>
+                                <i class="fas fa-edit text-red-600 hover:text-red-800"></i>
                             </button>
                         </td>
                     </tr>
@@ -143,14 +119,13 @@
             </div>
         </div>
 
-    </div>
-</main>
 
-{% include 'create_features_modal.html' %}
+    {% include 'create_features_modal.html' %}
 
-{% endblock %}
 
-<script>document.addEventListener("DOMContentLoaded", function () {
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     const userFilter = document.getElementById("userFilter");
     const tagFilter = document.getElementById("tagFilter");
@@ -158,7 +133,7 @@
     const projectFilter = document.getElementById("projectFilter");
     const tableBody = document.getElementById("table-body");
     const noResultsMessage = document.createElement("tr");
-    noResultsMessage.innerHTML = `<td colspan="8" class="text-center py-4 text-gray-500">Задачи с такими данными нет</td>`;
+    noResultsMessage.innerHTML = `<td colspan="8" class="text-center py-4 text-gray-500">Фичи с такими данными нет</td>`;
     noResultsMessage.style.display = "none";
     tableBody.appendChild(noResultsMessage);
 
@@ -235,7 +210,8 @@
 });
 </script>
     <script src="{% static 'script/features.js' %}"></script>
+
     {% block extra_js %}
     {% endblock %}
-</body>
-</html>
+
+{% endblock %}
