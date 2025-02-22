@@ -41,9 +41,7 @@ class TaskDetailView(BaseView):
 
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
-        task, error = self.task_service.get_by_id(
-            pk=task_id, user_id=self.user_id
-        )
+        task, error = self.task_service.get_by_id(pk=task_id, user_id=self.user_id)
         tags = self.task_service.get_tags_list(task_id=task_id)
         comments = self.comment_service.get_comments_list(task_id=task_id)
         feature, error = self.features_service.get_by_id(
@@ -58,9 +56,7 @@ class TaskDetailView(BaseView):
             pk=task.responsible_id, user_id=self.user_id
         )
         task_url = reverse("projects:tasks")
-        edit_tasks = reverse(
-            "projects:edit_tasks", kwargs={"task_id": task_id}
-        )
+        edit_tasks = reverse("projects:edit_tasks", kwargs={"task_id": task_id})
         task_status_choices = self.task_service.get_task_status_choices()
         context = {
             "task": task,
@@ -123,9 +119,7 @@ class CreateTaskView(BaseView):
                 task_dto,
                 self.user_id,
             )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class UpdateTaskView(BaseView):
@@ -136,13 +130,9 @@ class UpdateTaskView(BaseView):
     def get(self, request, *args, **kwargs):
 
         task_id = kwargs.get("task_id")
-        task, error = self.task_service.get_by_id(
-            pk=task_id, user_id=self.user_id
-        )
+        task, error = self.task_service.get_by_id(pk=task_id, user_id=self.user_id)
         if error:
-            return JsonResponse(
-                {"status": "error", "message": error}, status=403
-            )
+            return JsonResponse({"status": "error", "message": error}, status=403)
         task_status_choices = self.task_service.get_task_status_choices()
 
         data = {
@@ -192,9 +182,7 @@ class UpdateTaskView(BaseView):
                 user_id=self.user_id,
             )
         print(form.errors)
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class DeleteTaskView(BaseView):
@@ -206,13 +194,9 @@ class DeleteTaskView(BaseView):
         task_id = kwargs.get("task_id")
         try:
             self.task_service.delete(pk=task_id, user_id=self.user_id)
-            return JsonResponse(
-                {"status": "success", "message": "Task deleted"}
-            )
+            return JsonResponse({"status": "success", "message": "Task deleted"})
         except Exception as e:
-            return JsonResponse(
-                {"status": "error", "message": str(e)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(e)}, status=404)
 
 
 class CreateCommentView(BaseView):
@@ -233,13 +217,9 @@ class CreateCommentView(BaseView):
     def post(self, request, *args, **kwargs):
         form = CommentForm(request.POST)
         task_id = request.POST.get("task_id")
-        task, error = self.task_service.get_by_id(
-            pk=task_id, user_id=self.user_id
-        )
+        task, error = self.task_service.get_by_id(pk=task_id, user_id=self.user_id)
         if error:
-            return JsonResponse(
-                {"status": "error", "message": error}, status=403
-            )
+            return JsonResponse({"status": "error", "message": error}, status=403)
 
         if form.is_valid():
             comment_dto = CommentDTO(
@@ -253,9 +233,7 @@ class CreateCommentView(BaseView):
             return redirect("projects:task_detail", task_id=task_id)
 
         # Если форма не валидна, возвращаем ошибки
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class UpdateCommentView(BaseView):
@@ -265,28 +243,18 @@ class UpdateCommentView(BaseView):
             pk=comment_id, user_id=self.user_id
         )
         if error:
-            return JsonResponse(
-                {"status": "error", "message": error}, status=403
-            )
+            return JsonResponse({"status": "error", "message": error}, status=403)
         # from = CommentForm(initial={"comment": comment.comment})
         return JsonResponse({"comment": comment.comment})
 
     def post(self, request, *args, **kwargs):
         comment_id = kwargs.get("comment_id")
-
-        print("Comment id: ", comment_id)
-        if comment_id:
-
-            print("Get parent comment")
-
-            comment, error = self.comment_service.get_by_id(
-                pk=comment_id, user_id=self.user_id
-            )
-            if error:
-                return JsonResponse(
-                    {"status": "error", "message": error}, status=403
-                )
-            comment.id = comment_id
+        comment, error = self.comment_service.get_by_id(
+            pk=comment_id, user_id=self.user_id
+        )
+        if error:
+            return JsonResponse({"status": "error", "message": error}, status=403)
+        comment.id = comment_id
         form = CommentForm(request.POST)
 
         if form.is_valid():
@@ -299,9 +267,7 @@ class UpdateCommentView(BaseView):
                 dto=comment,
                 user_id=self.user_id,
             )
-        return JsonResponse(
-            {"status": "error", "errors": form.errors}, status=400
-        )
+        return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
 
 class DeleteCommentView(BaseView):
@@ -310,10 +276,6 @@ class DeleteCommentView(BaseView):
         comment_id = kwargs.get("comment_id")
         try:
             self.comment_service.delete(pk=comment_id, user_id=self.user_id)
-            return JsonResponse(
-                {"status": "success", "message": "Task deleted"}
-            )
+            return JsonResponse({"status": "success", "message": "Task deleted"})
         except Exception as e:
-            return JsonResponse(
-                {"status": "error", "message": str(e)}, status=404
-            )
+            return JsonResponse({"status": "error", "message": str(e)}, status=404)

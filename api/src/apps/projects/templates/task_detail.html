@@ -8,9 +8,6 @@
     <title>Детали задачи | Система Управления Проектами</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/home_lk/style.css' %}">
-    <!-- Подключаем библиотеку marked для рендеринга Markdown -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
 </head>
 <body class="bg-gray-50">
     {% include 'includes/sidebar.html' %}
@@ -36,17 +33,10 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <h2 class="text-xl font-semibold mb-4">Описание</h2>
-                    <!-- Блок для рендеринга Markdown -->
-                    <div id="taskDescription" class="markdown-content markdown-body">
-                        {{ task.description | safe }}
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl shadow-sm">
                     <h2 class="text-xl font-semibold mb-4">Ответственные</h2>
-                    <div class="space-y-4">
                         <div class="flex items-center space-x-3 p-4 border rounded-lg">
                             <div class="w-10 h-10 rounded-full bg-[#327680] text-white flex items-center justify-center">
                                 {{ contributor.name|slice:":1" }}{{ contributor.surname|slice:":1" }}
@@ -78,7 +68,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+            div class="bg-white p-6 rounded-xl shadow-sm mb-8">
                 <h2 class="text-xl font-semibold mb-4">Комментарии</h2>
                 <div class="space-y-4">
                     {% for comment in comments %}
@@ -104,13 +94,13 @@
                 <form method="post" action="{% url 'projects:create_comment' task_id=task.id %}">
                     {% csrf_token %}
                     <input type="hidden" name="task_id" value="{{ task.id }}">
+
                     <textarea name="comment" class="w-full p-2 border rounded-lg" rows="4" placeholder="Введите ваш комментарий..."></textarea>
                     <button type="submit" class="bg-[#327680] text-white px-4 py-2 rounded-lg mt-4">Отправить</button>
                 </form>
             </div>
         </main>
     </div>
-
     <script>
         // Рендеринг Markdown в HTML
         document.addEventListener('DOMContentLoaded', function () {
@@ -124,3 +114,4 @@
     <script src="{% static 'script/tasks.js' %}"></script>
 </body>
 </html>
+
