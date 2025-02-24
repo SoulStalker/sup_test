@@ -1,3 +1,46 @@
+$(document).ready(function() {
+    $('#permissions').select2({
+        width: 'resolve',
+        placeholder: 'Выберите права'
+    }).on('change', updateSelectedPermissions);
+});
+
+function updateSelectedPermissions() {
+    const selectedOptions = $('#permissions').select2('data');
+    const permissionsContainer = document.getElementById('permissions-container');
+    if (permissionsContainer) {
+        if (selectedOptions.length > 0) {
+            const selectedPermissions = selectedOptions.map(option => option.text).join(', ');
+            permissionsContainer.textContent = selectedPermissions;
+        } else {
+            permissionsContainer.textContent = 'Выберите права';
+        }
+    }
+}
+
+// Функция для очистки формы
+function resetFormForCreation(form) {
+    form.reset();
+    // Очищаем аватар
+    const avatarContainer = document.querySelector('.mb-4');
+    const avatarImg = avatarContainer.querySelector('img');
+    const avatarSpan = avatarContainer.querySelector('span');
+    if (avatarImg) avatarImg.style.display = 'none';
+    if (avatarSpan) avatarSpan.style.display = 'block';
+
+    // Очищаем мультиселект с правами
+    const permissionsSelect = document.getElementById('permissions');
+    Array.from(permissionsSelect.options).forEach(option => {
+        option.selected = false;
+    });
+    $('#permissions').trigger('change'); // Обновляем Select2
+    updateSelectedPermissions(); // Обновляем текстовое представление выбранных прав
+
+    // Устанавливаем action формы для создания
+    form.setAttribute('action', '/users/create/');
+}
+
+
 // Создание юзера
 document.addEventListener('DOMContentLoaded', function () {
     const openModalButton = document.getElementById('open-modal');
@@ -154,6 +197,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     option.selected = data.permissions_ids.includes(parseInt(option.value, 10));
                 });
 
+                // Обновляем состояние Select2 и вызываем функцию для обновления отображения выбранных прав
+                $('#permissions').trigger('change'); // Обновляем Select2
+                updateSelectedPermissions(); // Обновляем текстовое представление выбранных прав
+
+
                 // Меняем action формы для отправки на обновление
                 form.setAttribute('action', `/users/update/${userId}/`);
                 submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
@@ -180,64 +228,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function() {
     const roleSelect = document.getElementById('role-select');
-
-    // Слушаем изменения в селекторе ролей
-    roleSelect.addEventListener('change', function() {
-        const selectedRole = this.value;
-        filterTablesByRole(selectedRole);
-    });
-
-    function filterTablesByRole(role) {
-        const tables = ['table-users'];
-
-        // Проходим по всем таблицам
-        tables.forEach(tableId => {
-            const table = document.getElementById(tableId);
-            const rows = table.querySelectorAll('tbody tr');
-
-            rows.forEach(row => {
-                const rowRole = row.getAttribute('data-role');
-                // Скрываем или показываем строку в зависимости от выбранной роли
-                if (role === 'Роль' || rowRole === role) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-    }
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
     const teamSelect = document.getElementById('team-select');
 
-    // Слушаем изменения в селекторе команд
-    teamSelect.addEventListener('change', function() {
-        const selectedTeam = this.value;
-        filterTablesByTeam(selectedTeam);
-    });
+    roleSelect.addEventListener('change', filterTables);
+    teamSelect.addEventListener('change', filterTables);
 
-    function filterTablesByTeam(team) {
-        const tables = ['table-users'];
+    function filterTables() {
+        const selectedRole = roleSelect.value;
+        const selectedTeam = teamSelect.value;
+        const table = document.getElementById('table-container');
+        const rows = table.querySelectorAll('tbody tr');
 
-        // Проходим по всем таблицам
-        tables.forEach(tableId => {
-            const table = document.getElementById(tableId);
-            const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const rowRole = row.getAttribute('data-role');
+            const rowTeam = row.getAttribute('data-team');
 
-            rows.forEach(row => {
-                const rowTeam = row.getAttribute('data-team');
-                // Скрываем или показываем строку в зависимости от выбранной команды
-                if (team === 'Команда' || rowTeam === team) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+            const roleMatch = (selectedRole === 'Роль' || rowRole === selectedRole);
+            const teamMatch = (selectedTeam === 'Команда' || rowTeam === selectedTeam);
+
+            row.style.display = (roleMatch && teamMatch) ? '' : 'none';
         });
     }
 });
+
 
 // Загрузка аватара
 document.addEventListener('DOMContentLoaded', function() {

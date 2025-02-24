@@ -8,9 +8,6 @@
     <title>Детали задачи | Система Управления Проектами</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/home_lk/style.css' %}">
-    <!-- Подключаем библиотеку marked для рендеринга Markdown -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
 </head>
 <body class="bg-gray-50">
     {% include 'includes/sidebar.html' %}
@@ -31,50 +28,42 @@
                 </div>
                 <p class="text-sm text-gray-500 mt-2">Фича: {{ feature.name }}</p>
                 <p class="text-sm text-gray-500 mt-1">Статус: {{ task.status }}</p>
+                <p class="text-sm text-gray-500 mt-1">Приоритет: {{ task.priority }}</p>
                 <p class="text-sm text-gray-500 mt-1">Дата создания: {{ task.created_at }}</p>
                 <p class="text-sm text-gray-500 mt-1">Дедлайн: {{ task.deadline }}</p>
+                {% if task.closed_at %}
+                    <p class="text-sm text-gray-500 mt-1">Дата закрытия: {{ task.closed_at }}</p>
+                {% endif %}
+                <p class="text-sm text-gray-500 mt-1">Описание: {{ task.description|safe }}</p>
+                <div class="mt-2">
+                    <p class="text-sm text-gray-500">Теги:</p>
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        {% for tag in tags %}
+                            <span class="bg-[#{{ tag.color }}] text-white px-2 py-1 rounded-full text-xs">{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <h2 class="text-xl font-semibold mb-4">Описание</h2>
-                    <!-- Блок для рендеринга Markdown -->
-                    <div id="taskDescription" class="markdown-content markdown-body">
-                        {{ task.description }}
+                <h2 class="text-xl font-semibold mb-4">Ответственные</h2>
+                <div class="flex items-center space-x-3 p-4 border rounded-lg">
+                    <div class="w-10 h-10 rounded-full bg-[#327680] text-white flex items-center justify-center">
+                        {{ contributor.name|slice:":1" }}{{ contributor.surname|slice:":1" }}
+                    </div>
+                    <div>
+                        <h3 class="font-medium">{{ contributor.name }} {{ contributor.surname }}</h3>
+                        <p class="text-sm text-gray-500">Инициатор</p>
                     </div>
                 </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <h2 class="text-xl font-semibold mb-4">Ответственные</h2>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-3 p-4 border rounded-lg">
-                            <div class="w-10 h-10 rounded-full bg-[#327680] text-white flex items-center justify-center">
-                                {{ contributor.name|slice:":1" }}{{ contributor.surname|slice:":1" }}
-                            </div>
-                            <div>
-                                <h3 class="font-medium">{{ contributor.name }} {{ contributor.surname }}</h3>
-                                <p class="text-sm text-gray-500">Инициатор</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3 p-4 border rounded-lg">
-                            <div class="w-10 h-10 rounded-full bg-[#327680] text-white flex items-center justify-center">
-                                {{ responsible.name|slice:":1" }}{{ responsible.surname|slice:":1" }}
-                            </div>
-                            <div>
-                                <h3 class="font-medium">{{ responsible.name }} {{ responsible.surname }}</h3>
-                                <p class="text-sm text-gray-500">Ответственный</p>
-                            </div>
-                        </div>
+                <div class="flex items-center space-x-3 p-4 border rounded-lg">
+                    <div class="w-10 h-10 rounded-full bg-[#327680] text-white flex items-center justify-center">
+                        {{ responsible.name|slice:":1" }}{{ responsible.surname|slice:":1" }}
                     </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
-                <h2 class="text-xl font-semibold mb-4">Теги</h2>
-                <div class="flex flex-wrap gap-2">
-                    {% for tag in tags %}
-                    <span class="bg-[#327680] text-white px-3 py-1 rounded-full text-sm">{{ tag.name }}</span>
-                    {% endfor %}
+                    <div>
+                        <h3 class="font-medium">{{ responsible.name }} {{ responsible.surname }}</h3>
+                        <p class="text-sm text-gray-500">Ответственный</p>
+                    </div>
                 </div>
             </div>
 
@@ -88,11 +77,11 @@
                                 {{ comment.user.name|slice:":1" }}{{ comment.user.surname|slice:":1" }}
                             </div>
                             <div>
-                                <h3 class="font-medium">{{ comment.user.name }} {{ comment.user.surname }}</h3>
-                                <p class="text-sm text-gray-500">{{ comment.created_at }}</p>
+                                <p class="text-sm text-gray-500 mt-2">{{ comment.user.name }} {{ comment.user.surname }}</p>
+                                <p class="font-medium">{{ comment.comment }}</p>
+                                <small class="text-sm text-gray-500">{{ comment.created_at }}</small>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-500 mt-2">{{ comment.text }}</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -102,22 +91,14 @@
                 <h2 class="text-xl font-semibold mb-4">Добавить комментарий</h2>
                 <form method="post" action="{% url 'projects:create_comment' task_id=task.id %}">
                     {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{ task.id }}">
+
                     <textarea name="comment" class="w-full p-2 border rounded-lg" rows="4" placeholder="Введите ваш комментарий..."></textarea>
                     <button type="submit" class="bg-[#327680] text-white px-4 py-2 rounded-lg mt-4">Отправить</button>
                 </form>
             </div>
         </main>
     </div>
-
-    <script>
-        // Рендеринг Markdown в HTML
-        document.addEventListener('DOMContentLoaded', function () {
-            const taskDescription = document.getElementById('taskDescription');
-            if (taskDescription) {
-                // Преобразуем Markdown в HTML
-                taskDescription.innerHTML = marked.parse(taskDescription.textContent);
-            }
-        });
-    </script>
+    <script src="{% static 'script/tasks.js' %}"></script>
 </body>
 </html>

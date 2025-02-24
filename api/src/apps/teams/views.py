@@ -14,7 +14,6 @@ class TeamListView(BaseView):
     def get(self, *args, **kwargs):
         teams = self.team_service.get_list()
         teams = self.paginate_queryset(teams)
-        # users = User.objects.filter(team__isnull=True).distinct()
         users = self.user_service.get_active_users()
         return render(
             self.request,

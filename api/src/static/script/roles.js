@@ -122,6 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Заполняем форму полученными данными
                     document.getElementById('name').value = data.name;
                     document.getElementById('color').value = data.color;
+                    const colorPicker = document.getElementById('color-picker');
+                    colorPicker.value = `#${data.color}`;
 
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/users/roles/edit/${roleId}/`);

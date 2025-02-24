@@ -1,53 +1,91 @@
-<div id="modal-create-permission" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
-        <h2 class="text-xl mb-4">Создание прав</h2>
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<!-- Подключение jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Подключение CSS и JS библиотеки Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+
+<div id="modal-create-permission"
+     class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-11">
+    <div class="modal bg-white p-8 rounded-lg shadow-lg w-1/2">
+        <div class="modal-header mb-4">
+            <h2 class="modal-title text-xl font-semibold">Создание прав</h2>
+        </div>
+
         <form id="create-permission-form" method="POST" action="{% url 'users:permissions' %}">
             {% csrf_token %}
-            <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700">Название прав*</label>
+
+            <!-- Permission Name -->
+            <div class="form-group mb-4">
+                <label for="name" class="form-label block text-sm font-medium text-gray-700">Название прав*</label>
                 <input type="text" id="name" name="name" maxlength="20" pattern="[A-Za-zА-Яа-я]+"
-                    class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                       required>
             </div>
-            <div class="mb-4 relative">
-                <label for="code" class="block text-sm font-medium text-gray-700">Код</label>
-                    <select id="code" name="code"
-                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                        <option value="">Выбрать</option>
-                        {% for code in codes %}
-                            <option value="{{ code }}">{{ code }}</option>
-                        {% endfor %}
-                    </select>
+
+            <!-- Permission Code -->
+            <div class="form-group mb-4 relative">
+                <label for="code" class="form-label block text-sm font-medium text-gray-700">Код</label>
+                <select id="code" name="code"
+                        class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                    <option value="">Выбрать</option>
+                    {% for code, label in codes %}
+                    <option value="{{ code }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="mb-4">
-                <label for="description" class="block text-sm font-medium text-gray-700">Описание</label>
+
+            <!-- Permission Description -->
+            <div class="form-group mb-4">
+                <label for="description" class="form-label block text-sm font-medium text-gray-700">Описание</label>
                 <textarea id="description" name="description" maxlength="500"
-                    class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
-                    placeholder="Введите описание (не более 500 символов)"></textarea>
+                          class="form-textarea mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                          placeholder="Введите описание (не более 500 символов)"></textarea>
             </div>
-            <div class="mb-4">
-                 <label for="content_type" class="block text-sm font-medium text-gray-700">Тип объекта*</label>
-                    <select id="content_type" name="content_type"
-                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
-                        <option value="">Выбрать</option>
-                        {% for ct in content_types %}
-                            <option value="{{ ct.id }}">{{ ct.name }}</option>
-                        {% endfor %}
-                    </select>
+
+            <!-- Content Type -->
+            <div class="form-group mb-4">
+                <label for="content_type" class="form-label block text-sm font-medium text-gray-700">Тип
+                    объекта*</label>
+                <select id="content_type" name="content_type"
+                        class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
+                        required>
+                    <option value="">Выбрать</option>
+                    {% for ct in content_types %}
+                    <option value="{{ ct.id }}">{{ ct.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="mb-4">
-                <label for="object_id" class="block text-sm font-medium text-gray-700">ОбъектP</label>
-                    <select id="object_id" name="object_id"
-                        class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
-                        <option value="">Все</option>
-                        {% for object in objects %}
-                            <option value="{{ object.id }}">{{ object.name }}</option>
-                        {% endfor %}
-                    </select>
+
+            <!-- Object -->
+            <div class="form-group mb-4">
+                <label for="object_id" class="form-label block text-sm font-medium text-gray-700">Объект</label>
+                <select id="object_id" name="object_id"
+                        class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                    <option value="">Все</option>
+                    {% for object in objects %}
+                    <option value="{{ object.id }}">{{ object.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="flex justify-end space-x-2">
-                <button id="delete-permission" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 delete-btn">Удалить</button>
-                <button id="cancel-permission" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-                <button id="submit-permission" type="submit" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
+
+            <!-- Button Group -->
+            <div class="form-group flex justify-end space-x-2">
+                <button type="button" id="delete-permission"
+                        class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 delete-btn">
+                    Удалить
+                </button>
+                <button type="button" id="cancel-permission"
+                        class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена
+                </button>
+                <button type="submit" id="submit-permission"
+                        class="btn btn-primary bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать
+                </button>
             </div>
         </form>
     </div>
@@ -55,12 +93,17 @@
 
 
 <!-- Попап подтверждения удаления -->
-<div id="confirm-delete-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+<div id="confirm-delete-popup"
+     class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-12">
     <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
-        <h2 class="text-lg mb-4">Данные права будут удалены</h2>
-        <div class="flex justify-end space-x-2">
-            <button id="confirm-delete" type="button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
-            <button id="cancel-delete" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
+        <h2 class="modal-title text-xl text-center font-semibold">Данные права будут удалены</h2>
+        <div class="flex justify-center mt-4 space-x-2">
+            <button id="confirm-delete" type="button"
+                    class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить
+            </button>
+            <button id="cancel-delete" type="button"
+                    class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена
+            </button>
         </div>
     </div>
 </div>

@@ -1,36 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таблица задач</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
-    <link href="{% static 'css/output.css' %}" rel="stylesheet">
-</head>
-<body class="bg-gray-50">
-
-{% include 'includes/sidebar.html' %}
-<main class="main-content">
-    {% block content %}
-    <!-- Основной контент -->
-    <div class="flex-grow p-6">
-
         <!-- Верхняя панель -->
-        <div class="p-4 flex items-center justify-between">
-            <h1 class="text-2xl font-bold">Таблица задач</h1>
+        <div class="flex justify-between items-center mb-4 p-6">
+            <h1 class="text-2xl font-bold">{% block title %}Таблица задач{% endblock %}</h1>
         </div>
         <div class="bg-white shadow rounded-lg">
             <!-- Поиск и элементы управления -->
             <div class="p-4 flex items-center">
                 <!-- Поиск -->
-                <form id="search-form" method="get" class="flex items-center space-x-2 w-1/2">
-                    <input type="text" name="q" placeholder="Поиск" id="search-input"
-                           class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-1/3 mr-4">
-                </form>
+                <input type="text" name="q" placeholder="Поиск" id="search-input"
+                       class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 flex-grow mr-4">
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
-                <div class="flex items-center ml-auto space-x-4">
+                <div class="flex items-center space-x-4">
                     <!-- Выпадающий список для количества строк -->
                     <form id="rows-per-page-form" method="get" class="flex items-center">
                         <label for="rows-per-page" class="mr-2 text-green-custom">Строк на странице:</label>
@@ -64,16 +47,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% if query %}
-                    <div class="search_info">
-                        {% if tasks %}
-                        <h2 id="search-info">Ваш поисковый запрос: <strong>{{ query }}</strong></h2>
-                        {% else %}
-                        <p><strong>По вашему запросу ничего не найдено.</strong></p>
-                        {% endif %}
-                        <button id="clear-search">Очистить поиск</button>
-                    </div>
-                    {% endif %}
+
                     {% for item_task in tasks %}
                     <tr class="w-full hover:bg-gray-100">
                         <td class="border-b py-2 px-4 text-left">{{ item_task.id }}
@@ -83,7 +57,7 @@
                                 {{ item_task.name }}</a>
                         </td>
                         <td class="border-b py-2 px-4 text-left">{{ item_task.contributor.name }}</td>
-                        <td class="border-b py-2 px-4 text-left overflow-auto break-words whitespace-normal">{{ item_task.description|truncatechars:100 }}
+                        <td class="border-b py-2 px-4 text-left overflow-auto break-words whitespace-normal">{{ item_task.description|truncatechars:100|safe }}
                         </td>
                         <td class="border-b py-2 px-4 text-left">{{ item_task.created_at }}</td>
                         <td class="border-b py-2 px-4 text-center">
@@ -124,12 +98,84 @@
 </div>
 <!-- tasks.html -->
 {% include 'create_task_modal.html' %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-input');
+        const tableBody = document.querySelector('table tbody');
+        const table = document.getElementById('task-container');
 
+        // Create "No Data" message
+        const createNoDataMessage = (colSpan) => {
+            const noDataMessage = document.createElement('tr');
+            const noDataCell = document.createElement('td');
+            noDataCell.colSpan = colSpan;
+            noDataCell.textContent = 'Данных нет';
+            noDataCell.classList.add('text-center', 'text-gray-500', 'py-4');
+            noDataMessage.appendChild(noDataCell);
+            return noDataMessage;
+        };
+
+        const colSpan = table.querySelectorAll('thead th').length;
+        let noDataMessage = createNoDataMessage(colSpan);
+        tableBody.appendChild(noDataMessage);
+        noDataMessage.style.display = 'none';
+
+        const resetHighlight = () => {
+            const highlightedElements = document.querySelectorAll('mark.highlight');
+            highlightedElements.forEach(el => { el.outerHTML = el.textContent; });
+        };
+
+        const highlightText = (element, searchText) => {
+            const innerText = element.textContent;
+            const regex = new RegExp(`(${searchText})`, 'gi');
+            element.innerHTML = innerText.replace(regex, '<mark class="highlight">$1</mark>');
+        };
+
+        searchInput.addEventListener('input', function () {
+            const query = searchInput.value.toLowerCase().trim();
+            const rows = tableBody.querySelectorAll('tr:not(:last-child)');
+            let hasVisibleRows = false;
+
+            resetHighlight();
+
+            rows.forEach(function (row) {
+                const cells = row.querySelectorAll('td');
+                let match = false;
+
+                cells.forEach(function (cell) {
+                    if (cell.textContent.toLowerCase().includes(query)) {
+                        match = true;
+                        highlightText(cell, query);
+                    }
+                });
+
+                if (match) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noDataMessage.style.display = hasVisibleRows ? 'none' : '';
+        });
+
+        searchInput.addEventListener('blur', function () {
+            if (searchInput.value === '') {
+                const rows = tableBody.querySelectorAll('tr:not(:last-child)');
+                rows.forEach(function (row) {
+                    row.style.display = '';
+                });
+                resetHighlight();
+                noDataMessage.style.display = 'none';
+            }
+        });
+    });
+</script>
 <script src="{% static 'script/tasks.js' %}"></script>
 <script src="{% static 'script/pagination.js' %}"></script>
-{% block extra_js %}
-{% endblock %}
+
+    {% block extra_js %}
+    {% endblock %}
 
 {% endblock %}
-</body>
-</html>

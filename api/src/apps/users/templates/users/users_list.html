@@ -1,50 +1,42 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Таблица пользователей</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="{% static 'css/add-style.css' %}" rel="stylesheet">
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
 </head>
-<body class="bg-gray-100 h-screen flex">
+<body class="bg-gray-50">
 
-    {% include 'includes/sidebar.html' %}
-
-    <!-- Основной контент -->
-    <div class="flex-1 flex flex-col">
-
-        <!-- Верхняя панель -->
-        <div class="flex justify-between items-center mb-4 p-6">
-            <h1 class="text-2xl font-bold">Таблица пользователей</h1>
-        </div>
-
-        <!-- Таблица -->
-        <div class="bg-white shadow-md rounded-lg overflow-hidden m-2.5"> <!-- Добавлен внешний отступ -->
-            <div class="p-4 flex items-center">
+{% include 'includes/sidebar.html' %}
+<main class="main-content">
+    {% block content %}
+    <div class="flex-grow p-6">
+        <h1 class="text-2xl font-semibold mb-6">Таблица пользователей</h1>
+        <div class="bg-white shadow rounded-lg">
+            <!-- Поиск и элементы управления -->
+            <div class="p-4 flex items-center space-x-4">
                 <!-- Поиск -->
-                <input type="text" placeholder="Поиск" class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-1/3 mr-4">
+                <input type="text" placeholder="Поиск" id="table-search"
+                       class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 flex-grow mr-4">
 
-                <!-- Выпадающий список "Меню таблицы" -->
-                <div class="relative mr-4">
-                    <select id="role-select" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark focus:ring-2 focus:ring-teal-500">
-                        <option value="Роль">Роль</option>
-                        {% for role in roles %}
-                        <option value="{{ role.id }}">{{ role.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="relative mr-4">
-                    <select id="team-select"  class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark focus:ring-2 focus:ring-teal-500">
-                        <option value="Команда">Команда</option>
-                        {% for team in teams %}
-                        <option value="{{ team.id }}">{{ team.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <!-- Фильтры -->
+                <select id="role-select"
+                        class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark focus:ring-2 focus:ring-teal-500">
+                    <option value="Роль">Роль</option>
+                    {% for role in roles %}
+                    <option value="{{ role.id }}">{{ role.name }}</option>
+                    {% endfor %}
+                </select>
+                <select id="team-select"
+                        class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark focus:ring-2 focus:ring-teal-500">
+                    <option value="Команда">Команда</option>
+                    {% for team in teams %}
+                    <option value="{{ team.id }}">{{ team.name }}</option>
+                    {% endfor %}
+                </select>
                 <!-- Элементы после кнопки "Меню таблицы" смещены вправо -->
                 <div class="flex items-center ml-auto space-x-4">
                     <!-- Выпадающий список для количества строк -->
@@ -58,104 +50,184 @@
                             <option value="Все" {% if request.GET.per_page == 'Все' %}selected{% endif %}>Все</option>
                         </select>
                         <input type="hidden" name="page" value="{{ page.number }}">
-
                     </form>
                     {% include "pagination.html" with page=users %}
-
                     <!-- Кнопка "Создать пользователя" -->
-                    <button id="open-modal"  class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать пользователя</button>
+                    <button id="open-modal" class="bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">
+                        Создать пользователя
+                    </button>
                 </div>
             </div>
-
-            <table id="table-users" class="min-w-full table-auto">
-                <thead class="bg-gray-100">
+            <div id="table-container" class="overflow-x-auto lg:overflow-visible">
+                <table id="table-style-1" class="w-full mx-auto table-auto">
+                    <thead class="bg-gray-100 text-xs">
                     <tr>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ID</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Имя</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">Фамилия</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">E-MAIL</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК TELEGRAM</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ИМЯ TELEGRAM</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК ГУГЛ МИТ</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК В GITLAB</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">НИК В GITHUB</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">КОМАНДА</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">РОЛЬ</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ДАТА РЕГИСТРАЦИИ</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">АКТИВНЫЙ</th>
-                        <th class="px-4 py-4 border-b text-left text-gray-600 font-medium">ДЕЙСТВИЯ</th>
+                        <th class="border-b py-2 px-4 text-left">ID</th>
+                        <th class="border-b py-2 px-4 text-left">Имя</th>
+                        <th class="border-b py-2 px-4 text-left">Фамилия</th>
+                        <th class="border-b py-2 px-4 text-left">E-MAIL</th>
+                        <th class="border-b py-2 px-4 text-left">НИК TELEGRAM</th>
+                        <th class="border-b py-2 px-4 text-left">ИМЯ TELEGRAM</th>
+                        <th class="border-b py-2 px-4 text-left">НИК ГУГЛ МИТ</th>
+                        <th class="border-b py-2 px-4 text-left">НИК В GITLAB</th>
+                        <th class="border-b py-2 px-4 text-left">НИК В GITHUB</th>
+                        <th class="border-b py-2 px-4 text-left">КОМАНДА</th>
+                        <th class="border-b py-2 px-4 text-left">РОЛЬ</th>
+                        <th class="border-b py-2 px-4 text-left">ДАТА РЕГИСТРАЦИИ</th>
+                        <th class="border-b py-2 px-4 text-left">АКТИВНЫЙ</th>
+                        <th class="border-b py-2 px-4 text-left"></th>
                     </tr>
-                </thead>
+                    </thead>
                     <tbody>
                     {% for user in users %}
-                    <tr data-role="{{ user.role_id.id }}" data-team="{{ user.team_id.id }}" class="hover:bg-gray-50">
-                        <td class="px-4 py-4 border-b">{{ user.id }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.name }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.surname }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.email }}</td>
-                        <td class="px-4 py-4 border-b">
-                            <!-- Ссылка на Telegram -->
-                            <a href="https://t.me/{{ user.tg_nickname|urlencode }}"
-                               class="text-blue-600 hover:underline" target="_blank">
-                                {{ user.tg_nickname }}
-                            </a>
-                        </td>
-                        <td class="px-4 py-4 border-b">{{ user.tg_name }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.google_meet_nickname }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.gitlab_nickname }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.github_nickname }}</td>
-                        <td class="px-4 py-4 border-b">{{ user.team_id.name }}</td>
-                        <td class="px-4 py-4 border-b">
-                            <!-- Цветной кружочек с цветом роли -->
-                            <span
-                                class="inline-block w-6 h-6 rounded-full border border-gray-300 align-middle"
-                                style="background-color: #{{ user.role_id.color }};">
-                            </span>
-
-                            <span class="ml-2 align-middle">{{ user.role_id }}</span>
-                        </td>
-
-                        <td class="px-4 py-4 border-b">{{ user.date_joined | date:"d.m.y" }}</td>
-                        <td class="px-4 py-4 border-b text-center">
-                            <!-- Условный рендеринг активности -->
-                            {% if user.is_active %}
-                            <svg class="w-6 h-6 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            {% else %}
-                            <svg class="w-6 h-6 text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            {% endif %}
-                        </td>
-                        <td class="max-w-[50px] border-b py-2 px-4">
-                            <button class="text-teal-600 hover:underline edit-user-button" data-user-id="{{ user.id }}">
-                                <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12.4525 7.73527L12.448 7.74157L6.02434 14.1658L7.94954 16.0903L14.3786 9.66156L12.4525 7.73527Z" fill="#0C0C0C"/>
-                                    <path d="M2.82559 10.9668L4.75078 12.893L11.1753 6.46878L11.1816 6.46428L9.2546 4.53709L2.82559 10.9668Z" fill="#0C0C0C"/>
-                                    <path d="M1.79594 12.4826L0.0462492 17.7313C-0.0617561 18.0544 0.0228479 18.4118 0.26406 18.6521C0.435068 18.824 0.66548 18.9167 0.900391 18.9167C0.995796 18.9167 1.0921 18.9014 1.18481 18.8699L6.43297 17.1201L1.79594 12.4826Z" fill="#0C0C0C"/>
-                                    <path d="M16.9401 1.97531C15.5279 0.563895 13.2292 0.563895 11.817 1.97531L10.5282 3.2643L15.6521 8.38877L16.941 7.09978C18.3532 5.68746 18.3532 3.38762 16.9401 1.97531Z" fill="#0C0C0C"/>
+                        <tr class="hover:bg-gray-50" data-role="{{ user.role_id.id }}" data-team="{{ user.team_id.id }}">
+                            <td class="border-b py-2 px-4 text-left" style="width: 30px;">{{ user.id }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.name }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.surname }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.email }}</td>
+                            <td class="border-b py-2 px-4 text-left">
+                                <a href="https://t.me/{{ user.tg_nickname|urlencode }}"
+                                   class="text-blue-600 hover:underline" target="_blank">{{ user.tg_nickname }}</a>
+                            </td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.tg_name }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.google_meet_nickname }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.gitlab_nickname }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.github_nickname }}</td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.team_id.name }}</td>
+                            <td class="border-b py-2 px-4 text-left">
+                                <div class="w-6 h-6 inline-block rounded-full border border-gray-300 align-middle"
+                                     style="background-color: #{{ user.role_id.color }}"></div>
+                                <span class="ml-2 align-middle">{{ user.role_id.name }}</span>
+                            </td>
+                            <td class="border-b py-2 px-4 text-left">{{ user.date_joined | date:"d.m.y" }}</td>
+                            <td class="border-b py-2 px-4 text-center">
+                                {% if user.is_active %}
+                                <svg class="w-6 h-6 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M5 13l4 4L19 7"/>
                                 </svg>
-                            </button>
-                        </td>
-                    </tr>
+                                {% else %}
+                                <svg class="w-6 h-6 text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                {% endif %}
+                            </td>
+                            <td class="border-b py-2 px-4 text-left edit-user-button" style="width: 30px;"
+                                data-user-id="{{ user.id }}">
+                                <button class="text-gray-600 hover:text-gray-900">✏️</button>
+                            </td>
+                        </tr>
                     {% endfor %}
+
                     </tbody>
-            </table>
-        </div>
-
-        {% include 'users/create_user_modal.html' %}
-
-    </div>
-    <div id="access-denied-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
-            <h2 class="text-lg mb-4" id="access-denied-message"></h2>
-            <div class="flex justify-end">
-                <button id="close-access-denied-popup" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Закрыть</button>
+                </table>
             </div>
         </div>
     </div>
-    <script src="{% static 'script/users.js' %}"></script>
+    {% endblock %}
+</main>
 
+<!-- Модальное окно для создания пользователя -->
+{% include 'users/create_user_modal.html' %}
+
+<!-- Попап для отображения ошибки доступа -->
+<div id="access-denied-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
+        <h2 class="text-lg mb-4" id="access-denied-message"></h2>
+        <div class="flex justify-end">
+            <button id="close-access-denied-popup" type="button"
+                    class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Закрыть
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const searchInput = document.querySelector('#table-search');
+                        const tableBody = document.querySelector('#table-style-1 tbody');
+                        const table = document.getElementById('table-style-1');
+
+                        // Создание сообщения о "Нет данных"
+                        const createNoDataMessage = (colSpan) => {
+                            const noDataMessage = document.createElement('tr');
+                            const noDataCell = document.createElement('td');
+                            noDataCell.colSpan = colSpan;
+                            noDataCell.textContent = 'Данных нет';
+                            noDataCell.classList.add('text-center', 'text-gray-500', 'py-4');
+                            noDataMessage.appendChild(noDataCell);
+                            return noDataMessage;
+                        };
+
+                        const colSpan = table.querySelectorAll('thead th').length;
+                        let noDataMessage = createNoDataMessage(colSpan);
+                        tableBody.appendChild(noDataMessage);
+                        noDataMessage.style.display = 'none';
+
+                        // Сбросить выделение текста
+                        const resetHighlight = () => {
+                            const highlightedElements = document.querySelectorAll('mark.highlight');
+                            highlightedElements.forEach(el => { el.outerHTML = el.textContent; });
+                        };
+
+                        // Выделение текста
+                        const highlightText = (element, searchText) => {
+                            const innerText = element.textContent;
+                            const regex = new RegExp(`(${searchText})`, 'gi');
+                            element.innerHTML = innerText.replace(regex, '<mark class="highlight">$1</mark>');
+                        };
+
+                        // Слушаем ввод в поле поиска
+                        searchInput.addEventListener('input', function () {
+                            const query = searchInput.value.toLowerCase().trim();
+                            const rows = Array.from(tableBody.querySelectorAll('tr:not(.no-data-message)')); // Исключаем строку с сообщением "Нет данных"
+                            let hasVisibleRows = false;
+
+                            resetHighlight();
+
+                            rows.forEach(function (row) {
+                                const cells = row.querySelectorAll('td');
+                                let match = false;
+
+                                // Проверяем каждую ячейку строки на совпадение с запросом
+                                cells.forEach(function (cell) {
+                                    if (cell.textContent.toLowerCase().includes(query)) {
+                                        match = true;
+                                        highlightText(cell, query);
+                                    }
+                                });
+
+                                if (match) {
+                                    row.style.display = '';
+                                    hasVisibleRows = true;
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                            });
+
+                            // Показать или скрыть сообщение о "Нет данных"
+                            noDataMessage.style.display = hasVisibleRows ? 'none' : '';
+                        });
+
+                        // Обработчик для возврата всех строк при потере фокуса с поля поиска
+                        searchInput.addEventListener('blur', function () {
+                            if (searchInput.value === '') {
+                                const rows = tableBody.querySelectorAll('tr');
+                                rows.forEach(function (row) {
+                                    row.style.display = '';
+                                });
+                                resetHighlight();
+                                noDataMessage.style.display = 'none';
+                            }
+                        });
+
+                        // Убедимся, что строка с сообщением о "Нет данных" имеет правильный класс для управления
+                        noDataMessage.classList.add('no-data-message');
+                    });
+                </script>
+<script src="{% static 'script/users.js' %}"></script>
+<script src="{% static 'script/pagination.js' %}"></script>
 </body>
 </html>

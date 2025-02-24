@@ -3,21 +3,40 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModalButton = document.getElementById('close-modal');
     const modal = document.getElementById('modal');
     const form = document.getElementById('create-task-form');
+    const modalTitle = document.getElementById('modal-title'); // Заголовок модального окна
     const deleteButton = document.getElementById('delete-task-button'); // Кнопка удаления
     const confirmDeletePopup = document.getElementById('confirm-delete-popup'); // Попап подтверждения удаления
     const confirmDeleteButton = document.getElementById('confirm-delete'); // Кнопка подтверждения удаления
     const accessDeniedPopup = document.getElementById('access-denied-popup');
     const accessDeniedMessage = document.getElementById('access-denied-message');
     const closeAccessDeniedPopup = document.getElementById('close-access-denied-popup');
-    const task_id = '';
+    const tagsContainer = document.getElementById('tags-container');
+    const tagsInput = document.getElementById('task-tags'); // Поле для хранения выбранных тегов
 
     let submitButton = form.querySelector('button[type="submit"]');
     let currentTaskId = null; // Переменная для хранения текущего ID задачи
+    let editor = null;
+    let selectedTags = []; // Массив для хранения ID выбранных тегов
+
+    function initEditor() {
+        if (editor) return; // Уже инициализирован
+
+        ClassicEditor
+            .create(document.querySelector('#task-description'))
+            .then(newEditor => {
+                editor = newEditor;
+            })
+            .catch(error => {
+                console.error('Ошибка инициализации CKEditor:', error);
+            });
+    }
 
     // Открытие модального окна для создания задачи
     if (openModalButton) {
         openModalButton.addEventListener('click', function () {
             modal.classList.remove('hidden');
+            modalTitle.textContent = 'Создание задачи'; // Устанавливаем заголовок для создания задачи
+            initEditor();
             form.setAttribute('action', 'create/');
             submitButton.textContent = 'Создать задачу';
             form.reset();
@@ -27,6 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Закрытие модального окна
     function closeModal() {
+        if (editor) {
+            editor.setData(''); // Очищаем содержимое
+        }
         modal.classList.add('hidden');
         form.reset(); // Сбрасываем форму
         clearErrors(); // Очищение ошибок
@@ -41,7 +63,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Обработка отправки формы
-    form.addEventListener('submit', function(event) {
+    form.addEventListener('submit', function (event) {
+        if (editor) {
+            editor.updateSourceElement(); // Синхронизируем данные
+        }
         event.preventDefault();
         console.log('Отправка формы создания задачи');
 
@@ -61,44 +86,44 @@ document.addEventListener('DOMContentLoaded', function () {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
             }
         })
-        .then(response => {
-            console.log('Ответ от сервера:', response);
-            if (!response.ok) {
-                throw new Error('Сеть ответила с ошибкой: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Данные от сервера:', data);
-            if (data.status === 'success') {
-                closeModal(); // Закрываем модальное окно при успешном ответе
-                location.reload(); // Перезагрузка страницы для обновления данных
-            } else {
-                // Обработка ошибок
-                if (data.errors) {
-                    console.error('Ошибки валидации:', data.errors);
-                    Object.entries(data.errors).forEach(([fieldName, errors]) => {
-                        const field = form.querySelector(`[name="${fieldName}"]`);
-                        if (field) {
-                            showError(field, errors);
-                        }
-                    });
-                } else if (data.message) {
-                    console.error('Ошибка сервиса:', data.message);
-                    const generalErrorDiv = document.createElement('div');
-                    generalErrorDiv.className = 'general-error';
-                    generalErrorDiv.textContent = data.message;
-                    form.insertBefore(generalErrorDiv, form.firstChild);
+            .then(response => {
+                console.log('Ответ от сервера:', response);
+                if (!response.ok) {
+                    throw new Error('Сеть ответила с ошибкой: ' + response.status);
                 }
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка сети:', error);
-            const networkErrorDiv = document.createElement('div');
-            networkErrorDiv.className = 'network-error';
-            networkErrorDiv.textContent = 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.';
-            form.insertBefore(networkErrorDiv, form.firstChild);
-        });
+                return response.json();
+            })
+            .then(data => {
+                console.log('Данные от сервера:', data);
+                if (data.status === 'success') {
+                    closeModal(); // Закрываем модальное окно при успешном ответе
+                    location.reload(); // Перезагрузка страницы для обновления данных
+                } else {
+                    // Обработка ошибок
+                    if (data.errors) {
+                        console.error('Ошибки валидации:', data.errors);
+                        Object.entries(data.errors).forEach(([fieldName, errors]) => {
+                            const field = form.querySelector(`[name="${fieldName}"]`);
+                            if (field) {
+                                showError(field, errors);
+                            }
+                        });
+                    } else if (data.message) {
+                        console.error('Ошибка сервиса:', data.message);
+                        const generalErrorDiv = document.createElement('div');
+                        generalErrorDiv.className = 'general-error';
+                        generalErrorDiv.textContent = data.message;
+                        form.insertBefore(generalErrorDiv, form.firstChild);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка сети:', error);
+                const networkErrorDiv = document.createElement('div');
+                networkErrorDiv.className = 'network-error';
+                networkErrorDiv.textContent = 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.';
+                form.insertBefore(networkErrorDiv, form.firstChild);
+            });
     });
 
     // Редактирование задачи
@@ -107,6 +132,8 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             currentTaskId = this.getAttribute('data-task-id'); // Получаем ID задачи
             const editUrl = this.getAttribute('data-url');
+            // Инициализация редактора перед заполнением данных
+            initEditor(); // Добавлено здесь
             fetch(editUrl)
                 .then(response => {
                     if (response.status === 403) {
@@ -126,37 +153,49 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(data => {
                     // Заполняем форму полученными данными
-
                     document.getElementById('task-name').value = data.name || '';
                     document.getElementById('task-priority').value = data.priority || '';
-                    document.getElementById('task-description').value = data.description || '';
+                    if (editor) {
+                        editor.setData(data.description || ''); // Устанавливаем данные
+                    }
                     document.getElementById('task-status').value = data.status || '';
                     document.getElementById('task-responsible').value = data.responsible || '';
                     document.getElementById('task-feature').value = data.feature || '';
                     document.getElementById('task-contributor').value = data.contributor || '';
 
-
                     // Логика выделения тегов
-                    const tagsContainer = document.querySelectorAll('.tag'); // Все элементы тегов
-                    const selectedTags = data.tags || []; // ID выбранных тегов
+                    const tags = document.querySelectorAll('.tag'); // Все элементы тегов
+                    const selectedTagsFromServer = data.tags || []; // ID выбранных тегов
                     document.task_id = data.id || null;
 
-                    tagsContainer.forEach(tag => {
-                        const tagId = parseInt(tag.getAttribute('data-tag-id'), 10);
-                        if (selectedTags.includes(tagId)) {
-                            tag.classList.add('selected'); // Добавляем класс "selected"
-                        } else {
-                            tag.classList.remove('selected'); // Убираем класс, если он есть
+                    // Очищаем все выделения
+                    tags.forEach(tag => {
+                        tag.classList.remove('selected');
+                    });
+
+                    // Обновляем массив выбранных тегов
+                    selectedTags = [];
+                    selectedTagsFromServer.forEach(tagId => {
+                        const tagElement = document.querySelector(`.tag[data-tag-id="${tagId}"]`);
+                        if (tagElement) {
+                            tagElement.classList.add('selected'); // Добавляем класс "selected"
+                            selectedTags.push(tagId); // Добавляем в массив
                         }
                     });
+
+                    // Обновляем значение скрытого поля
+                    tagsInput.value = selectedTags.join(',');
+
+                    // Устанавливаем заголовок для редактирования задачи
+                    modalTitle.textContent = 'Редактирование задачи';
+
                     modal.classList.remove('hidden');
-                    // Меняем action формы для отправки на обновление
                     form.setAttribute('action', editUrl);
                     submitButton.textContent = 'Сохранить'; // Меняем текст кнопки на "Сохранить"
                 })
                 .catch(error => console.error('Ошибка:', error));
             // Обработчик закрытия попапа с ошибкой доступа
-            closeAccessDeniedPopup.addEventListener('click', function() {
+            closeAccessDeniedPopup.addEventListener('click', function () {
                 accessDeniedPopup.classList.add('hidden');
             });
         });
@@ -182,19 +221,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 },
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    confirmDeletePopup.classList.add('hidden'); // Закрываем попап подтверждения удаления
-                    closeModal(); // Закрываем модальное окно редактирования
-
-                    // Перенаправляем на страницу задач
-                    window.location.reload(); // Это обновит текущую страницу
-                } else {
-                    alert('Ошибка: ' + data.message); // Показываем сообщение об ошибке
-                }
-            })
-            .catch(error => console.error('Ошибка при удалении задачи:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        confirmDeletePopup.classList.add('hidden'); // Закрываем попап подтверждения удаления
+                        closeModal(); // Закрываем модальное окно редактирования
+                        window.location.reload(); // Это обновит текущую страницу
+                    } else {
+                        alert('Ошибка: ' + data.message); // Показываем сообщение об ошибке
+                    }
+                })
+                .catch(error => console.error('Ошибка при удалении задачи:', error));
         }
     });
 
@@ -219,18 +256,11 @@ document.addEventListener('DOMContentLoaded', function () {
         errorDiv.textContent = errors.join(', ');
         field.parentNode.insertBefore(errorDiv, field.nextSibling); // Вставляем ошибку после поля
     };
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    const tagsContainer = document.getElementById('tags-container');
-    const tagsInput = document.getElementById('task-tags');
-
-    let selectedTags = []; // Массив для хранения ID выбранных тегов
 
     // Обработка кликов по тегам
     tagsContainer.addEventListener('click', function (event) {
         const tagElement = event.target.closest('.tag');
-        if (!tagElement) return; // Если клик не на теге, выходим
+        if (!tagElement) return; // Если клик не на теге, выход
 
         const tagId = tagElement.getAttribute('data-tag-id');
 
@@ -248,3 +278,82 @@ document.addEventListener('DOMContentLoaded', function () {
         tagsInput.value = selectedTags.join(',');
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const openCommentModalButton = document.getElementById('open-comment-modal');
+    const closeCommentModalButton = document.getElementById('close-comment-modal');
+    const commentModal = document.getElementById('comment-modal');
+    const commentForm = document.getElementById('comment-form');
+
+    // Открытие модального окна для создания комментария
+    if (openCommentModalButton) {
+        openCommentModalButton.addEventListener('click', function () {
+            const taskId = this.getAttribute('data-task-id');
+            document.getElementById('comment-task-id').value = taskId;
+            commentModal.classList.remove('hidden');
+        });
+    }
+
+    // Закрытие модального окна
+    closeCommentModalButton.addEventListener('click', function () {
+        commentModal.classList.add('hidden');
+    });
+
+    // Обработка отправки формы комментария
+    commentForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(commentForm);
+
+        fetch(commentForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сеть ответила с ошибкой: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    commentModal.classList.add('hidden');
+                    location.reload(); // Перезагрузка страницы для обновления данных
+                } else {
+                    // Обработка ошибок
+                    if (data.errors) {
+                        Object.entries(data.errors).forEach(([fieldName, errors]) => {
+                            const field = commentForm.querySelector(`[name="${fieldName}"]`);
+                            if (field) {
+                                showError(field, errors);
+                            }
+                        });
+                    } else if (data.message) {
+                        const generalErrorDiv = document.createElement('div');
+                        generalErrorDiv.className = 'general-error';
+                        generalErrorDiv.textContent = data.message;
+                        commentForm.insertBefore(generalErrorDiv, commentForm.firstChild);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка сети:', error);
+                const networkErrorDiv = document.createElement('div');
+                networkErrorDiv.className = 'network-error';
+                networkErrorDiv.textContent = 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.';
+                commentForm.insertBefore(networkErrorDiv, commentForm.firstChild);
+            });
+    });
+
+    // Функция для отображения ошибок
+    const showError = (field, errors) => {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error';
+        errorDiv.textContent = errors.join(', ');
+        field.parentNode.insertBefore(errorDiv, field.nextSibling);
+    };
+});
+

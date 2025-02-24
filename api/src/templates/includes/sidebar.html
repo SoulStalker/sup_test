@@ -54,7 +54,7 @@
                 </li>
                 <li>
                     <a href="{% url 'projects:tasks' %}"
-                       class="override {% if request.resolver_match.url_name == 'taskss' %}menu_active{% endif %}"> <i
+                       class="override {% if 'tasks' in request.resolver_match.url_name %}menu_active{% endif %}"> <i
                             class="fas fa-tasks fa-fw"></i>
                         <span class="menu-text">Задачи</span>
                     </a>
@@ -73,10 +73,18 @@
                         <i class="fas fa-chevron-down drop"></i>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'users:users' %}">Все пользователи</a></li>
-                        <li><a href="{% url 'users:roles' %}">Команда</a></li>
-                        <li><a href="{% url 'users:permissions' %}">Права доступа</a></li>
-                        <li><a href="{% url 'teams:teams' %}">Команды</a></li>
+                        <li><a href="{% url 'users:users' %}"
+                               class="{% if request.resolver_match.url_name == 'users' %}menu_active{% endif %}">Все
+                            пользователи</a></li>
+                        <li><a href="{% url 'users:roles' %}"
+                               class="{% if request.resolver_match.url_name == 'roles' %}menu_active{% endif %}">Роли</a>
+                        </li>
+                        <li><a href="{% url 'users:permissions' %}"
+                               class="{% if request.resolver_match.url_name == 'permissions' %}menu_active{% endif %}">Права
+                            доступа</a></li>
+                        <li><a href="{% url 'teams:teams' %}"
+                               class="{% if request.resolver_match.url_name == 'teams' %}menu_active{% endif %}">Команды</a>
+                        </li>
                     </ul>
                 </li>
                 <li>

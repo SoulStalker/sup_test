@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     "src.apps.registration",
     "src.apps.authorization",
     "src.apps.verifyemail",
-    "src.apps.home"
+    "src.apps.home",
 ]
 
 MIDDLEWARE = [
@@ -75,7 +75,7 @@ DATABASES = {
         "USER": env.str("POSTGRES_USER"),
         "PASSWORD": env.str("POSTGRES_PASSWORD"),
         "HOST": env.str("DB_HOST"),
-        "PORT": 5432,
+        "PORT": env.int("DB_PORT"),
     }
 }
 

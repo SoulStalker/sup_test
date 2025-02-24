@@ -1,15 +1,6 @@
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/projects/popup.css' %}">
-<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
-<!-- Подключение jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Подключение CSS и JS библиотеки Select2 -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
-
 
 
 <div id="modal" class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-11">
@@ -17,16 +8,14 @@
         <div class="modal-header mb-4">
             <h2 class="modal-title text-xl font-semibold">Создать проект</h2>
         </div>
-
         <form id="create-project-form" method="POST" action="{% url 'projects:create_project' %}" enctype="multipart/form-data">
             {% csrf_token %}
-
             <!-- Project Name -->
             <div class="form-group mb-4">
                 <label for="project-name" class="form-label block text-sm font-medium text-gray-700">Название проекта</label>
-                <input type="text" id="project-name" name="name" class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full" required>
+                <input type="text" id="project-name" name="name"
+                       class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
             </div>
-
             <!-- Project Logo -->
             <div class="form-group mb-4">
                 <label for="project-logo" class="form-label block text-sm font-medium text-gray-700">Логотип проекта</label>
@@ -34,17 +23,15 @@
                     <div class="file-input-trigger cursor-pointer p-2 border border-gray-300 rounded hover:bg-gray-100">
                         Выберите файл или перетащите
                     </div>
-                    <input type="file" id="project-logo" name="logo" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <input type="file" id="logo-input" name="logo" class="absolute inset-0 opacity-0 cursor-pointer">
                 </div>
                 <img id="logo-preview" src="" alt="Логотип проекта" class="mt-2 hidden w-25 h-auto rounded">
             </div>
-
             <!-- Project Description -->
             <div class="form-group mb-4">
                 <label for="project-description" class="form-label block text-sm font-medium text-gray-700">Описание проекта</label>
                 <textarea id="project-description" name="description" class="editor form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"></textarea>
             </div>
-
             <div class="form-group flex space-x-4">
                 <!-- Status -->
                 <div class="w-1/2">
@@ -57,17 +44,14 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="w-1/2">
                     <!-- Project Date -->
                     <div class="form-group mb-4">
-                        <label for="project-date" class="form-label block text-sm font-medium text-gray-700">Дата</label>
-                        <input type="date" id="project-date" name="date_created" class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
+                        <label for="project-date_created" class="form-label block text-sm font-medium text-gray-700">Дата и время</label>
+                        <input type="datetime-local" id="project-date_created" name="date_created" class="form-input mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full">
                     </div>
                 </div>
-
             </div>
-
             <div class="form-group mb-4 flex space-x-4">
                 <!-- Responsible Person -->
                 <div class="w-1/2">
@@ -78,61 +62,39 @@
                         {% endfor %}
                     </select>
                 </div>
-                <!-- Participants -->
-                <div class="form-group mb-4">
-                    <label for="project-participants" class="form-label block text-sm font-medium text-gray-700">Участники</label>
-                    <select id="project-participants" name="participants"
-                            class="form-select mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
-                            multiple style="width: 260px;">
+                <!-- Участники -->
+                <div class="form-group mb-4 w-1/2">
+                    <label for="project-participants" class="form-label block text-sm font-medium text-gray-700">Участники*</label>
+                    <select id="project-participants" name="participants" multiple
+                            class="form-select select2 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            required>
                         {% for user in users %}
                         <option value="{{ user.id }}">{{ user.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        // Инициализация Select2
-                        $('#project-participants').select2({
-                            placeholder: "Выберите участников", // Плейсхолдер
-                            allowClear: true, // Возможность очистить выбор
-                            width: 'resolve' // Автоматическая ширина
-                        });
-                    });
-                </script>
             </div>
-
+            <div class="text-red-500 text-sm mt-1 hidden"></div>
 
             <!-- Button Group -->
             <div class="flex justify-end space-x-2">
                 <button type="button" id="delete-project-button"
                         class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Удалить</button>
                 <button type="button" id="close-modal" class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
-                <button type="submit" id="submit-button" class="btn btn-primary bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Создать</button>
+                <button type="submit" id="submit-button" class="btn btn-primary bg-green-custom text-white px-4 py-2 rounded hover:bg-green-dark">Обновить</button>
             </div>
         </form>
     </div>
 </div>
 
-
-
-
 <!-- Попап подтверждения удаления -->
 <div id="confirm-delete-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden z-12">
     <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
-        <h2 class="modal-title text-xl text-center font-semibold">Данная задача будет удалена</h2>
+        <h2 class="modal-title text-xl text-center font-semibold">Данный проект будет удален</h2>
         <div class="flex justify-center mt-4 space-x-2">
             <button id="confirm-delete" type="button" class="btn btn-danger bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" data-task-id="{{ task.id }}">Удалить </button>
-            <button id="cancel-delete" type="button" class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена </button>
+            <button id="cancel-delete" type="button" class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Отмена</button>
         </div>
     </div>
 </div>
-<!-- Попап для отображения ошибки доступа -->
-<div id="access-denied-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
-        <h2 class="modal-title text-xl text-center font-semibold"></h2>
-        <div class="flex justify-center mt-4 space-x-2">
-            <button id="close-access-denied-popup" type="button" class="btn btn-neutral bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Закрыть</button>
-        </div>
-    </div>
-</div>
+

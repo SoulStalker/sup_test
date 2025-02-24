@@ -1,3 +1,7 @@
+
+
+
+
 // переключение на вторую таблицу
 function toggleTableStyle2() {
     const tableStyle1 = document.getElementById('table-style-1');
@@ -176,14 +180,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// редактирование мита
 document.addEventListener('DOMContentLoaded', function () {
     const editMeetButtons = document.querySelectorAll('.edit-meet-button');
     const modal = document.getElementById('modal-create-meet');
     const form = document.getElementById('create-meet-form');
+    const modalTitle = document.querySelector('.modal-title');
     const accessDeniedPopup = document.getElementById('access-denied-popup');
     const accessDeniedMessage = document.getElementById('access-denied-message');
     const closeAccessDeniedPopup = document.getElementById('close-access-denied-popup');
+    const submitButton = document.getElementById('submit-meet');
 
     editMeetButtons.forEach(button => {
         button.addEventListener('click', function () {
@@ -193,7 +198,6 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch(`/meets/edit/${meetId}/`)
                 .then(response => {
                     if (response.status === 403) {
-                        // Если доступ запрещён (403), показываем попап с ошибкой
                         return response.json().then(errorData => {
                             accessDeniedMessage.textContent = errorData.message || 'Доступ запрещён';
                             accessDeniedPopup.classList.remove('hidden');
@@ -206,8 +210,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     return response.json();
                 })
                 .then(data => {
-                    // Открываем модальное окно только если данные успешно получены
                     modal.classList.remove('hidden');
+
+                    // Меняем заголовок модального окна
+                    modalTitle.textContent = 'Обновить Мит';
 
                     // Заполняем форму данными мита
                     document.getElementById('title').value = data.title;
@@ -236,16 +242,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Меняем action формы для отправки на обновление
                     form.setAttribute('action', `/meets/edit/${meetId}/`);
-                    submitButton.textContent = 'Сохранить';
+                    submitButton.textContent = 'Обновить';
+                    submitButton.classList.remove('bg-green-custom');
+                    submitButton.classList.add('bg-blue-custom');
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
-                    // Модальное окно не открывается, если доступ запрещен
                 });
         });
     });
 
-    // Закрытие попапа с ошибкой доступа
     closeAccessDeniedPopup.addEventListener('click', function () {
         accessDeniedPopup.classList.add('hidden');
     });

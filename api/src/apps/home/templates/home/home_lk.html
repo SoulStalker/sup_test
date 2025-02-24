@@ -34,7 +34,7 @@
                         <div>
                             <h1 class="text-2xl font-semibold text-[#327680]">{{ user.name }} {{ user.surname }}</h1>
                             <p class="text-sm opacity-90">{{ user.email }}</p>
-                            <p class="text-xs opacity-75">Дата регистрации: {{ user.date_joined }}</p>
+                            <p class="text-xs opacity-75">Дата регистрации: <span id="date_joined">{{ user.date_joined }}</span></p>
 
                             <div class="flex space-x-2 mt-4">
                                 <a href="#" class="icon-wrapper">
@@ -70,7 +70,14 @@
             <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
                 <div class="md:col-span-4 bg-white p-6 rounded-xl shadow-sm flex-col justify-between" style="max-height: 525px;">
                     <h2 class="text-xl font-semibold mb-4 w-full text-center">График успеваемости</h2>
-                    <canvas id="progressChart" height="438" width="1278" style="display: block; box-sizing: border-box; height: 395px; max-height: 566px; width: 1150px;"></canvas>
+                    <div class="mb-4 text-center">
+                        <button class="interval-button" data-interval="day">День</button>
+                        <button class="interval-button" data-interval="week">Неделя</button>
+                        <button class="interval-button" data-interval="month">Месяц</button>
+                        <button class="interval-button" data-interval="year">Год</button>
+                    </div>
+                    <canvas id="progressChart" height="438" width="1278"
+                            style="display: block; box-sizing: border-box; height: 395px; max-height: 566px; width: 1150px;"></canvas>
                 </div>
 
                 <div class="md:col-span-1 space-y-6 flex flex-col justify-between" style="max-height: 525px;">
@@ -111,29 +118,33 @@
                             <h3 class="font-medium">{{ task.name }}</h3>
                             <span class="text-sm status-badge">{{ task.status }}</span>
                         </div>
-                        <p class="text-sm text-gray-500 mt-1">Дедлайн: {{ task.closed_at }}</p>
+                        <p class="text-sm text-gray-500 mt-1">Дедлайн: <span id="closed_at">{{ task.closed_at }}</span></p>
                     </div>
                     {% endfor %}
-                    </div>
-                    <div class="pagination">
-                        <span>Пагинация</span>
-                        <button class="pagination-btn">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                            </svg>
-                        </button>
-                        <button class="pagination-btn">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </button>
-                    </div>
                 </div>
+                {% if task_responsible|length > 5 %}
+                <div class="pagination mt-2.5">
+                    <span>Пагинация</span>
+                    <button class="pagination-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <button class="pagination-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+                {% endif %}
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="bg-white p-6 rounded-xl shadow-sm space-y-4">
                     <h2 class="text-xl font-semibold mb-4">Проекты</h2>
-                    {% for project in projects_participants %}
+                    {% for project in projects_participants|slice:":5" %}
                     <div class="space-y-4">
                         <div class="p-4 border rounded-lg">
                             <div class="flex justify-between items-center">
@@ -144,7 +155,11 @@
                         </div>
                     </div>
                     {% endfor %}
-
+                    <div class="text-center mt-4">
+                        <a href="/projects/"
+                           class="text-white bg-[#327680] hover:bg-red-700 px-4 py-2 rounded-lg text-sm transition-colors">Посмотреть
+                            все проекты</a>
+                    </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-sm">
                     <h2 class="text-xl font-semibold mb-4">Команда</h2>
@@ -174,27 +189,184 @@
     </div>
 
     <script>
-        const ctx = document.getElementById('progressChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
+// Функция для преобразования текстовой даты в формат YYYY-MM-DD
+function parseRussianDate(dateString) {
+    const months = {
+        'января': '01',
+        'февраля': '02',
+        'марта': '03',
+        'апреля': '04',
+        'мая': '05',
+        'июня': '06',
+        'июля': '07',
+        'августа': '08',
+        'сентября': '09',
+        'октября': '10',
+        'ноября': '11',
+        'декабря': '12'
+    };
+    // Убираем "г." и время (если есть)
+    const cleanedDate = dateString.replace(' г.', '').replace(/\d{1,2}:\d{2}/, '').trim();
+    // Разделяем строку на части
+    const [day, monthName, year] = cleanedDate.split(' ');
+    // Получаем числовой месяц
+    const month = months[monthName.toLowerCase()];
+    if (!month) {
+        console.error(`Неизвестный месяц: ${monthName}`);
+        return null;
+    }
+    // Формируем дату в формате YYYY-MM-DD
+    return `${year}-${month}-${day.padStart(2, '0')}`;
+}
+
+// Извлечение даты регистрации пользователя
+const registrationElement = document.getElementById('date_joined');
+let userRegistrationDate = null;
+if (registrationElement) {
+    const rawDate = registrationElement.textContent.trim();
+    userRegistrationDate = parseRussianDate(rawDate); // Преобразуем в формат YYYY-MM-DD
+}
+if (!userRegistrationDate) {
+    console.error("Не удалось извлечь дату регистрации пользователя.");
+    userRegistrationDate = new Date().toISOString().split('T')[0]; // Запасной вариант: текущая дата
+}
+console.log("Дата регистрации:", userRegistrationDate);
+
+// Извлечение данных о задачах из DOM
+const taskItems = document.querySelectorAll('.task-item');
+const tasksByDate = {};
+taskItems.forEach(task => {
+    // Проверяем статус задачи
+    const statusBadge = task.querySelector('.status-badge');
+    if (statusBadge && statusBadge.textContent.trim() === 'Готов') {
+        // Извлекаем дедлайн
+        const deadlineElement = task.querySelector('#closed_at');
+        if (deadlineElement) {
+            const rawDate = deadlineElement.textContent.trim(); // Извлекаем текст даты
+            const parsedDate = parseRussianDate(rawDate); // Преобразуем в формат YYYY-MM-DD
+            if (parsedDate && parsedDate >= userRegistrationDate) {
+                if (!tasksByDate[parsedDate]) {
+                    tasksByDate[parsedDate] = 0;
+                }
+                tasksByDate[parsedDate] += 1; // Увеличиваем счетчик задач для этой даты
+            }
+        }
+    }
+});
+
+// Генерация всех дат от даты регистрации до последней даты задачи
+const allDates = [];
+const lastTaskDate = Object.keys(tasksByDate).sort((a, b) => new Date(a) - new Date(b)).pop();
+if (lastTaskDate) {
+    let currentDate = new Date(userRegistrationDate);
+    const endDate = new Date(lastTaskDate);
+    while (currentDate <= endDate) {
+        const formattedDate = currentDate.toISOString().split('T')[0];
+        allDates.push(formattedDate);
+        currentDate.setDate(currentDate.getDate() + 1); // Переходим к следующему дню
+    }
+}
+
+// Создание массивов для графика
+const dates = allDates;
+const taskCounts = dates.map(date => tasksByDate[date] || 0); // Если задач нет, значение = 0
+
+// Настройка графика
+let chartInstance = null;
+
+function updateChart(interval) {
+    // Группировка данных по интервалу
+    const groupedData = {};
+    dates.forEach((date, index) => {
+        const count = taskCounts[index];
+        const dateObj = new Date(date);
+
+        let key;
+        if (interval === 'year') {
+            key = dateObj.getFullYear();
+        } else if (interval === 'month') {
+            key = `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}`;
+        } else if (interval === 'week') {
+            const startOfWeek = new Date(dateObj);
+            startOfWeek.setDate(dateObj.getDate() - dateObj.getDay()); // Начало недели (воскресенье)
+            key = startOfWeek.toISOString().split('T')[0];
+        } else {
+            key = date; // День
+        }
+
+        if (!groupedData[key]) {
+            groupedData[key] = 0;
+        }
+        groupedData[key] += count;
+    });
+
+    // Преобразование в массивы для графика
+    const groupedDates = Object.keys(groupedData).sort((a, b) => new Date(a) - new Date(b));
+    const groupedTaskCounts = groupedDates.map(date => groupedData[date]);
+
+    // Обновление графика
+    if (chartInstance) {
+        chartInstance.data.labels = groupedDates;
+        chartInstance.data.datasets[0].data = groupedTaskCounts;
+        chartInstance.update();
+    } else {
+        const ctx = document.getElementById('progressChart');
+        if (ctx) {
+            chartInstance = new Chart(ctx, {
+                type: 'line', // Тип графика (линейный)
                 data: {
-                    labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'],
+                    labels: groupedDates, // Метки (даты)
                     datasets: [{
-                        label: 'Выполнено задач',
-                        data: [4, 8, 15, 16, 23, 24],
-                        borderColor: '#327680',
-                        tension: 0.4
+                        label: 'Количество готовых задач',
+                        data: groupedTaskCounts, // Данные (количество задач)
+                        borderColor: '#327680', // Цвет линии
+                        tension: 0.4, // Плавность линии
+                        fill: false // Не заливать область под графиком
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
                         legend: {
-                            display: false
+                            display: false // Скрываем легенду
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true // Начало оси Y с нуля
                         }
                     }
                 }
             });
+        } else {
+            console.error("Элемент с ID 'progressChart' не найден.");
+        }
+    }
+}
+
+// Добавление обработчиков событий для кнопок
+document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.interval-button');
+    buttons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            // Удаление класса active со всех кнопок
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Добавление класса active к нажатой кнопке
+            event.target.classList.add('active');
+
+            // Получение выбранного интервала
+            const selectedInterval = event.target.dataset.interval;
+            updateChart(selectedInterval);
+        });
+    });
+
+    // Инициализация графика с начальным интервалом (по умолчанию - все даты)
+    updateChart('day');
+
+    // Установка активного класса для первой кнопки при загрузке страницы
+    buttons[0].classList.add('active');
+});
             // Task Filtering
             document.querySelectorAll('.task-filter').forEach(button => {
                 button.addEventListener('click', (e) => {
