@@ -1,0 +1,2 @@
+ Игнорировать все .js файлы
+*.js linguist-generated
